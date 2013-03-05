@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <!-- Global app label -->
+    <string name="app_name">SolnRss</string>
+    <string name="title_publications">Articles</string>
+    <string name="title_syndications">Sites</string>
+    <string name="title_categories">Categories</string>
+    <string name="menu_settings">Settings</string>
+    <string name="menu_add_categorie">Add a categorie</string>
+    <string name="menu_add_site">Add a site</string>
+
+    <!-- Publication's tab label -->
+    <string name="empty_publications">No publications found. Please add a site or try a refresh </string>
+
+    <!-- Context publication's context menu -->
+    <string name="display_one_publication">Display only his publications</string>
+    <string name="display_all_publication">Display all publications</string>
+    <string name="display_syndications_screen">Display syndication\'s screen</string>
+    <string name="mark_all_read">Mark all publication as read</string>
+    <string name="mark_selected_read">Mark this site publications as read</string>
+
+    <!-- New publication notification -->
+    <string name="notify_new_pub_title">New publications</string>
+    <string name="notify_new_pub_msg">%1$s unread publications</string>
+
+    <!-- Syndication's tab label -->
+    <string name="search_syndication_info">Get it</string>
+    <string name="display_syndication">Display</string>
+    <string name="manage_syndication">Manage</string>
+    <string name="startOrPause">Start or pause button</string>
+
+    <!-- Search syndication task result -->
+    <string name="feed_search_error">An error occurred when searching a web site\'s publication informations.</string>
+    <string name="feed_search_ok">Success, publication informations found.</string>
+    <string name="feed_not_found">Sorry, unable to retrieve publication informations</string>
+    <string name="site_record_error">An error occurred when recording the site\'s publication informations in internal database</string>
+    <string name="site_already_recorded">An site with this link still recorded in application</string>
+    <string name="load_syndication">Search publication informations. Please wait</string>
+    <string name="no_connection">No internet connection seems to be avialable, please active it.</string>
+    <string name="http_get_error">Error occurred when trying to get website informations.</string>
+    <string name="bad_url">Error occurred when trying to get website informations.</string>
+    <string name="empty_url">Please enter a valid url</string>
+
+    <!-- Syndication manager activity -->
+    <string name="site_parameter">%1$s</string>
+    <string name="clean_articles_btn">Clean</string>
+    <string name="delete_articles_btn">Delete</string>
+    <string name="active_articles_btn">Activate</string>
+    <string name="unactive_articles_btn">Desactivate</string>
+    <string name="delete_ok">Your deletetion is well done</string>
+    <string name="clean_confirm">Would you like to remove articles list ?</string>
+    <string name="delete_confirm">Would you like to delete this syndication ?</string>
+    <string name="creation_date">Create: %1$s</string>
+    <string name="last_refresh_date">Last refresh date: %1$s</string>
+    <string name="last_publication_date">Last publication date: %1$s</string>
+    <string name="num_of_articles_found">Number of articles found: %1$s</string>
+    <string name="action_bar_search">Search</string>
+    <string name="continue_reading">View article</string>
+    <string name="syndication_number_of_click">%1$s article(s) read</string>
+
+    <!-- Settings -->
+    <!-- View Read / Unread -->
+    <string name="pref_view_unread">View unread</string>
+    <string name="pref_summ_view_unread_off">View only unread publications</string>
+    <string name="pref_summ_view_unread_on">View all read and unread publications</string>
+    <!-- Unread font weight -->
+
+    <string name="pref_view_font_weight">Publication font weight</string>
+    <string name="pref_view_font_weight_off">View unread publications in normal font weight</string>
+    <string name="pref_view_font_weight_on">View unread publications in bold font weight</string>
+
+    <!-- Display a notification after found new publications -->
+    <string name="pref_display_notify">Notify</string>
+    <string name="pref_summ_display_notify_on">Display a notification when new publications found</string>
+    <string name="pref_summ_display_notify_off">No notification displayed when new publications found</string>
+
+    <!-- Categorie -->
+    <string name="empty_categories">No categories found</string>
+    <string name="delete_categorie">Delete</string>
+    <string name="add_to_categorie">Add syndications</string>
+
+    <!-- Dialog add item -->
+    <string name="add_categorie_explain">Add a new categorie</string>
+    <string name="add_site_explain">Please enter a valid URL</string>
+    <string name="add_categorie">New Categorie</string>
+    <string name="add_site">New Site</string>
+
+</resources>

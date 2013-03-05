@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
+    android:key="first_preferencescreen" >
+
+    <CheckBoxPreference
+        android:defaultValue="true"
+        android:key="pref_unread_font_weight"
+        android:summaryOff="@string/pref_view_font_weight_off"
+        android:summaryOn="@string/pref_view_font_weight_on"
+        android:title="@string/pref_view_font_weight" />
+
+    <CheckBoxPreference
+        android:defaultValue="true"
+        android:key="pref_display_unread"
+        android:summaryOff="@string/pref_summ_view_unread_off"
+        android:summaryOn="@string/pref_summ_view_unread_on"
+        android:title="@string/pref_view_unread" />
+
+    <CheckBoxPreference
+        android:defaultValue="true"
+        android:key="pref_display_notify"
+        android:summaryOff="@string/pref_summ_display_notify_off"
+        android:summaryOn="@string/pref_summ_display_notify_on"
+        android:title="@string/pref_display_notify" />
+
+    <SeekBarPreference
+        android:defaultValue="20"
+        android:key="xxx"
+        android:max="100"
+        android:title="Refresh every" >
+    </SeekBarPreference>
+
+</PreferenceScreen>

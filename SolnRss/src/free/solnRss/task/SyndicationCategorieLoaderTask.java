@@ -1,0 +1,40 @@
+package free.solnRss.task;
+
+import android.content.Context;
+import android.database.Cursor;
+import android.os.AsyncTask;
+import free.solnRss.R;
+import free.solnRss.activity.SyndicationsCategorieActivity;
+import free.solnRss.adapter.SyndicationsCategorieAdapter;
+import free.solnRss.repository.SyndicationRepository;
+
+public class SyndicationCategorieLoaderTask extends
+		AsyncTask<Integer, Void, SyndicationsCategorieAdapter> {
+
+	private SyndicationRepository repository;
+	private Context context;
+
+	private final String[] from = { "syn_name" };
+	private final int[] to = { android.R.id.text1, };
+
+	public SyndicationCategorieLoaderTask(Context context) {
+		this.context = context;
+	}
+
+	@Override
+	protected SyndicationsCategorieAdapter doInBackground(Integer... arg0) {
+		repository = new SyndicationRepository(context);
+		Cursor c = repository.syndicationCategorie(arg0[0]);
+		c.moveToFirst();
+		SyndicationsCategorieAdapter adapter = new SyndicationsCategorieAdapter(
+				context, R.layout.syndications_categorie, c, from, to, 0);
+		return adapter;
+
+	}
+
+	@Override
+	protected void onPostExecute(SyndicationsCategorieAdapter result) {
+		((SyndicationsCategorieActivity) context).setListAdapter(result);
+		super.onPostExecute(result);
+	}
+}

@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginLeft="5dp"
+    android:layout_marginRight="5dp"
+    android:keepScreenOn="true"
+    android:orientation="vertical" >
+
+    <EditText
+        android:id="@+id/filterList"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="5dp"
+        android:layout_marginLeft="5dp"
+        android:layout_marginRight="5dp"
+        android:layout_marginTop="5dp"
+        android:background="@drawable/input"
+        android:inputType="text"
+        android:padding="3dp"
+        android:visibility="gone" >
+    </EditText>
+
+    <ListView
+        android:id="@android:id/list"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:requiresFadingEdge="vertical" >
+    </ListView>
+
+    <LinearLayout
+        android:id="@+id/emptyPublicationsLayout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="10dp"
+        android:visibility="invisible" >
+
+        <TextView
+            android:id="@+id/emptyPublicationsMessage"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/empty_publications"
+            android:visibility="invisible" />
+
+        <Button
+            android:id="@+id/displayAllButton"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:onClick="displayAllPublication"
+            android:layout_marginTop="20dp"
+            android:text="@string/display_all_publication" />
+    </LinearLayout>
+
+    <!-- 
+    <include
+        android:id="@+id/footer"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content" >
+    </include>
+    -->
+    
+</LinearLayout>

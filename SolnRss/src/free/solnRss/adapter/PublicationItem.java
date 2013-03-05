@@ -1,0 +1,35 @@
+package free.solnRss.adapter;
+
+import android.widget.TextView;
+
+public class PublicationItem {
+
+	private TextView title;
+	private TextView name;
+	private Integer isRead;
+
+	public TextView getTitle() {
+		return title;
+	}
+
+	public void setTitle(TextView title) {
+		this.title = title;
+	}
+
+	public TextView getName() {
+		return name;
+	}
+
+	public void setName(TextView name) {
+		this.name = name;
+	}
+
+	public Integer getIsRead() {
+		return isRead;
+	}
+
+	public void setIsRead(Integer isRead) {
+		this.isRead = isRead;
+	}
+
+}

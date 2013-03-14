@@ -12,7 +12,7 @@ import free.solnRss.activity.SolnRss;
 import free.solnRss.adapter.PublicationAdapter;
 import free.solnRss.repository.PublicationRepository;
 
-public class PublicationsByCategorieLoaderTask extends AsyncTask<Integer, Void, PublicationAdapter> {
+public class PublicationsByCategoryLoaderTask extends AsyncTask<Integer, Void, PublicationAdapter> {
 
 	final int emptyMessageID = R.id.emptyPublicationsMessage;
 
@@ -23,7 +23,7 @@ public class PublicationsByCategorieLoaderTask extends AsyncTask<Integer, Void, 
 	private ListFragment fragment;
 	private Context context;
 
-	public PublicationsByCategorieLoaderTask(ListFragment fragment, Context context) {
+	public PublicationsByCategoryLoaderTask(ListFragment fragment, Context context) {
 		this.context = context;
 		this.fragment = fragment;
 	}
@@ -34,7 +34,11 @@ public class PublicationsByCategorieLoaderTask extends AsyncTask<Integer, Void, 
 		Cursor c = repository.fetchPublicationByCategorie(ids[0], null,
 				mustDisplayUnread());
 		c.moveToFirst();
-
+		
+		// Keep the category id in adapter for filter
+		((PublicationAdapter) fragment.getListAdapter())
+				.setSelectedCategoryId(ids[0]);
+				
 		return new PublicationAdapter(context, R.layout.publications, c, from,	to, 0);
 	}
 

@@ -6,14 +6,14 @@ import android.os.AsyncTask;
 import free.solnRss.adapter.SyndicationsCategorieAdapter;
 import free.solnRss.repository.SyndicationRepository;
 
-public class SyndicationCategorieReloaderTask extends
+public class SyndicationCategoryReloaderTask extends
 		AsyncTask<Integer, Void, Cursor> {
 
 	private SyndicationRepository repository;
 	private Context context;
 	private SyndicationsCategorieAdapter adapter;
 
-	public SyndicationCategorieReloaderTask(Context context, SyndicationsCategorieAdapter adapter) {
+	public SyndicationCategoryReloaderTask(Context context, SyndicationsCategorieAdapter adapter) {
 		this.context = context;
 		this.adapter = adapter;
 	}

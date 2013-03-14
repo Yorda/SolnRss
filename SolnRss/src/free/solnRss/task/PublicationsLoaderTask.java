@@ -12,7 +12,8 @@ import free.solnRss.activity.SolnRss;
 import free.solnRss.adapter.PublicationAdapter;
 import free.solnRss.repository.PublicationRepository;
 
-public class PublicationsLoaderTask extends AsyncTask<Integer, Void, PublicationAdapter> {
+public class PublicationsLoaderTask extends
+		AsyncTask<Integer, Void, PublicationAdapter> {
 
 	final int emptyMessageID = R.id.emptyPublicationsMessage;
 
@@ -34,12 +35,15 @@ public class PublicationsLoaderTask extends AsyncTask<Integer, Void, Publication
 		repository = new PublicationRepository(context);
 		Cursor c = repository.fetchFilteredPublication(ids[0], filter,
 				mustDisplayUnread());
-		c.moveToFirst();
-
-		PublicationAdapter publications = new PublicationAdapter(context,
-				R.layout.publications, c, from, to, 0);
 		
-		return publications;
+		c.moveToFirst();
+		PublicationAdapter publicationAdapter = new PublicationAdapter(context,
+				R.layout.publications, c, from, to, 0);
+
+		// Keep the syndication id in adapter for filter
+		publicationAdapter.setSelectedSyndicationId(ids[0]);
+				
+		return publicationAdapter;
 	}
 
 	@Override

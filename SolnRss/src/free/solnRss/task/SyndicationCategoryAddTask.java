@@ -2,21 +2,21 @@ package free.solnRss.task;
 
 import android.content.Context;
 import android.os.AsyncTask;
-import free.solnRss.activity.SyndicationsCategorieActivity;
-import free.solnRss.repository.CategorieRepository;
+import free.solnRss.activity.SyndicationsCategoriesActivity;
+import free.solnRss.repository.CategoryRepository;
 
-public class SyndicationCategorieAddTask extends AsyncTask<Integer, Void, Void> {
+public class SyndicationCategoryAddTask extends AsyncTask<Integer, Void, Void> {
 
-	private CategorieRepository repository;
+	private CategoryRepository repository;
 	private Context context;
 
-	public SyndicationCategorieAddTask(Context context) {
+	public SyndicationCategoryAddTask(Context context) {
 		this.context = context;
 	}
 
 	@Override
 	protected Void doInBackground(Integer... args) {
-		repository = new CategorieRepository(context);
+		repository = new CategoryRepository(context);
 		repository.addSyndicationToCategorie(args[0], args[1]);
 		return null;
 	}
@@ -24,6 +24,6 @@ public class SyndicationCategorieAddTask extends AsyncTask<Integer, Void, Void> 
 	@Override
 	protected void onPostExecute(Void result) {
 		super.onPostExecute(result);		
-		((SyndicationsCategorieActivity)context).reload();
+		((SyndicationsCategoriesActivity)context).reload();
 	}
 }

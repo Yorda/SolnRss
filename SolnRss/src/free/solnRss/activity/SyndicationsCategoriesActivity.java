@@ -6,12 +6,12 @@ import android.view.View;
 import android.widget.CheckBox;
 import free.solnRss.R;
 import free.solnRss.adapter.SyndicationsCategorieAdapter;
-import free.solnRss.task.SyndicationCategorieAddTask;
-import free.solnRss.task.SyndicationCategorieLoaderTask;
-import free.solnRss.task.SyndicationCategorieReloaderTask;
-import free.solnRss.task.SyndicationCategorieRemoveTask;
+import free.solnRss.task.SyndicationCategoryAddTask;
+import free.solnRss.task.SyndicationCategoryLoaderTask;
+import free.solnRss.task.SyndicationCategoryReloaderTask;
+import free.solnRss.task.SyndicationCategoryRemoveTask;
 
-public class SyndicationsCategorieActivity extends ListActivity {
+public class SyndicationsCategoriesActivity extends ListActivity {
 	final int layoutID = R.layout.activity_syndications_categorie;
 	private Integer selectedCategorieID;
 	@Override
@@ -32,18 +32,18 @@ public class SyndicationsCategorieActivity extends ListActivity {
 	}
 
 	void loadSyndicationCategorie() {
-		SyndicationCategorieLoaderTask task = new SyndicationCategorieLoaderTask(this);
+		SyndicationCategoryLoaderTask task = new SyndicationCategoryLoaderTask(this);
 		task.execute(selectedCategorieID);
 	}
 
 	public void addSyndicationToCategorie(Integer syndicationId) {
-		SyndicationCategorieAddTask addTask = new SyndicationCategorieAddTask(
+		SyndicationCategoryAddTask addTask = new SyndicationCategoryAddTask(
 				this);
 		addTask.execute(syndicationId, selectedCategorieID);
 	}
 
 	public void removeSyndicationToCategorie(Integer syndicationId) {
-		SyndicationCategorieRemoveTask removeTask = new SyndicationCategorieRemoveTask(
+		SyndicationCategoryRemoveTask removeTask = new SyndicationCategoryRemoveTask(
 				this);
 		removeTask.execute(syndicationId, selectedCategorieID);
 	}
@@ -59,7 +59,7 @@ public class SyndicationsCategorieActivity extends ListActivity {
 	}
 
 	public void reload() {
-		SyndicationCategorieReloaderTask task = new SyndicationCategorieReloaderTask(
+		SyndicationCategoryReloaderTask task = new SyndicationCategoryReloaderTask(
 				this, (SyndicationsCategorieAdapter) getListAdapter());
 		task.execute(selectedCategorieID);
 	}

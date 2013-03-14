@@ -8,7 +8,7 @@ import android.view.View;
 import android.widget.TextView;
 import free.solnRss.R;
 import free.solnRss.adapter.CategorieAdapter;
-import free.solnRss.repository.CategorieRepository;
+import free.solnRss.repository.CategoryRepository;
 
 /**
  * Task for load the syndication list.
@@ -18,7 +18,7 @@ import free.solnRss.repository.CategorieRepository;
 public class CategoriesLoaderTask extends AsyncTask<Void, Void, CategorieAdapter> {
 
 	final int emptyMessageID = R.id.emptyCategoriesMessage;
-	CategorieRepository repository;
+	CategoryRepository repository;
 	ListFragment fragment;
 	Activity activity;
 	
@@ -32,7 +32,7 @@ public class CategoriesLoaderTask extends AsyncTask<Void, Void, CategorieAdapter
 	
 	@Override
 	protected CategorieAdapter doInBackground(Void... params) {
-		repository = new CategorieRepository(activity);
+		repository = new CategoryRepository(activity);
 		Cursor c = repository.fetchAllCategorie();
 		c.moveToFirst();	
 		CategorieAdapter adapter = new CategorieAdapter(activity,

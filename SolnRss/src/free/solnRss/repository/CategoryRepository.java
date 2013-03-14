@@ -4,9 +4,9 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 
-public class CategorieRepository extends Repository {
+public class CategoryRepository extends Repository {
 
-	public CategorieRepository(Context context) {
+	public CategoryRepository(Context context) {
 		super.context = context;
 	}
 	

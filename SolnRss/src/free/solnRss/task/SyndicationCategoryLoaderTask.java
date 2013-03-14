@@ -4,11 +4,11 @@ import android.content.Context;
 import android.database.Cursor;
 import android.os.AsyncTask;
 import free.solnRss.R;
-import free.solnRss.activity.SyndicationsCategorieActivity;
+import free.solnRss.activity.SyndicationsCategoriesActivity;
 import free.solnRss.adapter.SyndicationsCategorieAdapter;
 import free.solnRss.repository.SyndicationRepository;
 
-public class SyndicationCategorieLoaderTask extends
+public class SyndicationCategoryLoaderTask extends
 		AsyncTask<Integer, Void, SyndicationsCategorieAdapter> {
 
 	private SyndicationRepository repository;
@@ -17,7 +17,7 @@ public class SyndicationCategorieLoaderTask extends
 	private final String[] from = { "syn_name" };
 	private final int[] to = { android.R.id.text1, };
 
-	public SyndicationCategorieLoaderTask(Context context) {
+	public SyndicationCategoryLoaderTask(Context context) {
 		this.context = context;
 	}
 
@@ -34,7 +34,7 @@ public class SyndicationCategorieLoaderTask extends
 
 	@Override
 	protected void onPostExecute(SyndicationsCategorieAdapter result) {
-		((SyndicationsCategorieActivity) context).setListAdapter(result);
+		((SyndicationsCategoriesActivity) context).setListAdapter(result);
 		super.onPostExecute(result);
 	}
 }

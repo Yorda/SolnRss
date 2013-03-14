@@ -8,8 +8,6 @@ import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.ListFragment;
-import android.text.Editable;
-import android.text.TextWatcher;
 import android.util.Log;
 import android.view.ContextMenu;
 import android.view.ContextMenu.ContextMenuInfo;
@@ -19,14 +17,13 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
-import android.widget.EditText;
 import android.widget.ListView;
 import free.solnRss.R;
 import free.solnRss.activity.ReaderActivity;
 import free.solnRss.adapter.PublicationAdapter;
 import free.solnRss.repository.PublicationRepository;
-import free.solnRss.task.PublicationsByCategorieLoaderTask;
-import free.solnRss.task.PublicationsByCategorieReloaderTask;
+import free.solnRss.task.PublicationsByCategoryLoaderTask;
+import free.solnRss.task.PublicationsByCategoryReloaderTask;
 import free.solnRss.task.PublicationsLoaderTask;
 import free.solnRss.task.PublicationsReloaderTask;
 
@@ -37,7 +34,7 @@ public class PublicationsFragment extends ListFragment {
 	private Integer selectedSyndicationID;
 	private Integer nextSelectedSyndicationID; // selected by context menu
 	private Integer selectedCategorieID;
-	private EditText filter;
+	
 
 	public Integer getSelectedSyndicationID(){
 		return selectedSyndicationID;
@@ -53,7 +50,6 @@ public class PublicationsFragment extends ListFragment {
 		publicationRepository = new PublicationRepository(getActivity());
 		View fragment = inflater.inflate(layoutID, vg, false);
 		restoreOrFirstDisplay(save);
-		filter = (EditText)fragment.findViewById(R.id.filterList);
 		return fragment;
 	}
 
@@ -101,7 +97,7 @@ public class PublicationsFragment extends ListFragment {
 	public void onActivityCreated(Bundle savedInstanceState) {
 		super.onActivityCreated(savedInstanceState);
 		registerForContextMenu(getListView());
-		filter.addTextChangedListener(addTextWatcher());
+		getListView().setTextFilterEnabled(true);
 	}
 	
 	@Override
@@ -292,7 +288,7 @@ public class PublicationsFragment extends ListFragment {
 			task.execute(selectedSyndicationID,	cursor.getInt(cursor.getColumnIndex("_id")));
 		}
 		else if (selectedCategorieID != null) {
-			PublicationsByCategorieReloaderTask task = new PublicationsByCategorieReloaderTask(	this, getActivity());
+			PublicationsByCategoryReloaderTask task = new PublicationsByCategoryReloaderTask(	this, getActivity());
 			task.execute(selectedCategorieID, cursor.getInt(cursor.getColumnIndex("_id")));
 		}
 		else {
@@ -337,7 +333,7 @@ public class PublicationsFragment extends ListFragment {
 
 	private void loadPublicationsByCategorie(Integer selectedCategorieId) {
 		this.selectedSyndicationID = null;
-		PublicationsByCategorieLoaderTask task = new PublicationsByCategorieLoaderTask(this, getActivity());
+		PublicationsByCategoryLoaderTask task = new PublicationsByCategoryLoaderTask(this, getActivity());
 		task.execute(selectedCategorieId);
 	}
 
@@ -359,42 +355,11 @@ public class PublicationsFragment extends ListFragment {
 	public void reLoadPublicationsByCategorie(Integer selectedCategorieId, Context context) {
 		this.selectedSyndicationID = null;
 		this.selectedCategorieID = selectedCategorieId;
-		PublicationsByCategorieReloaderTask task = new PublicationsByCategorieReloaderTask(this, getActivity());
+		PublicationsByCategoryReloaderTask task = new PublicationsByCategoryReloaderTask(this, getActivity());
 		task.execute(this.selectedCategorieID);
 	}
 
 	public void moveListViewToTop() {
 		getListView().setSelection(0);
-	}
-	
-	/**
-	 * 
-	 * @return
-	 */
-	public TextWatcher addTextWatcher() {
-		TextWatcher tw = new TextWatcher() {
-			@Override
-			public void onTextChanged(CharSequence s, int start, int before, int count) {
-				if (getListAdapter() != null) {
-					PublicationAdapter publicationAdapter = (PublicationAdapter) getListAdapter();
-					
-					if (isSyndicationOrCategorieSelected()) {
-						publicationAdapter.setSelectedSyndicationID(selectedSyndicationID);
-					} else {
-						publicationAdapter.setSelectedSyndicationID(null);
-					}
-					publicationAdapter.getFilter().filter(s);
-				}
-			}
-			@Override
-			public void beforeTextChanged(CharSequence s, int start, 
-					int count, int after) {
-			}
-
-			@Override
-			public void afterTextChanged(Editable s) {
-			}
-		};
-		return tw;
 	}
 }

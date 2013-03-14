@@ -39,8 +39,11 @@ public class PublicationsReloaderTask extends AsyncTask<Integer, Void, Cursor> {
 		if (ids.length > 1) {
 			repository.markClickedPublicationRead(ids[1]);
 		}
-		return repository.fetchFilteredPublication(ids[0], null,
-				mustDisplayUnread());
+
+		// Keep the syndication id in adapter for filter
+		((PublicationAdapter) fragment.getListAdapter()).setSelectedSyndicationId(ids[0]);
+
+		return repository.fetchFilteredPublication(ids[0], null, mustDisplayUnread());
 	}
 
 	@Override
@@ -53,7 +56,6 @@ public class PublicationsReloaderTask extends AsyncTask<Integer, Void, Cursor> {
 		} else {
 			hideEmptyPublicationsMessage();
 		}
-
 		repository.close();
 	}
 
@@ -63,18 +65,18 @@ public class PublicationsReloaderTask extends AsyncTask<Integer, Void, Cursor> {
 	}
 
 	private void displayEmptyPublicationsMessage() {
-		
 		((TextView) ((SolnRss) context).findViewById(emptyMessageID))
 				.setVisibility(View.VISIBLE);
 		
 		((View) ((SolnRss) context).findViewById(emptyPublicationsLayoutID))
 				.setVisibility(View.VISIBLE);
-		
-		
 	}
 
 	private void hideEmptyPublicationsMessage() {
 		((TextView) ((SolnRss) context).findViewById(emptyMessageID))
+				.setVisibility(View.INVISIBLE);
+
+		((View) ((SolnRss) context).findViewById(emptyPublicationsLayoutID))
 				.setVisibility(View.INVISIBLE);
 	}
 }

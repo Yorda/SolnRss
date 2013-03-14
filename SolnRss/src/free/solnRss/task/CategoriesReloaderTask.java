@@ -9,14 +9,14 @@ import android.widget.TextView;
 import free.solnRss.R;
 import free.solnRss.activity.SolnRss;
 import free.solnRss.adapter.CategorieAdapter;
-import free.solnRss.repository.CategorieRepository;
+import free.solnRss.repository.CategoryRepository;
 
 /**
  * @author jftomasi
  */
 public class CategoriesReloaderTask extends AsyncTask<Integer, Void, Cursor> {
 	final int emptyMessageID = R.id.emptyCategoriesMessage;
-	private CategorieRepository repository;
+	private CategoryRepository repository;
 	private Context context;
 	private ListFragment fragment;
 
@@ -27,7 +27,7 @@ public class CategoriesReloaderTask extends AsyncTask<Integer, Void, Cursor> {
 
 	@Override
 	protected Cursor doInBackground(Integer... ids) {
-		repository = new CategorieRepository(context);
+		repository = new CategoryRepository(context);
 		return repository.fetchAllCategorie();
 	}
 

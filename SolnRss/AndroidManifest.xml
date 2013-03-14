@@ -45,7 +45,7 @@
             android:label="@string/app_name" >
         </activity>
          <activity
-            android:name="free.solnRss.activity.SyndicationsCategorieActivity"
+            android:name="free.solnRss.activity.SyndicationsCategoriesActivity"
             android:label="@string/app_name" >
         </activity>
         

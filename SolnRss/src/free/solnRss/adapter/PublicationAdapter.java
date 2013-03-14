@@ -17,7 +17,7 @@ public class PublicationAdapter extends SimpleCursorAdapter implements
 		FilterQueryProvider {
 
 	private Typeface tf = null;
-	private Integer selectedSyndicationID;
+	private Integer selectedSyndicationID, selectedCategoryId;
 	protected Cursor cursor;
 	private Context context;
 	private int layout;
@@ -31,7 +31,6 @@ public class PublicationAdapter extends SimpleCursorAdapter implements
 		this.layout = layout;
 		setFilterQueryProvider(this);
 		tf = Typeface.createFromAsset(context.getAssets(), "fonts/MONOF55.TTF");
-		// final int oddColor = Color.parseColor("#f7f7f7");
 	}
 
 	@Override
@@ -42,14 +41,11 @@ public class PublicationAdapter extends SimpleCursorAdapter implements
 			
 			convertView = View.inflate(context, layout, null);
 			publicationItem = new PublicationItem();
-			
 			// Title of syndication
 			publicationItem.setName((TextView) convertView.findViewById(R.id.name));
 			// Title of publication
 			publicationItem.setTitle((TextView) convertView.findViewById(R.id.title));
-			
 			convertView.setTag(publicationItem);
-
 		} else {
 			publicationItem = (PublicationItem) convertView.getTag();
 		}
@@ -59,9 +55,7 @@ public class PublicationAdapter extends SimpleCursorAdapter implements
 		String  title   = getCursor().getString(getCursor().getColumnIndex("pub_title"));
 		String  name    = getCursor().getString(getCursor().getColumnIndex("syn_name"));
 		Integer isRead  = getCursor().getInt   (getCursor().getColumnIndex("pub_already_read"));
-
-		//publicationItem.getTitle().setText(Html.fromHtml(title));
-		//publicationItem.getTitle().setText(StringTools.unescapeHTML(title));
+		
 		publicationItem.getTitle().setText(title);
 		publicationItem.getName ().setText(name);
 		
@@ -89,12 +83,34 @@ public class PublicationAdapter extends SimpleCursorAdapter implements
 	
 	@Override
 	public Cursor runQuery(CharSequence constraint) {
-		Log.e(PublicationAdapter.this.getClass().getName(), "CALL FILTER CURSOR");
-		PublicationRepository rep = new PublicationRepository(context);
-		return rep.fetchFilteredPublication(selectedSyndicationID, constraint.toString(),mustDisplayUnread());
+		Log.e(PublicationAdapter.this.getClass().getName(),
+				"CALL FILTER CURSOR "
+						+ (selectedCategoryId != null ? "category " + selectedCategoryId : "")
+						+ (selectedSyndicationID != null ? "syndication " + selectedSyndicationID : ""));
+		
+		PublicationRepository repository = new PublicationRepository(context);
+		Cursor cursor = null;
+		if (selectedCategoryId != null) {
+			cursor = repository.fetchPublicationByCategorie(selectedCategoryId, 
+					constraint.toString(), mustDisplayUnread());
+		} else if (selectedSyndicationID != null) {
+			cursor = repository.fetchFilteredPublication(selectedSyndicationID,
+					constraint.toString(), mustDisplayUnread());
+		} else {
+			cursor = repository.fetchFilteredPublication(null, 
+					constraint.toString(), mustDisplayUnread());
+		}
+		return cursor;
 	}
 
-	public void setSelectedSyndicationID(Integer selectedSyndicationID) {
+	public void setSelectedSyndicationId(Integer selectedSyndicationID) {
+		this.selectedCategoryId = null;
 		this.selectedSyndicationID = selectedSyndicationID;
 	}
+
+	public void setSelectedCategoryId(Integer selectedCategoryId) {
+		this.selectedSyndicationID = null;
+		this.selectedCategoryId = selectedCategoryId;
+	}
+	
 }

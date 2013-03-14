@@ -15,7 +15,7 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ListView;
 import free.solnRss.R;
-import free.solnRss.activity.SyndicationsCategorieActivity;
+import free.solnRss.activity.SyndicationsCategoriesActivity;
 import free.solnRss.activity.SolnRss;
 import free.solnRss.adapter.CategorieAdapter;
 import free.solnRss.task.CategoriesAddAndReloaderTask;
@@ -82,7 +82,7 @@ public class CategoriesFragment extends ListFragment {
 	}
 	
 	public void startActivityForAddSyndication() {
-		Intent i = new Intent(getActivity(), SyndicationsCategorieActivity.class);
+		Intent i = new Intent(getActivity(), SyndicationsCategoriesActivity.class);
 		i.putExtra("selectedCategorieID", selectedCategorieID);
 		startActivityForResult(i, 0);
 	}

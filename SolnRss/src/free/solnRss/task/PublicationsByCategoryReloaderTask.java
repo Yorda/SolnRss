@@ -18,13 +18,13 @@ import free.solnRss.repository.PublicationRepository;
  * @author jftomasi
  * 
  */
-public class PublicationsByCategorieReloaderTask extends AsyncTask<Integer, Void, Cursor> {
+public class PublicationsByCategoryReloaderTask extends AsyncTask<Integer, Void, Cursor> {
 	final int emptyMessageID = R.id.emptyPublicationsMessage;
 	private PublicationRepository repository;
 	private Context context;
 	private ListFragment fragment;
 
-	public PublicationsByCategorieReloaderTask(ListFragment fragment,
+	public PublicationsByCategoryReloaderTask(ListFragment fragment,
 			Context context) {
 		this.context = context;
 		this.fragment = fragment;
@@ -38,6 +38,10 @@ public class PublicationsByCategorieReloaderTask extends AsyncTask<Integer, Void
 			repository.markClickedPublicationRead(ids[1]);
 		}
 				
+		// Keep the category id in adapter for filter
+		((PublicationAdapter) fragment.getListAdapter())
+				.setSelectedCategoryId(ids[0]);
+		
 		return repository.fetchPublicationByCategorie(ids[0], null,
 				mustDisplayUnread());
 		
@@ -47,6 +51,7 @@ public class PublicationsByCategorieReloaderTask extends AsyncTask<Integer, Void
 	protected void onPostExecute(Cursor result) {
 		super.onPostExecute(result);
 		((PublicationAdapter) fragment.getListAdapter()).changeCursor(result);
+				
 		if (fragment.getListAdapter().isEmpty()) {
 			displayEmptyMessage();
 		} else {

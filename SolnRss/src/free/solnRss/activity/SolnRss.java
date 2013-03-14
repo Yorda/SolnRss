@@ -16,6 +16,7 @@ import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.view.ViewPager;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -158,6 +159,7 @@ public class SolnRss extends FragmentActivity implements
 		// Inflate the menu; this adds items to the action bar if it is present.
 		getMenuInflater().inflate(R.menu.activity_soln_rss, menu);
 		MenuItem searchItem = menu.findItem(R.id.action_search);
+		
 		searchView = (SearchView) searchItem.getActionView();
 		setupSearchView(searchItem);
 		
@@ -264,14 +266,12 @@ public class SolnRss extends FragmentActivity implements
 			if(fragment != null){
 				((CategoriesFragment)fragment).loadCategories(this);
 			}
-			
 			break;
 		case 2:
 			fragment = retrieveSyndicationsFragment();
 			if(fragment != null){
 				((SyndicationsFragment)fragment).loadSyndications(this);
 			}
-			
 			break;
 		}
 		viewPager.setCurrentItem(tab.getPosition());
@@ -320,7 +320,6 @@ public class SolnRss extends FragmentActivity implements
 			((PublicationsFragment)fragment).moveListViewToTop();
 		}
 	}
-	
 	
 	public void displaySyndications(Integer syndicationID) {
 		viewPager.setCurrentItem(2);
@@ -378,18 +377,9 @@ public class SolnRss extends FragmentActivity implements
 	       cm.getActiveNetworkInfo().isConnectedOrConnecting();
 	}
 	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
+	/*
+	 * The search view in action bar 
+	 */
 	private void setupSearchView(MenuItem searchItem) {
 
 		boolean isAlwaysExpanded = false;
@@ -401,37 +391,30 @@ public class SolnRss extends FragmentActivity implements
 					| MenuItem.SHOW_AS_ACTION_COLLAPSE_ACTION_VIEW
 				);
 		}
-
-		/*SearchManager searchManager = (SearchManager) getSystemService(Context.SEARCH_SERVICE);
-		if (searchManager != null) {
-			List<SearchableInfo> searchables = 
-				searchManager.getSearchablesInGlobalSearch();
-
-			// Try to use the "applications" global search provider
-			SearchableInfo info = 
-				searchManager.getSearchableInfo(getComponentName());
-			
-			for (SearchableInfo inf : searchables) {
-				if (inf.getSuggestAuthority() != null
-						&& inf.getSuggestAuthority().startsWith("applications")) {
-					info = inf;
-				}
-			}
-			searchView.setSearchableInfo(info);
-		}*/
-
+		
 		searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
 			@Override
 			public boolean onQueryTextSubmit(String query) {
-			Log.e("setOnQueryTextListener", "submit " + query);
-				searchView.setIconified(true);
+				//Log.e(SolnRss.this.getClass().getName(), "setOnQueryTextListener " + "submit " + query );
+				//searchView.setIconified(true);
 				return false;
 			}
 			
 			@Override
 			public boolean onQueryTextChange(String newText) {
-			Log.e("setOnQueryTextListener", "change " + newText);
-				return false;
+				//Log.e(SolnRss.this.getClass().getName(), "setOnQueryTextListener " + "change " + newText );
+				
+				Fragment fragment = retrievePublicationsFragment();
+				((PublicationsFragment)fragment).getListView().setFilterText(newText);
+				
+				if (TextUtils.isEmpty(newText)) {
+					((PublicationsFragment) fragment).getListView()
+							.clearTextFilter();
+				} else {
+					((PublicationsFragment) fragment).getListView()
+							.setFilterText(newText);
+				}
+				return true;
 			}
 		});
 	}

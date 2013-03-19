@@ -34,9 +34,9 @@ public class CategoriesAddAndReloaderTask extends AsyncTask<String, Void, Cursor
 
 	@Override
 	protected void onPostExecute(Cursor result) {
-		super.onPostExecute(result);
+		//super.onPostExecute(result);
 		if (fragment.getListAdapter() != null) {
-			((CategorieAdapter) fragment.getListAdapter()).changeCursor(result);
+			((CategorieAdapter) fragment.getListAdapter()).swapCursor(result);
 		}
 		if (fragment.getListAdapter() == null
 				|| fragment.getListAdapter().isEmpty()) {

@@ -31,9 +31,8 @@ public class CategoriesDeleteAndReloaderTask extends AsyncTask<Integer, Void, Cu
 
 	@Override
 	protected void onPostExecute(Cursor result) {
-		super.onPostExecute(result);
 		if( fragment.getListAdapter() != null){
-			((CategorieAdapter) fragment.getListAdapter()).changeCursor(result);
+			((CategorieAdapter) fragment.getListAdapter()).swapCursor(result);
 		}
 		
 		if (fragment.getListAdapter() == null

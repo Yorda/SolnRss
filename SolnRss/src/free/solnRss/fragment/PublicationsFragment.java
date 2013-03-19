@@ -8,6 +8,7 @@ import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.ListFragment;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.ContextMenu;
 import android.view.ContextMenu.ContextMenuInfo;
@@ -19,22 +20,25 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ListView;
 import free.solnRss.R;
+import free.solnRss.activity.SolnRss;
 import free.solnRss.activity.ReaderActivity;
 import free.solnRss.adapter.PublicationAdapter;
+import free.solnRss.fragment.listener.PublicationsFragmentListener;
 import free.solnRss.repository.PublicationRepository;
 import free.solnRss.task.PublicationsByCategoryLoaderTask;
 import free.solnRss.task.PublicationsByCategoryReloaderTask;
 import free.solnRss.task.PublicationsLoaderTask;
 import free.solnRss.task.PublicationsReloaderTask;
 
-public class PublicationsFragment extends ListFragment {
+public class PublicationsFragment extends ListFragment implements
+		PublicationsFragmentListener {
 
 	final int layoutID = R.layout.fragment_publications;
 	private PublicationRepository publicationRepository;
 	private Integer selectedSyndicationID;
 	private Integer nextSelectedSyndicationID; // selected by context menu
 	private Integer selectedCategorieID;
-	
+	private String filterText;
 
 	public Integer getSelectedSyndicationID(){
 		return selectedSyndicationID;
@@ -49,7 +53,7 @@ public class PublicationsFragment extends ListFragment {
 	public View onCreateView(LayoutInflater inflater, ViewGroup vg, Bundle save) {
 		publicationRepository = new PublicationRepository(getActivity());
 		View fragment = inflater.inflate(layoutID, vg, false);
-		restoreOrFirstDisplay(save);
+		//restoreOrFirstDisplay(save);
 		return fragment;
 	}
 
@@ -62,6 +66,9 @@ public class PublicationsFragment extends ListFragment {
 
 			selectedCategorieID = save.getInt("selectedCategorieID") == 0 ? null
 					: save.getInt("selectedCategorieID");
+			
+			filterText = TextUtils.isEmpty(save.getString("filterText")) ? null 
+					: save.getString("filterText");
 		}
 
 		Log.e(PublicationsFragment.this.getClass().getName(),"Restore with Sid-> " + selectedSyndicationID + " cId-> " + selectedCategorieID);
@@ -71,7 +78,12 @@ public class PublicationsFragment extends ListFragment {
 		} else if (selectedCategorieID != null) {
 			loadPublicationsByCategorie(selectedCategorieID);
 		} else {
-			loadAllPublications(getActivity());
+			loadPublications(getActivity());
+		}
+		
+		if (((SolnRss) getActivity()).getFilterText() != null) {
+			getListView().setFilterText(
+					((SolnRss) getActivity()).getFilterText());
 		}
 	}
 
@@ -84,13 +96,17 @@ public class PublicationsFragment extends ListFragment {
 		if (selectedCategorieID != null) {
 			outState.putInt("selectedCategorieID", selectedCategorieID);
 		}
+		if (filterText != null) {
+			outState.putString("filterText", filterText);
+		}
 		
 		Log.e(PublicationsFragment.this.getClass().getName(),"Save sId-> " + selectedSyndicationID	+ " cId-> " + selectedCategorieID);
 	}
 	
 	@Override
-	public void onViewCreated(View view, Bundle savedInstanceState) {
-		super.onViewCreated(view, savedInstanceState);
+	public void onViewCreated(View view, Bundle save) {
+		restoreOrFirstDisplay(save);
+		super.onViewCreated(view, save);
 	}
 	
 	@Override
@@ -98,6 +114,8 @@ public class PublicationsFragment extends ListFragment {
 		super.onActivityCreated(savedInstanceState);
 		registerForContextMenu(getListView());
 		getListView().setTextFilterEnabled(true);
+		
+		((SolnRss)getActivity()).setPublicationsFragmentListener(this);
 	}
 	
 	@Override
@@ -154,10 +172,10 @@ public class PublicationsFragment extends ListFragment {
 			// syndication.
 			if(!isSyndicationOrCategorieSelected()){
 				selectedSyndicationID = nextSelectedSyndicationID;
-				reLoadPublicationsBySyndication(this.selectedSyndicationID, getActivity());
+				reLoadPublicationsBySyndication(getActivity(), this.selectedSyndicationID);
 				this.moveListViewToTop();
 			} else {
-				reLoadAllPublications(getActivity());
+				reloadPublications(getActivity());
 				this.moveListViewToTop();
 			}
 			
@@ -213,7 +231,7 @@ public class PublicationsFragment extends ListFragment {
 			}
 		}.execute();
 		
-		reLoadAllPublications(getActivity());
+		reloadPublications(getActivity());
 	}
 
 	/**
@@ -229,7 +247,7 @@ public class PublicationsFragment extends ListFragment {
 				
 			}
 		}.execute();
-		refreshPublications();
+		refreshPublications(getActivity());
 	}
 	
 	private void markCategoryPublicationsAsRead(final Integer id) {
@@ -242,7 +260,7 @@ public class PublicationsFragment extends ListFragment {
 				
 			}
 		}.execute();
-		refreshPublications();
+		refreshPublications(getActivity());
 	}
 	
 	
@@ -285,7 +303,7 @@ public class PublicationsFragment extends ListFragment {
 		
 		if (selectedSyndicationID != null) {
 			PublicationsReloaderTask task = new PublicationsReloaderTask(this, getActivity());
-			task.execute(selectedSyndicationID,	cursor.getInt(cursor.getColumnIndex("_id")));
+			task.execute(selectedSyndicationID,	cursor.getInt(cursor.getColumnIndex("_id")), filterText);
 		}
 		else if (selectedCategorieID != null) {
 			PublicationsByCategoryReloaderTask task = new PublicationsByCategoryReloaderTask(	this, getActivity());
@@ -293,7 +311,7 @@ public class PublicationsFragment extends ListFragment {
 		}
 		else {
 			PublicationsReloaderTask task = new PublicationsReloaderTask(this, getActivity());
-			task.execute(null, cursor.getInt(cursor.getColumnIndex("_id")));
+			task.execute(null, cursor.getInt(cursor.getColumnIndex("_id")),filterText);
 		}
 	}
 	
@@ -304,25 +322,6 @@ public class PublicationsFragment extends ListFragment {
 	 */
 	public String hasDescriptionValue(Cursor cursor) {
 		return cursor.getString(cursor.getColumnIndex("pub_publication"));
-	}
-		
-	private void refreshPublications() {
-		if (this.selectedSyndicationID != null) {
-			reLoadPublicationsBySyndication(selectedSyndicationID, getActivity());
-		} else if (this.selectedCategorieID != null) {
-			reLoadPublicationsByCategorie(this.selectedCategorieID,
-					getActivity());
-		} else {
-			reLoadAllPublications(getActivity());
-		}
-	}
-	
-	public void loadAllPublications(Context context) {
-		this.selectedSyndicationID = null;
-		this.selectedCategorieID = null;
-		PublicationsLoaderTask task = new PublicationsLoaderTask(this, context);
-		// TODO add task without parameter value
-		task.execute(selectedSyndicationID);
 	}
 
 	private void loadPublicationsBySyndication(Integer selectedSyndicationId) {
@@ -337,29 +336,85 @@ public class PublicationsFragment extends ListFragment {
 		task.execute(selectedCategorieId);
 	}
 
-	public void reLoadAllPublications(Context context) {
+	@Override
+	public void loadPublications(Context context) {
+		this.selectedSyndicationID = null;
+		this.selectedCategorieID = null;
+		PublicationsLoaderTask task = new PublicationsLoaderTask(this, context);
+		task.execute(selectedSyndicationID, filterText);
+	}
+	
+	@Override
+	public void reloadPublications(Context context) {
 		this.selectedSyndicationID = null;
 		this.selectedCategorieID = null;
 		PublicationsReloaderTask task = new PublicationsReloaderTask(this, context);
-		// TODO add task without parameter value
-		task.execute(selectedSyndicationID);
-	}
-	
-	public void reLoadPublicationsBySyndication(Integer selectedSyndicationID, Context context) {
-		this.selectedSyndicationID = selectedSyndicationID;
-		this.selectedCategorieID = null;
-		PublicationsReloaderTask task = new PublicationsReloaderTask(this, getActivity());
-		task.execute(selectedSyndicationID);
+		task.execute(selectedSyndicationID, null, filterText);
 	}
 
-	public void reLoadPublicationsByCategorie(Integer selectedCategorieId, Context context) {
+	@Override
+	public void reLoadPublicationsByCategorie(Context context,
+			Integer categorieID) {
 		this.selectedSyndicationID = null;
-		this.selectedCategorieID = selectedCategorieId;
-		PublicationsByCategoryReloaderTask task = new PublicationsByCategoryReloaderTask(this, getActivity());
+		this.selectedCategorieID = categorieID;
+		PublicationsByCategoryReloaderTask task = new PublicationsByCategoryReloaderTask(this, context);
 		task.execute(this.selectedCategorieID);
 	}
 
+	@Override
+	public void reLoadPublicationsBySyndication(Context context,
+			Integer syndicationID) {
+		this.selectedSyndicationID = syndicationID;
+		this.selectedCategorieID = null;
+		PublicationsReloaderTask task = new PublicationsReloaderTask(this,	context);
+		task.execute(selectedSyndicationID, null, filterText);
+	}
+
+	@Override
+	public void refreshPublications(Context context) {
+		if (this.selectedSyndicationID != null) {
+			reLoadPublicationsBySyndication(context, this.selectedSyndicationID);
+		} else if (this.selectedCategorieID != null) {
+			reLoadPublicationsByCategorie(context, this.selectedCategorieID);
+		} else {
+			reloadPublications(context);
+		}
+	}
+	
+	@Override
 	public void moveListViewToTop() {
 		getListView().setSelection(0);
+	}
+	
+	/*private void refreshPublications() {
+	if (this.selectedSyndicationID != null) {
+		reLoadPublicationsBySyndication(getActivity(),this.selectedSyndicationID);
+	} else if (this.selectedCategorieID != null) {
+		reLoadPublicationsByCategorie(getActivity(), this.selectedCategorieID);
+	} else {
+		reloadPublications(getActivity());
+	}
+}*/
+	
+	@Override
+	public void filterPublications(String text) {
+		
+		if (this.getListView() != null) {
+			if (TextUtils.isEmpty(text)) {
+				setFilterText(null);
+				this.getListView().clearTextFilter();
+			} else {
+				setFilterText(text); 
+				this.getListView().setFilterText(text);
+			}
+		}
+	}
+
+	public String getFilterText() {
+		return filterText;
+	}
+
+	public void setFilterText(String filterText) {
+		this.filterText = filterText;
 	}
 }

@@ -15,15 +15,18 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ListView;
 import free.solnRss.R;
-import free.solnRss.activity.SyndicationsCategoriesActivity;
 import free.solnRss.activity.SolnRss;
+import free.solnRss.activity.SyndicationsCategoriesActivity;
 import free.solnRss.adapter.CategorieAdapter;
+import free.solnRss.fragment.listener.CategoriesFragmentListener;
 import free.solnRss.task.CategoriesAddAndReloaderTask;
 import free.solnRss.task.CategoriesDeleteAndReloaderTask;
 import free.solnRss.task.CategoriesLoaderTask;
 import free.solnRss.task.CategoriesReloaderTask;
 
-public class CategoriesFragment extends ListFragment {
+public class CategoriesFragment extends ListFragment implements
+		CategoriesFragmentListener {
+
 	final private int layoutID = R.layout.fragment_categories;
 	private Integer selectedCategorieID;
 	
@@ -39,6 +42,7 @@ public class CategoriesFragment extends ListFragment {
 	public void onActivityCreated(Bundle savedInstanceState) {
 		super.onActivityCreated(savedInstanceState);
 		registerForContextMenu(getListView());
+		((SolnRss)getActivity()).setCategoriesFragmentListener(this);
 	}
 	
 	@Override
@@ -87,11 +91,13 @@ public class CategoriesFragment extends ListFragment {
 		startActivityForResult(i, 0);
 	}
 	
+	@Override
 	public void loadCategories(Context context) {
 		CategoriesLoaderTask task = new CategoriesLoaderTask(this, (SolnRss) context);
 		task.execute();
 	}
 
+	@Override
 	public void reloadCategories(Context context) {
 		CategoriesReloaderTask task = new CategoriesReloaderTask(this, context);
 		task.execute();

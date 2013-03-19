@@ -1,12 +1,13 @@
 package free.solnRss.task;
 
-import android.app.Activity;
+import android.content.Context;
 import android.database.Cursor;
 import android.os.AsyncTask;
 import android.support.v4.app.ListFragment;
 import android.view.View;
 import android.widget.TextView;
 import free.solnRss.R;
+import free.solnRss.activity.SolnRss;
 import free.solnRss.adapter.SyndicationAdapter;
 import free.solnRss.repository.SyndicationRepository;
 
@@ -16,26 +17,27 @@ import free.solnRss.repository.SyndicationRepository;
  * @author jf.tomasi
  * 
  */
-public class SyndicationsLoaderTask extends AsyncTask<Void, Void, SyndicationAdapter> {
+public class SyndicationsLoaderTask extends
+		AsyncTask<Void, Void, SyndicationAdapter> {
 	final int emptyMessageID = R.id.emptySyndicationsMessage;
 	SyndicationRepository repository;
 	ListFragment fragment;
-	Activity activity;
+	Context context;
 
 	private final String[] from = { "syn_name", "syn_number_click" };
 	private final int[] to = { android.R.id.text1, android.R.id.text2 };
 
-	public SyndicationsLoaderTask(ListFragment fragment, Activity activity) {
-		this.activity = activity;
+	public SyndicationsLoaderTask(ListFragment fragment, Context context) {
+		this.context = context;
 		this.fragment = fragment;
 	}
 
 	@Override
 	protected SyndicationAdapter doInBackground(Void... params) {
-		repository = new SyndicationRepository(activity);
+		repository = new SyndicationRepository(context);
 		Cursor c = repository.fetchAllSite();
 		c.moveToFirst();
-		SyndicationAdapter adapter = new SyndicationAdapter(activity,
+		SyndicationAdapter adapter = new SyndicationAdapter(context,
 				R.layout.syndications, c, from, to, 0);
 		return adapter;
 	}
@@ -54,12 +56,12 @@ public class SyndicationsLoaderTask extends AsyncTask<Void, Void, SyndicationAda
 	}
 
 	private void displayEmptySyndicationsMessage() {
-		((TextView) activity.findViewById(emptyMessageID))
+		((TextView) ((SolnRss) context).findViewById(emptyMessageID))
 				.setVisibility(View.VISIBLE);
 	}
 
 	private void hideEmptySyndicationsMessage() {
-		((TextView) activity.findViewById(emptyMessageID))
+		((TextView) ((SolnRss) context).findViewById(emptyMessageID))
 				.setVisibility(View.INVISIBLE);
 	}
 }

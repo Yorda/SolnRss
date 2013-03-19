@@ -13,7 +13,6 @@ import android.content.SharedPreferences;
 import android.net.ConnectivityManager;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
-import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.view.ViewPager;
 import android.text.TextUtils;
@@ -27,19 +26,24 @@ import free.solnRss.R;
 import free.solnRss.adapter.SectionsPagerAdapter;
 import free.solnRss.dialog.AddItemDialog;
 import free.solnRss.dialog.AddItemDialog.NewAddItemDialogListener;
-import free.solnRss.fragment.CategoriesFragment;
-import free.solnRss.fragment.PublicationsFragment;
-import free.solnRss.fragment.SyndicationsFragment;
+import free.solnRss.fragment.listener.CategoriesFragmentListener;
+import free.solnRss.fragment.listener.PublicationsFragmentListener;
+import free.solnRss.fragment.listener.SyndicationsFragmentListener;
 import free.solnRss.service.PublicationsFinderService;
 import free.solnRss.task.SyndicationFinderTask;
 
-public class SolnRss extends FragmentActivity implements 
-		ActionBar.TabListener, SharedPreferences.OnSharedPreferenceChangeListener,
-		NewAddItemDialogListener {
+public class SolnRss extends FragmentActivity implements ActionBar.TabListener,
+	SharedPreferences.OnSharedPreferenceChangeListener,	NewAddItemDialogListener {
 	
+	private SyndicationsFragmentListener syndicationsListener;
+	private CategoriesFragmentListener categoriesListener;
+	private PublicationsFragmentListener publicationsListener;
+
 	private SectionsPagerAdapter sectionPageAdapter;
 	private ViewPager viewPager;
 	private SearchView searchView;
+	
+	private String filterText;
 	
 	@Override
 	protected void onResume() {
@@ -56,17 +60,18 @@ public class SolnRss extends FragmentActivity implements
 	@Override
 	protected void onDestroy() {
 		super.onDestroy();
-		Log.e(SolnRss.this.getClass().getName(), "DESTROY");;
+		Log.e(SolnRss.this.getClass().getName(), "DESTROY");
 	}
 	
 	@Override
 	public void onSharedPreferenceChanged(SharedPreferences shared, String key) {
 		if (key.compareTo("pref_unread_font_weight") == 0) {
-			reLoadAllPublications();
+			//reLoadAllPublications();
+			publicationsListener.refreshPublications(this);
 		}
 
 		if (key.compareTo("pref_display_unread") == 0) {
-			reLoadAllPublications();
+			publicationsListener.refreshPublications(this);
 		}
 	}
 
@@ -226,11 +231,11 @@ public class SolnRss extends FragmentActivity implements
 	}
 	
 	void addCategorie(String newCatgorie) {
-		if (newCatgorie == null) {
-			return;
+		if (!TextUtils.isEmpty(newCatgorie)) {
+			//CategoriesFragment fragment = ((CategoriesFragment) retrieveCategoriesFragment());
+			///fragment.addCategorie(this, newCatgorie);
+			categoriesListener.addCategorie(this, newCatgorie);
 		}
-		CategoriesFragment fragment = ((CategoriesFragment) retrieveCategoriesFragment());
-		fragment.addCategorie(this, newCatgorie);
 	}
 	
 	public void addSyndication(String url) {
@@ -259,18 +264,26 @@ public class SolnRss extends FragmentActivity implements
 	public void onTabSelected(Tab tab, 
 			FragmentTransaction fragmentTransaction) {
 		// When the given tab is selected, switch to the corresponding page in the ViewPager.
-		Fragment fragment = null;
+		//Fragment fragment = null;
 		switch(tab.getPosition()){
 		case 0:
-			fragment = retrieveCategoriesFragment();
+			/*fragment = retrieveCategoriesFragment();
 			if(fragment != null){
 				((CategoriesFragment)fragment).loadCategories(this);
+			}*/
+			
+			if (categoriesListener != null) {
+				categoriesListener.loadCategories(this);
 			}
+			
 			break;
 		case 2:
-			fragment = retrieveSyndicationsFragment();
+			/*fragment = retrieveSyndicationsFragment();
 			if(fragment != null){
 				((SyndicationsFragment)fragment).loadSyndications(this);
+			}*/
+			if (syndicationsListener != null) {
+				syndicationsListener.loadSyndications(this);
 			}
 			break;
 		}
@@ -293,54 +306,70 @@ public class SolnRss extends FragmentActivity implements
 	}
 	
 	public void displayAllPublications() {
+		//viewPager.setCurrentItem(1);
+		/*Fragment fragment = retrievePublicationsFragment();
+		((PublicationsFragment)fragment).loadAllPublications(this);*/
+		
+		publicationsListener.loadPublications(this);
 		viewPager.setCurrentItem(1);
-		Fragment fragment = retrievePublicationsFragment();
-		((PublicationsFragment)fragment).loadAllPublications(this);
 	}
 	
 	public void reLoadPublicationsBySyndication(Integer syndicationID) {
+		//viewPager.setCurrentItem(1);
+		//Fragment fragment = retrievePublicationsFragment();
+		//((PublicationsFragment)fragment).reLoadPublicationsBySyndication(syndicationID, this);
+		//((PublicationsFragment)fragment).moveListViewToTop();
+		
+		publicationsListener.reLoadPublicationsBySyndication(this, syndicationID);
 		viewPager.setCurrentItem(1);
-		Fragment fragment = retrievePublicationsFragment();
-		((PublicationsFragment)fragment).reLoadPublicationsBySyndication(syndicationID, this);
-		((PublicationsFragment)fragment).moveListViewToTop();
+		publicationsListener.moveListViewToTop();
+		
 	}
 
 	public void reLoadPublicationsByCategorie(Integer categorieID) {
+		//viewPager.setCurrentItem(1);
+		//Fragment fragment = retrievePublicationsFragment();
+		//((PublicationsFragment)fragment).reLoadPublicationsByCategorie(categorieID, this);
+		//((PublicationsFragment)fragment).moveListViewToTop();
+		
+		publicationsListener.reLoadPublicationsByCategorie(this, categorieID);
 		viewPager.setCurrentItem(1);
-		Fragment fragment = retrievePublicationsFragment();
-		((PublicationsFragment)fragment).reLoadPublicationsByCategorie(categorieID, this);
-		((PublicationsFragment)fragment).moveListViewToTop();
+		publicationsListener.moveListViewToTop();
 	}
 	
 	public void reLoadAllPublications() {
-		Fragment fragment = retrievePublicationsFragment();
+		/*Fragment fragment = retrievePublicationsFragment();
 		if (fragment != null) {
 			((PublicationsFragment)fragment).reLoadAllPublications(this);
-			
 			((PublicationsFragment)fragment).moveListViewToTop();
-		}
+		}*/
+		
+		publicationsListener.reloadPublications(this);
+		publicationsListener.moveListViewToTop();
 	}
 	
 	public void displaySyndications(Integer syndicationID) {
+		
+		syndicationsListener.loadSyndications(this);
 		viewPager.setCurrentItem(2);
-		Fragment fragment = retrieveSyndicationsFragment();
-		((SyndicationsFragment)fragment).loadSyndications(this);
+		//Fragment fragment = retrieveSyndicationsFragment();
+		//((SyndicationsFragment)fragment).loadSyndications(this);
 	}
 
-	public Fragment retrieveCategoriesFragment() {
+	/*public Fragment retrieveCategoriesFragment() {
 		return getSupportFragmentManager().findFragmentByTag(
 				SectionsPagerAdapter.getFragementTag(viewPager.getId(), 0));
-	}
+	}*/
 
-	public Fragment retrievePublicationsFragment() {
+	/*public Fragment retrievePublicationsFragment() {
 		return getSupportFragmentManager().findFragmentByTag(
 				SectionsPagerAdapter.getFragementTag(viewPager.getId(), 1));
-	}
+	}*/
 
-	public Fragment retrieveSyndicationsFragment() {
+	/*public Fragment retrieveSyndicationsFragment() {
 		return getSupportFragmentManager().findFragmentByTag(
 				SectionsPagerAdapter.getFragementTag(viewPager.getId(), 2));
-	}
+	}*/
 	
 
 	/**
@@ -349,7 +378,6 @@ public class SolnRss extends FragmentActivity implements
 	protected void onNewIntent(Intent intent) {
 		displayAllPublications();
 	};
-	
 	
 	private void warmUser(String msg) {
 		String ok = getResources().getString(android.R.string.ok);
@@ -395,28 +423,68 @@ public class SolnRss extends FragmentActivity implements
 		searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
 			@Override
 			public boolean onQueryTextSubmit(String query) {
-				//Log.e(SolnRss.this.getClass().getName(), "setOnQueryTextListener " + "submit " + query );
-				//searchView.setIconified(true);
 				return false;
 			}
 			
 			@Override
 			public boolean onQueryTextChange(String newText) {
-				//Log.e(SolnRss.this.getClass().getName(), "setOnQueryTextListener " + "change " + newText );
-				
-				Fragment fragment = retrievePublicationsFragment();
-				((PublicationsFragment)fragment).getListView().setFilterText(newText);
-				
-				if (TextUtils.isEmpty(newText)) {
-					((PublicationsFragment) fragment).getListView()
-							.clearTextFilter();
-				} else {
-					((PublicationsFragment) fragment).getListView()
-							.setFilterText(newText);
-				}
+				filterPublications(newText);
 				return true;
 			}
 		});
 	}
+	
+	/*
+	 * Apply the text for filter in publication's list
+	 */
+	private void filterPublications(String text) {
+		publicationsListener.filterPublications(text);
+		/*Fragment fragment = retrievePublicationsFragment();
+		if (fragment != null) {
+			PublicationsFragment publicationsFragment = ((PublicationsFragment) fragment);
+			if (publicationsFragment.getListView() != null) {
+				if (TextUtils.isEmpty(text)) {
+					setFilterText(null);
+					publicationsFragment.getListView().clearTextFilter();
+				} else {
+					setFilterText(text); 
+					publicationsFragment.getListView().setFilterText(text);
+				}
+			}
+		}*/
+	}
 
+	public CategoriesFragmentListener getCategoriesFragmentListener() {
+		return categoriesListener;
+	}
+
+	public void setCategoriesFragmentListener(CategoriesFragmentListener categoriesFragmentListener) {
+		this.categoriesListener = categoriesFragmentListener;
+	}
+
+	public SyndicationsFragmentListener getSyndicationsFragmentListener() {
+		return syndicationsListener;
+	}
+
+	public void setSyndicationsFragmentListener(
+			SyndicationsFragmentListener syndicationsFragmentListener) {
+		this.syndicationsListener = syndicationsFragmentListener;
+	}
+
+	public PublicationsFragmentListener getPublicationsFragmentListener() {
+		return publicationsListener;
+	}
+
+	public void setPublicationsFragmentListener(
+			PublicationsFragmentListener publicationsFragmentListener) {
+		this.publicationsListener = publicationsFragmentListener;
+	}
+
+	public String getFilterText() {
+		return filterText;
+	}
+
+	public void setFilterText(String filterText) {
+		this.filterText = filterText;
+	}
 }

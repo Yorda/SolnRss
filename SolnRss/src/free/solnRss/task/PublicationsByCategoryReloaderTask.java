@@ -49,9 +49,8 @@ public class PublicationsByCategoryReloaderTask extends AsyncTask<Integer, Void,
 
 	@Override
 	protected void onPostExecute(Cursor result) {
-		super.onPostExecute(result);
-		((PublicationAdapter) fragment.getListAdapter()).changeCursor(result);
-				
+		//super.onPostExecute(result);
+		((PublicationAdapter) fragment.getListAdapter()).swapCursor(result);
 		if (fragment.getListAdapter().isEmpty()) {
 			displayEmptyMessage();
 		} else {

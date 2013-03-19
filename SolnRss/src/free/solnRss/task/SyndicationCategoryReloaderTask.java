@@ -27,8 +27,8 @@ public class SyndicationCategoryReloaderTask extends
 
 	@Override
 	protected void onPostExecute(Cursor result) {
-		adapter.changeCursor(result);
-		adapter.notifyDataSetChanged();
-		super.onPostExecute(result);
+		adapter.swapCursor(result);
+		//adapter.notifyDataSetChanged();
+		//super.onPostExecute(result);
 	}
 }

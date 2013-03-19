@@ -5,6 +5,7 @@ import android.database.Cursor;
 import android.os.AsyncTask;
 import android.preference.PreferenceManager;
 import android.support.v4.app.ListFragment;
+import android.text.TextUtils;
 import android.view.View;
 import android.widget.TextView;
 import free.solnRss.R;
@@ -18,7 +19,8 @@ import free.solnRss.repository.PublicationRepository;
  * @author jftomasi
  * 
  */
-public class PublicationsReloaderTask extends AsyncTask<Integer, Void, Cursor> {
+public class PublicationsReloaderTask extends AsyncTask<Object, Void, Cursor> {
+	
 	final int emptyMessageID = R.id.emptyPublicationsMessage;
 	final int emptyPublicationsLayoutID = R.id.emptyPublicationsLayout;
 	final int displayAllButtonID = R.id.displayAllButton;
@@ -26,40 +28,54 @@ public class PublicationsReloaderTask extends AsyncTask<Integer, Void, Cursor> {
 	private PublicationRepository repository;
 	private Context context;
 	private ListFragment fragment;
-
+	private String filter;
+	
 	public PublicationsReloaderTask(ListFragment fragment, Context context) {
 		this.context = context;
 		this.fragment = fragment;
 	}
 
 	@Override
-	protected Cursor doInBackground(Integer... ids) {
+	protected Cursor doInBackground(Object... params) {
+
+		Integer syndicationId = (Integer) params[0];
+		Integer publicationId = params.length > 1 && params[1] != null ? (Integer) params[1] : null;
+		filter = params.length > 2 && params[2] != null ? (String) params[2] : null;
+
 		// Set this publication as read and reload cursor for adapter
 		repository = new PublicationRepository(context);
-		if (ids.length > 1) {
-			repository.markClickedPublicationRead(ids[1]);
+		
+		if (publicationId != null) {
+			repository.markClickedPublicationRead(publicationId);
 		}
 
 		// Keep the syndication id in adapter for filter
-		((PublicationAdapter) fragment.getListAdapter()).setSelectedSyndicationId(ids[0]);
+		((PublicationAdapter) fragment.getListAdapter()).setSelectedSyndicationId(syndicationId);
 
-		return repository.fetchFilteredPublication(ids[0], null, mustDisplayUnread());
+		return repository.fetchFilteredPublication(syndicationId, null, displayUnread());
 	}
 
 	@Override
 	protected void onPostExecute(Cursor result) {
-		super.onPostExecute(result);
-		((PublicationAdapter) fragment.getListAdapter()).changeCursor(result);
+		
+		//((PublicationAdapter) fragment.getListAdapter()).changeCursor(result);
 
+		((PublicationAdapter) fragment.getListAdapter()).swapCursor(result);
+		
 		if (fragment.getListAdapter().isEmpty()) {
 			displayEmptyPublicationsMessage();
 		} else {
 			hideEmptyPublicationsMessage();
+			if (!TextUtils.isEmpty(filter)) {
+				fragment.getListView().setFilterText(filter);
+			} else {
+				fragment.getListView().clearTextFilter();
+			}
 		}
 		repository.close();
 	}
 
-	public boolean mustDisplayUnread() {
+	public boolean displayUnread() {
 		return PreferenceManager.getDefaultSharedPreferences(context)
 				.getBoolean("pref_display_unread", true);
 	}

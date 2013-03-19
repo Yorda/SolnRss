@@ -1,7 +1,7 @@
 package free.solnRss.fragment;
 
-import android.app.Activity;
 import android.app.AlertDialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.DialogInterface.OnClickListener;
 import android.content.Intent;
@@ -23,6 +23,7 @@ import free.solnRss.R;
 import free.solnRss.activity.ActivityResult;
 import free.solnRss.activity.SolnRss;
 import free.solnRss.adapter.SyndicationAdapter;
+import free.solnRss.fragment.listener.SyndicationsFragmentListener;
 import free.solnRss.repository.PublicationRepository;
 import free.solnRss.repository.SyndicationRepository;
 import free.solnRss.task.SyndicationsLoaderTask;
@@ -33,7 +34,9 @@ import free.solnRss.task.SyndicationsReloaderTask;
  * @author jftomasi
  *
  */
-public class SyndicationsFragment extends ListFragment {
+public class SyndicationsFragment extends ListFragment implements
+		SyndicationsFragmentListener {
+	
 	final private int layoutID = R.layout.fragment_syndications;
 	
 	private Integer selectedSyndicationID;
@@ -82,6 +85,7 @@ public class SyndicationsFragment extends ListFragment {
 	public void onActivityCreated(Bundle savedInstanceState) {
 		super.onActivityCreated(savedInstanceState);
 		registerForContextMenu(getListView());
+		((SolnRss)getActivity()).setSyndicationsFragmentListener(this);
 	}
 	
 	@Override
@@ -148,7 +152,7 @@ public class SyndicationsFragment extends ListFragment {
 			protected void onPostExecute(Void result) {
 				boolean newStatus = activeStatus == 0 ? false : true;
 				item.setTitle(newStatus ? desactivate : activate);
-				reloadSyndication(getActivity());
+				reloadSyndications(getActivity());
 			};
 		}.execute(selectedSyndicationID);
 	}
@@ -164,7 +168,7 @@ public class SyndicationsFragment extends ListFragment {
 			};
 			@Override
 			protected void onPostExecute(ActivityResult result) {
-				reloadSyndication(getActivity());
+				reloadSyndications(getActivity());
 			};
 		};
 		
@@ -215,7 +219,7 @@ public class SyndicationsFragment extends ListFragment {
 		builder.create().show();
 	}
 
-	public void reloadSyndication(Activity context) {
+	/*public void reloadSyndication(Activity context) {
 		SyndicationsReloaderTask reloader =	new SyndicationsReloaderTask(context, this);
 		reloader.execute(selectedSyndicationID);
 	}
@@ -225,6 +229,20 @@ public class SyndicationsFragment extends ListFragment {
 			SyndicationsLoaderTask task = new SyndicationsLoaderTask(this,	context);
 			task.execute();
 		}
+	}*/
+
+	@Override
+	public void loadSyndications(Context context) {
+		if (getListAdapter() == null) {
+			SyndicationsLoaderTask task = new SyndicationsLoaderTask(this,	(SolnRss)context);
+			task.execute();
+		}
+	}
+
+	@Override
+	public void reloadSyndications(Context context) {
+		SyndicationsReloaderTask reloader =	new SyndicationsReloaderTask(context, this);
+		reloader.execute(selectedSyndicationID);
 	}
 	
 }

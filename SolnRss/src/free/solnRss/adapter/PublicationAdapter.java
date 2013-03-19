@@ -5,7 +5,6 @@ import android.database.Cursor;
 import android.graphics.Typeface;
 import android.preference.PreferenceManager;
 import android.support.v4.widget.SimpleCursorAdapter;
-import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FilterQueryProvider;
@@ -83,10 +82,10 @@ public class PublicationAdapter extends SimpleCursorAdapter implements
 	
 	@Override
 	public Cursor runQuery(CharSequence constraint) {
-		Log.e(PublicationAdapter.this.getClass().getName(),
+		/*Log.e(PublicationAdapter.this.getClass().getName(),
 				"CALL FILTER CURSOR "
 						+ (selectedCategoryId != null ? "category " + selectedCategoryId : "")
-						+ (selectedSyndicationID != null ? "syndication " + selectedSyndicationID : ""));
+						+ (selectedSyndicationID != null ? "syndication " + selectedSyndicationID : ""));*/
 		
 		PublicationRepository repository = new PublicationRepository(context);
 		Cursor cursor = null;

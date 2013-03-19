@@ -5,6 +5,7 @@ import android.database.Cursor;
 import android.os.AsyncTask;
 import android.preference.PreferenceManager;
 import android.support.v4.app.ListFragment;
+import android.text.TextUtils;
 import android.view.View;
 import android.widget.TextView;
 import free.solnRss.R;
@@ -13,7 +14,7 @@ import free.solnRss.adapter.PublicationAdapter;
 import free.solnRss.repository.PublicationRepository;
 
 public class PublicationsLoaderTask extends
-		AsyncTask<Integer, Void, PublicationAdapter> {
+		AsyncTask<Object, Void, PublicationAdapter> {
 
 	final int emptyMessageID = R.id.emptyPublicationsMessage;
 
@@ -23,7 +24,8 @@ public class PublicationsLoaderTask extends
 	private PublicationRepository repository;
 	private ListFragment fragment;
 	private Context context;
-	private String filter = null;
+	private String filter;
+
 
 	public PublicationsLoaderTask(ListFragment fragment, Context context) {
 		this.context = context;
@@ -31,18 +33,21 @@ public class PublicationsLoaderTask extends
 	}
 
 	@Override
-	protected PublicationAdapter doInBackground(Integer... ids) {
-		repository = new PublicationRepository(context);
-		Cursor c = repository.fetchFilteredPublication(ids[0], filter,
-				mustDisplayUnread());
+	protected PublicationAdapter doInBackground(Object... params) {
 		
+		Integer id = (Integer) params[0];
+		filter = params.length > 1 && params[1] != null ? (String) params[1] : null;
+
+		repository = new PublicationRepository(context);
+		Cursor c = repository.fetchFilteredPublication(id, null, displayUnread());
+
 		c.moveToFirst();
-		PublicationAdapter publicationAdapter = new PublicationAdapter(context,
-				R.layout.publications, c, from, to, 0);
+		PublicationAdapter publicationAdapter = 
+			new PublicationAdapter(context,	R.layout.publications, c, from, to, 0);
 
 		// Keep the syndication id in adapter for filter
-		publicationAdapter.setSelectedSyndicationId(ids[0]);
-				
+		publicationAdapter.setSelectedSyndicationId((Integer)id);
+
 		return publicationAdapter;
 	}
 
@@ -53,8 +58,14 @@ public class PublicationsLoaderTask extends
 		fragment.setListAdapter(result);
 		if (fragment.getListAdapter().isEmpty()) {
 			displayEmptyMessage();
+			
 		} else {
 			hideEmptyMessage();
+			if (!TextUtils.isEmpty(filter)) {
+				fragment.getListView().setFilterText(filter);
+			} else {
+				fragment.getListView().clearTextFilter();
+			}
 		}
 
 		result.notifyDataSetChanged();
@@ -62,16 +73,23 @@ public class PublicationsLoaderTask extends
 	}
 
 	private void hideEmptyMessage() {
-		((TextView) ((SolnRss) context).findViewById(emptyMessageID))
-				.setVisibility(View.INVISIBLE);
+		TextView tv = ((TextView) ((SolnRss) context)
+				.findViewById(emptyMessageID));
+		if (tv != null) {
+			tv.setVisibility(View.INVISIBLE);
+		}
+
 	}
 
 	private void displayEmptyMessage() {
-		((TextView) ((SolnRss) context).findViewById(emptyMessageID))
-				.setVisibility(View.VISIBLE);
+		TextView tv = ((TextView) ((SolnRss) context)
+				.findViewById(emptyMessageID));
+		if (tv != null) {
+			tv.setVisibility(View.VISIBLE);
+		}
 	}
 
-	public boolean mustDisplayUnread() {
+	public boolean displayUnread() {
 		return PreferenceManager.getDefaultSharedPreferences(context)
 				.getBoolean("pref_display_unread", true);
 	}

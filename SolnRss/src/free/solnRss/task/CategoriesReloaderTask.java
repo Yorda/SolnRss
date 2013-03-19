@@ -33,8 +33,7 @@ public class CategoriesReloaderTask extends AsyncTask<Integer, Void, Cursor> {
 
 	@Override
 	protected void onPostExecute(Cursor result) {
-		super.onPostExecute(result);
-		((CategorieAdapter) fragment.getListAdapter()).changeCursor(result);
+		((CategorieAdapter) fragment.getListAdapter()).swapCursor(result);
 		if (fragment.getListAdapter().isEmpty()) {
 			displayEmptyMessage();
 		} else {
@@ -52,4 +51,5 @@ public class CategoriesReloaderTask extends AsyncTask<Integer, Void, Cursor> {
 		((TextView) ((SolnRss) context).findViewById(emptyMessageID))
 				.setVisibility(View.INVISIBLE);
 	}
+	
 }

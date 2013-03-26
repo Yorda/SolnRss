@@ -176,7 +176,7 @@ public class PublicationRepository extends Repository {
 	 * Get the publications 
 	 * @return
 	 */
-	public Cursor fetchAllPublications(Integer syndicationId){
+	/*public Cursor fetchAllPublications(Integer syndicationId){
 		open(context);
 		
 		String[] args = new String[] {};
@@ -203,7 +203,7 @@ public class PublicationRepository extends Repository {
 		sb.append("order by a.pub_publication_date desc");
 		
 		return sqLiteDatabase.rawQuery(sb.toString(), args);
-	}
+	}*/
 
 	/**
 	 * 

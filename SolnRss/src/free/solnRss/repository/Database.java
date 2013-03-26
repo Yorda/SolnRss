@@ -15,11 +15,14 @@ public class Database extends SQLiteOpenHelper {
 
 	public static int VERSION = 6;
 	public static String DATABASE_NAME = "SOLNRSS.db";
+	
+	private String SCHEMA_NAME = "schema.sql";
+	private Context context;
 
-	String SCHEMA_NAME = "schema.sql";
-	Context context;
-	String TAG = this.getClass().getName();
-
+	public Database(Context context) {
+		super(context, DATABASE_NAME, null, VERSION);
+	}
+	
 	public Database(Context context, String name, CursorFactory factory, int version) {
 		super(context, name, factory, version);
 		this.context = context;
@@ -28,17 +31,6 @@ public class Database extends SQLiteOpenHelper {
 	@Override
 	public void onCreate(SQLiteDatabase db) {
 		setDatabase(db);
-		
-		//Add default site
-		/*String sql = "insert into d_syndication values(1,'Gizmodo', " +
-				"'http://www.gizmodo.fr/feed','http://www.gizmodo.fr', 0,0, '2012-12-07 13:42:21', '2012-11-30 10:22:58'  )";
-		
-		db.execSQL(sql);
-		
-		sql = "insert into d_syndication values(2,'Planete libre', " +
-				"'http://www.planet-libre.org/feed.php?type=atom','http://www.planet-libre.org', 0,0, '2012-12-07 15:42:21', '2012-11-30 11:22:58'  )";
-		
-		db.execSQL(sql);*/
 	}
 
 	@Override
@@ -102,18 +94,19 @@ public class Database extends SQLiteOpenHelper {
 
 	private void setDatabase(SQLiteDatabase db) {
 		try {
-
-			InputStream is = context.getResources().getAssets().open(SCHEMA_NAME);
+			InputStream is = 
+					context.getResources().getAssets().open(SCHEMA_NAME);
 			String[] statements = parseSqlFile(is);
 
 			for (String statement : statements) {
 				db.execSQL(statement);
 			}
+			
 		} catch (IOException e) {
-			Log.e(TAG, "Unable to create the database ", e);
+			Log.e(this.getClass().getName(), "Unable to create the database ");
 			e.printStackTrace();
 		} catch (Exception e) {
-			Log.e(TAG, "Unable to create the database ", e);
+			Log.e(this.getClass().getName(), "Unable to create the database ");
 			e.printStackTrace();
 		}
 	}
@@ -163,4 +156,14 @@ public class Database extends SQLiteOpenHelper {
 		return sql.toString().split(";");
 	}
 
+	//Add default site
+			/*String sql = "insert into d_syndication values(1,'Gizmodo', " +
+					"'http://www.gizmodo.fr/feed','http://www.gizmodo.fr', 0,0, '2012-12-07 13:42:21', '2012-11-30 10:22:58'  )";
+			
+			db.execSQL(sql);
+			
+			sql = "insert into d_syndication values(2,'Planete libre', " +
+					"'http://www.planet-libre.org/feed.php?type=atom','http://www.planet-libre.org', 0,0, '2012-12-07 15:42:21', '2012-11-30 11:22:58'  )";
+			
+			db.execSQL(sql);*/
 }

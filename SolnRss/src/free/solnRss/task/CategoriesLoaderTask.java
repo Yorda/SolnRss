@@ -23,7 +23,7 @@ public class CategoriesLoaderTask extends AsyncTask<Void, Void, CategorieAdapter
 	Activity activity;
 	
 	private final String[] from = { "cat_name"};
-	private final int[] to = { android.R.id.text1, };
+	private final int[] to = { android.R.id.text1 };
 	
 	public CategoriesLoaderTask(ListFragment fragment, Activity activity) {
 		this.activity = activity;

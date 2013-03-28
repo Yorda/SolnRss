@@ -10,6 +10,9 @@ import android.database.Cursor;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.ListFragment;
+import android.support.v4.app.LoaderManager;
+import android.support.v4.content.CursorLoader;
+import android.support.v4.content.Loader;
 import android.view.ContextMenu;
 import android.view.ContextMenu.ContextMenuInfo;
 import android.view.LayoutInflater;
@@ -24,9 +27,10 @@ import free.solnRss.activity.ActivityResult;
 import free.solnRss.activity.SolnRss;
 import free.solnRss.adapter.SyndicationAdapter;
 import free.solnRss.fragment.listener.SyndicationsFragmentListener;
+import free.solnRss.provider.SyndicationsProvider;
 import free.solnRss.repository.PublicationRepository;
 import free.solnRss.repository.SyndicationRepository;
-import free.solnRss.task.SyndicationsLoaderTask;
+import free.solnRss.repository.SyndicationTable;
 import free.solnRss.task.SyndicationsReloaderTask;
 
 /**
@@ -35,7 +39,57 @@ import free.solnRss.task.SyndicationsReloaderTask;
  *
  */
 public class SyndicationsFragment extends ListFragment implements
-		SyndicationsFragmentListener {
+		LoaderManager.LoaderCallbacks<Cursor>, SyndicationsFragmentListener {
+	
+	private SyndicationAdapter syndicationAdapter;
+	
+	private void provideSyndications() {
+		getLoaderManager().initLoader(0, null, this);
+		
+		final String[] from = { 
+				"syn_name", 
+				"syn_number_click" 
+			};
+		
+		final int[] to = {
+				android.R.id.text1, 
+				android.R.id.text2 
+			};
+		
+		syndicationAdapter = new SyndicationAdapter(getActivity(),R.layout.syndications, null, from, to, 0);
+		setListAdapter(syndicationAdapter);
+	}
+	
+	private void clickOnSyndicationItem(ListView l, View v, int position,	long id) {
+		//Cursor cursor = ((SyndicationAdapter) l.getAdapter()).getCursor();
+	}
+	
+	@Override
+	public Loader<Cursor> onCreateLoader(int id, Bundle args) {
+		final String syndicationTable = SyndicationTable.SYNDICATION_TABLE;
+		String columns[] = new String[] {
+				syndicationTable + "." + SyndicationTable.COLUMN_ID,
+				syndicationTable + "." + SyndicationTable.COLUMN_NAME,
+				syndicationTable + "." + SyndicationTable.COLUMN_URL,
+				syndicationTable + "." + SyndicationTable.COLUMN_IS_ACTIVE,
+				syndicationTable + "." + SyndicationTable.COLUMN_NUMBER_CLICK
+			};
+		
+		CursorLoader cursorLoader = new CursorLoader(getActivity(),
+				SyndicationsProvider.URI, columns, null, null, null);
+		
+		return cursorLoader;
+	}
+
+	@Override
+	public void onLoadFinished(Loader<Cursor> arg0, Cursor arg1) {
+		syndicationAdapter.swapCursor(arg1);
+	}
+
+	@Override
+	public void onLoaderReset(Loader<Cursor> arg0) {
+		syndicationAdapter.swapCursor(null);
+	}
 	
 	final private int layoutID = R.layout.fragment_syndications;
 	
@@ -79,6 +133,8 @@ public class SyndicationsFragment extends ListFragment implements
 		Cursor cursor = ((SyndicationAdapter) l.getAdapter()).getCursor();
 		int syndicationID = cursor.getInt(cursor.getColumnIndex("_id"));
 		((SolnRss) getActivity()).reLoadPublicationsBySyndication(syndicationID);
+		
+		clickOnSyndicationItem(l, v, position, id);
 	}
 	
 	@Override
@@ -219,23 +275,14 @@ public class SyndicationsFragment extends ListFragment implements
 		builder.create().show();
 	}
 
-	/*public void reloadSyndication(Activity context) {
-		SyndicationsReloaderTask reloader =	new SyndicationsReloaderTask(context, this);
-		reloader.execute(selectedSyndicationID);
-	}
-	
-	public void loadSyndications(Activity context) {
-		if (getListAdapter() == null) {
-			SyndicationsLoaderTask task = new SyndicationsLoaderTask(this,	context);
-			task.execute();
-		}
-	}*/
 
 	@Override
 	public void loadSyndications(Context context) {
+		
 		if (getListAdapter() == null) {
-			SyndicationsLoaderTask task = new SyndicationsLoaderTask(this,	(SolnRss)context);
-			task.execute();
+			provideSyndications();
+			//SyndicationsLoaderTask task = new SyndicationsLoaderTask(this,	(SolnRss)context);
+			//task.execute();
 		}
 	}
 

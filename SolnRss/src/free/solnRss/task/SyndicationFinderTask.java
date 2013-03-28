@@ -1,9 +1,5 @@
 package free.solnRss.task;
 
-import model.Syndication;
-import all.business.SyndicationBusiness;
-import all.business.impl.SyndicationBusinessImpl;
-import all.exception.ExtractFeedException;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
@@ -14,6 +10,10 @@ import android.os.AsyncTask;
 import android.widget.Toast;
 import free.solnRss.R;
 import free.solnRss.activity.SolnRss;
+import free.solnRss.business.SyndicationBusiness;
+import free.solnRss.business.impl.SyndicationBusinessImpl;
+import free.solnRss.exception.ExtractFeedException;
+import free.solnRss.model.Syndication;
 import free.solnRss.repository.SyndicationRepository;
 
 public class SyndicationFinderTask extends AsyncTask<String, Void, String> {

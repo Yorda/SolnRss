@@ -1,6 +1,7 @@
 package free.solnRss.fragment;
 
 import android.app.Activity;
+import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
@@ -8,6 +9,9 @@ import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.ListFragment;
+import android.support.v4.app.LoaderManager;
+import android.support.v4.content.CursorLoader;
+import android.support.v4.content.Loader;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.ContextMenu;
@@ -20,19 +24,84 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ListView;
 import free.solnRss.R;
-import free.solnRss.activity.SolnRss;
 import free.solnRss.activity.ReaderActivity;
+import free.solnRss.activity.SolnRss;
 import free.solnRss.adapter.PublicationAdapter;
 import free.solnRss.fragment.listener.PublicationsFragmentListener;
+import free.solnRss.provider.PublicationsProvider;
 import free.solnRss.repository.PublicationRepository;
+import free.solnRss.repository.PublicationTable;
+import free.solnRss.repository.SyndicationTable;
 import free.solnRss.task.PublicationsByCategoryLoaderTask;
 import free.solnRss.task.PublicationsByCategoryReloaderTask;
 import free.solnRss.task.PublicationsLoaderTask;
 import free.solnRss.task.PublicationsReloaderTask;
 
 public class PublicationsFragment extends ListFragment implements
-		PublicationsFragmentListener {
+		LoaderManager.LoaderCallbacks<Cursor>, PublicationsFragmentListener {
 
+	private PublicationAdapter publicationAdapter;
+	
+	private void providePublications() {
+		getLoaderManager().initLoader(0, null, this);
+		
+		final String[] from = { 
+				"pub_title", 
+				"pub_link" 
+			};
+		
+		final int[] to = { 
+				android.R.id.text1, 
+				android.R.id.text2 
+			};
+		
+		publicationAdapter = new PublicationAdapter(getActivity(),R.layout.publications, null, from, to, 0);
+		setListAdapter(publicationAdapter);
+	}
+	
+	private void clickOnPublicationItem(ListView l, View v, int position,	long id) {
+
+		Cursor cursor = ((PublicationAdapter) l.getAdapter()).getCursor();
+		int publicationId = cursor.getInt(cursor.getColumnIndex("_id"));
+
+		ContentValues values = new ContentValues();
+		values.put(PublicationTable.COLUMN_ALREADY_READ, "1");
+		Uri uri = Uri.parse(PublicationsProvider.URI + "/publicationId/"
+				+ publicationId);
+		getActivity().getContentResolver().update(uri, values, null, null);
+	}
+	
+	
+	@Override
+	public Loader<Cursor> onCreateLoader(int id, Bundle args) {
+		
+		final String publicationTable = PublicationTable.PUBLICATION_TABLE;
+		final String syndicationTable = SyndicationTable.SYNDICATION_TABLE;
+		String columns[] = new String[] {
+				publicationTable + "." + PublicationTable.COLUMN_ID,
+				publicationTable + "." + PublicationTable.COLUMN_TITLE, 
+				publicationTable + "." + PublicationTable.COLUMN_LINK,
+				publicationTable + "." + PublicationTable.COLUMN_ALREADY_READ, 
+				syndicationTable + "." + SyndicationTable.COLUMN_NAME,
+				publicationTable + "." + PublicationTable.COLUMN_PUBLICATION,
+				publicationTable + "." + PublicationTable.COLUMN_SYNDICATION_ID };
+		
+		CursorLoader cursorLoader = new CursorLoader(getActivity(),
+				PublicationsProvider.URI, columns, null, null, null);
+		
+		return cursorLoader;
+	}
+	
+	@Override
+	public void onLoadFinished(Loader<Cursor> arg0, Cursor arg1) {
+		publicationAdapter.swapCursor(arg1);
+	}
+
+	@Override
+	public void onLoaderReset(Loader<Cursor> arg0) {
+		publicationAdapter.swapCursor(null);
+	}
+	
 	final int layoutID = R.layout.fragment_publications;
 	private PublicationRepository publicationRepository;
 	private Integer selectedSyndicationID;
@@ -78,7 +147,10 @@ public class PublicationsFragment extends ListFragment implements
 		} else if (selectedCategorieID != null) {
 			loadPublicationsByCategorie(selectedCategorieID);
 		} else {
-			loadPublications(getActivity());
+			//loadPublications(getActivity());
+			
+			providePublications();
+			
 		}
 		
 		if (((SolnRss) getActivity()).getFilterText() != null) {
@@ -131,7 +203,11 @@ public class PublicationsFragment extends ListFragment implements
 		} else {
 			openBroswser(link);
 		}
-		markPublicationRead(cursor);
+		
+		openBroswser(link);
+		
+		//markPublicationRead(cursor);
+		clickOnPublicationItem(l, v, position, id);
 	}
 	
 	private boolean isSyndicationOrCategorieSelected() {
@@ -152,7 +228,9 @@ public class PublicationsFragment extends ListFragment implements
 		c.moveToPosition(info.position);
 
 		menu.setHeaderTitle(c.getString(c.getColumnIndex("syn_name")));
+		
 		nextSelectedSyndicationID = c.getInt(c.getColumnIndex("syn_syndication_id"));
+		
 		MenuInflater inflater = getActivity().getMenuInflater();
 		inflater.inflate(R.menu.publications_context, menu);
 
@@ -321,7 +399,7 @@ public class PublicationsFragment extends ListFragment implements
 	 * @return
 	 */
 	public String hasDescriptionValue(Cursor cursor) {
-		return cursor.getString(cursor.getColumnIndex("pub_publication"));
+		return cursor.getString(cursor.getColumnIndex(PublicationTable.COLUMN_PUBLICATION));
 	}
 
 	private void loadPublicationsBySyndication(Integer selectedSyndicationId) {

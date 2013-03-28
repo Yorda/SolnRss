@@ -7,7 +7,8 @@ import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 
-import model.Publication;
+import free.solnRss.model.Publication;
+
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;

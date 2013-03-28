@@ -1,7 +1,8 @@
 package free.solnRss.provider;
 
+
+
 import android.content.ContentProvider;
-import android.content.ContentResolver;
 import android.content.ContentValues;
 import android.content.UriMatcher;
 import android.database.Cursor;
@@ -9,88 +10,121 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteQueryBuilder;
 import android.net.Uri;
 import free.solnRss.repository.Database;
+import free.solnRss.repository.PublicationTable;
+import free.solnRss.repository.SyndicationTable;
 
 public class PublicationsProvider extends ContentProvider {
-
-	private Database database;
+	public static final String CONTENT_PROVIDER_MIME = 
+			"vnd.android.cursor.item/vnd.com.soln.rss.provider.publications",
+								AUTHORITY = 
+			"com.solnRss.provider.publicationprovider",
+								PUBLICATION_PATH = "publications";
+	public  final static Uri URI = 
+			Uri.parse("content://" + AUTHORITY + "/" + PUBLICATION_PATH);
 	
-	private final static String AUTHORITY =  "com.solnRss.provider.publicationprovider";
-	private final static String PUBLICATION_PATH = "publications";
-	public final static Uri URI = Uri.parse("content://" + AUTHORITY + "/" + PUBLICATION_PATH);
-	 
-	public final String CONTENT_TYPE      = ContentResolver.CURSOR_DIR_BASE_TYPE  + "/publications";
-	public final String CONTENT_ITEM_TYPE = ContentResolver.CURSOR_ITEM_BASE_TYPE + "/publication";
-
+	private Database repository;
+	private final String syndicationTable = SyndicationTable.SYNDICATION_TABLE;
+	private final String publicationTable = PublicationTable.PUBLICATION_TABLE;
+	
 	private UriMatcher uriMatcher;
-
 	// Used for the UriMacher
 	private final int PUBLICATIONS = 10;
 	private final int SYNDICATION_ID = 20;
+	private final int PUBLICATION_ID = 30;
 
 	@Override
 	public boolean onCreate() {
-		database = new Database(getContext());
+		repository = new Database(getContext());
 		uriMatcher = new UriMatcher(UriMatcher.NO_MATCH);
 		uriMatcher.addURI(AUTHORITY, PUBLICATION_PATH, PUBLICATIONS);
 		uriMatcher.addURI(AUTHORITY, PUBLICATION_PATH + "/#", SYNDICATION_ID);
+		uriMatcher.addURI(AUTHORITY, PUBLICATION_PATH + "/publicationId/#", PUBLICATION_ID);
 		return true;
 	}
 	
-	public static final String CONTENT_PROVIDER_MIME = "vnd.android.cursor.item/vnd.com.soln.rss.provider.publications";
-
 	@Override
-	public Cursor query(Uri uri, String[] projection, String selection,
-			String[] selectionArgs, String sortOrder) {
-
-		// Uisng SQLiteQueryBuilder instead of query() method
+	public Cursor query(Uri uri, String[] projection, String selection, String[] args, String sort) {
 		SQLiteQueryBuilder queryBuilder = new SQLiteQueryBuilder();
-
-		// Set the table
-		queryBuilder.setTables(SyndicationTable.SYNDICATION_TABLE
-				+ " LEFT JOIN " + PublicationTable.PUBLICATION_TABLE 
-				+ " ON "+ SyndicationTable.SYNDICATION_TABLE  + "." + SyndicationTable.COLUMN_ID 
-				+ " = " + PublicationTable.PUBLICATION_TABLE  + "." + PublicationTable.COLUMN_SYNDICATION_ID);
 		
-		int uriType = uriMatcher.match(uri);
+		// Set the table
+		queryBuilder.setTables(
+				publicationTable + " LEFT JOIN " + syndicationTable   
+			+ " ON "+ syndicationTable  + "." + SyndicationTable.COLUMN_ID 
+			+ " = " + publicationTable  + "." + PublicationTable.COLUMN_SYNDICATION_ID);
 
-		switch (uriType) {
-		case PUBLICATIONS:
+		switch (uriMatcher.match(uri)) {
+			case PUBLICATIONS:
+				queryBuilder.appendWhere(PublicationTable.COLUMN_ALREADY_READ + " = 0 ");
 			break;
-
-		case SYNDICATION_ID:
-			// Adding the syndication ID to the original query
-			queryBuilder.appendWhere(PublicationTable.COLUMN_SYNDICATION_ID	+ "=" + uri.getLastPathSegment());
+				
+			case SYNDICATION_ID:
+				String requestedId =  uri.getLastPathSegment();
+				queryBuilder.appendWhere(PublicationTable.COLUMN_SYNDICATION_ID + "=" + requestedId);
 			break;
 			
-		default:
-			throw new IllegalArgumentException("Unknown URI: " + uri);
+			default: throw new IllegalArgumentException("Unknown URI: " + uri);
 		}
 
-		SQLiteDatabase db = database.getReadableDatabase();
+		SQLiteDatabase db = repository.getReadableDatabase();
+		Cursor cursor = queryBuilder.query(db, projection, selection,
+				args, null, null,
+				PublicationTable.COLUMN_PUBLICATION_DATE + " desc");
+		cursor.setNotificationUri(getContext().getContentResolver(), uri);
 		
-		Cursor cursor = 
-			queryBuilder.query(db, projection, selection, selectionArgs, null, null,
-					PublicationTable.COLUMN_PUBLICATION_DATE + " desc");
-
 		return cursor;
 	}
 
 	@Override
-	public Uri insert(Uri uri, ContentValues values) {
-		return null;
+	public int bulkInsert(Uri uri, ContentValues[] values) {
+		return super.bulkInsert(uri, values);
 	}
+	
+	@Override
+	public Uri insert(Uri uri, ContentValues values) {
+		
+		SQLiteDatabase db = repository.getWritableDatabase();
+	    long id = 0;
+	    switch (uriMatcher.match(uri)) {
+			case PUBLICATIONS:
+				id = db.insert(PublicationTable.PUBLICATION_TABLE, null, values);
+			break;
+		
+			default: throw new IllegalArgumentException("Unknown URI: " + uri);
+	    }
+	    // Not refresh after recorded new publication
+	    // getContext().getContentResolver().notifyChange(uri, null);
+		return Uri.parse(PUBLICATION_PATH + "/publicationId/" + id);
+	}
+	
 
 	@Override
-	public int update(Uri uri, ContentValues values, String selection,
-			String[] selectionArgs) {
-		return 0;
+	public int update(Uri uri, ContentValues values, String selection, String[] selectionArgs) {
+		SQLiteDatabase db = repository.getWritableDatabase();
+		int rowsUpdated = 0;
+		int uriType = uriMatcher.match(uri);
+		switch (uriType) {
+
+			case PUBLICATIONS:
+			break;
+	
+			case PUBLICATION_ID:
+				String id = uri.getLastPathSegment();
+				rowsUpdated = db.update(
+						PublicationTable.PUBLICATION_TABLE, values,
+						PublicationTable.COLUMN_ID + "=" + id, null);
+			break;
+	
+			default: throw new IllegalArgumentException("Unknown URI: " + uri);
+		}
+		getContext().getContentResolver().notifyChange(uri, null);
+		return rowsUpdated;
 	}
 
 	@Override
 	public int delete(Uri uri, String selection, String[] selectionArgs) {
 		return 0;
 	}
-
+	
 	@Override
 	public String getType(Uri uri) {
 		return CONTENT_PROVIDER_MIME;

@@ -1,4 +1,4 @@
-package free.solnRss.provider;
+package free.solnRss.repository;
 
 import android.database.sqlite.SQLiteDatabase;
 

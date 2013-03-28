@@ -9,8 +9,9 @@ import java.util.GregorianCalendar;
 import java.util.List;
 import java.util.Locale;
 
-import model.Publication;
-import model.Syndication;
+import free.solnRss.model.Publication;
+import free.solnRss.model.Syndication;
+
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;

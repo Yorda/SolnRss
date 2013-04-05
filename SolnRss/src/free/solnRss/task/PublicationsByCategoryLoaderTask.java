@@ -36,9 +36,7 @@ public class PublicationsByCategoryLoaderTask extends AsyncTask<Integer, Void, P
 		c.moveToFirst();
 		
 		// Keep the category id in adapter for filter
-		((PublicationAdapter) fragment.getListAdapter())
-				.setSelectedCategoryId(ids[0]);
-				
+		((PublicationAdapter) fragment.getListAdapter()).setSelectedCategoryId(ids[0]);
 		return new PublicationAdapter(context, R.layout.publications, c, from,	to, 0);
 	}
 

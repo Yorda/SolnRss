@@ -19,6 +19,7 @@
     <string name="display_syndications_screen">Display syndication\'s screen</string>
     <string name="mark_all_read">Mark all publication as read</string>
     <string name="mark_selected_read">Mark this site publications as read</string>
+    <string name="mark_selected_category_read">Mark this category\'s publications as read</string>
 
     <!-- New publication notification -->
     <string name="notify_new_pub_title">New publications</string>
@@ -44,10 +45,10 @@
 
     <!-- Syndication manager activity -->
     <string name="site_parameter">%1$s</string>
-    <string name="clean_articles_btn">Clean</string>
-    <string name="delete_articles_btn">Delete</string>
-    <string name="active_articles_btn">Activate</string>
-    <string name="unactive_articles_btn">Desactivate</string>
+    <string name="clean_articles_btn">Delete his publications</string>
+    <string name="delete_articles_btn">Delete this syndication</string>
+    <string name="active_articles_btn">Start</string>
+    <string name="unactive_articles_btn">Pause</string>
     <string name="delete_ok">Your deletetion is well done</string>
     <string name="clean_confirm">Would you like to remove articles list ?</string>
     <string name="delete_confirm">Would you like to delete this syndication ?</string>
@@ -77,8 +78,8 @@
 
     <!-- Categorie -->
     <string name="empty_categories">No categories found</string>
-    <string name="delete_categorie">Delete</string>
-    <string name="add_to_categorie">Add syndications</string>
+    <string name="delete_categorie">Delete this category</string>
+    <string name="add_to_categorie">Add or remove syndication(s)</string>
 
     <!-- Dialog add item -->
     <string name="add_categorie_explain">Add a new categorie</string>

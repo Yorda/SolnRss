@@ -29,7 +29,6 @@ import free.solnRss.dialog.AddItemDialog.NewAddItemDialogListener;
 import free.solnRss.fragment.listener.CategoriesFragmentListener;
 import free.solnRss.fragment.listener.PublicationsFragmentListener;
 import free.solnRss.fragment.listener.SyndicationsFragmentListener;
-import free.solnRss.service.PublicationsFinderService;
 import free.solnRss.task.SyndicationFinderTask;
 
 public class SolnRss extends FragmentActivity implements ActionBar.TabListener,
@@ -66,7 +65,6 @@ public class SolnRss extends FragmentActivity implements ActionBar.TabListener,
 	@Override
 	public void onSharedPreferenceChanged(SharedPreferences shared, String key) {
 		if (key.compareTo("pref_unread_font_weight") == 0) {
-			//reLoadAllPublications();
 			publicationsListener.refreshPublications(this);
 		}
 
@@ -116,10 +114,11 @@ public class SolnRss extends FragmentActivity implements ActionBar.TabListener,
 					.setText(sectionPageAdapter.getPageTitle(i))
 					.setTabListener(this));
 		}
-		
+		  
 		// Start the service for retrieve new publications
-		Intent service = new Intent(this, PublicationsFinderService.class);
-		startService(service);
+		
+		//Intent service = new Intent(this, PublicationsCursorCacheService.class);
+		//startService(service);
 		
 		PreferenceManager
 				.getDefaultSharedPreferences(this)
@@ -301,18 +300,18 @@ public class SolnRss extends FragmentActivity implements ActionBar.TabListener,
 	}
 	
 	
-	public void displayAllPublication(View v) {
+	/*public void displayAllPublication(View v) {
 		displayAllPublications();
-	}
+	}*/
 	
-	public void displayAllPublications() {
+	/*public void displayAllPublications() {
 		//viewPager.setCurrentItem(1);
-		/*Fragment fragment = retrievePublicationsFragment();
-		((PublicationsFragment)fragment).loadAllPublications(this);*/
+		//Fragment fragment = retrievePublicationsFragment();
+		//((PublicationsFragment)fragment).loadAllPublications(this);
 		
-		publicationsListener.loadPublications(this);
-		viewPager.setCurrentItem(1);
-	}
+		//publicationsListener.loadPublications(this);
+		//viewPager.setCurrentItem(1);
+	}*/
 	
 	public void reLoadPublicationsBySyndication(Integer syndicationID) {
 		//viewPager.setCurrentItem(1);
@@ -348,35 +347,23 @@ public class SolnRss extends FragmentActivity implements ActionBar.TabListener,
 		publicationsListener.moveListViewToTop();
 	}
 	
+	public void reLoadAllPublications(View v){
+		reLoadAllPublications();
+	}
+	
 	public void displaySyndications(Integer syndicationID) {
-		
 		syndicationsListener.loadSyndications(this);
 		viewPager.setCurrentItem(2);
 		//Fragment fragment = retrieveSyndicationsFragment();
 		//((SyndicationsFragment)fragment).loadSyndications(this);
-	}
-
-	/*public Fragment retrieveCategoriesFragment() {
-		return getSupportFragmentManager().findFragmentByTag(
-				SectionsPagerAdapter.getFragementTag(viewPager.getId(), 0));
-	}*/
-
-	/*public Fragment retrievePublicationsFragment() {
-		return getSupportFragmentManager().findFragmentByTag(
-				SectionsPagerAdapter.getFragementTag(viewPager.getId(), 1));
-	}*/
-
-	/*public Fragment retrieveSyndicationsFragment() {
-		return getSupportFragmentManager().findFragmentByTag(
-				SectionsPagerAdapter.getFragementTag(viewPager.getId(), 2));
-	}*/
-	
+	}	
 
 	/**
 	 * Call by a click on notification for refresh publication list
 	 */
 	protected void onNewIntent(Intent intent) {
-		displayAllPublications();
+		//displayAllPublications();
+		reLoadAllPublications();
 	};
 	
 	private void warmUser(String msg) {
@@ -487,4 +474,20 @@ public class SolnRss extends FragmentActivity implements ActionBar.TabListener,
 	public void setFilterText(String filterText) {
 		this.filterText = filterText;
 	}
+	
+	
+/*public Fragment retrieveCategoriesFragment() {
+	return getSupportFragmentManager().findFragmentByTag(
+			SectionsPagerAdapter.getFragementTag(viewPager.getId(), 0));
+}*/
+
+/*public Fragment retrievePublicationsFragment() {
+	return getSupportFragmentManager().findFragmentByTag(
+			SectionsPagerAdapter.getFragementTag(viewPager.getId(), 1));
+}*/
+
+/*public Fragment retrieveSyndicationsFragment() {
+	return getSupportFragmentManager().findFragmentByTag(
+			SectionsPagerAdapter.getFragementTag(viewPager.getId(), 2));
+}*/
 }

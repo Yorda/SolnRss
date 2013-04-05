@@ -35,6 +35,7 @@ public class CategorieAdapter extends SimpleCursorAdapter {
 			categorieItem = new CategorieItem();
 
 			categorieItem.setName((TextView) convertView.findViewById(R.id.categorie_name));
+			categorieItem.setNumberOfUse((TextView) convertView.findViewById(R.id.categorie_number_of_use));
 			convertView.setTag(categorieItem);
 
 		} else {
@@ -45,10 +46,25 @@ public class CategorieAdapter extends SimpleCursorAdapter {
 
 		String name = getCursor().getString(
 				getCursor().getColumnIndex("cat_name"));
-
+		
 		categorieItem.getName().setText(name);
 		categorieItem.getName().setTypeface(tf, Typeface.NORMAL);
 
+		Integer numberOfUse = getCursor().getInt(
+				getCursor().getColumnIndex("number_of_use"));
+		
+		String use = new String();
+		if (numberOfUse == null || numberOfUse == 0) {
+			use = "Not use";
+		} else if (numberOfUse == 1) {
+			use = "Use by 1 syndication";
+		} else {
+			use = "Use by " + numberOfUse + " syndications";
+		}
+		
+		categorieItem.getNumberOfUse().setText(use);
+		categorieItem.getNumberOfUse().setTypeface(tf, Typeface.NORMAL);
+		
 		return convertView;
 	}
 

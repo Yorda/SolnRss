@@ -39,27 +39,22 @@ public class PublicationsReloaderTask extends AsyncTask<Object, Void, Cursor> {
 	protected Cursor doInBackground(Object... params) {
 
 		Integer syndicationId = (Integer) params[0];
-		Integer publicationId = params.length > 1 && params[1] != null ? (Integer) params[1] : null;
 		filter = params.length > 2 && params[2] != null ? (String) params[2] : null;
-
-		// Set this publication as read and reload cursor for adapter
 		repository = new PublicationRepository(context);
 		
-		if (publicationId != null) {
-			repository.markClickedPublicationRead(publicationId);
-		}
+		// Set this publication as read and reload cursor for adapter
+		//Integer publicationId = params.length > 1 && params[1] != null ? (Integer) params[1] : null;
+		//if (publicationId != null) {
+		//	repository.markClickedPublicationRead(publicationId);
+		//}
 
 		// Keep the syndication id in adapter for filter
 		((PublicationAdapter) fragment.getListAdapter()).setSelectedSyndicationId(syndicationId);
-
 		return repository.fetchFilteredPublication(syndicationId, null, displayUnread());
 	}
 
 	@Override
 	protected void onPostExecute(Cursor result) {
-		
-		//((PublicationAdapter) fragment.getListAdapter()).changeCursor(result);
-
 		((PublicationAdapter) fragment.getListAdapter()).swapCursor(result);
 		
 		if (fragment.getListAdapter().isEmpty()) {
@@ -72,6 +67,8 @@ public class PublicationsReloaderTask extends AsyncTask<Object, Void, Cursor> {
 				fragment.getListView().clearTextFilter();
 			}
 		}
+		
+		((PublicationAdapter) fragment.getListAdapter()).notifyDataSetChanged();
 		repository.close();
 	}
 

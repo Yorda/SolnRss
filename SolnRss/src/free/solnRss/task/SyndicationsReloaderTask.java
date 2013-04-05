@@ -30,7 +30,6 @@ public class SyndicationsReloaderTask extends AsyncTask<Integer, Void, Cursor> {
 
 	@Override
 	protected void onPostExecute(Cursor result) {
-		//super.onPostExecute(result);
 		((SyndicationAdapter) fragment.getListAdapter()).swapCursor(result);
 		if (fragment.getListAdapter().isEmpty()) {
 			displayEmptySyndicationsMessage();

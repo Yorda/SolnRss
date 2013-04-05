@@ -37,24 +37,28 @@ public class CategoryProvider extends ContentProvider {
 	public Cursor query(Uri uri, String[] projection, 
 			String selection, String[] args, String sort) {
 
-		SQLiteQueryBuilder queryBuilder = new SQLiteQueryBuilder();
-		queryBuilder.setTables(CategoryTable.CATEGORY_TABLE);
-
+		SQLiteQueryBuilder queryBuilder = null;
+		Cursor cursor = null;
+		
+		SQLiteDatabase db = repository.getReadableDatabase();
+		
 		switch (uriMatcher.match(uri)) {
 		case CATEGORIES:
+			cursor = db.rawQuery("select c.*, count(cs.cas_categorie_id) as number_of_use from d_categorie c left join d_categorie_syndication cs on c._id = cs.cas_categorie_id group by c.cat_name order by number_of_use desc", null);
 			break;
 
 		case CATEGORY_ID:
+			queryBuilder = new SQLiteQueryBuilder();
+			queryBuilder.setTables(CategoryTable.CATEGORY_TABLE);
 			queryBuilder.appendWhere(CategoryTable.COLUMN_ID + "=" + uri.getLastPathSegment());
+			cursor = queryBuilder.query(db, projection, selection, args, null, null, sort);
 			break;
 
 		default: throw new IllegalArgumentException("Unknown URI: " + uri);
 		}
 
-		SQLiteDatabase db = repository.getReadableDatabase();
-		Cursor cursor = queryBuilder.query(db, projection, selection, args, null, null, sort);
+		
 		cursor.setNotificationUri(getContext().getContentResolver(), uri);
-
 		return cursor;
 	}
 

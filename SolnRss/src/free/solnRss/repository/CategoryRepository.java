@@ -12,9 +12,11 @@ public class CategoryRepository extends Repository {
 	
 	public Cursor fetchAllCategorie() {
 		open(context);
-		String[] columns = { "_id", "cat_name", };
+		return sqLiteDatabase.rawQuery("select c.*, count(cs.cas_categorie_id) as number_of_use from d_categorie c left join d_categorie_syndication cs on c._id = cs.cas_categorie_id group by c.cat_name order by number_of_use desc", null);
+		
+		/*String[] columns = { "_id", "cat_name", };
 		return sqLiteDatabase.query("d_categorie", columns, null, null, null,
-				null, " cat_name desc ", null);
+				null, " cat_name desc ", null);*/
 	}
 
 	public void insert(String label) {

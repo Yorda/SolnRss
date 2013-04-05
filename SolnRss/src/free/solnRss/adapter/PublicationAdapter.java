@@ -3,24 +3,25 @@ package free.solnRss.adapter;
 import android.content.Context;
 import android.database.Cursor;
 import android.graphics.Typeface;
+import android.net.Uri;
 import android.preference.PreferenceManager;
 import android.support.v4.widget.SimpleCursorAdapter;
+import android.text.TextUtils;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FilterQueryProvider;
 import android.widget.TextView;
 import free.solnRss.R;
-import free.solnRss.repository.PublicationRepository;
+import free.solnRss.provider.PublicationsProvider;
+import free.solnRss.repository.PublicationTable;
 
 public class PublicationAdapter extends SimpleCursorAdapter implements
 		FilterQueryProvider {
-
-	private Typeface tf = null;
-	private Integer selectedSyndicationID, selectedCategoryId;
 	protected Cursor cursor;
 	private Context context;
 	private int layout;
 	
+	private Typeface tf = null;
 	public PublicationAdapter(final Context context, int layout, Cursor c,
 			String[] from, int[] to, int flags) {
 
@@ -50,10 +51,10 @@ public class PublicationAdapter extends SimpleCursorAdapter implements
 		}
 		
 		getCursor().moveToPosition(position);
-
-		String  title   = getCursor().getString(getCursor().getColumnIndex("pub_title"));
-		String  name    = getCursor().getString(getCursor().getColumnIndex("syn_name"));
-		Integer isRead  = getCursor().getInt   (getCursor().getColumnIndex("pub_already_read"));
+	
+		String  title   = getCursor().getString(getCursor().getColumnIndex("pub_title")); //
+		String  name    = getCursor().getString(4); // syn_name
+		Integer isRead  = getCursor().getInt   (3); // pub_already_read
 		
 		publicationItem.getTitle().setText(title);
 		publicationItem.getName ().setText(name);
@@ -80,28 +81,48 @@ public class PublicationAdapter extends SimpleCursorAdapter implements
 				.getBoolean("pref_display_unread", true);
 	}
 	
+	private Integer selectedSyndicationID, selectedCategoryId;
 	@Override
-	public Cursor runQuery(CharSequence constraint) {
-		/*Log.e(PublicationAdapter.this.getClass().getName(),
-				"CALL FILTER CURSOR "
-						+ (selectedCategoryId != null ? "category " + selectedCategoryId : "")
-						+ (selectedSyndicationID != null ? "syndication " + selectedSyndicationID : ""));*/
+	public Cursor runQuery(CharSequence constraint) {		
 		
-		PublicationRepository repository = new PublicationRepository(context);
 		Cursor cursor = null;
+		/*
+		PublicationRepository repository = new PublicationRepository(context);
+		
 		if (selectedCategoryId != null) {
 			cursor = repository.fetchPublicationByCategorie(selectedCategoryId, 
 					constraint.toString(), mustDisplayUnread());
+			
 		} else if (selectedSyndicationID != null) {
 			cursor = repository.fetchFilteredPublication(selectedSyndicationID,
 					constraint.toString(), mustDisplayUnread());
 		} else {
 			cursor = repository.fetchFilteredPublication(null, 
 					constraint.toString(), mustDisplayUnread());
+		}*/
+		
+		Uri uri = PublicationsProvider.URI;
+		if (selectedSyndicationID != null) {
+			uri = Uri.parse(PublicationsProvider.URI + "/" + selectedSyndicationID);
+		} else if (selectedCategoryId != null) {
+			uri = Uri.parse(PublicationsProvider.URI + "/categoryId/" + selectedCategoryId);
 		}
+
+		String selection = null;
+		String[] args = null;
+		
+		if (!TextUtils.isEmpty(constraint.toString())) {
+			selection = PublicationTable.COLUMN_TITLE + " like ? ";
+			args = new String[1];
+			args[0] = "%" + constraint.toString() + "%";
+		}
+
+		cursor = context.getContentResolver().query(uri, 
+				PublicationsProvider.projection, selection, args, null);
+
 		return cursor;
 	}
-
+	
 	public void setSelectedSyndicationId(Integer selectedSyndicationID) {
 		this.selectedCategoryId = null;
 		this.selectedSyndicationID = selectedSyndicationID;

@@ -49,6 +49,8 @@
 
         <!-- SERVICE -->
         <service android:name="free.solnRss.service.PublicationsFinderService" />
+        
+        <!-- service android:name="free.solnRss.service.PublicationsCursorCacheService" / -->
         <!--
         RECEIVER
         <receiver android:name=".receiver.NotificationReceiver" />

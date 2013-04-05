@@ -30,8 +30,6 @@ import free.solnRss.fragment.listener.SyndicationsFragmentListener;
 import free.solnRss.provider.SyndicationsProvider;
 import free.solnRss.repository.PublicationRepository;
 import free.solnRss.repository.SyndicationRepository;
-import free.solnRss.repository.SyndicationTable;
-import free.solnRss.task.SyndicationsReloaderTask;
 
 /**
  * 
@@ -45,7 +43,10 @@ public class SyndicationsFragment extends ListFragment implements
 	
 	private void provideSyndications() {
 		getLoaderManager().initLoader(0, null, this);
-		
+	}
+	
+	private void initAdapter() {
+
 		final String[] from = { 
 				"syn_name", 
 				"syn_number_click" 
@@ -66,33 +67,32 @@ public class SyndicationsFragment extends ListFragment implements
 	
 	@Override
 	public Loader<Cursor> onCreateLoader(int id, Bundle args) {
-		final String syndicationTable = SyndicationTable.SYNDICATION_TABLE;
-		String columns[] = new String[] {
-				syndicationTable + "." + SyndicationTable.COLUMN_ID,
-				syndicationTable + "." + SyndicationTable.COLUMN_NAME,
-				syndicationTable + "." + SyndicationTable.COLUMN_URL,
-				syndicationTable + "." + SyndicationTable.COLUMN_IS_ACTIVE,
-				syndicationTable + "." + SyndicationTable.COLUMN_NUMBER_CLICK
-			};
 		
 		CursorLoader cursorLoader = new CursorLoader(getActivity(),
-				SyndicationsProvider.URI, columns, null, null, null);
-		
+				SyndicationsProvider.URI,
+				SyndicationsProvider.syndicationProjection, 
+				null, null, null);
+
 		return cursorLoader;
 	}
 
 	@Override
 	public void onLoadFinished(Loader<Cursor> arg0, Cursor arg1) {
+		if(syndicationAdapter == null){
+			initAdapter();
+		}
 		syndicationAdapter.swapCursor(arg1);
 	}
 
 	@Override
 	public void onLoaderReset(Loader<Cursor> arg0) {
+		if(syndicationAdapter == null){
+			initAdapter();
+		}
 		syndicationAdapter.swapCursor(null);
 	}
 	
 	final private int layoutID = R.layout.fragment_syndications;
-	
 	private Integer selectedSyndicationID;
 	private Integer activeStatus;
 	
@@ -151,6 +151,7 @@ public class SyndicationsFragment extends ListFragment implements
 		AdapterView.AdapterContextMenuInfo info = (AdapterView.AdapterContextMenuInfo) menuInfo;
 		Cursor c = ((SyndicationAdapter) getListAdapter()).getCursor();
 		c.moveToPosition(info.position);
+		
 		selectedSyndicationID = c.getInt(c.getColumnIndex("_id"));
 		activeStatus =  c.getInt(c.getColumnIndex("syn_is_active"));
 		
@@ -288,8 +289,9 @@ public class SyndicationsFragment extends ListFragment implements
 
 	@Override
 	public void reloadSyndications(Context context) {
-		SyndicationsReloaderTask reloader =	new SyndicationsReloaderTask(context, this);
-		reloader.execute(selectedSyndicationID);
+		getLoaderManager().restartLoader(0, null, this);
+		// SyndicationsReloaderTask reloader =	new SyndicationsReloaderTask(context, this);
+		// reloader.execute(selectedSyndicationID);
 	}
 	
 }

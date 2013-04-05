@@ -12,4 +12,11 @@
         android:textSize="18sp" 
        />
       
+      <TextView
+        android:id="@+id/categorie_number_of_use"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textColor="#047a7a"
+        android:textStyle="italic" />
+      
 </LinearLayout>

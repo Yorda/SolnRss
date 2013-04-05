@@ -37,10 +37,9 @@ public class PublicationsByCategoryReloaderTask extends AsyncTask<Integer, Void,
 		if (ids.length > 1) {
 			repository.markClickedPublicationRead(ids[1]);
 		}
-				
+		
 		// Keep the category id in adapter for filter
-		((PublicationAdapter) fragment.getListAdapter())
-				.setSelectedCategoryId(ids[0]);
+		((PublicationAdapter) fragment.getListAdapter()).setSelectedCategoryId(ids[0]);
 		
 		return repository.fetchPublicationByCategorie(ids[0], null,
 				mustDisplayUnread());
@@ -49,13 +48,14 @@ public class PublicationsByCategoryReloaderTask extends AsyncTask<Integer, Void,
 
 	@Override
 	protected void onPostExecute(Cursor result) {
-		//super.onPostExecute(result);
+		
 		((PublicationAdapter) fragment.getListAdapter()).swapCursor(result);
 		if (fragment.getListAdapter().isEmpty()) {
 			displayEmptyMessage();
 		} else {
 			hideEmptyMessage();
 		}
+		
 		repository.close();
 	}
 

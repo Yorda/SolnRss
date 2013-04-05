@@ -3,15 +3,22 @@ package free.solnRss.adapter;
 import android.content.Context;
 import android.database.Cursor;
 import android.graphics.Typeface;
+import android.net.Uri;
 import android.support.v4.widget.SimpleCursorAdapter;
+import android.text.TextUtils;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.CheckBox;
+import android.widget.FilterQueryProvider;
 import android.widget.TextView;
 import free.solnRss.R;
+import free.solnRss.provider.SyndicationsProvider;
+import free.solnRss.repository.SyndicationTable;
 
-public class SyndicationsCategorieAdapter extends SimpleCursorAdapter {
+public class SyndicationsCategorieAdapter extends SimpleCursorAdapter implements
+		FilterQueryProvider {
 
+	protected Cursor cursor;
 	private Context context;
 	private int layout;
 	private Typeface tf = null;
@@ -19,8 +26,10 @@ public class SyndicationsCategorieAdapter extends SimpleCursorAdapter {
 	public SyndicationsCategorieAdapter(Context context, int layout, Cursor c,
 			String[] from, int[] to, int flags) {
 		super(context, layout, c, from, to, flags);
+		this.cursor = c;
 		this.context = context;
 		this.layout = layout;
+		setFilterQueryProvider(this);
 		tf = Typeface.createFromAsset(context.getAssets(), "fonts/MONOF55.TTF");
 	}
 
@@ -66,5 +75,25 @@ public class SyndicationsCategorieAdapter extends SimpleCursorAdapter {
 		}
 
 		return convertView;
+	}
+
+	@Override
+	public Cursor runQuery(CharSequence constraint) {
+		
+		Uri uri = SyndicationsProvider.URI;
+		
+		String selection = null;
+		String[] args = null;
+		
+		if (!TextUtils.isEmpty(constraint.toString())) {
+			selection = SyndicationTable.COLUMN_NAME + " like ? ";
+			args = new String[1];
+			args[0] = "%" + constraint.toString() + "%";
+		}
+
+		Cursor cursor = context.getContentResolver().query(uri, 
+				SyndicationsProvider.syndicationProjection , selection, args, null);
+
+		return cursor;
 	}
 }

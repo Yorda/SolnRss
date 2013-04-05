@@ -30,37 +30,35 @@ import free.solnRss.task.CategoriesReloaderTask;
 
 public class CategoriesFragment extends ListFragment implements
 		LoaderManager.LoaderCallbacks<Cursor>, CategoriesFragmentListener {
-
 	
-private CategorieAdapter categorieAdapter;
+	private CategorieAdapter categorieAdapter;
+	final private int layoutID = R.layout.fragment_categories;
+	private Integer selectedCategorieID;
 	
 	private void provideCategories() {
 		getLoaderManager().initLoader(0, null, this);
-		
-		final String[] from = { 
-				"cat_name"
-			};
-		
-		final int[] to = {
-				android.R.id.text1
-			};
-		
-		categorieAdapter = new CategorieAdapter(getActivity(),R.layout.categories, null, from, to, 0);
-		setListAdapter(categorieAdapter);
 	}
 	
-	private void clickOnCategoryItem(ListView l, View v, int position, long id) {
-		// Cursor cursor = ((SyndicationAdapter) l.getAdapter()).getCursor();
+	private final String[] from = { 
+			"cat_name"
+		};
+	private final int[] to = {
+			android.R.id.text1
+		};
+	
+	private void initAdapter() {
+		categorieAdapter = new CategorieAdapter(getActivity(),
+				R.layout.categories, null, from, to, 0);
+		setListAdapter(categorieAdapter);
 	}
 
+	private final String categoryTable = CategoryTable.CATEGORY_TABLE;
+	private final String columns[] = new String[] {
+			categoryTable + "." + CategoryTable.COLUMN_ID,
+			categoryTable + "." + CategoryTable.COLUMN_NAME
+		};
 	@Override
-	public Loader<Cursor> onCreateLoader(int id, Bundle args) {
-		final String categoryTable = CategoryTable.CATEGORY_TABLE;
-		String columns[] = new String[] {
-				categoryTable + "." + CategoryTable.COLUMN_ID,
-				categoryTable + "." + CategoryTable.COLUMN_NAME
-			};
-		
+	public Loader<Cursor> onCreateLoader(int id, Bundle args) {	
 		CursorLoader cursorLoader = new CursorLoader(getActivity(),
 				CategoryProvider.URI, columns, null, null, null);
 		
@@ -69,16 +67,19 @@ private CategorieAdapter categorieAdapter;
 
 	@Override
 	public void onLoadFinished(Loader<Cursor> arg0, Cursor arg1) {
+		if(categorieAdapter == null){
+			initAdapter();
+		}
 		categorieAdapter.swapCursor(arg1);
 	}
 
 	@Override
 	public void onLoaderReset(Loader<Cursor> arg0) {
+		if(categorieAdapter == null){
+			initAdapter();
+		}
 		categorieAdapter.swapCursor(null);
 	}
-	
-	final private int layoutID = R.layout.fragment_categories;
-	private Integer selectedCategorieID;
 	
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup vg,
@@ -145,11 +146,14 @@ private CategorieAdapter categorieAdapter;
 	
 	@Override
 	public void loadCategories(Context context) {
-		//CategoriesLoaderTask task = new CategoriesLoaderTask(this, (SolnRss) context);
-		//task.execute();
 		if (getListAdapter() == null) {
 			provideCategories();
 		}
+	}
+	
+	@Override
+	public void onActivityResult(int requestCode, int resultCode, Intent data) {
+		getLoaderManager().restartLoader(0, null, this);
 	}
 
 	@Override
@@ -167,4 +171,8 @@ private CategorieAdapter categorieAdapter;
 		CategoriesDeleteAndReloaderTask task = new CategoriesDeleteAndReloaderTask(this, context);
 		task.execute(categorieId);
 	}
+	
+	private void clickOnCategoryItem(ListView l, View v, int position, long id) {
+	}
 }
+

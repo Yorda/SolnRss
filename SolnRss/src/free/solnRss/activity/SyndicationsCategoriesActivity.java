@@ -2,8 +2,12 @@ package free.solnRss.activity;
 
 import android.app.ListActivity;
 import android.os.Bundle;
+import android.text.TextUtils;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.CheckBox;
+import android.widget.SearchView;
 import free.solnRss.R;
 import free.solnRss.adapter.SyndicationsCategorieAdapter;
 import free.solnRss.task.SyndicationCategoryAddTask;
@@ -14,6 +18,8 @@ import free.solnRss.task.SyndicationCategoryRemoveTask;
 public class SyndicationsCategoriesActivity extends ListActivity {
 	final int layoutID = R.layout.activity_syndications_categorie;
 	private Integer selectedCategorieID;
+	private SearchView searchView;
+	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -26,6 +32,15 @@ public class SyndicationsCategoriesActivity extends ListActivity {
 	}
 
 	@Override
+	public boolean onCreateOptionsMenu(Menu menu) {
+		getMenuInflater().inflate(R.menu.activity_soln_rss, menu);
+		MenuItem searchItem = menu.findItem(R.id.action_search);
+		searchView = (SearchView) searchItem.getActionView();
+		setupSearchView(searchItem);
+		return true;
+	}
+	
+	@Override
 	protected void onStart() {
 		super.onStart();
 		loadSyndicationCategorie();
@@ -37,14 +52,12 @@ public class SyndicationsCategoriesActivity extends ListActivity {
 	}
 
 	public void addSyndicationToCategorie(Integer syndicationId) {
-		SyndicationCategoryAddTask addTask = new SyndicationCategoryAddTask(
-				this);
+		SyndicationCategoryAddTask addTask = new SyndicationCategoryAddTask(this);
 		addTask.execute(syndicationId, selectedCategorieID);
 	}
 
 	public void removeSyndicationToCategorie(Integer syndicationId) {
-		SyndicationCategoryRemoveTask removeTask = new SyndicationCategoryRemoveTask(
-				this);
+		SyndicationCategoryRemoveTask removeTask = new SyndicationCategoryRemoveTask(this);
 		removeTask.execute(syndicationId, selectedCategorieID);
 	}
 
@@ -64,4 +77,38 @@ public class SyndicationsCategoriesActivity extends ListActivity {
 		task.execute(selectedCategorieID);
 	}
 
+	private void setupSearchView(MenuItem searchItem) {
+		boolean isAlwaysExpanded = false;
+		if (isAlwaysExpanded) {
+			searchView.setIconifiedByDefault(false);
+		} else {
+			searchItem.setShowAsAction(
+					MenuItem.SHOW_AS_ACTION_IF_ROOM
+					| MenuItem.SHOW_AS_ACTION_COLLAPSE_ACTION_VIEW
+				);
+		}
+		searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+			@Override
+			public boolean onQueryTextSubmit(String query) {
+				filterCategorie(query);
+				return false;
+			}
+			
+			@Override
+			public boolean onQueryTextChange(String newText) {
+				filterCategorie(newText);
+				return true;
+			}
+		});
+	}
+	
+	private void filterCategorie(String newText) {
+		if (this.getListView() != null) {
+			if (TextUtils.isEmpty(newText)) {
+				this.getListView().clearTextFilter();
+			} else {
+				this.getListView().setFilterText(newText);
+			}
+		}
+	}
 }

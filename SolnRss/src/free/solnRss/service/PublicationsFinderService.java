@@ -124,6 +124,8 @@ public class PublicationsFinderService extends Service {
 		return syndications;
 	}
 
+	SparseArray<List<Publication>> map = new SparseArray<List<Publication>>();
+	
 	private void refreshPublications(List<Syndication> syndications) {
 
 		if (!isOnline() || syndications.size() <= 0 || isWorking) {
@@ -132,11 +134,15 @@ public class PublicationsFinderService extends Service {
 		try {
 			
 			isWorking = true;
-			SparseArray<List<Publication>> map = new SparseArray<List<Publication>>();
-			
+			map.clear();
 			for (Syndication syndication : syndications) {
-				Log.e(this.getClass().getName(),"Get new publications for syndication id " + syndication.getId());
-				map = findNewPublication(syndication, map);				
+				if (isOnline()) {
+					Log.e(this.getClass().getName(),"Get new publications for syndication id "+ syndication.getId());
+					findNewPublication(syndication);
+				}
+				else {
+					break;
+				}
 			}
 			
 			List<ContentValues> arr = new ArrayList<ContentValues>();
@@ -194,7 +200,7 @@ public class PublicationsFinderService extends Service {
 	}
 	
 	private boolean isPublicationAlreadyRecorded(Integer syndicationId, String title, String url) {
-		Uri uri = Uri.parse(PublicationsProvider.URI + "/" + syndicationId);
+		Uri uri = Uri.parse(PublicationsProvider.URI + "/publicationInSyndication/" + syndicationId);
 		Cursor cursor = getContentResolver().query(
 				uri,
 				new String[] { PublicationTable.PUBLICATION_TABLE + "." + PublicationTable.COLUMN_ID },
@@ -204,7 +210,6 @@ public class PublicationsFinderService extends Service {
 						title,
 						url 
 					}, 
-					
 				null);
 		boolean isAlreadyRecorded = true;
 		if (cursor.getCount() < 1) {
@@ -214,7 +219,7 @@ public class PublicationsFinderService extends Service {
 		return isAlreadyRecorded;
 	}
 	
-	private SparseArray<List<Publication>> findNewPublication(Syndication syndication, SparseArray<List<Publication>> map) {
+	private void findNewPublication(Syndication syndication) {
 
 		try {
 			// Get the new rss
@@ -231,7 +236,6 @@ public class PublicationsFinderService extends Service {
 			Log.e("LoadArticlesService", 
 					"Error when trying to refresh "	+ syndication.getId() + " - " + e.getCause());
 		}
-		return map;
 	}
 	
 	private void notifyNewPublications(Integer newPublicationsNumber) {

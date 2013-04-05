@@ -9,6 +9,7 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteQueryBuilder;
 import android.net.Uri;
+import android.preference.PreferenceManager;
 import free.solnRss.repository.Database;
 import free.solnRss.repository.PublicationTable;
 import free.solnRss.repository.SyndicationTable;
@@ -23,15 +24,26 @@ public class PublicationsProvider extends ContentProvider {
 			Uri.parse("content://" + AUTHORITY + "/" + PUBLICATION_PATH);
 	
 	private Database repository;
-	private final String syndicationTable = SyndicationTable.SYNDICATION_TABLE;
-	private final String publicationTable = PublicationTable.PUBLICATION_TABLE;
+	private final static String syndicationTable = SyndicationTable.SYNDICATION_TABLE;
+	private final static String publicationTable = PublicationTable.PUBLICATION_TABLE;
 	
 	private UriMatcher uriMatcher;
 	// Used for the UriMacher
-	private final int PUBLICATIONS = 10;
-	private final int SYNDICATION_ID = 20;
-	private final int PUBLICATION_ID = 30;
+	private final int PUBLICATIONS     = 10;
+	private final int SYNDICATION_ID   = 20;
+	private final int PUBLICATION_ID   = 30;
+	private final int CATEGORY_ID      = 40;
+	private final int PUBLICATION_IN_SYNDICATION = 50;
 
+	final public static String projection[] = new String[] {
+			publicationTable + "." + PublicationTable.COLUMN_ID,
+			publicationTable + "." + PublicationTable.COLUMN_TITLE, 
+			publicationTable + "." + PublicationTable.COLUMN_LINK,
+			publicationTable + "." + PublicationTable.COLUMN_ALREADY_READ, 
+			syndicationTable + "." + SyndicationTable.COLUMN_NAME,
+			publicationTable + "." + PublicationTable.COLUMN_PUBLICATION,
+			publicationTable + "." + PublicationTable.COLUMN_SYNDICATION_ID };
+	
 	@Override
 	public boolean onCreate() {
 		repository = new Database(getContext());
@@ -39,41 +51,83 @@ public class PublicationsProvider extends ContentProvider {
 		uriMatcher.addURI(AUTHORITY, PUBLICATION_PATH, PUBLICATIONS);
 		uriMatcher.addURI(AUTHORITY, PUBLICATION_PATH + "/#", SYNDICATION_ID);
 		uriMatcher.addURI(AUTHORITY, PUBLICATION_PATH + "/publicationId/#", PUBLICATION_ID);
+		uriMatcher.addURI(AUTHORITY, PUBLICATION_PATH + "/categoryId/#", CATEGORY_ID);
+		uriMatcher.addURI(AUTHORITY, PUBLICATION_PATH + "/publicationInSyndication/#", PUBLICATION_IN_SYNDICATION);
 		return true;
 	}
+	
+	private final String tables = publicationTable + " LEFT JOIN "
+			+ syndicationTable + " ON " + syndicationTable + "."
+			+ SyndicationTable.COLUMN_ID + " = " + publicationTable + "."
+			+ PublicationTable.COLUMN_SYNDICATION_ID;
 	
 	@Override
 	public Cursor query(Uri uri, String[] projection, String selection, String[] args, String sort) {
 		SQLiteQueryBuilder queryBuilder = new SQLiteQueryBuilder();
 		
 		// Set the table
-		queryBuilder.setTables(
-				publicationTable + " LEFT JOIN " + syndicationTable   
-			+ " ON "+ syndicationTable  + "." + SyndicationTable.COLUMN_ID 
-			+ " = " + publicationTable  + "." + PublicationTable.COLUMN_SYNDICATION_ID);
+		queryBuilder.setTables(tables);
 
+		StringBuilder where = new StringBuilder();
+		if (!displayUnreadPublications()) {
+			where.append(PublicationTable.COLUMN_ALREADY_READ);
+			where.append(" = 0 ");
+		}
+		
 		switch (uriMatcher.match(uri)) {
 			case PUBLICATIONS:
-				queryBuilder.appendWhere(PublicationTable.COLUMN_ALREADY_READ + " = 0 ");
+			break;
+				
+			case PUBLICATION_IN_SYNDICATION:
+				// No filter read / unread
+				where = new StringBuilder();
 			break;
 				
 			case SYNDICATION_ID:
-				String requestedId =  uri.getLastPathSegment();
-				queryBuilder.appendWhere(PublicationTable.COLUMN_SYNDICATION_ID + "=" + requestedId);
+				String syndicationId =  uri.getLastPathSegment();
+				where = addWhereClauses(where, PublicationTable.COLUMN_SYNDICATION_ID + "=" + syndicationId);
+			break;
+			
+			case CATEGORY_ID:
+				String categoryId =  uri.getLastPathSegment();
+				where = addWhereClauses(where, 
+						PublicationTable.COLUMN_SYNDICATION_ID
+						+ " in (select syn_syndication_id from d_categorie_syndication where cas_categorie_id = " 
+						+ categoryId + ")");
 			break;
 			
 			default: throw new IllegalArgumentException("Unknown URI: " + uri);
 		}
 
+		if (where.length() != 0) {
+			queryBuilder.appendWhere(where.toString());
+		}
+		
 		SQLiteDatabase db = repository.getReadableDatabase();
 		Cursor cursor = queryBuilder.query(db, projection, selection,
 				args, null, null,
 				PublicationTable.COLUMN_PUBLICATION_DATE + " desc");
-		cursor.setNotificationUri(getContext().getContentResolver(), uri);
 		
+		cursor.setNotificationUri(getContext().getContentResolver(), uri);
 		return cursor;
 	}
 
+	/*
+	 * Add a where clause to string builder
+	 */
+	private StringBuilder addWhereClauses(StringBuilder where, String clause) {
+		if (where.length() != 0) {
+			where.append(" and ");
+		}
+		where.append(clause);
+		return where;
+	}
+	
+	private boolean displayUnreadPublications() {
+		return PreferenceManager.getDefaultSharedPreferences(getContext())
+					.getBoolean("pref_display_unread", true);
+	}
+	
 	@Override
 	public int bulkInsert(Uri uri, ContentValues[] values) {
 		return super.bulkInsert(uri, values);
@@ -96,7 +150,6 @@ public class PublicationsProvider extends ContentProvider {
 		return Uri.parse(PUBLICATION_PATH + "/publicationId/" + id);
 	}
 	
-
 	@Override
 	public int update(Uri uri, ContentValues values, String selection, String[] selectionArgs) {
 		SQLiteDatabase db = repository.getWritableDatabase();

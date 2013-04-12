@@ -23,11 +23,16 @@
         android:summaryOn="@string/pref_summ_display_notify_on"
         android:title="@string/pref_display_notify" />
 
-    <SeekBarPreference
+    
+   <!-- SeekBarPreference
         android:defaultValue="20"
         android:key="xxx"
         android:max="100"
-        android:title="Refresh every" >
-    </SeekBarPreference>
+        android:title="Refresh every"  /> -->
+        
+    <free.solnRss.preference.SeekBarPreference  
+                android:key="pref_search_publication_time"
+                android:defaultValue="15"
+                android:title="@string/pref_search_publication_time" />   
 
 </PreferenceScreen>

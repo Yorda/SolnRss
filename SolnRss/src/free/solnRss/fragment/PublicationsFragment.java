@@ -8,6 +8,8 @@ import android.database.Cursor;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.ResultReceiver;
 import android.support.v4.app.ListFragment;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
@@ -25,6 +27,7 @@ import android.view.animation.AnimationUtils;
 import android.widget.AdapterView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
+import android.widget.Toast;
 import free.solnRss.R;
 import free.solnRss.activity.ReaderActivity;
 import free.solnRss.activity.SolnRss;
@@ -41,6 +44,15 @@ import free.solnRss.task.PublicationsReloaderTask;
 public class PublicationsFragment extends ListFragment implements
 		LoaderManager.LoaderCallbacks<Cursor>, PublicationsFragmentListener {
 
+	// Global variable.
+	private ResultReceiver resultReceiver = new ResultReceiver(new Handler()) {
+		protected void onReceiveResult(int resultCode, Bundle resultData) {
+			Log.e(PublicationsFragment.class.getName(), "Receive some change");
+			//getListView().setScrollbarFadingEnabled(false);
+			refreshPublications(getActivity());
+		};
+	};
+		
 	private PublicationAdapter publicationAdapter;
 	
 	final private String[] from = { 
@@ -57,7 +69,7 @@ public class PublicationsFragment extends ListFragment implements
 		publicationAdapter = new PublicationAdapter(getActivity(),R.layout.publications, null, from, to, 0);
 		setListAdapter(publicationAdapter);
 		publicationAdapter.setSelectedCategoryId(selectedCategorieID);
-		publicationAdapter.setSelectedCategoryId(selectedSyndicationID);
+		publicationAdapter.setSelectedSyndicationId(selectedSyndicationID);
 	}
 	
 	
@@ -265,6 +277,9 @@ public class PublicationsFragment extends ListFragment implements
 		
 		// Start the service for retrieve new publications
 		Intent service = new Intent(getActivity(), PublicationsFinderService.class);
+		service.setAction("REGISTER_RECEIVER");
+		service.putExtra("ResultReceiver", resultReceiver);
+		service.putExtra("ResultReceiver_ID", hashCode());
 		getActivity().startService(service);
 	}
 	
@@ -315,9 +330,18 @@ public class PublicationsFragment extends ListFragment implements
 		if (isSyndicationOrCategorieSelected()) {
 			menu.getItem(0).setTitle(
 					getResources().getString(R.string.display_all_publication));
-			menu.getItem(1).setTitle(
-					getResources().getString(R.string.mark_selected_read));
+			
 		}
+		if (selectedSyndicationID != null) {
+			menu.getItem(1).setTitle(
+					getResources().getString(R.string.mark_selected_syndication_read));
+
+		} else if (selectedCategorieID != null) {
+			menu.getItem(1).setTitle(
+					getResources().getString(R.string.mark_selected_category_read));
+		}
+		
+		// menu.getItem(3).setVisible(false);
 	}
 
 	@Override
@@ -428,7 +452,12 @@ public class PublicationsFragment extends ListFragment implements
 	private void openBroswser(String url) {
 		// Start a browser
 		Intent openUrlIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
-		startActivity(openUrlIntent);
+		try {
+			startActivity(openUrlIntent);
+		} catch (Exception e) {
+			Toast.makeText(getActivity(), getActivity().getResources().getString(
+					R.string.open_browser_bad_url), Toast.LENGTH_LONG).show();
+		}
 	}
 
 	/**

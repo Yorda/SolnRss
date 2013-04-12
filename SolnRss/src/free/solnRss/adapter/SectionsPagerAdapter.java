@@ -51,7 +51,6 @@ public class SectionsPagerAdapter extends FragmentPagerAdapter{ //FragmentStateP
 		Fragment fragment = null;
 		
 		//Position p = Position.values()[position];
-		
 		/*switch (position) {
 		case 0:
 			fragment = categoriesFragment;

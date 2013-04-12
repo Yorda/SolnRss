@@ -1,6 +1,11 @@
 package free.solnRss.activity;
 
 import android.app.ListActivity;
+import android.app.LoaderManager;
+import android.content.CursorLoader;
+import android.content.Loader;
+import android.database.Cursor;
+import android.net.Uri;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.view.Menu;
@@ -10,12 +15,15 @@ import android.widget.CheckBox;
 import android.widget.SearchView;
 import free.solnRss.R;
 import free.solnRss.adapter.SyndicationsCategorieAdapter;
+import free.solnRss.provider.SyndicationsProvider;
+import free.solnRss.repository.SyndicationTable;
 import free.solnRss.task.SyndicationCategoryAddTask;
 import free.solnRss.task.SyndicationCategoryLoaderTask;
-import free.solnRss.task.SyndicationCategoryReloaderTask;
 import free.solnRss.task.SyndicationCategoryRemoveTask;
 
-public class SyndicationsCategoriesActivity extends ListActivity {
+public class SyndicationsCategoriesActivity extends ListActivity implements
+		LoaderManager.LoaderCallbacks<Cursor> {
+	
 	final int layoutID = R.layout.activity_syndications_categorie;
 	private Integer selectedCategorieID;
 	private SearchView searchView;
@@ -24,13 +32,12 @@ public class SyndicationsCategoriesActivity extends ListActivity {
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(layoutID);
-		selectedCategorieID = getIntent()
-				.getIntExtra("selectedCategorieID", -1);
+		selectedCategorieID = getIntent().getIntExtra("selectedCategorieID", -1);
 		if (selectedCategorieID == -1) {
 			finish();
 		}
 	}
-
+	
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 		getMenuInflater().inflate(R.menu.activity_soln_rss, menu);
@@ -43,7 +50,9 @@ public class SyndicationsCategoriesActivity extends ListActivity {
 	@Override
 	protected void onStart() {
 		super.onStart();
-		loadSyndicationCategorie();
+		//loadSyndicationCategorie();
+		getLoaderManager().initLoader(0, null, this);
+		getListView().setTextFilterEnabled(true);
 	}
 
 	void loadSyndicationCategorie() {
@@ -72,9 +81,7 @@ public class SyndicationsCategoriesActivity extends ListActivity {
 	}
 
 	public void reload() {
-		SyndicationCategoryReloaderTask task = new SyndicationCategoryReloaderTask(
-				this, (SyndicationsCategorieAdapter) getListAdapter());
-		task.execute(selectedCategorieID);
+		getLoaderManager().restartLoader(0, null, this);
 	}
 
 	private void setupSearchView(MenuItem searchItem) {
@@ -90,25 +97,83 @@ public class SyndicationsCategoriesActivity extends ListActivity {
 		searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
 			@Override
 			public boolean onQueryTextSubmit(String query) {
-				filterCategorie(query);
+				filterCategories(query);
 				return false;
 			}
 			
 			@Override
 			public boolean onQueryTextChange(String newText) {
-				filterCategorie(newText);
+				filterCategories(newText);
 				return true;
 			}
 		});
 	}
-	
-	private void filterCategorie(String newText) {
+	private String filterText = null;
+	private void filterCategories(String newText) {
 		if (this.getListView() != null) {
 			if (TextUtils.isEmpty(newText)) {
 				this.getListView().clearTextFilter();
+				filterText = null;
 			} else {
 				this.getListView().setFilterText(newText);
+				filterText = newText;
 			}
 		}
+	}
+	
+	private final String[] from = { "syn_name" };
+	private final int[] to = { android.R.id.text1 };
+	
+	SyndicationsCategorieAdapter adapter;
+	private void initAdapter() {		
+		adapter = new SyndicationsCategorieAdapter(this,R.layout.syndications_categorie, null, from, to, 0);
+		setListAdapter(adapter);
+		adapter.setSelectedCategoryId(selectedCategorieID);
+	}
+	
+	
+	@Override
+	public Loader<Cursor> onCreateLoader(int arg0, Bundle arg1) {
+		
+		Uri uri = Uri.parse(SyndicationsProvider.URI 
+				+ "/selectedCategoryId/"
+				+ selectedCategorieID);
+
+		String selection = null;
+		String[] args    = null;
+
+		if (!TextUtils.isEmpty(filterText)) {
+			selection = SyndicationTable.COLUMN_NAME + " like ? ";
+			args = new String[1];
+			args[0] = "%" + filterText + "%";
+		}
+		
+		CursorLoader cursorLoader = new CursorLoader(this, uri,
+				SyndicationsProvider.syndicationByCategoryProjection, selection, args, null);
+		return cursorLoader;
+	}
+
+	@Override
+	public void onLoadFinished(Loader<Cursor> loader, Cursor cursor) {
+		if(adapter == null){
+			initAdapter();
+		}
+		if (cursor.getCount() < 1) {
+			findViewById(R.id.emptySyndicationCategoryLayout)
+					.setVisibility(View.VISIBLE);
+		} else {
+			findViewById(R.id.emptySyndicationCategoryLayout)
+					.setVisibility(View.INVISIBLE);
+		}
+		
+		adapter.swapCursor(cursor);
+	}
+
+	@Override
+	public void onLoaderReset(Loader<Cursor> loader) {
+		if(adapter == null){
+			initAdapter();
+		}
+		adapter.swapCursor(null);
 	}
 }

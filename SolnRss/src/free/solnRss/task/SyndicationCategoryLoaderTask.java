@@ -28,6 +28,7 @@ public class SyndicationCategoryLoaderTask extends
 		c.moveToFirst();
 		SyndicationsCategorieAdapter adapter = new SyndicationsCategorieAdapter(
 				context, R.layout.syndications_categorie, c, from, to, 0);
+		adapter.setSelectedCategoryId(arg0[0]);
 		return adapter;
 
 	}

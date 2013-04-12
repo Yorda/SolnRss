@@ -8,20 +8,6 @@
     android:keepScreenOn="true"
     android:orientation="vertical" >
 
-    <!-- EditText
-        android:id="@+id/filterList"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="5dp"
-        android:layout_marginLeft="5dp"
-        android:layout_marginRight="5dp"
-        android:layout_marginTop="5dp"
-        android:background="@drawable/input"
-        android:inputType="text"
-        android:padding="3dp"
-        android:visibility="gone" >
-    </EditText -->
-
     <LinearLayout
         android:id="@+id/progressContainer"
         android:layout_width="match_parent"
@@ -69,17 +55,24 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="@string/empty_publications"
-                android:visibility="visible" />
+                android:visibility="visible" 
+                android:typeface="monospace"
+                android:textStyle="bold|italic"
+                android:textSize="16sp"
+               />
 
-            <Button
+            <Button        
                 android:id="@+id/displayAllButton"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="20dp"
                 android:onClick="reLoadAllPublications"
-                android:text="@string/display_all_publication" />
+                android:text="@string/display_all_publication" 
+                
+                 android:typeface="monospace"
+                />
         </LinearLayout>
         
     </FrameLayout>
-    
+
 </LinearLayout>

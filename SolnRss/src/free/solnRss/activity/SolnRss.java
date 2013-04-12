@@ -32,7 +32,8 @@ import free.solnRss.fragment.listener.SyndicationsFragmentListener;
 import free.solnRss.task.SyndicationFinderTask;
 
 public class SolnRss extends FragmentActivity implements ActionBar.TabListener,
-	SharedPreferences.OnSharedPreferenceChangeListener,	NewAddItemDialogListener {
+		SharedPreferences.OnSharedPreferenceChangeListener,
+		NewAddItemDialogListener {
 	
 	private SyndicationsFragmentListener syndicationsListener;
 	private CategoriesFragmentListener categoriesListener;
@@ -76,7 +77,7 @@ public class SolnRss extends FragmentActivity implements ActionBar.TabListener,
 	private void removeNotification(){
 		NotificationManager notificationManager = 
 				(NotificationManager) getSystemService(NOTIFICATION_SERVICE);
-		notificationManager.cancel(0x010001);
+		notificationManager.cancel(0x000001);
 	}
 	
 	@Override
@@ -116,7 +117,6 @@ public class SolnRss extends FragmentActivity implements ActionBar.TabListener,
 		}
 		  
 		// Start the service for retrieve new publications
-		
 		//Intent service = new Intent(this, PublicationsCursorCacheService.class);
 		//startService(service);
 		
@@ -231,8 +231,6 @@ public class SolnRss extends FragmentActivity implements ActionBar.TabListener,
 	
 	void addCategorie(String newCatgorie) {
 		if (!TextUtils.isEmpty(newCatgorie)) {
-			//CategoriesFragment fragment = ((CategoriesFragment) retrieveCategoriesFragment());
-			///fragment.addCategorie(this, newCatgorie);
 			categoriesListener.addCategorie(this, newCatgorie);
 		}
 	}
@@ -266,21 +264,11 @@ public class SolnRss extends FragmentActivity implements ActionBar.TabListener,
 		//Fragment fragment = null;
 		switch(tab.getPosition()){
 		case 0:
-			/*fragment = retrieveCategoriesFragment();
-			if(fragment != null){
-				((CategoriesFragment)fragment).loadCategories(this);
-			}*/
-			
 			if (categoriesListener != null) {
 				categoriesListener.loadCategories(this);
 			}
-			
 			break;
 		case 2:
-			/*fragment = retrieveSyndicationsFragment();
-			if(fragment != null){
-				((SyndicationsFragment)fragment).loadSyndications(this);
-			}*/
 			if (syndicationsListener != null) {
 				syndicationsListener.loadSyndications(this);
 			}
@@ -300,49 +288,19 @@ public class SolnRss extends FragmentActivity implements ActionBar.TabListener,
 	}
 	
 	
-	/*public void displayAllPublication(View v) {
-		displayAllPublications();
-	}*/
-	
-	/*public void displayAllPublications() {
-		//viewPager.setCurrentItem(1);
-		//Fragment fragment = retrievePublicationsFragment();
-		//((PublicationsFragment)fragment).loadAllPublications(this);
-		
-		//publicationsListener.loadPublications(this);
-		//viewPager.setCurrentItem(1);
-	}*/
-	
 	public void reLoadPublicationsBySyndication(Integer syndicationID) {
-		//viewPager.setCurrentItem(1);
-		//Fragment fragment = retrievePublicationsFragment();
-		//((PublicationsFragment)fragment).reLoadPublicationsBySyndication(syndicationID, this);
-		//((PublicationsFragment)fragment).moveListViewToTop();
-		
 		publicationsListener.reLoadPublicationsBySyndication(this, syndicationID);
 		viewPager.setCurrentItem(1);
 		publicationsListener.moveListViewToTop();
-		
 	}
 
 	public void reLoadPublicationsByCategorie(Integer categorieID) {
-		//viewPager.setCurrentItem(1);
-		//Fragment fragment = retrievePublicationsFragment();
-		//((PublicationsFragment)fragment).reLoadPublicationsByCategorie(categorieID, this);
-		//((PublicationsFragment)fragment).moveListViewToTop();
-		
 		publicationsListener.reLoadPublicationsByCategorie(this, categorieID);
 		viewPager.setCurrentItem(1);
 		publicationsListener.moveListViewToTop();
 	}
 	
 	public void reLoadAllPublications() {
-		/*Fragment fragment = retrievePublicationsFragment();
-		if (fragment != null) {
-			((PublicationsFragment)fragment).reLoadAllPublications(this);
-			((PublicationsFragment)fragment).moveListViewToTop();
-		}*/
-		
 		publicationsListener.reloadPublications(this);
 		publicationsListener.moveListViewToTop();
 	}
@@ -354,15 +312,12 @@ public class SolnRss extends FragmentActivity implements ActionBar.TabListener,
 	public void displaySyndications(Integer syndicationID) {
 		syndicationsListener.loadSyndications(this);
 		viewPager.setCurrentItem(2);
-		//Fragment fragment = retrieveSyndicationsFragment();
-		//((SyndicationsFragment)fragment).loadSyndications(this);
 	}	
 
 	/**
 	 * Call by a click on notification for refresh publication list
 	 */
 	protected void onNewIntent(Intent intent) {
-		//displayAllPublications();
 		reLoadAllPublications();
 	};
 	
@@ -426,19 +381,6 @@ public class SolnRss extends FragmentActivity implements ActionBar.TabListener,
 	 */
 	private void filterPublications(String text) {
 		publicationsListener.filterPublications(text);
-		/*Fragment fragment = retrievePublicationsFragment();
-		if (fragment != null) {
-			PublicationsFragment publicationsFragment = ((PublicationsFragment) fragment);
-			if (publicationsFragment.getListView() != null) {
-				if (TextUtils.isEmpty(text)) {
-					setFilterText(null);
-					publicationsFragment.getListView().clearTextFilter();
-				} else {
-					setFilterText(text); 
-					publicationsFragment.getListView().setFilterText(text);
-				}
-			}
-		}*/
 	}
 
 	public CategoriesFragmentListener getCategoriesFragmentListener() {

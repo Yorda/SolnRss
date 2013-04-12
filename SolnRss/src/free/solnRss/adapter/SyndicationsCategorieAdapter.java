@@ -22,6 +22,7 @@ public class SyndicationsCategorieAdapter extends SimpleCursorAdapter implements
 	private Context context;
 	private int layout;
 	private Typeface tf = null;
+	private Integer selectedCategoryId;
 
 	public SyndicationsCategorieAdapter(Context context, int layout, Cursor c,
 			String[] from, int[] to, int flags) {
@@ -66,8 +67,6 @@ public class SyndicationsCategorieAdapter extends SimpleCursorAdapter implements
 		item.getName().setTypeface(tf);
 		item.getCheck().setTag(syndicationId);
 
-		// Log.e(SyndicationsCategorieAdapter.this.getClass().getName(), name +
-		// " Categorie id is " + categorieId);
 		if (categorieId == null || categorieId == 0) {
 			item.getCheck().setChecked(false);
 		} else {
@@ -80,7 +79,8 @@ public class SyndicationsCategorieAdapter extends SimpleCursorAdapter implements
 	@Override
 	public Cursor runQuery(CharSequence constraint) {
 		
-		Uri uri = SyndicationsProvider.URI;
+		Uri uri = Uri.parse(SyndicationsProvider.URI + "/selectedCategoryId/"
+				+ selectedCategoryId);
 		
 		String selection = null;
 		String[] args = null;
@@ -92,8 +92,12 @@ public class SyndicationsCategorieAdapter extends SimpleCursorAdapter implements
 		}
 
 		Cursor cursor = context.getContentResolver().query(uri, 
-				SyndicationsProvider.syndicationProjection , selection, args, null);
+				SyndicationsProvider.syndicationByCategoryProjection , selection, args, null);
 
 		return cursor;
+	}
+
+	public void setSelectedCategoryId(Integer selectedCategoryId) {
+		this.selectedCategoryId = selectedCategoryId;
 	}
 }

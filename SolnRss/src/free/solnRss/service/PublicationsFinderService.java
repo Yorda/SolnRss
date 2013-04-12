@@ -18,11 +18,14 @@ import android.app.Service;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.res.Resources;
 import android.database.Cursor;
 import android.net.ConnectivityManager;
 import android.net.Uri;
+import android.os.Bundle;
 import android.os.IBinder;
+import android.os.ResultReceiver;
 import android.preference.PreferenceManager;
 import android.support.v4.app.NotificationCompat;
 import android.util.Log;
@@ -39,8 +42,15 @@ import free.solnRss.repository.PublicationTable;
 import free.solnRss.repository.SyndicationTable;
 import free.solnRss.tools.StringTools;
 
-public class PublicationsFinderService extends Service {
-	private final ServiceBinder<PublicationsFinderService> binder = new ServiceBinder<PublicationsFinderService>();
+public class PublicationsFinderService extends Service implements
+		SharedPreferences.OnSharedPreferenceChangeListener {
+
+	final DateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.FRENCH);
+	private boolean isWorking = false;
+	
+	private final ServiceBinder<PublicationsFinderService> binder = 
+			new ServiceBinder<PublicationsFinderService>();
+	
 	@Override
 	public void onCreate() {
 		binder.localBinder(this);
@@ -50,32 +60,92 @@ public class PublicationsFinderService extends Service {
 	@Override
 	public IBinder onBind(Intent intent) {
 		return binder;
-	}	
-	final DateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.FRENCH);
-	private SyndicationBusiness syndicationBusiness;
-
-	private boolean isWorking = false;
-	private final int notificationId = 0x010001;
-	final String syndicationTable = SyndicationTable.SYNDICATION_TABLE;
-		
-	@Override
-	public int onStartCommand(Intent intent, int flags, int startId) {
-		
-		syndicationBusiness = new SyndicationBusinessImpl();
-		TimerTask timerTask = new TimerTask() {
+	}
+	
+	private Timer timer = null;
+	private TimerTask timerTask = null;
+	
+	private void createTimerTask() {
+		timerTask = new TimerTask() {
 			@Override
 			public void run() {
 				runService();
 			}
 		};
+	}
+	
+	private long minuteToMiliSecond(int minutes) {
+		long second = 1000;
+		long oneMinute = 60 * second;
+		return minutes * oneMinute;
+	}
+	
+	private SparseArray<ResultReceiver> receiverMap = new SparseArray<ResultReceiver>();
+	private int resultReceiverId = -1;
+	
+	private void registerOrUnregisterReceiver(Intent intent) {
+		// 
+		if(intent == null){
+			receiverMap = new SparseArray<ResultReceiver>();
+		}
+		else if ("UNREGISTER_RECEIVER".equals(intent.getAction())) {
+			// Extract the ResultReceiver ID and remove it from the map
+			resultReceiverId = intent.getIntExtra("ResultReceiver_ID", 0);
+			receiverMap.remove(resultReceiverId);
+		}
+		else if ("REGISTER_RECEIVER".equals(intent.getAction())) {
+			// Extract the ResultReceiver and store it into the map
+			ResultReceiver receiver = intent.getParcelableExtra("ResultReceiver");
+			resultReceiverId = intent.getIntExtra("ResultReceiver_ID", 0);
+			receiverMap.put(resultReceiverId, receiver);
+		} 
+	}
+	
+	@Override
+	public void onSharedPreferenceChanged(SharedPreferences sharedPreferences,	String key) {
+		if (key.compareTo("pref_search_publication_time") == 0) {
+			
+			int time = PreferenceManager.getDefaultSharedPreferences(this)
+					.getInt("pref_search_publication_time", 15);
+			
+			//Log.e(SolnRss.class.getName(), "SERVICE MUST MAKE SEARCH EVERY  " + time + " MINUTE ");
+			
+			// TODO stop search if new time is 0 and test
+			if(time == 0){
+				timerTask.cancel();
+				timer.cancel();
+				timer = null;
+				timerTask = null;
+			}else {
+				timer = new Timer("Search RSS feed timer", true);
+				createTimerTask();
+				timer.schedule(timerTask, time, time);
+			}
+		}
+	}
+	
+	@Override
+	public int onStartCommand(Intent intent, int flags, int startId) {
 
+		createTimerTask() ;
+		
 		int second = 1000;
 		int minute = 60 * second;
-		int ten_minutes = minute * 10;
-		Timer timer = new Timer();
 		
-		timer.schedule(timerTask, minute, ten_minutes);
+		PreferenceManager.getDefaultSharedPreferences(this)
+				.registerOnSharedPreferenceChangeListener(this);
 		
+		int minutes = PreferenceManager.getDefaultSharedPreferences(this)
+				.getInt("pref_search_publication_time", 15);
+		
+		// If 0 don't start a timer task
+		if(minutes > 0){
+			long times = minuteToMiliSecond(minutes);
+			timer = new Timer("Search RSS feed timer", true);
+			timer.schedule(timerTask, minute,times);
+		}
+		
+		registerOrUnregisterReceiver(intent);
 		return super.onStartCommand(intent, flags, startId);
 	}
 
@@ -84,18 +154,20 @@ public class PublicationsFinderService extends Service {
 		refreshPublications(syndications);
 	}
 	
+	
 	private List<Syndication> findSyndicationsToRefresh() {
 		
 		// Period in minute
-		int refresh = 10;
+		int refresh = PreferenceManager.getDefaultSharedPreferences(this).getInt(
+				"pref_search_publication_time", 15);
 
 		GregorianCalendar calendar = new GregorianCalendar();
 		calendar.setTime( new Date());
 		calendar.add(Calendar.MINUTE, -refresh);
 
 		String projection[] = new String[] {
-				syndicationTable + "." + SyndicationTable.COLUMN_ID,
-				syndicationTable + "." + SyndicationTable.COLUMN_URL, };
+				SyndicationTable.SYNDICATION_TABLE + "." + SyndicationTable.COLUMN_ID,
+				SyndicationTable.SYNDICATION_TABLE + "." + SyndicationTable.COLUMN_URL, };
 
 		String selection = "syn_last_extract_time < Datetime(?) and syn_is_active = ? ";
 		String[] selectionArgs = new String[2];
@@ -132,7 +204,6 @@ public class PublicationsFinderService extends Service {
 			return;
 		}
 		try {
-			
 			isWorking = true;
 			map.clear();
 			for (Syndication syndication : syndications) {
@@ -219,6 +290,8 @@ public class PublicationsFinderService extends Service {
 		return isAlreadyRecorded;
 	}
 	
+	private SyndicationBusiness syndicationBusiness = new SyndicationBusinessImpl();
+	
 	private void findNewPublication(Syndication syndication) {
 
 		try {
@@ -239,8 +312,15 @@ public class PublicationsFinderService extends Service {
 	}
 	
 	private void notifyNewPublications(Integer newPublicationsNumber) {
-		if (newPublicationsNumber > 0 && mustDisplaynotification()) {
+		if (newPublicationsNumber > 0 && mustDisplayNotification()) {
 			createNotification(newPublicationsNumber);
+		}
+		
+		if (receiverMap.get(resultReceiverId) != null) {
+			ResultReceiver resultReceiver = receiverMap.get(resultReceiverId);
+			int resultCode =0;
+			Bundle resultData = null;
+			resultReceiver.send(resultCode, resultData);
 		}
 	}	
 	
@@ -274,7 +354,7 @@ public class PublicationsFinderService extends Service {
 		Notification notification = builder.build();
 
 		notification.flags |= Notification.FLAG_AUTO_CANCEL;
-		notificationManager.notify(notificationId, notification);
+		notificationManager.notify(0x000001, notification);
 	}
 	
 	/**
@@ -284,7 +364,6 @@ public class PublicationsFinderService extends Service {
 	public boolean isOnline() {
 	    ConnectivityManager cm = (ConnectivityManager) 
 	        getApplication().getSystemService(Context.CONNECTIVITY_SERVICE);
-
 	    return cm.getActiveNetworkInfo() != null && 
 	       cm.getActiveNetworkInfo().isConnected();
 	}
@@ -294,171 +373,8 @@ public class PublicationsFinderService extends Service {
 		return super.onUnbind(intent);
 	}
 	
-	public boolean mustDisplaynotification() {
+	public boolean mustDisplayNotification() {
 		return PreferenceManager.getDefaultSharedPreferences(getApplicationContext())
 				.getBoolean("pref_display_notify", true);
 	}
-	
-	
-	
-	
-	
-	/*
-	private SyndicationRepository syndicationRepository;
-	private PublicationRepository publicationRepository;
-
-	private SyndicationBusiness syndicationBusiness;
-	private List<Publication> publications;
-	
-	private boolean isWorking = false;
-	private final int notificationId = 0x010001;
-
-	private final ServiceBinder<PublicationsFinderService> binder = new ServiceBinder<PublicationsFinderService>();
-
-	@Override
-	public void onCreate() {
-		binder.localBinder(this);
-		super.onCreate();
-	}
-
-	@Override
-	public IBinder onBind(Intent intent) {
-		return binder;
-	}
-
-	@Override
-	public int onStartCommand(Intent intent, int flags, int startId) {
-
-		syndicationRepository = 
-			new SyndicationRepository(getApplicationContext());
-		publicationRepository = 
-			new PublicationRepository(getApplicationContext());
-		syndicationBusiness = 
-			new SyndicationBusinessImpl();
-		publications = 
-			new ArrayList<Publication>();
-
-		TimerTask timerTask = new TimerTask() {
-			@Override
-			public void run() {
-				runService();
-			}
-		};
-
-		Timer timer = new Timer();
-		timer.schedule(timerTask, 60000, 600000);
-		return super.onStartCommand(intent, flags, startId);
-	}
-
-	public void runService() {
-		Log.e(this.getClass().getName(), "Begin to run service for retrieve last publication");
-		Log.e(this.getClass().getName(), "Retrieve syndications to refresh ");
-		List<Syndication> syndications = 
-			syndicationRepository.findSyndicationToUpdate();
-		refreshPublications(syndications);
-		Log.e(this.getClass().getName(), "End running service for retrieve last publication");
-
-	}
-
-	private void refreshPublications(List<Syndication> syndications) {
-
-		if (!isOnline() || syndications.size() <= 0 || isWorking) {
-			return;
-		}
-		try {
-			
-			isWorking = true;
-			Integer newPublicationsNumber = 0;
-			int n = 1 ;
-			for (Syndication syndication : syndications) {
-				Log.e(this.getClass().getName(), "Get new publications  for " + syndication.getId() + " number " + n + " / " +syndications.size() );
-				newPublicationsNumber += findNewPublication(syndication);
-				n++;
-			}
-			notifyNewPublications(newPublicationsNumber);
-		} finally {
-			isWorking = false;
-		}
-	}
-
-	private Integer findNewPublication(Syndication syndication) {
-		Integer numberOfnewArticles = 0;
-		try {
-			// Get the new rss
-			publications = syndicationBusiness.getLastPublications(syndication.getUrl());
-			
-			// Escape HTML
-			for (Publication p : publications) {
-				p.setTitle(StringTools.unescapeHTML(p.getTitle()));
-			}
-			
-			// Update articles with new one
-			numberOfnewArticles += 
-				publicationRepository.refresh(publications,syndication.getId(), numberOfnewArticles);
-			publications.clear();
-			// Set new Last update date to syndication
-			syndicationRepository.updateLastExtractTime(syndication.getId());
-
-		} catch (ExtractFeedException e) {
-			Log.e("LoadArticlesService", "Error when trying to refresh " + syndication.getId());
-			e.printStackTrace();
-		}
-		return numberOfnewArticles;
-	}
-	
-	private void notifyNewPublications(Integer newPublicationsNumber) {
-		if (newPublicationsNumber > 0 && mustDisplaynotification()) {
-			createNotification(newPublicationsNumber);
-		}
-	}
-	
-
-	private void createNotification(int newPublicationsNumber) {
-		Resources r = getResources();
-		String title = r.getString(R.string.notify_new_pub_title);
-
-		String text = 
-			String.format(r.getString(R.string.notify_new_pub_msg), newPublicationsNumber);
-
-		NotificationManager notificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
-
-		NotificationCompat.Builder builder = new NotificationCompat.Builder(this);
-		// builder.setSmallIcon(android.R.drawable.arrow_up_float);
-		builder.setSmallIcon(R.drawable.ic_launcher);
-
-		builder.setContentTitle(title);
-		builder.setContentText(text);
-
-		// Create pending intent for going back on screen
-		Intent intent = new Intent(this, SolnRss.class);
-		intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP
-				| Intent.FLAG_ACTIVITY_SINGLE_TOP);
-
-		PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, intent, 0);
-		builder.setContentIntent(pendingIntent);
-
-		Notification notification = builder.build();
-
-		notification.flags |= Notification.FLAG_AUTO_CANCEL;
-		notificationManager.notify(notificationId, notification);
-	}
-	
-
-	public boolean isOnline() {
-	    ConnectivityManager cm = (ConnectivityManager) 
-	        getApplication().getSystemService(Context.CONNECTIVITY_SERVICE);
-
-	    return cm.getActiveNetworkInfo() != null && 
-	       cm.getActiveNetworkInfo().isConnectedOrConnecting();
-	}
-	
-	@Override
-	public boolean onUnbind(Intent intent) {
-		return super.onUnbind(intent);
-	}
-	
-	public boolean mustDisplaynotification() {
-		return PreferenceManager.getDefaultSharedPreferences(getApplicationContext())
-				.getBoolean("pref_display_notify", true);
-	}*/
 }

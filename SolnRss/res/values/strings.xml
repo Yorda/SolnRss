@@ -11,14 +11,16 @@
     <string name="menu_add_site">Add a site</string>
 
     <!-- Publication's tab label -->
-    <string name="empty_publications">No publications found. Please add a site or try a refresh </string>
+    <string name="empty_publications">No publications found. Please add a site or try a refresh. </string>
+    <string name="empty_syndications">You don\'t follow any web site. Please add some. </string>
+    <string name="open_browser_bad_url">Unable to open browser, this link seems to be wrong.</string>
 
     <!-- Context publication's context menu -->
     <string name="display_one_publication">Display only his publications</string>
     <string name="display_all_publication">Display all publications</string>
     <string name="display_syndications_screen">Display syndication\'s screen</string>
     <string name="mark_all_read">Mark all publication as read</string>
-    <string name="mark_selected_read">Mark this site publications as read</string>
+    <string name="mark_selected_syndication_read">Mark this site publications as read</string>
     <string name="mark_selected_category_read">Mark this category\'s publications as read</string>
 
     <!-- New publication notification -->
@@ -76,7 +78,9 @@
     <string name="pref_summ_display_notify_on">Display a notification when new publications found</string>
     <string name="pref_summ_display_notify_off">No notification displayed when new publications found</string>
 
-    <!-- Categorie -->
+    <string name="pref_search_publication_time">Search new articles every:</string>
+    
+    <!-- Category -->
     <string name="empty_categories">No categories found</string>
     <string name="delete_categorie">Delete this category</string>
     <string name="add_to_categorie">Add or remove syndication(s)</string>

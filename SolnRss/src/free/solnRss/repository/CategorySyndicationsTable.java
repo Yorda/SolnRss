@@ -4,9 +4,9 @@ import android.database.sqlite.SQLiteDatabase;
 
 public class CategorySyndicationsTable {
 
-	public static final String CATEGORY_SYNDICATION_TABLE = "d_category_syndication";
+	public static final String CATEGORY_SYNDICATION_TABLE = "d_categorie_syndication";
 	public static final String COLUMN_ID = "_id";
-	public static final String COLUMN_CATEGORY_ID = "cas_category_id";
+	public static final String COLUMN_CATEGORY_ID = "cas_categorie_id";
 	public static final String COLUMN_SYNDICATION_ID = "syn_syndication_id";
 	
 	private static final String DATABASE_CREATE = "create table d_category_syndication (\r\n"

@@ -111,9 +111,9 @@ public class PublicationRepository extends Repository {
 		sb.append("a.pub_title, ");
 		sb.append("a.pub_link, ");
 		sb.append("a.pub_already_read, ");
-		sb.append("a.syn_syndication_id, ");
+		sb.append("s.syn_name, ");
 		sb.append("a.pub_publication, ");
-		sb.append("s.syn_name ");		
+		sb.append("a.syn_syndication_id ");		
 		sb.append("from d_syndication s left join d_publication a on s._id = a.syn_syndication_id ");
 		sb.append(" where 1 = 1 ");
 		
@@ -149,9 +149,9 @@ public class PublicationRepository extends Repository {
 		sb.append("a.pub_title, ");
 		sb.append("a.pub_link, ");
 		sb.append("a.pub_already_read, ");
-		sb.append("a.syn_syndication_id, ");
+		sb.append("s.syn_name, ");
 		sb.append("a.pub_publication, ");
-		sb.append("s.syn_name ");
+		sb.append("a.syn_syndication_id ");
 		sb.append("from d_syndication s left outer join d_publication a on s._id = a.syn_syndication_id ");
 		sb.append(" where ");
 
@@ -172,39 +172,6 @@ public class PublicationRepository extends Repository {
 		return sqLiteDatabase.rawQuery(sb.toString(),
 				arr.toArray(new String[arr.size()]));
 	}
-	
-	/**
-	 * Get the publications 
-	 * @return
-	 */
-	/*public Cursor fetchAllPublications(Integer syndicationId){
-		open(context);
-		
-		String[] args = new String[] {};
-		
-		StringBuilder sb = new StringBuilder();
-		sb.append("select ");
-		sb.append("a._id, ");
-		sb.append("a.pub_title, ");
-		sb.append("a.pub_link, "); 
-		sb.append("a.pub_already_read, ");
-		sb.append("a.syn_syndication_id, "); 
-		sb.append("s.syn_name ");
-		sb.append("from ");
-		sb.append("d_publication a, ");
-		sb.append("d_syndication s ");
-		sb.append("where ");
-		sb.append("a.syn_syndication_id = s._id ");
-		
-		if (syndicationId != null) {
-			sb.append("and a.syn_syndication_id = ? ");
-			args = new String[] {syndicationId.toString() };
-		}
-		
-		sb.append("order by a.pub_publication_date desc");
-		
-		return sqLiteDatabase.rawQuery(sb.toString(), args);
-	}*/
 
 	/**
 	 * 

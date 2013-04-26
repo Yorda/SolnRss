@@ -51,11 +51,14 @@ public class AddItemDialog extends DialogFragment implements OnEditorActionListe
 		case Site:
 			getDialog().setTitle(getResources().getString(R.string.add_site));
 			label.setText(getResources().getString(R.string.add_site_explain));
+			editText.setHint(getResources().getString(R.string.new_syndication_hint));
 			break;
 
 		case Categorie:
 			getDialog().setTitle(getResources().getString(R.string.add_categorie));
 			label.setText(getResources().getString(R.string.add_categorie_explain));
+			
+			editText.setHint(getResources().getString(R.string.new_category_hint));
 			break;
 
 		default:

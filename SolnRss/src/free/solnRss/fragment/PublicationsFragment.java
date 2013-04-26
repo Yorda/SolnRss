@@ -1,6 +1,5 @@
 package free.solnRss.fragment;
 
-import android.app.Activity;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
@@ -10,6 +9,7 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.ResultReceiver;
+import android.preference.PreferenceManager;
 import android.support.v4.app.ListFragment;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
@@ -44,12 +44,20 @@ import free.solnRss.task.PublicationsReloaderTask;
 public class PublicationsFragment extends ListFragment implements
 		LoaderManager.LoaderCallbacks<Cursor>, PublicationsFragmentListener {
 
-	// Global variable.
+	//Integer index = null;
+	//Integer top   = null;
+	
 	private ResultReceiver resultReceiver = new ResultReceiver(new Handler()) {
 		protected void onReceiveResult(int resultCode, Bundle resultData) {
+			/*
 			Log.e(PublicationsFragment.class.getName(), "Receive some change");
-			//getListView().setScrollbarFadingEnabled(false);
+			getListView().setScrollbarFadingEnabled(false);
+			index = getListView().getFirstVisiblePosition()
+					+ resultData.getInt("newPublicationsNumber");
+			View v = getListView().getChildAt(0);
+			top = (v == null) ? 0 : v.getTop();
 			refreshPublications(getActivity());
+			*/
 		};
 	};
 		
@@ -71,7 +79,6 @@ public class PublicationsFragment extends ListFragment implements
 		publicationAdapter.setSelectedCategoryId(selectedCategorieID);
 		publicationAdapter.setSelectedSyndicationId(selectedSyndicationID);
 	}
-	
 	
 	@Override
 	public Loader<Cursor> onCreateLoader(int id, Bundle bundle) {		
@@ -105,6 +112,7 @@ public class PublicationsFragment extends ListFragment implements
 
 	@Override
 	public void onLoadFinished(Loader<Cursor> arg0, Cursor arg1) {
+		
 		if(publicationAdapter == null){
 			initAdapter();
 		}
@@ -124,18 +132,21 @@ public class PublicationsFragment extends ListFragment implements
 		else{
 			 hideEmptyMessage();
 		}
+		
+		/*if(index != null){
+			getListView().setSelectionFromTop(index, top);
+			index = null;
+		}*/
 	}
 
-	final int emptyPublicationsLayout = R.id.emptyPublicationsLayout;
-
 	private void displayEmptyMessage() {
-		((LinearLayout) ((SolnRss) getActivity()).findViewById(emptyPublicationsLayout))
-				.setVisibility(View.VISIBLE);
+		LinearLayout l = (LinearLayout) getActivity().findViewById(R.id.emptyPublicationsLayout);
+		l.setVisibility(View.VISIBLE);
 	}
 
 	private void hideEmptyMessage() {
-		((LinearLayout) ((SolnRss) getActivity()).findViewById(emptyPublicationsLayout))
-				.setVisibility(View.INVISIBLE);
+		LinearLayout l = (LinearLayout) getActivity().findViewById(R.id.emptyPublicationsLayout);
+		l.setVisibility(View.INVISIBLE);
 	}
 	
 	@Override
@@ -158,8 +169,6 @@ public class PublicationsFragment extends ListFragment implements
 		int syndicationId = cursor.getInt(cursor
 				.getColumnIndex(PublicationTable.COLUMN_SYNDICATION_ID));
 		addOneClickToSyndication(syndicationId);
-
-		//getLoaderManager().restartLoader(0, null, this);
 	}
 	
 	private void markPublicationAsRead(int publicationId) {
@@ -177,22 +186,30 @@ public class PublicationsFragment extends ListFragment implements
 		getActivity().getContentResolver().update(uri, values, null, null);
 	}
 	
-	public void refreshPublicationsAfterMarkAsRead(Context context) {
+	/*
+	 * Refresh publication after click on item list for hide it.
+	 * Use async task instead of content provider, because when calling intent for open browser
+	 * the loader manger don't refresh list view. why ????
+	 */
+	private void refreshPublicationsAfterMarkAsRead(Context context) {
+
 		if (this.selectedSyndicationID != null) {
-			PublicationsReloaderTask task = new PublicationsReloaderTask(this, context);
+			PublicationsReloaderTask task = new PublicationsReloaderTask(
+					this, context);
 			task.execute(this.selectedSyndicationID);
-			
+
 		} else if (this.selectedCategorieID != null) {
-			PublicationsByCategoryReloaderTask task = new PublicationsByCategoryReloaderTask(this, context);
+			PublicationsByCategoryReloaderTask task = new PublicationsByCategoryReloaderTask(
+					this, context);
 			task.execute(this.selectedCategorieID);
 
 		} else {
-			PublicationsReloaderTask task = new PublicationsReloaderTask(this, context);
+			PublicationsReloaderTask task = new PublicationsReloaderTask(
+					this, context);
 			task.execute(selectedSyndicationID);
 		}
 	}
 	
-	private final int layoutID = R.layout.fragment_publications;
 	private PublicationRepository publicationRepository;
 	private Integer selectedSyndicationID;
 	private Integer nextSelectedSyndicationID; // selected by context menu
@@ -200,17 +217,11 @@ public class PublicationsFragment extends ListFragment implements
 	private String filterText;
 	
 	@Override
-	public void onAttach(Activity activity) {
-		super.onAttach(activity);
-	}
-	
-	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup vg, Bundle save) {
-		View fragment = inflater.inflate(layoutID, vg, false);	
-		listContainer =  fragment.findViewById(R.id.listContainer);
-	    progressContainer = fragment.findViewById(R.id.progressContainer);
-	    listShown = true;
-	    
+		View fragment     = inflater.inflate(R.layout.fragment_publications, vg, false);
+		listContainer     = fragment.findViewById(R.id.listContainer);
+		progressContainer = fragment.findViewById(R.id.progressContainer);
+		listShown = true;
 		return fragment;
 	}
 
@@ -289,18 +300,27 @@ public class PublicationsFragment extends ListFragment implements
 		Cursor cursor = ((PublicationAdapter) l.getAdapter()).getCursor();
 		clickOnPublicationItem(cursor, l, v, position, id);
 		
-	/*	String description = hasDescriptionValue(cursor);
+		String link = getClickedUrl(cursor);
+		
+		String description = hasDescriptionValue(cursor);
+		
 	    if (description != null && description.trim().length() > 0) {
 			// TODO improve this
-			// openReaderActivity(description, link);
-			openBroswser(link);
+	    	if(displayPublicationOnApp()){
+	    		openReaderActivity(description, link);
+	    	}else{
+	    		openBroswser(link);
+	    	}			
 		} else {
 			openBroswser(link);
-		}*/
-		
-		
-		String link = getClickedUrl(cursor);
-		openBroswser(link);
+		}
+	    
+		//openBroswser(link);
+	}
+	
+	private boolean displayPublicationOnApp() {
+		return PreferenceManager.getDefaultSharedPreferences(getActivity())
+					.getBoolean("pref_display_publication", true);
 	}
 	
 	private boolean isSyndicationOrCategorieSelected() {
@@ -340,8 +360,6 @@ public class PublicationsFragment extends ListFragment implements
 			menu.getItem(1).setTitle(
 					getResources().getString(R.string.mark_selected_category_read));
 		}
-		
-		// menu.getItem(3).setVisible(false);
 	}
 
 	@Override
@@ -350,9 +368,10 @@ public class PublicationsFragment extends ListFragment implements
 		case R.id.menu_see_only:
 			// Make a switch between display a the selected syndication and all
 			// syndication.
-			if(!isSyndicationOrCategorieSelected()){
+			if (!isSyndicationOrCategorieSelected()) {
 				selectedSyndicationID = nextSelectedSyndicationID;
-				reLoadPublicationsBySyndication(getActivity(), this.selectedSyndicationID);
+				reLoadPublicationsBySyndication(getActivity(),
+						this.selectedSyndicationID);
 				this.moveListViewToTop();
 			} else {
 				reloadPublications(getActivity());
@@ -363,18 +382,12 @@ public class PublicationsFragment extends ListFragment implements
 		case R.id.menu_mark_read:
 
 			if (selectedSyndicationID != null && selectedCategorieID == null) {
-				// Log.e(PublicationsFragment.this.getClass().getName(),
-				// "Mark syndication as read");
 				markSyndicationPublicationsAsRead(selectedSyndicationID);
 			} else if (selectedCategorieID != null
 					&& selectedSyndicationID == null) {
-				// Log.e(PublicationsFragment.this.getClass().getName(),
-				// "Mark category as read");
 				markCategoryPublicationsAsRead(selectedCategorieID);
 			} else {
 				markAllPublicationsAsRead();
-				// Log.e(PublicationsFragment.this.getClass().getName(),
-				// "Mark all as read");
 			}
 			break;
 
@@ -383,7 +396,7 @@ public class PublicationsFragment extends ListFragment implements
 		}
 		return super.onContextItemSelected(item);
 	}
-	
+
 	/**
 	 * 
 	 * @param text
@@ -499,7 +512,7 @@ public class PublicationsFragment extends ListFragment implements
 	public void reloadPublications(Context context) {
 		this.selectedSyndicationID = null;
 		this.selectedCategorieID = null;
-		if(isAdded()){
+		if (isAdded()) {
 			getLoaderManager().restartLoader(0, null, this);
 		}
 	}
@@ -575,13 +588,11 @@ public class PublicationsFragment extends ListFragment implements
 		this.filterText = filterText;
 	}
 	
-	
-	//public ListView mList;
 	private boolean listShown;
 	private View progressContainer;
  	private View listContainer;
-	public void setListShown(boolean shown, boolean animate){
-		
+ 	
+	public void setListShown(boolean shown, boolean animate){		
 	    if (listShown == shown) {
 	        return;
 	    }

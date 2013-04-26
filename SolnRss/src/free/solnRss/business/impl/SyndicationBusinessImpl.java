@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 
+import com.google.code.rome.android.repackaged.com.sun.syndication.feed.synd.SyndContent;
 import com.google.code.rome.android.repackaged.com.sun.syndication.feed.synd.SyndEntry;
 
 import free.solnRss.business.SyndicationBusiness;
@@ -44,8 +45,14 @@ public class SyndicationBusinessImpl implements SyndicationBusiness {
 			Publication publication = null;
 			String description;
 			for (SyndEntry entry : entries) {
+				
 				description = entry.getDescription() != null 
 						? entry.getDescription().getValue() : null;
+						
+				if(entry.getContents() != null && entry.getContents().size() > 0){
+					description = ((SyndContent) entry.getContents().get(0)).getValue();
+				}
+					
 				publication = new Publication(entry.getLink(),
 						entry.getPublishedDate(), entry.getTitle(), description);
 				publications.add(publication);

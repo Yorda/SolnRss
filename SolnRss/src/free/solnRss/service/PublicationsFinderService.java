@@ -318,8 +318,9 @@ public class PublicationsFinderService extends Service implements
 		
 		if (receiverMap.get(resultReceiverId) != null) {
 			ResultReceiver resultReceiver = receiverMap.get(resultReceiverId);
-			int resultCode =0;
-			Bundle resultData = null;
+			int resultCode = 0;
+			Bundle resultData = new Bundle();
+			resultData.putInt("newPublicationsNumber", newPublicationsNumber);
 			resultReceiver.send(resultCode, resultData);
 		}
 	}	

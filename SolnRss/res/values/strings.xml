@@ -67,8 +67,8 @@
     <string name="pref_view_unread">View unread</string>
     <string name="pref_summ_view_unread_off">View only unread publications</string>
     <string name="pref_summ_view_unread_on">View all read and unread publications</string>
+    
     <!-- Unread font weight -->
-
     <string name="pref_view_font_weight">Publication font weight</string>
     <string name="pref_view_font_weight_off">View unread publications in normal font weight</string>
     <string name="pref_view_font_weight_on">View unread publications in bold font weight</string>
@@ -78,6 +78,10 @@
     <string name="pref_summ_display_notify_on">Display a notification when new publications found</string>
     <string name="pref_summ_display_notify_off">No notification displayed when new publications found</string>
 
+    <string name="pref_display_publication">Display publications</string>
+    <string name="pref_display_publication_browser">Display on the browser</string>
+    <string name="pref_display_publication_app">Display on screen in app</string>
+   
     <string name="pref_search_publication_time">Search new articles every:</string>
     
     <!-- Category -->
@@ -90,5 +94,7 @@
     <string name="add_site_explain">Please enter a valid URL</string>
     <string name="add_categorie">New Categorie</string>
     <string name="add_site">New Site</string>
+    <string name="new_syndication_hint">Enter a valid web site or Rss url</string>
+    <string name="new_category_hint">Add a new category name</string>
 
 </resources>

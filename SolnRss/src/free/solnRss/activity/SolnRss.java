@@ -75,8 +75,7 @@ public class SolnRss extends FragmentActivity implements ActionBar.TabListener,
 	}
 
 	private void removeNotification(){
-		NotificationManager notificationManager = 
-				(NotificationManager) getSystemService(NOTIFICATION_SERVICE);
+		NotificationManager notificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
 		notificationManager.cancel(0x000001);
 	}
 	
@@ -184,7 +183,7 @@ public class SolnRss extends FragmentActivity implements ActionBar.TabListener,
 			return true;
 			
 		case R.id.menu_add_site:
-			openDialogForAddSite();
+			openDialogForAddSyndication();
 			return true;
 			
 		case R.id.menu_display_all:
@@ -201,11 +200,12 @@ public class SolnRss extends FragmentActivity implements ActionBar.TabListener,
 		displayAddItemDialog(AddItemDialog.Item.Categorie);
 	}
 
-	void openDialogForAddSite() {
+	void openDialogForAddSyndication() {
 		displayAddItemDialog(AddItemDialog.Item.Site);
 	}
 
 	void displayAddItemDialog(AddItemDialog.Item item) {
+		
 		AddItemDialog dialog = new AddItemDialog();
 		Bundle args = new Bundle();
 		args.putString("item", item.toString());

@@ -17,42 +17,42 @@ public final class R {
         public static final int input=0x7f020003;
     }
     public static final class id {
-        public static final int action_search=0x7f07001b;
-        public static final int cancel=0x7f070020;
-        public static final int categorie_name=0x7f070005;
-        public static final int categorie_number_of_use=0x7f070006;
-        public static final int continueReading=0x7f070001;
-        public static final int displayAllButton=0x7f07000d;
-        public static final int emptyCategoriesMessage=0x7f070009;
-        public static final int emptyPublicationsLayout=0x7f07000c;
-        public static final int emptyPublicationsMessage=0x7f070004;
-        public static final int emptySyndicationCategoryLayout=0x7f070003;
-        public static final int emptySyndicationsMessage=0x7f070010;
-        public static final int label_add_new_item=0x7f070007;
-        public static final int listContainer=0x7f07000b;
+        public static final int action_search=0x7f07001a;
+        public static final int cancel=0x7f07001f;
+        public static final int categorie_name=0x7f070004;
+        public static final int categorie_number_of_use=0x7f070005;
+        public static final int displayAllButton=0x7f07000c;
+        public static final int emptyCategoriesMessage=0x7f070008;
+        public static final int emptyPublicationsLayout=0x7f07000b;
+        public static final int emptyPublicationsMessage=0x7f070003;
+        public static final int emptySyndicationCategoryLayout=0x7f070002;
+        public static final int emptySyndicationsMessage=0x7f07000f;
+        public static final int label_add_new_item=0x7f070006;
+        public static final int listContainer=0x7f07000a;
         public static final int menu_active=0x7f070021;
-        public static final int menu_add_categorie=0x7f070019;
-        public static final int menu_add_site=0x7f07001a;
-        public static final int menu_add_to_categorie=0x7f07001d;
+        public static final int menu_add_categorie=0x7f070018;
+        public static final int menu_add_site=0x7f070019;
+        public static final int menu_add_to_categorie=0x7f07001c;
         public static final int menu_clean=0x7f070022;
         public static final int menu_delete=0x7f070023;
-        public static final int menu_delete_categorie=0x7f07001c;
-        public static final int menu_display_all=0x7f070018;
-        public static final int menu_mark_read=0x7f07001f;
-        public static final int menu_see_only=0x7f07001e;
-        public static final int menu_settings=0x7f070017;
-        public static final int name=0x7f070011;
-        public static final int pager=0x7f070002;
-        public static final int progressContainer=0x7f07000a;
+        public static final int menu_delete_categorie=0x7f07001b;
+        public static final int menu_display_all=0x7f070017;
+        public static final int menu_mark_read=0x7f07001e;
+        public static final int menu_see_only=0x7f07001d;
+        public static final int menu_settings=0x7f070016;
+        public static final int name=0x7f070010;
+        public static final int pager=0x7f070001;
+        public static final int progressContainer=0x7f070009;
+        public static final int read_on_site=0x7f070020;
         public static final int reader=0x7f070000;
-        public static final int search=0x7f07000f;
-        public static final int syndication_number_of_click=0x7f070014;
-        public static final int syndication_title=0x7f070013;
-        public static final int syndication_to_categorie_check=0x7f070016;
-        public static final int syndication_to_categorie_name=0x7f070015;
-        public static final int text_add_new_item=0x7f070008;
-        public static final int title=0x7f070012;
-        public static final int urlToSearch=0x7f07000e;
+        public static final int search=0x7f07000e;
+        public static final int syndication_number_of_click=0x7f070013;
+        public static final int syndication_title=0x7f070012;
+        public static final int syndication_to_categorie_check=0x7f070015;
+        public static final int syndication_to_categorie_name=0x7f070014;
+        public static final int text_add_new_item=0x7f070007;
+        public static final int title=0x7f070011;
+        public static final int urlToSearch=0x7f07000d;
     }
     public static final class layout {
         public static final int activity_reader=0x7f030000;
@@ -72,19 +72,20 @@ public final class R {
         public static final int activity_soln_rss=0x7f060000;
         public static final int categories_context=0x7f060001;
         public static final int publications_context=0x7f060002;
-        public static final int searchview_in_menu=0x7f060003;
-        public static final int syndications_context=0x7f060004;
+        public static final int reader_menu=0x7f060003;
+        public static final int searchview_in_menu=0x7f060004;
+        public static final int syndications_context=0x7f060005;
     }
     public static final class string {
         public static final int action_bar_search=0x7f04002c;
         public static final int active_articles_btn=0x7f040023;
-        public static final int add_categorie=0x7f04003e;
+        public static final int add_categorie=0x7f040041;
         /**  Dialog add item 
          */
-        public static final int add_categorie_explain=0x7f04003c;
-        public static final int add_site=0x7f04003f;
-        public static final int add_site_explain=0x7f04003d;
-        public static final int add_to_categorie=0x7f04003b;
+        public static final int add_categorie_explain=0x7f04003f;
+        public static final int add_site=0x7f040042;
+        public static final int add_site_explain=0x7f040040;
+        public static final int add_to_categorie=0x7f04003e;
         /**  Global app label 
          */
         public static final int app_name=0x7f040000;
@@ -94,7 +95,7 @@ public final class R {
         public static final int continue_reading=0x7f04002d;
         public static final int creation_date=0x7f040028;
         public static final int delete_articles_btn=0x7f040022;
-        public static final int delete_categorie=0x7f04003a;
+        public static final int delete_categorie=0x7f04003d;
         public static final int delete_confirm=0x7f040027;
         public static final int delete_ok=0x7f040025;
         public static final int display_all_publication=0x7f04000b;
@@ -105,7 +106,7 @@ public final class R {
         public static final int display_syndications_screen=0x7f04000c;
         /**  Category 
          */
-        public static final int empty_categories=0x7f040039;
+        public static final int empty_categories=0x7f04003c;
         /**  Publication's tab label 
          */
         public static final int empty_publications=0x7f040007;
@@ -127,6 +128,8 @@ public final class R {
         public static final int menu_add_categorie=0x7f040005;
         public static final int menu_add_site=0x7f040006;
         public static final int menu_settings=0x7f040004;
+        public static final int new_category_hint=0x7f040044;
+        public static final int new_syndication_hint=0x7f040043;
         public static final int no_connection=0x7f04001c;
         public static final int notify_new_pub_msg=0x7f040011;
         /**  New publication notification 
@@ -137,7 +140,10 @@ public final class R {
         /**  Display a notification after found new publications 
          */
         public static final int pref_display_notify=0x7f040035;
-        public static final int pref_search_publication_time=0x7f040038;
+        public static final int pref_display_publication=0x7f040038;
+        public static final int pref_display_publication_app=0x7f04003a;
+        public static final int pref_display_publication_browser=0x7f040039;
+        public static final int pref_search_publication_time=0x7f04003b;
         public static final int pref_summ_display_notify_off=0x7f040037;
         public static final int pref_summ_display_notify_on=0x7f040036;
         public static final int pref_summ_view_unread_off=0x7f040030;

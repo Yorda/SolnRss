@@ -7,18 +7,17 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteQueryBuilder;
 import android.net.Uri;
-import android.text.TextUtils;
+import android.preference.PreferenceManager;
 import free.solnRss.repository.CategorySyndicationsTable;
 import free.solnRss.repository.Database;
 import free.solnRss.repository.SyndicationTable;
 
 public class SyndicationsProvider extends ContentProvider {
-	private final static String 
-		AUTHORITY        = "com.solnRss.provider.syndicationprovider",
-		SYNDICATION_PATH = "syndications",
-		MIME 			 = "vnd.android.cursor.item/vnd.com.soln.rss.provider.syndications";
-	public final static Uri 
-		URI = Uri.parse("content://" + AUTHORITY + "/" + SYNDICATION_PATH);
+	private final static String AUTHORITY = "com.solnRss.provider.syndicationprovider",
+			SYNDICATION_PATH = "syndications",
+			MIME = "vnd.android.cursor.item/vnd.com.soln.rss.provider.syndications";
+	public final static Uri URI = Uri.parse("content://" + AUTHORITY + "/"
+			+ SYNDICATION_PATH);
 
 	private Database repository;
 	
@@ -95,8 +94,11 @@ public class SyndicationsProvider extends ContentProvider {
 			default: throw new IllegalArgumentException("Unknown URI: " + uri);
 		}
 		
-		if(TextUtils.isEmpty(sort)){
+		
+		if (sortByMostUsed()) {
 			sort = SyndicationTable.COLUMN_NUMBER_CLICK + " desc";
+		} else {
+			sort = SyndicationTable.COLUMN_NAME + " asc";
 		}
 
 		SQLiteDatabase db = repository.getReadableDatabase();
@@ -105,6 +107,11 @@ public class SyndicationsProvider extends ContentProvider {
 		return cursor;
 	}
 
+	public boolean sortByMostUsed() {
+		return PreferenceManager.getDefaultSharedPreferences(getContext())
+				.getBoolean("pref_sort_syndications", true);
+	}
+	
 	@Override
 	public int update(Uri uri, ContentValues values, 
 			String selection, String[] selectionArgs) {

@@ -69,9 +69,19 @@ public class SolnRss extends FragmentActivity implements ActionBar.TabListener,
 			publicationsListener.refreshPublications(this);
 		}
 
-		if (key.compareTo("pref_display_unread") == 0) {
+		else if (key.compareTo("pref_display_unread") == 0) {
 			publicationsListener.refreshPublications(this);
 		}
+		
+		else if (key.compareTo("pref_sort_syndications") == 0) {
+			syndicationsListener.reloadSyndications(this);
+		}
+		
+
+		else if (key.compareTo("pref_sort_categories") == 0) {
+			categoriesListener.reloadCategories(this);
+		}
+		
 	}
 
 	private void removeNotification(){

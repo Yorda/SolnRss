@@ -96,5 +96,20 @@
     <string name="add_site">New Site</string>
     <string name="new_syndication_hint">Enter a valid web site or Rss url</string>
     <string name="new_category_hint">Add a new category name</string>
+    
+    
+    
+    
+    
+    <string name="pref_sort_syndications_most_use">The most use</string>
+    <string name="pref_sort_syndications_alphabetic">Alphabetical</string>
+    <string name="pref_sort_syndications">Sort syndications by:</string>
+    
+    <string name="pref_sort_categories_most_use">The most use</string>
+    <string name="pref_sort_categories_alphabetic">Alphabetical</string>
+    <string name="pref_sort_categories">Sort categories by:</string>
+
+
+    
 
 </resources>

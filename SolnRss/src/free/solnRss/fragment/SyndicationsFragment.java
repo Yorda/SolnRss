@@ -282,16 +282,14 @@ public class SyndicationsFragment extends ListFragment implements
 		
 		if (getListAdapter() == null) {
 			provideSyndications();
-			//SyndicationsLoaderTask task = new SyndicationsLoaderTask(this,	(SolnRss)context);
-			//task.execute();
 		}
 	}
 
 	@Override
 	public void reloadSyndications(Context context) {
-		getLoaderManager().restartLoader(0, null, this);
-		// SyndicationsReloaderTask reloader =	new SyndicationsReloaderTask(context, this);
-		// reloader.execute(selectedSyndicationID);
+		if(isAdded()){
+			getLoaderManager().restartLoader(0, null, this);
+		}
 	}
 	
 }

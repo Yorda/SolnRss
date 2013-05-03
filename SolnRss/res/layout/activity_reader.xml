@@ -2,9 +2,10 @@
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="fill_parent"
-    android:layout_height="wrap_content" >
+    android:layout_height="wrap_content" 
+    android:background="@android:color/white">
 
-    <TextView
+    <!-- TextView
         android:id="@+id/reader"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
@@ -12,6 +13,16 @@
         android:paddingRight="5dp"
         android:textSize="14sp"
         android:textStyle="bold"
-        android:typeface="sans" />
+        android:typeface="sans" / -->
+    
+    <WebView  android:id="@+id/reader"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:paddingLeft="5dp"
+        android:paddingRight="5dp"
+        android:textSize="14sp"
+        android:textStyle="bold"
+        android:typeface="sans"
+        />
 
 </ScrollView>

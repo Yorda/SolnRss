@@ -144,6 +144,12 @@ public final class R {
         public static final int pref_display_publication_app=0x7f04003a;
         public static final int pref_display_publication_browser=0x7f040039;
         public static final int pref_search_publication_time=0x7f04003b;
+        public static final int pref_sort_categories=0x7f04004a;
+        public static final int pref_sort_categories_alphabetic=0x7f040049;
+        public static final int pref_sort_categories_most_use=0x7f040048;
+        public static final int pref_sort_syndications=0x7f040047;
+        public static final int pref_sort_syndications_alphabetic=0x7f040046;
+        public static final int pref_sort_syndications_most_use=0x7f040045;
         public static final int pref_summ_display_notify_off=0x7f040037;
         public static final int pref_summ_display_notify_on=0x7f040036;
         public static final int pref_summ_view_unread_off=0x7f040030;

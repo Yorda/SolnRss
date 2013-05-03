@@ -26,7 +26,6 @@ import free.solnRss.provider.CategoryProvider;
 import free.solnRss.repository.CategoryTable;
 import free.solnRss.task.CategoriesAddAndReloaderTask;
 import free.solnRss.task.CategoriesDeleteAndReloaderTask;
-import free.solnRss.task.CategoriesReloaderTask;
 
 public class CategoriesFragment extends ListFragment implements
 		LoaderManager.LoaderCallbacks<Cursor>, CategoriesFragmentListener {
@@ -158,8 +157,9 @@ public class CategoriesFragment extends ListFragment implements
 
 	@Override
 	public void reloadCategories(Context context) {
-		CategoriesReloaderTask task = new CategoriesReloaderTask(this, context);
-		task.execute();
+		if (isAdded()) {
+			getLoaderManager().restartLoader(0, null, this);
+		}
 	}
 	
 	public void addCategorie(Context context, String newCatgorie) {

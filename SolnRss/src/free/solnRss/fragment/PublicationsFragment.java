@@ -1,5 +1,6 @@
 package free.solnRss.fragment;
 
+import android.app.Activity;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
@@ -548,7 +549,14 @@ public class PublicationsFragment extends ListFragment implements
 		this.selectedCategorieID = null;
 		Bundle bundle = new Bundle();
 		bundle.putInt("selectedSyndicationID", this.selectedSyndicationID);
-		getLoaderManager().restartLoader(0, bundle, this);
+		if (isAdded()) {
+			getLoaderManager().restartLoader(0, bundle, this);
+		}
+	}
+	
+	@Override
+	public void onAttach(Activity activity) {
+		super.onAttach(activity);
 	}
 
 	@Override

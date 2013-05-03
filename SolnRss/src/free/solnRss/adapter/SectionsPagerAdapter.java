@@ -18,7 +18,6 @@ public class SectionsPagerAdapter extends FragmentPagerAdapter{ //FragmentStateP
 		Syndications(2);
 		
 		private Position(int pos) {
-
 		}
 	}
 

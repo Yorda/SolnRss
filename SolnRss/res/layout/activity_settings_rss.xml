@@ -30,6 +30,21 @@
         android:summaryOn="@string/pref_display_publication_app"
         android:title="@string/pref_display_publication" />
 
+    <CheckBoxPreference
+        android:defaultValue="true"
+        android:key="pref_sort_syndications"
+        android:summaryOff="@string/pref_sort_syndications_alphabetic"
+        android:summaryOn="@string/pref_sort_syndications_most_use"
+        android:title="@string/pref_sort_syndications" />
+    
+    <CheckBoxPreference
+        android:defaultValue="true"
+        android:key="pref_sort_categories"
+        android:summaryOff="@string/pref_sort_categories_alphabetic"
+        android:summaryOn="@string/pref_sort_categories_most_use"
+        android:title="@string/pref_sort_categories" />
+    
+    
     <free.solnRss.preference.SeekBarPreference
         android:defaultValue="15"
         android:key="pref_search_publication_time"

@@ -6,7 +6,7 @@ import android.os.AsyncTask;
 import android.preference.PreferenceManager;
 import android.support.v4.app.ListFragment;
 import android.view.View;
-import android.widget.TextView;
+import android.widget.LinearLayout;
 import free.solnRss.R;
 import free.solnRss.activity.SolnRss;
 import free.solnRss.adapter.PublicationAdapter;
@@ -65,6 +65,16 @@ public class PublicationsByCategoryReloaderTask extends AsyncTask<Integer, Void,
 	}
 
 	private void displayEmptyMessage() {
+		LinearLayout l = (LinearLayout) ((SolnRss) context).findViewById(R.id.emptyPublicationsLayout);
+		l.setVisibility(View.VISIBLE);
+	}
+
+	private void hideEmptyMessage() {
+		LinearLayout l = (LinearLayout) ((SolnRss) context).findViewById(R.id.emptyPublicationsLayout);
+		l.setVisibility(View.INVISIBLE);
+	}
+	
+	/*private void displayEmptyMessage() {
 		((TextView) ((SolnRss) context).findViewById(emptyMessageID))
 				.setVisibility(View.VISIBLE);
 	}
@@ -72,5 +82,5 @@ public class PublicationsByCategoryReloaderTask extends AsyncTask<Integer, Void,
 	private void hideEmptyMessage() {
 		((TextView) ((SolnRss) context).findViewById(emptyMessageID))
 				.setVisibility(View.INVISIBLE);
-	}
+	}*/
 }

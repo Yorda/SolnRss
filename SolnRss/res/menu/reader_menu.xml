@@ -4,7 +4,7 @@
     <item
         android:id="@+id/read_on_site"
         android:orderInCategory="0"
-        android:showAsAction="ifRoom|withText"
+        android:showAsAction="always"
         android:title="Read on web site">
     </item>
 

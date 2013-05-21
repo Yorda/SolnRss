@@ -41,6 +41,9 @@ public class ReaderActivity extends Activity {
 		settings.setDefaultTextEncodingName("utf-8");
 		webView.getSettings().setLayoutAlgorithm(LayoutAlgorithm.SINGLE_COLUMN);
 		webView.loadDataWithBaseURL(null, text, "text/html", "utf-8", null);
+		
+		// webView.setBackgroundColor(0x00000000);
+		// webView.setLayerType(WebView.LAYER_TYPE_SOFTWARE, null);
 	}
 
 	private void goToSite() {
@@ -77,19 +80,19 @@ public class ReaderActivity extends Activity {
 	}
 	
 	// somewhere on your code...
-			/*WebViewClient yourWebClient = new WebViewClient(){
-			    // you tell the webclient you want to catch when a url is about to load
-			    @Override
-			    public boolean shouldOverrideUrlLoading(WebView  view, String  url){
-			        return true;
-			    }
-			    // here you execute an action when the URL you want is about to load
-			    @Override
-			    public void onLoadResource(WebView  view, String  url){
-			        if( url.equals("http://cnn.com") ){
-			            // do whatever you want
-			           //download the image from url and save it whereever you want
-			        }
-			    }
-			};*/
+	/*WebViewClient yourWebClient = new WebViewClient(){
+	    // you tell the webclient you want to catch when a url is about to load
+	    @Override
+	    public boolean shouldOverrideUrlLoading(WebView  view, String  url){
+	        return true;
+	    }
+	    // here you execute an action when the URL you want is about to load
+	    @Override
+	    public void onLoadResource(WebView  view, String  url){
+	        if( url.equals("http://cnn.com") ){
+	            // do whatever you want
+	           //download the image from url and save it whereever you want
+	        }
+	    }
+	};*/
 }

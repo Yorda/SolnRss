@@ -3,7 +3,7 @@
 
     <!-- Global app label -->
     <string name="app_name">SolnRss</string>
-    <string name="title_publications">Articles</string>
+    <string name="title_publications">Publications</string>
     <string name="title_syndications">Sites</string>
     <string name="title_categories">Categories</string>
     <string name="menu_settings">Settings</string>
@@ -11,7 +11,7 @@
     <string name="menu_add_site">Add a site</string>
 
     <!-- Publication's tab label -->
-    <string name="empty_publications">No publications found. Please add a site or try a refresh. </string>
+    <string name="empty_publications">No items to display. </string>
     <string name="empty_syndications">You don\'t follow any web site. Please add some. </string>
     <string name="open_browser_bad_url">Unable to open browser, this link seems to be wrong.</string>
 
@@ -20,6 +20,7 @@
     <string name="display_all_publication">Display all publications</string>
     <string name="display_syndications_screen">Display syndication\'s screen</string>
     <string name="mark_all_read">Mark all publication as read</string>
+    <string name="mark_as_read">Mark as read</string>
     <string name="mark_selected_syndication_read">Mark this site publications as read</string>
     <string name="mark_selected_category_read">Mark this category\'s publications as read</string>
 
@@ -47,8 +48,8 @@
 
     <!-- Syndication manager activity -->
     <string name="site_parameter">%1$s</string>
-    <string name="clean_articles_btn">Delete his publications</string>
-    <string name="delete_articles_btn">Delete this syndication</string>
+    <string name="clean_articles_btn">Remove publications</string>
+    <string name="delete_articles_btn">Delete</string>
     <string name="active_articles_btn">Start</string>
     <string name="unactive_articles_btn">Pause</string>
     <string name="delete_ok">Your deletetion is well done</string>
@@ -98,9 +99,6 @@
     <string name="new_category_hint">Add a new category name</string>
     
     
-    
-    
-    
     <string name="pref_sort_syndications_most_use">The most use</string>
     <string name="pref_sort_syndications_alphabetic">Alphabetical</string>
     <string name="pref_sort_syndications">Sort syndications by:</string>
@@ -108,8 +106,5 @@
     <string name="pref_sort_categories_most_use">The most use</string>
     <string name="pref_sort_categories_alphabetic">Alphabetical</string>
     <string name="pref_sort_categories">Sort categories by:</string>
-
-
     
-
 </resources>

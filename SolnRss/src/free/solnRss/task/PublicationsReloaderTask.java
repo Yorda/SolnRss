@@ -7,7 +7,7 @@ import android.preference.PreferenceManager;
 import android.support.v4.app.ListFragment;
 import android.text.TextUtils;
 import android.view.View;
-import android.widget.TextView;
+import android.widget.LinearLayout;
 import free.solnRss.R;
 import free.solnRss.activity.SolnRss;
 import free.solnRss.adapter.PublicationAdapter;
@@ -58,9 +58,9 @@ public class PublicationsReloaderTask extends AsyncTask<Object, Void, Cursor> {
 		((PublicationAdapter) fragment.getListAdapter()).swapCursor(result);
 		
 		if (fragment.getListAdapter().isEmpty()) {
-			displayEmptyPublicationsMessage();
+			displayEmptyMessage();
 		} else {
-			hideEmptyPublicationsMessage();
+			hideEmptyMessage();
 			if (!TextUtils.isEmpty(filter)) {
 				fragment.getListView().setFilterText(filter);
 			} else {
@@ -77,7 +77,17 @@ public class PublicationsReloaderTask extends AsyncTask<Object, Void, Cursor> {
 				.getBoolean("pref_display_unread", true);
 	}
 
-	private void displayEmptyPublicationsMessage() {
+	private void displayEmptyMessage() {
+		LinearLayout l = (LinearLayout) ((SolnRss) context).findViewById(R.id.emptyPublicationsLayout);
+		l.setVisibility(View.VISIBLE);
+	}
+
+	private void hideEmptyMessage() {
+		LinearLayout l = (LinearLayout) ((SolnRss) context).findViewById(R.id.emptyPublicationsLayout);
+		l.setVisibility(View.INVISIBLE);
+	}
+	
+	/*private void displayEmptyPublicationsMessage() {
 		((TextView) ((SolnRss) context).findViewById(emptyMessageID))
 				.setVisibility(View.VISIBLE);
 		
@@ -91,5 +101,5 @@ public class PublicationsReloaderTask extends AsyncTask<Object, Void, Cursor> {
 
 		((View) ((SolnRss) context).findViewById(emptyPublicationsLayoutID))
 				.setVisibility(View.INVISIBLE);
-	}
+	}*/
 }

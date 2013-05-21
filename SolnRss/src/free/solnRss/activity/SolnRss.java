@@ -11,6 +11,7 @@ import android.content.DialogInterface.OnClickListener;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.net.ConnectivityManager;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.v4.app.FragmentActivity;
@@ -29,6 +30,7 @@ import free.solnRss.dialog.AddItemDialog.NewAddItemDialogListener;
 import free.solnRss.fragment.listener.CategoriesFragmentListener;
 import free.solnRss.fragment.listener.PublicationsFragmentListener;
 import free.solnRss.fragment.listener.SyndicationsFragmentListener;
+import free.solnRss.repository.PublicationRepository;
 import free.solnRss.task.SyndicationFinderTask;
 
 public class SolnRss extends FragmentActivity implements ActionBar.TabListener,
@@ -77,7 +79,6 @@ public class SolnRss extends FragmentActivity implements ActionBar.TabListener,
 			syndicationsListener.reloadSyndications(this);
 		}
 		
-
 		else if (key.compareTo("pref_sort_categories") == 0) {
 			categoriesListener.reloadCategories(this);
 		}
@@ -182,6 +183,7 @@ public class SolnRss extends FragmentActivity implements ActionBar.TabListener,
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
 		switch (item.getItemId()) {
+		
 		case R.id.menu_settings:
 			// Open preferences screen
 			Intent i = new Intent(SolnRss.this, SettingsActivity.class);
@@ -200,6 +202,9 @@ public class SolnRss extends FragmentActivity implements ActionBar.TabListener,
 			reLoadAllPublications();
 			return true;
 			
+		/*case R.id.menu_all_read:
+			markAllPublicationsAsRead();
+			return true;*/
 			
 		default:
 			return super.onOptionsItemSelected(item);
@@ -237,6 +242,25 @@ public class SolnRss extends FragmentActivity implements ActionBar.TabListener,
 		default:
 			break;
 		}
+	}
+	
+	/**
+	 * All unread publication set to read
+	 */
+	protected void markAllPublicationsAsRead() {
+
+		new AsyncTask<Void, Void, Void>() {
+			@Override
+			protected Void doInBackground(Void... params) {
+				
+				PublicationRepository publicationRepository = new PublicationRepository(SolnRss.this);
+				publicationRepository.markAllPublicationsAsRead();
+				return null;
+			}
+			protected void onPostExecute(Void result) {
+				reLoadPublicationsBySyndication(null);
+			};
+		}.execute();		
 	}
 	
 	void addCategorie(String newCatgorie) {
@@ -314,15 +338,15 @@ public class SolnRss extends FragmentActivity implements ActionBar.TabListener,
 		publicationsListener.reloadPublications(this);
 		publicationsListener.moveListViewToTop();
 	}
-	
-	public void reLoadAllPublications(View v){
+
+	public void reLoadAllPublications(View v) {
 		reLoadAllPublications();
 	}
-	
+
 	public void displaySyndications(Integer syndicationID) {
 		syndicationsListener.loadSyndications(this);
 		viewPager.setCurrentItem(2);
-	}	
+	}
 
 	/**
 	 * Call by a click on notification for refresh publication list

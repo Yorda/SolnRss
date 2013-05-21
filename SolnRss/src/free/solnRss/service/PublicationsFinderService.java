@@ -260,13 +260,18 @@ public class PublicationsFinderService extends Service implements
 		values.put(PublicationTable.COLUMN_PUBLICATION, publication.getDescription());
 		values.put(PublicationTable.COLUMN_TITLE, publication.getTitle());
 		values.put(PublicationTable.COLUMN_ALREADY_READ, 0);
+		
+		values.put(PublicationTable.COLUMN_PUBLICATION_DATE,sdf.format(new Date()));
+		
+		/*
 		if (publication.getPublicationDate() == null) {
 			values.put(PublicationTable.COLUMN_PUBLICATION_DATE,
 					sdf.format(new Date()));
 		} else {
 			values.put(PublicationTable.COLUMN_PUBLICATION_DATE,
 					sdf.format(publication.getPublicationDate()));
-		}	
+		}*/
+		
 		return values;
 	}
 	

@@ -89,7 +89,6 @@ public class PublicationsFragment extends ListFragment implements
 			if ( bundle.getInt("selectedSyndicationID") != 0) {
 				selectedSyndicationID = bundle.getInt("selectedSyndicationID");
 				uri = Uri.parse(PublicationsProvider.URI + "/" + selectedSyndicationID);
-				
 			} 
 			else if (bundle.getInt("selectedCategorieID") != 0) {
 				selectedCategorieID = bundle.getInt("selectedCategorieID");
@@ -302,11 +301,10 @@ public class PublicationsFragment extends ListFragment implements
 		clickOnPublicationItem(cursor, l, v, position, id);
 		
 		String link = getClickedUrl(cursor);
-		
 		String description = hasDescriptionValue(cursor);
 		
 	    if (description != null && description.trim().length() > 0) {
-			// TODO improve this
+
 	    	if(displayPublicationOnApp()){
 	    		openReaderActivity(description, link);
 	    	}else{
@@ -315,8 +313,6 @@ public class PublicationsFragment extends ListFragment implements
 		} else {
 			openBroswser(link);
 		}
-	    
-		//openBroswser(link);
 	}
 	
 	private boolean displayPublicationOnApp() {
@@ -351,13 +347,15 @@ public class PublicationsFragment extends ListFragment implements
 		if (isSyndicationOrCategorieSelected()) {
 			menu.getItem(0).setTitle(
 					getResources().getString(R.string.display_all_publication));
-			
 		}
-		if (selectedSyndicationID != null) {
+		
+		/*if (selectedSyndicationID != null) {
 			menu.getItem(1).setTitle(
 					getResources().getString(R.string.mark_selected_syndication_read));
 
-		} else if (selectedCategorieID != null) {
+		} else */
+		
+		if (selectedCategorieID != null) {
 			menu.getItem(1).setTitle(
 					getResources().getString(R.string.mark_selected_category_read));
 		}
@@ -371,9 +369,9 @@ public class PublicationsFragment extends ListFragment implements
 			// syndication.
 			if (!isSyndicationOrCategorieSelected()) {
 				selectedSyndicationID = nextSelectedSyndicationID;
-				reLoadPublicationsBySyndication(getActivity(),
-						this.selectedSyndicationID);
+				reLoadPublicationsBySyndication(getActivity(),this.selectedSyndicationID);
 				this.moveListViewToTop();
+				
 			} else {
 				reloadPublications(getActivity());
 				this.moveListViewToTop();
@@ -382,14 +380,24 @@ public class PublicationsFragment extends ListFragment implements
 
 		case R.id.menu_mark_read:
 
-			if (selectedSyndicationID != null && selectedCategorieID == null) {
+			/*if (selectedSyndicationID != null 
+			&& selectedCategorieID == null) {
 				markSyndicationPublicationsAsRead(selectedSyndicationID);
+				
 			} else if (selectedCategorieID != null
 					&& selectedSyndicationID == null) {
 				markCategoryPublicationsAsRead(selectedCategorieID);
+				
 			} else {
 				markAllPublicationsAsRead();
+			}*/
+			
+			if (selectedCategorieID != null) {
+				markCategoryPublicationsAsRead(selectedCategorieID);
+			} else {
+				markSyndicationPublicationsAsRead(nextSelectedSyndicationID);
 			}
+			
 			break;
 
 		default:
@@ -408,23 +416,6 @@ public class PublicationsFragment extends ListFragment implements
 		i.putExtra("read", text);
 		i.putExtra("link", link);
 		startActivity(i);
-	}
-	
-	/**
-	 * All unread publication set to read
-	 */
-	private void markAllPublicationsAsRead() {
-
-		new AsyncTask<Void, Void, Void>() {
-			@Override
-			protected Void doInBackground(Void... params) {
-				publicationRepository.markAllPublicationsAsRead();
-				return null;
-			}
-			protected void onPostExecute(Void result) {
-				reloadPublications(getActivity());
-			};
-		}.execute();		
 	}
 
 	/**

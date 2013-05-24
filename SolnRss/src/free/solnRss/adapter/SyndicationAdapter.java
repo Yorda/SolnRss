@@ -4,18 +4,24 @@ import android.content.Context;
 import android.database.Cursor;
 import android.graphics.Typeface;
 import android.graphics.drawable.Drawable;
+import android.net.Uri;
 import android.support.v4.widget.SimpleCursorAdapter;
+import android.text.TextUtils;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.FilterQueryProvider;
 import android.widget.TextView;
 import free.solnRss.R;
+import free.solnRss.provider.SyndicationsProvider;
+import free.solnRss.repository.SyndicationTable;
 
 /**
  * 
  * @author jftomasi
  * 
  */
-public class SyndicationAdapter extends SimpleCursorAdapter {
+public class SyndicationAdapter extends SimpleCursorAdapter implements
+		FilterQueryProvider {
 
 	private final int titleID = R.id.syndication_title;
 	private final int numberOfClickID = R.id.syndication_number_of_click;
@@ -77,5 +83,25 @@ public class SyndicationAdapter extends SimpleCursorAdapter {
 		item.getNumberOfClick().setTypeface(tf);
 
 		return convertView;
+	}
+
+	@Override
+	public Cursor runQuery(CharSequence constraint) {
+		Cursor cursor = null;
+		Uri uri = SyndicationsProvider.URI;
+
+		String selection = null;
+		String[] args = null;
+		
+		if (!TextUtils.isEmpty(constraint.toString())) {
+			selection = SyndicationTable.COLUMN_NAME + " like ? ";
+			args = new String[1];
+			args[0] = "%" + constraint.toString() + "%";
+		}
+
+		cursor = context.getContentResolver().query(uri, 
+				SyndicationsProvider.syndicationProjection, selection, args, null);
+
+		return cursor;
 	}
 }

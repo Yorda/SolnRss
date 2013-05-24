@@ -17,6 +17,7 @@ import free.solnRss.repository.PublicationTable;
 
 public class PublicationAdapter extends SimpleCursorAdapter implements
 		FilterQueryProvider {
+	
 	protected Cursor cursor;
 	private Context context;
 	private int layout;
@@ -86,21 +87,6 @@ public class PublicationAdapter extends SimpleCursorAdapter implements
 	public Cursor runQuery(CharSequence constraint) {		
 		
 		Cursor cursor = null;
-		/*
-		PublicationRepository repository = new PublicationRepository(context);
-		
-		if (selectedCategoryId != null) {
-			cursor = repository.fetchPublicationByCategorie(selectedCategoryId, 
-					constraint.toString(), mustDisplayUnread());
-			
-		} else if (selectedSyndicationID != null) {
-			cursor = repository.fetchFilteredPublication(selectedSyndicationID,
-					constraint.toString(), mustDisplayUnread());
-		} else {
-			cursor = repository.fetchFilteredPublication(null, 
-					constraint.toString(), mustDisplayUnread());
-		}*/
-		
 		Uri uri = PublicationsProvider.URI;
 		if (selectedSyndicationID != null) {
 			uri = Uri.parse(PublicationsProvider.URI + "/" + selectedSyndicationID);

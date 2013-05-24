@@ -25,10 +25,12 @@ import android.widget.SearchView;
 import android.widget.Toast;
 import free.solnRss.R;
 import free.solnRss.adapter.SectionsPagerAdapter;
+import free.solnRss.adapter.SectionsPagerAdapter.TAB_SELECTED;
 import free.solnRss.dialog.AddItemDialog;
 import free.solnRss.dialog.AddItemDialog.NewAddItemDialogListener;
 import free.solnRss.fragment.listener.CategoriesFragmentListener;
 import free.solnRss.fragment.listener.PublicationsFragmentListener;
+import free.solnRss.fragment.listener.PublicationsFragmentListener2;
 import free.solnRss.fragment.listener.SyndicationsFragmentListener;
 import free.solnRss.repository.PublicationRepository;
 import free.solnRss.task.SyndicationFinderTask;
@@ -39,13 +41,16 @@ public class SolnRss extends FragmentActivity implements ActionBar.TabListener,
 	
 	private SyndicationsFragmentListener syndicationsListener;
 	private CategoriesFragmentListener categoriesListener;
-	private PublicationsFragmentListener publicationsListener;
+	
+	//private PublicationsFragmentListener publicationsListener;
+	private PublicationsFragmentListener2 publicationsListener2;
 
 	private SectionsPagerAdapter sectionPageAdapter;
 	private ViewPager viewPager;
 	private SearchView searchView;
 	
-	private String filterText;
+	private TAB_SELECTED tabSelected;
+	
 	
 	@Override
 	protected void onResume() {
@@ -68,11 +73,13 @@ public class SolnRss extends FragmentActivity implements ActionBar.TabListener,
 	@Override
 	public void onSharedPreferenceChanged(SharedPreferences shared, String key) {
 		if (key.compareTo("pref_unread_font_weight") == 0) {
-			publicationsListener.refreshPublications(this);
+			//publicationsListener.refreshPublications(this);
+			publicationsListener2.refreshPublications();
 		}
 
 		else if (key.compareTo("pref_display_unread") == 0) {
-			publicationsListener.refreshPublications(this);
+			//publicationsListener.refreshPublications(this);
+			publicationsListener2.refreshPublications();
 		}
 		
 		else if (key.compareTo("pref_sort_syndications") == 0) {
@@ -301,11 +308,16 @@ public class SolnRss extends FragmentActivity implements ActionBar.TabListener,
 			if (categoriesListener != null) {
 				categoriesListener.loadCategories(this);
 			}
+			tabSelected = TAB_SELECTED.values()[0];
+			break;
+		case 1:
+			tabSelected = TAB_SELECTED.values()[1];
 			break;
 		case 2:
 			if (syndicationsListener != null) {
 				syndicationsListener.loadSyndications(this);
 			}
+			tabSelected = TAB_SELECTED.values()[2];
 			break;
 		}
 		viewPager.setCurrentItem(tab.getPosition());
@@ -323,20 +335,23 @@ public class SolnRss extends FragmentActivity implements ActionBar.TabListener,
 	
 	
 	public void reLoadPublicationsBySyndication(Integer syndicationID) {
-		publicationsListener.reLoadPublicationsBySyndication(this, syndicationID);
+		//publicationsListener.reLoadPublicationsBySyndication(this, syndicationID);
+		publicationsListener2.reLoadPublicationsBySyndication(syndicationID);
 		viewPager.setCurrentItem(1);
-		publicationsListener.moveListViewToTop();
+		publicationsListener2.moveListViewToTop();
 	}
 
 	public void reLoadPublicationsByCategorie(Integer categorieID) {
-		publicationsListener.reLoadPublicationsByCategorie(this, categorieID);
+		//publicationsListener.reLoadPublicationsByCategorie(this, categorieID);
+		publicationsListener2.reLoadPublicationsByCategory(categorieID);
 		viewPager.setCurrentItem(1);
-		publicationsListener.moveListViewToTop();
+		publicationsListener2.moveListViewToTop();
 	}
 	
 	public void reLoadAllPublications() {
-		publicationsListener.reloadPublications(this);
-		publicationsListener.moveListViewToTop();
+		//publicationsListener.reloadPublications(this);
+		publicationsListener2.reloadPublications();
+		publicationsListener2.moveListViewToTop();
 	}
 
 	public void reLoadAllPublications(View v) {
@@ -401,10 +416,27 @@ public class SolnRss extends FragmentActivity implements ActionBar.TabListener,
 			public boolean onQueryTextSubmit(String query) {
 				return false;
 			}
-			
+
 			@Override
 			public boolean onQueryTextChange(String newText) {
-				filterPublications(newText);
+				switch (tabSelected) {
+				case Categories:
+					filterCategories(newText);
+					// Log.e(SolnRss.this.getClass().getName(),
+					// "Filter for Category");
+					break;
+				case Publications:
+					filterPublications(newText);
+					// Log.e(SolnRss.this.getClass().getName(),
+					// "Filter for Publication");
+					break;
+				case Syndications:
+					filterSyndications(newText);
+					// Log.e(SolnRss.this.getClass().getName(),
+					// "Filter for Syndication");
+					break;
+				}
+
 				return true;
 			}
 		});
@@ -414,9 +446,18 @@ public class SolnRss extends FragmentActivity implements ActionBar.TabListener,
 	 * Apply the text for filter in publication's list
 	 */
 	private void filterPublications(String text) {
-		publicationsListener.filterPublications(text);
+		//publicationsListener.filterPublications(text);
+		publicationsListener2.filterPublications(text);
 	}
 
+	private void filterCategories(String text) {
+		categoriesListener.filterCategories(text);
+	}
+	
+	private void filterSyndications(String text) {
+		syndicationsListener.filterSyndications(text);
+	}
+	
 	public CategoriesFragmentListener getCategoriesFragmentListener() {
 		return categoriesListener;
 	}
@@ -434,22 +475,30 @@ public class SolnRss extends FragmentActivity implements ActionBar.TabListener,
 		this.syndicationsListener = syndicationsFragmentListener;
 	}
 
-	public PublicationsFragmentListener getPublicationsFragmentListener() {
+	/*public PublicationsFragmentListener getPublicationsFragmentListener() {
 		return publicationsListener;
-	}
+	}*/
 
 	public void setPublicationsFragmentListener(
 			PublicationsFragmentListener publicationsFragmentListener) {
-		this.publicationsListener = publicationsFragmentListener;
+		//this.publicationsListener = publicationsFragmentListener;
 	}
 
-	public String getFilterText() {
+	public void setPublicationsFragmentListener2(
+			PublicationsFragmentListener2 publicationsFragmentListener2) {
+		this.publicationsListener2 = publicationsFragmentListener2;
+		
+	}
+
+	/* private String filterText;
+	
+	 * public String getFilterText() {
 		return filterText;
 	}
 
 	public void setFilterText(String filterText) {
 		this.filterText = filterText;
-	}
+	}*/
 	
 	
 /*public Fragment retrieveCategoriesFragment() {

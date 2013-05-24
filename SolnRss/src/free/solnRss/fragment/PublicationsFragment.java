@@ -38,6 +38,7 @@ import free.solnRss.provider.PublicationsProvider;
 import free.solnRss.provider.SyndicationsProvider;
 import free.solnRss.repository.PublicationRepository;
 import free.solnRss.repository.PublicationTable;
+import free.solnRss.repository.SyndicationTable;
 import free.solnRss.service.PublicationsFinderService;
 import free.solnRss.task.PublicationsByCategoryReloaderTask;
 import free.solnRss.task.PublicationsReloaderTask;
@@ -249,9 +250,9 @@ public class PublicationsFragment extends ListFragment implements
 			loadPublications(getActivity());
 		}
 		
-		if (((SolnRss) getActivity()).getFilterText() != null) {
+		/*if (((SolnRss) getActivity()).getFilterText() != null) {
 			getListView().setFilterText(((SolnRss) getActivity()).getFilterText());
-		}
+		}*/
 	}
 
 	@Override
@@ -337,9 +338,9 @@ public class PublicationsFragment extends ListFragment implements
 		Cursor c = ((PublicationAdapter) getListAdapter()).getCursor();
 		c.moveToPosition(info.position);
 
-		menu.setHeaderTitle(c.getString(c.getColumnIndex("syn_name")));
+		menu.setHeaderTitle(c.getString(c.getColumnIndex(SyndicationTable.COLUMN_NAME)));
 		
-		nextSelectedSyndicationID = c.getInt(c.getColumnIndex("syn_syndication_id"));
+		nextSelectedSyndicationID = c.getInt(c.getColumnIndex(PublicationTable.COLUMN_SYNDICATION_ID));
 		
 		MenuInflater inflater = getActivity().getMenuInflater();
 		inflater.inflate(R.menu.publications_context, menu);

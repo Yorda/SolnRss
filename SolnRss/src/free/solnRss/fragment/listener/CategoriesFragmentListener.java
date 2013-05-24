@@ -21,4 +21,10 @@ public interface CategoriesFragmentListener {
 	 * @param newCatgorie
 	 */
 	public void addCategorie(Context contex, String newCatgorie);
+
+	/**
+	 * 
+	 * @param text
+	 */
+	public void filterCategories(String text);
 }

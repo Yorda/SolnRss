@@ -7,21 +7,22 @@ import android.support.v4.app.FragmentPagerAdapter;
 import android.view.ViewGroup;
 import free.solnRss.R;
 import free.solnRss.fragment.CategoriesFragment;
-import free.solnRss.fragment.PublicationsFragment;
+import free.solnRss.fragment.PublicationsFragment2;
 import free.solnRss.fragment.SyndicationsFragment;
 
 public class SectionsPagerAdapter extends FragmentPagerAdapter{ //FragmentStatePagerAdapter {
 
-	static enum Position {
+	public static enum TAB_SELECTED {
 		Categories(0), 
 		Publications(1), 
 		Syndications(2);
 		
-		private Position(int pos) {
+		private TAB_SELECTED(int pos) {
+			
 		}
 	}
 
-	private PublicationsFragment publicationsFragment;
+	private PublicationsFragment2 publicationsFragment;
 	private SyndicationsFragment syndicationsFragment;
 	private CategoriesFragment categoriesFragment;
 	private Resources r;
@@ -29,7 +30,7 @@ public class SectionsPagerAdapter extends FragmentPagerAdapter{ //FragmentStateP
 	public SectionsPagerAdapter(FragmentManager fm, Resources r) {
 		super(fm);
 		syndicationsFragment = new SyndicationsFragment();
-		publicationsFragment = new PublicationsFragment();
+		publicationsFragment = new PublicationsFragment2();
 		categoriesFragment   = new CategoriesFragment();
 		this.r = r;
 	}
@@ -48,21 +49,7 @@ public class SectionsPagerAdapter extends FragmentPagerAdapter{ //FragmentStateP
 	public Fragment getItem(int position) {
 		// Method getItem is called to instantiate the fragment for the given page.
 		Fragment fragment = null;
-		
-		//Position p = Position.values()[position];
-		/*switch (position) {
-		case 0:
-			fragment = categoriesFragment;
-			break;
-		case 1:
-			fragment = publicationsFragment;
-			break;
-		case 2:
-			fragment = syndicationsFragment;
-			break;
-		}*/
-
-		switch (Position.values()[position]) {
+		switch (TAB_SELECTED.values()[position]) {
 		case Categories:
 			fragment = categoriesFragment;
 			break;
@@ -73,13 +60,12 @@ public class SectionsPagerAdapter extends FragmentPagerAdapter{ //FragmentStateP
 			fragment = syndicationsFragment;
 			break;
 		}
-		
 		return fragment;
 	}
 	
 	@Override
 	public int getCount() {
-		return Position.values().length;
+		return TAB_SELECTED.values().length;
 	}
 
 	@Override

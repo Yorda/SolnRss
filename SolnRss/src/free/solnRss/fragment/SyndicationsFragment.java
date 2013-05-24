@@ -13,6 +13,7 @@ import android.support.v4.app.ListFragment;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
+import android.text.TextUtils;
 import android.view.ContextMenu;
 import android.view.ContextMenu.ContextMenuInfo;
 import android.view.LayoutInflater;
@@ -141,6 +142,7 @@ public class SyndicationsFragment extends ListFragment implements
 	public void onActivityCreated(Bundle savedInstanceState) {
 		super.onActivityCreated(savedInstanceState);
 		registerForContextMenu(getListView());
+		getListView().setTextFilterEnabled(true);
 		((SolnRss)getActivity()).setSyndicationsFragmentListener(this);
 	}
 	
@@ -290,6 +292,29 @@ public class SyndicationsFragment extends ListFragment implements
 		if(isAdded()){
 			getLoaderManager().restartLoader(0, null, this);
 		}
+	}
+
+	private String filterText;
+
+	@Override
+	public void filterSyndications(String text) {
+		if (this.getListView() != null) {
+			if (TextUtils.isEmpty(text)) {
+				setFilterText(null);
+				this.getListView().clearTextFilter();
+			} else {
+				setFilterText(text);
+				this.getListView().setFilterText(text);
+			}
+		}
+	}
+
+	public String getFilterText() {
+		return filterText;
+	}
+
+	public void setFilterText(String filterText) {
+		this.filterText = filterText;
 	}
 	
 }

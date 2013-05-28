@@ -30,7 +30,6 @@ import free.solnRss.dialog.AddItemDialog;
 import free.solnRss.dialog.AddItemDialog.NewAddItemDialogListener;
 import free.solnRss.fragment.listener.CategoriesFragmentListener;
 import free.solnRss.fragment.listener.PublicationsFragmentListener;
-import free.solnRss.fragment.listener.PublicationsFragmentListener2;
 import free.solnRss.fragment.listener.SyndicationsFragmentListener;
 import free.solnRss.repository.PublicationRepository;
 import free.solnRss.task.SyndicationFinderTask;
@@ -43,7 +42,7 @@ public class SolnRss extends FragmentActivity implements ActionBar.TabListener,
 	private CategoriesFragmentListener categoriesListener;
 	
 	//private PublicationsFragmentListener publicationsListener;
-	private PublicationsFragmentListener2 publicationsListener2;
+	private PublicationsFragmentListener publicationsListener;
 
 	private SectionsPagerAdapter sectionPageAdapter;
 	private ViewPager viewPager;
@@ -73,13 +72,11 @@ public class SolnRss extends FragmentActivity implements ActionBar.TabListener,
 	@Override
 	public void onSharedPreferenceChanged(SharedPreferences shared, String key) {
 		if (key.compareTo("pref_unread_font_weight") == 0) {
-			//publicationsListener.refreshPublications(this);
-			publicationsListener2.refreshPublications();
+			publicationsListener.refreshPublications();
 		}
 
 		else if (key.compareTo("pref_display_unread") == 0) {
-			//publicationsListener.refreshPublications(this);
-			publicationsListener2.refreshPublications();
+			publicationsListener.refreshPublications();
 		}
 		
 		else if (key.compareTo("pref_sort_syndications") == 0) {
@@ -132,10 +129,6 @@ public class SolnRss extends FragmentActivity implements ActionBar.TabListener,
 					.setText(sectionPageAdapter.getPageTitle(i))
 					.setTabListener(this));
 		}
-		  
-		// Start the service for retrieve new publications
-		//Intent service = new Intent(this, PublicationsCursorCacheService.class);
-		//startService(service);
 		
 		PreferenceManager
 				.getDefaultSharedPreferences(this)
@@ -335,23 +328,20 @@ public class SolnRss extends FragmentActivity implements ActionBar.TabListener,
 	
 	
 	public void reLoadPublicationsBySyndication(Integer syndicationID) {
-		//publicationsListener.reLoadPublicationsBySyndication(this, syndicationID);
-		publicationsListener2.reLoadPublicationsBySyndication(syndicationID);
+		publicationsListener.reLoadPublicationsBySyndication(syndicationID);
 		viewPager.setCurrentItem(1);
-		publicationsListener2.moveListViewToTop();
+		publicationsListener.moveListViewToTop();
 	}
 
 	public void reLoadPublicationsByCategorie(Integer categorieID) {
-		//publicationsListener.reLoadPublicationsByCategorie(this, categorieID);
-		publicationsListener2.reLoadPublicationsByCategory(categorieID);
+		publicationsListener.reLoadPublicationsByCategory(categorieID);
 		viewPager.setCurrentItem(1);
-		publicationsListener2.moveListViewToTop();
+		publicationsListener.moveListViewToTop();
 	}
 	
 	public void reLoadAllPublications() {
-		//publicationsListener.reloadPublications(this);
-		publicationsListener2.reloadPublications();
-		publicationsListener2.moveListViewToTop();
+		publicationsListener.reloadPublications();
+		publicationsListener.moveListViewToTop();
 	}
 
 	public void reLoadAllPublications(View v) {
@@ -446,8 +436,7 @@ public class SolnRss extends FragmentActivity implements ActionBar.TabListener,
 	 * Apply the text for filter in publication's list
 	 */
 	private void filterPublications(String text) {
-		//publicationsListener.filterPublications(text);
-		publicationsListener2.filterPublications(text);
+		publicationsListener.filterPublications(text);
 	}
 
 	private void filterCategories(String text) {
@@ -475,44 +464,9 @@ public class SolnRss extends FragmentActivity implements ActionBar.TabListener,
 		this.syndicationsListener = syndicationsFragmentListener;
 	}
 
-	/*public PublicationsFragmentListener getPublicationsFragmentListener() {
-		return publicationsListener;
-	}*/
-
-	public void setPublicationsFragmentListener(
-			PublicationsFragmentListener publicationsFragmentListener) {
-		//this.publicationsListener = publicationsFragmentListener;
-	}
-
 	public void setPublicationsFragmentListener2(
-			PublicationsFragmentListener2 publicationsFragmentListener2) {
-		this.publicationsListener2 = publicationsFragmentListener2;
+			PublicationsFragmentListener publicationsFragmentListener2) {
+		this.publicationsListener = publicationsFragmentListener2;
 		
 	}
-
-	/* private String filterText;
-	
-	 * public String getFilterText() {
-		return filterText;
-	}
-
-	public void setFilterText(String filterText) {
-		this.filterText = filterText;
-	}*/
-	
-	
-/*public Fragment retrieveCategoriesFragment() {
-	return getSupportFragmentManager().findFragmentByTag(
-			SectionsPagerAdapter.getFragementTag(viewPager.getId(), 0));
-}*/
-
-/*public Fragment retrievePublicationsFragment() {
-	return getSupportFragmentManager().findFragmentByTag(
-			SectionsPagerAdapter.getFragementTag(viewPager.getId(), 1));
-}*/
-
-/*public Fragment retrieveSyndicationsFragment() {
-	return getSupportFragmentManager().findFragmentByTag(
-			SectionsPagerAdapter.getFragementTag(viewPager.getId(), 2));
-}*/
 }

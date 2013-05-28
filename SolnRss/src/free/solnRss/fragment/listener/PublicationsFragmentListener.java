@@ -1,24 +1,18 @@
 package free.solnRss.fragment.listener;
 
-import android.content.Context;
 
-/**
- * 
- * @author jftomasi
- *
- */
 public interface PublicationsFragmentListener {
 	/**
 	 * 
 	 * @param context
 	 */
-	public void loadPublications(Context context);
+	public void loadPublications();
 
 	/**
 	 * 
 	 * @param context
 	 */
-	public void reloadPublications(Context context);
+	public void reloadPublications();
 	
 	
 	/**
@@ -26,21 +20,21 @@ public interface PublicationsFragmentListener {
 	 * 
 	 * @param context
 	 */
-	public void refreshPublications(Context context);
+	public void refreshPublications();
 	
 	/**
 	 * 
 	 * @param context
 	 * @param categorieID
 	 */
-	public void reLoadPublicationsByCategorie(Context context, Integer categorieID);
+	public void reLoadPublicationsByCategory(Integer categorieID);
 	
 	/**
 	 * 
 	 * @param context
 	 * @param syndicationID
 	 */
-	public void reLoadPublicationsBySyndication(Context context, Integer syndicationID);
+	public void reLoadPublicationsBySyndication(Integer syndicationID);
 	
 	/**
 	 * 
@@ -53,4 +47,5 @@ public interface PublicationsFragmentListener {
 	 * @param text
 	 */
 	public void filterPublications(String text);
+
 }

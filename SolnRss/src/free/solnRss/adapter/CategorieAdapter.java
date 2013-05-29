@@ -3,13 +3,20 @@ package free.solnRss.adapter;
 import android.content.Context;
 import android.database.Cursor;
 import android.graphics.Typeface;
+import android.net.Uri;
 import android.support.v4.widget.SimpleCursorAdapter;
+import android.text.TextUtils;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.FilterQueryProvider;
 import android.widget.TextView;
 import free.solnRss.R;
+import free.solnRss.provider.CategoryProvider;
+import free.solnRss.provider.PublicationsProvider;
+import free.solnRss.repository.CategoryTable;
 
-public class CategorieAdapter extends SimpleCursorAdapter {
+public class CategorieAdapter extends SimpleCursorAdapter implements
+		FilterQueryProvider {
 
 	private Typeface tf = null;
 	protected Cursor cursor;
@@ -23,6 +30,7 @@ public class CategorieAdapter extends SimpleCursorAdapter {
 		this.cursor = c;
 		this.context = context;
 		this.layout = layout;
+		setFilterQueryProvider(this);
 		tf = Typeface.createFromAsset(context.getAssets(), "fonts/MONOF55.TTF");
 	}
 
@@ -34,8 +42,10 @@ public class CategorieAdapter extends SimpleCursorAdapter {
 			convertView = View.inflate(context, layout, null);
 			categorieItem = new CategorieItem();
 
-			categorieItem.setName((TextView) convertView.findViewById(R.id.categorie_name));
-			categorieItem.setNumberOfUse((TextView) convertView.findViewById(R.id.categorie_number_of_use));
+			categorieItem.setName((TextView) convertView
+					.findViewById(R.id.categorie_name));
+			categorieItem.setNumberOfUse((TextView) convertView
+					.findViewById(R.id.categorie_number_of_use));
 			convertView.setTag(categorieItem);
 
 		} else {
@@ -46,14 +56,15 @@ public class CategorieAdapter extends SimpleCursorAdapter {
 
 		String name = getCursor().getString(
 				getCursor().getColumnIndex("cat_name"));
-		
+
 		categorieItem.getName().setText(name);
 		categorieItem.getName().setTypeface(tf, Typeface.NORMAL);
 
 		Integer numberOfUse = getCursor().getInt(
 				getCursor().getColumnIndex("number_of_use"));
-		
+
 		String use = new String();
+		// TODO get resource string
 		if (numberOfUse == null || numberOfUse == 0) {
 			use = "Not use";
 		} else if (numberOfUse == 1) {
@@ -61,11 +72,32 @@ public class CategorieAdapter extends SimpleCursorAdapter {
 		} else {
 			use = "Use by " + numberOfUse + " syndications";
 		}
-		
+
 		categorieItem.getNumberOfUse().setText(use);
 		categorieItem.getNumberOfUse().setTypeface(tf, Typeface.NORMAL);
-		
+
 		return convertView;
+	}
+
+	@Override
+	public Cursor runQuery(CharSequence constraint) {
+		Cursor cursor = null;
+		Uri uri = CategoryProvider.URI;
+
+		String selection = null;
+		String[] args = null;
+
+		if (!TextUtils.isEmpty(constraint.toString())) {
+
+			selection = CategoryTable.COLUMN_NAME + " like ? ";
+			args = new String[1];
+			args[0] = "%" + constraint.toString() + "%";
+		}
+
+		cursor = context.getContentResolver().query(uri,
+				PublicationsProvider.projection, selection, args, null);
+
+		return cursor;
 	}
 
 }

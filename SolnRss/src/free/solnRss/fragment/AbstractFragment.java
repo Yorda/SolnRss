@@ -1,8 +1,8 @@
 package free.solnRss.fragment;
 
-import android.support.v4.app.ListFragment;
 import android.database.Cursor;
 import android.os.Bundle;
+import android.support.v4.app.ListFragment;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.Loader;
 import android.support.v4.widget.SimpleCursorAdapter;
@@ -67,18 +67,36 @@ public abstract class AbstractFragment extends ListFragment implements
 	
 	private String filterText;
 
-	public void makeFilterInListView(String text) {
+	public void makeFilterInListView(String newText) {
 		if (this.getListView() != null) {
-			if (TextUtils.isEmpty(text)) {
+			
+			String newFilter = !TextUtils.isEmpty(newText) ? newText : null;
+			
+			if (getFilterText() == null && newFilter == null) {
+				return;
+			}
+			if (getFilterText() != null && getFilterText().equals(newFilter)) {
+				return;
+			}
+
+			setFilterText(newText);
+			this.getListView().setFilterText(newText);
+			
+			/*if (TextUtils.isEmpty(newText)) {
 				setFilterText(null);
 				this.getListView().clearTextFilter();
-			} else {
-				setFilterText(text);
-				this.getListView().setFilterText(text);
-			}
+			} 
+			else {
+				if (getFilterText() == null || getFilterText().compareTo(newText) != 0) {
+					setFilterText(newText);
+					this.getListView().setFilterText(newText);
+				}
+			}*/
 		}
 	}
 
+	
+	
 	public String getFilterText() {
 		return filterText;
 	}

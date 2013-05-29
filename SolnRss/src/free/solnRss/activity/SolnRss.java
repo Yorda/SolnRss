@@ -40,8 +40,6 @@ public class SolnRss extends FragmentActivity implements ActionBar.TabListener,
 	
 	private SyndicationsFragmentListener syndicationsListener;
 	private CategoriesFragmentListener categoriesListener;
-	
-	//private PublicationsFragmentListener publicationsListener;
 	private PublicationsFragmentListener publicationsListener;
 
 	private SectionsPagerAdapter sectionPageAdapter;
@@ -80,11 +78,11 @@ public class SolnRss extends FragmentActivity implements ActionBar.TabListener,
 		}
 		
 		else if (key.compareTo("pref_sort_syndications") == 0) {
-			syndicationsListener.reloadSyndications(this);
+			syndicationsListener.reloadSyndications();
 		}
 		
 		else if (key.compareTo("pref_sort_categories") == 0) {
-			categoriesListener.reloadCategories(this);
+			categoriesListener.reloadCategories();
 		}
 		
 	}
@@ -299,7 +297,7 @@ public class SolnRss extends FragmentActivity implements ActionBar.TabListener,
 		switch(tab.getPosition()){
 		case 0:
 			if (categoriesListener != null) {
-				categoriesListener.loadCategories(this);
+				categoriesListener.loadCategories();
 			}
 			tabSelected = TAB_SELECTED.values()[0];
 			break;
@@ -308,7 +306,7 @@ public class SolnRss extends FragmentActivity implements ActionBar.TabListener,
 			break;
 		case 2:
 			if (syndicationsListener != null) {
-				syndicationsListener.loadSyndications(this);
+				syndicationsListener.loadSyndications();
 			}
 			tabSelected = TAB_SELECTED.values()[2];
 			break;
@@ -349,7 +347,7 @@ public class SolnRss extends FragmentActivity implements ActionBar.TabListener,
 	}
 
 	public void displaySyndications(Integer syndicationID) {
-		syndicationsListener.loadSyndications(this);
+		syndicationsListener.loadSyndications();
 		viewPager.setCurrentItem(2);
 	}
 
@@ -412,18 +410,12 @@ public class SolnRss extends FragmentActivity implements ActionBar.TabListener,
 				switch (tabSelected) {
 				case Categories:
 					filterCategories(newText);
-					// Log.e(SolnRss.this.getClass().getName(),
-					// "Filter for Category");
 					break;
 				case Publications:
 					filterPublications(newText);
-					// Log.e(SolnRss.this.getClass().getName(),
-					// "Filter for Publication");
 					break;
 				case Syndications:
 					filterSyndications(newText);
-					// Log.e(SolnRss.this.getClass().getName(),
-					// "Filter for Syndication");
 					break;
 				}
 

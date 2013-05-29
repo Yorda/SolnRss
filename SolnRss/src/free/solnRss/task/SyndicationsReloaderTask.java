@@ -5,14 +5,13 @@ import android.database.Cursor;
 import android.os.AsyncTask;
 import android.support.v4.app.ListFragment;
 import android.view.View;
-import android.widget.TextView;
 import free.solnRss.R;
 import free.solnRss.activity.SolnRss;
 import free.solnRss.adapter.SyndicationAdapter;
 import free.solnRss.repository.SyndicationRepository;
 
 public class SyndicationsReloaderTask extends AsyncTask<Integer, Void, Cursor> {
-	final int emptyMessageID = R.id.emptySyndicationsMessage;
+
 	private SyndicationRepository repository;
 	private Context context;
 	private ListFragment fragment;
@@ -40,12 +39,12 @@ public class SyndicationsReloaderTask extends AsyncTask<Integer, Void, Cursor> {
 	}
 
 	private void displayEmptySyndicationsMessage() {
-		((TextView) ((SolnRss) context).findViewById(emptyMessageID))
+		((View) ((SolnRss) context).findViewById( R.id.emptySyndicationsLayout))
 				.setVisibility(View.VISIBLE);
 	}
 
 	private void hideEmptySyndicationsMessage() {
-		((TextView) ((SolnRss) context).findViewById(emptyMessageID))
+		((View) ((SolnRss) context).findViewById( R.id.emptySyndicationsLayout))
 				.setVisibility(View.INVISIBLE);
 	}
 }

@@ -36,6 +36,7 @@ public class SyndicationAdapter extends SimpleCursorAdapter implements
 		this.context = context;
 		this.layout = layout;
 		tf = Typeface.createFromAsset(context.getAssets(), "fonts/MONOF55.TTF");
+		setFilterQueryProvider(this);
 		pause = context.getResources().getDrawable(R.drawable.ic_pause);
 	}
 
@@ -78,8 +79,10 @@ public class SyndicationAdapter extends SimpleCursorAdapter implements
 		item.getTitle().setTypeface(tf);
 		String s = context.getResources().getString(
 				R.string.syndication_number_of_click);
+		
 		item.getNumberOfClick().setText(
 				String.format(s, String.valueOf(numberOfClick)));
+		
 		item.getNumberOfClick().setTypeface(tf);
 
 		return convertView;

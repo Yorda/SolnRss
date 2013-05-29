@@ -146,7 +146,7 @@ public class CategoriesFragment extends ListFragment implements
 	}
 	
 	@Override
-	public void loadCategories(Context context) {
+	public void loadCategories() {
 		if (getListAdapter() == null) {
 			provideCategories();
 		}
@@ -158,7 +158,7 @@ public class CategoriesFragment extends ListFragment implements
 	}
 
 	@Override
-	public void reloadCategories(Context context) {
+	public void reloadCategories() {
 		if (isAdded()) {
 			getLoaderManager().restartLoader(0, null, this);
 		}

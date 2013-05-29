@@ -227,6 +227,7 @@ public class PublicationsFragment extends AbstractFragment implements
 		setListAdapter((PublicationAdapter)simpleCursorAdapter);
 		((PublicationAdapter)simpleCursorAdapter).setSelectedCategoryId(selectedCategoryID);
 		((PublicationAdapter)simpleCursorAdapter).setSelectedSyndicationId(selectedSyndicationID);
+		
 	}
 
 	@Override
@@ -455,4 +456,5 @@ public class PublicationsFragment extends AbstractFragment implements
 		}.execute();
 		
 	}
+
 }

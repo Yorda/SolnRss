@@ -43,17 +43,25 @@ public class CategoryProvider extends ContentProvider {
 		
 		switch (uriMatcher.match(uri)) {
 		case CATEGORIES:
+			// TODO TRANSALATE TO QUERY BUILDER
+			String req = "select c.*, count(cs.cas_categorie_id) as number_of_use " + 
+					" from d_categorie c " +
+					" left join d_categorie_syndication cs " +
+					" on c._id = cs.cas_categorie_id " + 
+					(selection != null ? " where " + selection :"" ) +
+					" group by c.cat_name ";
 			
-			sort = "order by c.cat_name asc";
+			// Default sorting
+			sort = " order by c.cat_name asc ";
 			
 			if(sortByMostUsed()){
-				sort = " order by number_of_use desc";
+				sort = " order by number_of_use desc ";
 			}
 			
-			cursor = db.rawQuery("select c.*, count(cs.cas_categorie_id) as number_of_use " +
-					"from d_categorie c left join d_categorie_syndication cs on c._id = cs.cas_categorie_id " +
-					"group by c.cat_name " +
-					sort , null);
+			req = req.concat(sort);
+			
+			cursor = db.rawQuery(req, args);
+			
 			break;
 
 		case CATEGORY_ID:

@@ -55,24 +55,20 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="@string/empty_publications"
-                android:visibility="visible" 
-                android:typeface="monospace"
-                android:textStyle="bold|italic"
                 android:textSize="16sp"
-               />
+                android:textStyle="bold|italic"
+                android:typeface="monospace"
+                android:visibility="visible" />
 
-            <Button        
+            <Button
                 android:id="@+id/displayAllButton"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="20dp"
                 android:onClick="reLoadAllPublications"
-                android:text="@string/display_all_publication" 
-                
-                 android:typeface="monospace"
-                />
+                android:text="@string/display_all_publication"
+                android:typeface="monospace" />
         </LinearLayout>
-        
     </FrameLayout>
 
 </LinearLayout>

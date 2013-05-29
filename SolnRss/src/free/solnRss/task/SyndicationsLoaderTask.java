@@ -5,7 +5,6 @@ import android.database.Cursor;
 import android.os.AsyncTask;
 import android.support.v4.app.ListFragment;
 import android.view.View;
-import android.widget.TextView;
 import free.solnRss.R;
 import free.solnRss.activity.SolnRss;
 import free.solnRss.adapter.SyndicationAdapter;
@@ -19,7 +18,7 @@ import free.solnRss.repository.SyndicationRepository;
  */
 public class SyndicationsLoaderTask extends
 		AsyncTask<Void, Void, SyndicationAdapter> {
-	final int emptyMessageID = R.id.emptySyndicationsMessage;
+
 	SyndicationRepository repository;
 	ListFragment fragment;
 	Context context;
@@ -56,12 +55,12 @@ public class SyndicationsLoaderTask extends
 	}
 
 	private void displayEmptySyndicationsMessage() {
-		((TextView) ((SolnRss) context).findViewById(emptyMessageID))
+		((View) ((SolnRss) context).findViewById( R.id.emptySyndicationsLayout))
 				.setVisibility(View.VISIBLE);
 	}
 
 	private void hideEmptySyndicationsMessage() {
-		((TextView) ((SolnRss) context).findViewById(emptyMessageID))
+		((View) ((SolnRss) context).findViewById( R.id.emptySyndicationsLayout))
 				.setVisibility(View.INVISIBLE);
 	}
 }

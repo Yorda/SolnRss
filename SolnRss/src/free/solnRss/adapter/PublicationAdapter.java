@@ -53,7 +53,7 @@ public class PublicationAdapter extends SimpleCursorAdapter implements
 		
 		getCursor().moveToPosition(position);
 	
-		String  title   = getCursor().getString(1); //getCursor().getColumnIndex("pub_title")); //
+		String  title   = getCursor().getString(1); // pub_title
 		String  name    = getCursor().getString(4); // syn_name
 		Integer isRead  = getCursor().getInt   (3); // pub_already_read
 		

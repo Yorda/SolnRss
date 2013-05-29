@@ -5,7 +5,6 @@ import android.database.Cursor;
 import android.os.AsyncTask;
 import android.support.v4.app.ListFragment;
 import android.view.View;
-import android.widget.TextView;
 import free.solnRss.R;
 import free.solnRss.activity.SolnRss;
 import free.solnRss.adapter.CategorieAdapter;
@@ -14,8 +13,9 @@ import free.solnRss.repository.CategoryRepository;
 /**
  * @author jftomasi
  */
-public class CategoriesAddAndReloaderTask extends AsyncTask<String, Void, Cursor> {
-	final int emptyMessageID = R.id.emptyCategoriesMessage;
+public class CategoriesAddAndReloaderTask extends
+		AsyncTask<String, Void, Cursor> {
+	
 	private CategoryRepository repository;
 	private Context context;
 	private ListFragment fragment;
@@ -34,7 +34,7 @@ public class CategoriesAddAndReloaderTask extends AsyncTask<String, Void, Cursor
 
 	@Override
 	protected void onPostExecute(Cursor result) {
-		//super.onPostExecute(result);
+		// super.onPostExecute(result);
 		if (fragment.getListAdapter() != null) {
 			((CategorieAdapter) fragment.getListAdapter()).swapCursor(result);
 		}
@@ -49,19 +49,22 @@ public class CategoriesAddAndReloaderTask extends AsyncTask<String, Void, Cursor
 
 	private void displayEmptyMessage() {
 		if (isViewDisplayed()) {
-			((TextView) ((SolnRss) context).findViewById(emptyMessageID))
-				.setVisibility(View.VISIBLE);
+			((View) ((SolnRss) context)
+					.findViewById(R.id.emptycategoriesLayout))
+					.setVisibility(View.VISIBLE);
 		}
 	}
 
 	private void hideEmptyMessage() {
 		if (isViewDisplayed()) {
-			((TextView) ((SolnRss) context).findViewById(emptyMessageID))
-				.setVisibility(View.INVISIBLE);
+			((View) ((SolnRss) context)
+					.findViewById(R.id.emptycategoriesLayout))
+					.setVisibility(View.INVISIBLE);
 		}
 	}
-	
+
 	private boolean isViewDisplayed() {
-		return ((TextView) ((SolnRss) context).findViewById(emptyMessageID)) != null;
+		return ((View) ((SolnRss) context)
+				.findViewById(R.id.emptycategoriesLayout)) != null;
 	}
 }

@@ -7,13 +7,13 @@ public interface CategoriesFragmentListener {
 	 * 
 	 * @param context
 	 */
-	public void loadCategories(Context context);
+	public void loadCategories();
 
 	/**
 	 * 
 	 * @param context
 	 */
-	public void reloadCategories(Context context);
+	public void reloadCategories();
 	
 	/**
 	 * 

@@ -5,7 +5,6 @@ import android.database.Cursor;
 import android.os.AsyncTask;
 import android.support.v4.app.ListFragment;
 import android.view.View;
-import android.widget.TextView;
 import free.solnRss.R;
 import free.solnRss.activity.SolnRss;
 import free.solnRss.adapter.CategorieAdapter;
@@ -15,7 +14,7 @@ import free.solnRss.repository.CategoryRepository;
  * @author jftomasi
  */
 public class CategoriesReloaderTask extends AsyncTask<Integer, Void, Cursor> {
-	final int emptyMessageID = R.id.emptyCategoriesMessage;
+
 	private CategoryRepository repository;
 	private Context context;
 	private ListFragment fragment;
@@ -41,15 +40,15 @@ public class CategoriesReloaderTask extends AsyncTask<Integer, Void, Cursor> {
 		}
 		repository.close();
 	}
-	
+
 	private void displayEmptyMessage() {
-		((TextView) ((SolnRss) context).findViewById(emptyMessageID))
+		((View) ((SolnRss) context).findViewById(R.id.emptycategoriesLayout))
 				.setVisibility(View.VISIBLE);
 	}
 
 	private void hideEmptyMessage() {
-		((TextView) ((SolnRss) context).findViewById(emptyMessageID))
+		((View) ((SolnRss) context).findViewById(R.id.emptycategoriesLayout))
 				.setVisibility(View.INVISIBLE);
 	}
-	
+
 }

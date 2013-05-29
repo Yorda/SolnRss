@@ -1,6 +1,5 @@
 package free.solnRss.fragment.listener;
 
-import android.content.Context;
 
 /**
  * 
@@ -10,13 +9,13 @@ public interface SyndicationsFragmentListener {
 	 * 
 	 * @param context
 	 */
-	public void loadSyndications(Context context);
+	public void loadSyndications();
 
 	/**
 	 * 
 	 * @param context
 	 */
-	public void reloadSyndications(Context context);
+	public void reloadSyndications();
 
 	/**
 	 * 

@@ -4,24 +4,19 @@ import android.content.Context;
 import android.database.Cursor;
 import android.graphics.Typeface;
 import android.graphics.drawable.Drawable;
-import android.net.Uri;
 import android.support.v4.widget.SimpleCursorAdapter;
-import android.text.TextUtils;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.FilterQueryProvider;
 import android.widget.TextView;
 import free.solnRss.R;
-import free.solnRss.provider.SyndicationsProvider;
-import free.solnRss.repository.SyndicationTable;
 
 /**
  * 
  * @author jftomasi
  * 
  */
-public class SyndicationAdapter extends SimpleCursorAdapter implements
-		FilterQueryProvider {
+public class SyndicationAdapter extends SimpleCursorAdapter //implements	FilterQueryProvider 
+{
 
 	private final int titleID = R.id.syndication_title;
 	private final int numberOfClickID = R.id.syndication_number_of_click;
@@ -36,7 +31,7 @@ public class SyndicationAdapter extends SimpleCursorAdapter implements
 		this.context = context;
 		this.layout = layout;
 		tf = Typeface.createFromAsset(context.getAssets(), "fonts/MONOF55.TTF");
-		setFilterQueryProvider(this);
+		//setFilterQueryProvider(this);
 		pause = context.getResources().getDrawable(R.drawable.ic_pause);
 	}
 
@@ -88,6 +83,7 @@ public class SyndicationAdapter extends SimpleCursorAdapter implements
 		return convertView;
 	}
 
+	/*
 	@Override
 	public Cursor runQuery(CharSequence constraint) {
 		Cursor cursor = null;
@@ -106,5 +102,5 @@ public class SyndicationAdapter extends SimpleCursorAdapter implements
 				SyndicationsProvider.syndicationProjection, selection, args, null);
 
 		return cursor;
-	}
+	}*/
 }

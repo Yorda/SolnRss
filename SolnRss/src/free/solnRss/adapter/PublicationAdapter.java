@@ -3,20 +3,15 @@ package free.solnRss.adapter;
 import android.content.Context;
 import android.database.Cursor;
 import android.graphics.Typeface;
-import android.net.Uri;
 import android.preference.PreferenceManager;
 import android.support.v4.widget.SimpleCursorAdapter;
-import android.text.TextUtils;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.FilterQueryProvider;
 import android.widget.TextView;
 import free.solnRss.R;
-import free.solnRss.provider.PublicationsProvider;
-import free.solnRss.repository.PublicationTable;
 
-public class PublicationAdapter extends SimpleCursorAdapter implements
-		FilterQueryProvider {
+public class PublicationAdapter extends SimpleCursorAdapter //implements FilterQueryProvider 
+{
 	
 	protected Cursor cursor;
 	private Context context;
@@ -30,7 +25,7 @@ public class PublicationAdapter extends SimpleCursorAdapter implements
 		this.cursor = c;
 		this.context = context;
 		this.layout = layout;
-		setFilterQueryProvider(this);
+		//setFilterQueryProvider(this);
 		tf = Typeface.createFromAsset(context.getAssets(), "fonts/MONOF55.TTF");
 	}
 
@@ -82,7 +77,8 @@ public class PublicationAdapter extends SimpleCursorAdapter implements
 				.getBoolean("pref_display_unread", true);
 	}
 	
-	private Integer selectedSyndicationID, selectedCategoryId;
+	
+	/*
 	@Override
 	public Cursor runQuery(CharSequence constraint) {		
 		
@@ -107,8 +103,9 @@ public class PublicationAdapter extends SimpleCursorAdapter implements
 				PublicationsProvider.projection, selection, args, null);
 
 		return cursor;
-	}
+	}*/
 	
+	/*private Integer selectedSyndicationID, selectedCategoryId;
 	public void setSelectedSyndicationId(Integer selectedSyndicationID) {
 		this.selectedCategoryId = null;
 		this.selectedSyndicationID = selectedSyndicationID;
@@ -117,6 +114,6 @@ public class PublicationAdapter extends SimpleCursorAdapter implements
 	public void setSelectedCategoryId(Integer selectedCategoryId) {
 		this.selectedSyndicationID = null;
 		this.selectedCategoryId = selectedCategoryId;
-	}
+	}*/
 	
 }

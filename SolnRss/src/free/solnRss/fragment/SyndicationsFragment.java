@@ -27,6 +27,7 @@ import free.solnRss.fragment.listener.SyndicationsFragmentListener;
 import free.solnRss.provider.SyndicationsProvider;
 import free.solnRss.repository.PublicationRepository;
 import free.solnRss.repository.SyndicationRepository;
+import free.solnRss.repository.SyndicationTable;
 
 /**
  * 
@@ -47,11 +48,11 @@ public class SyndicationsFragment extends AbstractFragment implements
 		activeStatus = null;
 		View fragment = inflater.inflate( R.layout.fragment_syndications, vg, false);
 		
+		emptyLayoutId = R.id.emptySyndicationsLayout;	
+		
 		listContainer = fragment.findViewById(R.id.syndicationsListContainer);
 		progressContainer = fragment.findViewById(R.id.syndicationsProgressContainer);
-		emptyLayoutId = R.id.emptySyndicationsLayout;	
 		listShown = true;
-		
 		return fragment;
 	}
 
@@ -70,11 +71,20 @@ public class SyndicationsFragment extends AbstractFragment implements
 	@Override
 	public void onActivityCreated(Bundle savedInstanceState) {
 		super.onActivityCreated(savedInstanceState);
+
 		registerForContextMenu(getListView());
-		getListView().setTextFilterEnabled(true);
-		((SolnRss)getActivity()).setSyndicationsFragmentListener(this);
+		((SolnRss) getActivity()).setSyndicationsFragmentListener(this);
+		// getListView().setTextFilterEnabled(true);
+		setHasOptionsMenu(true);
+		setListShown(false);
 	}
 	
+	@Override
+	public void onViewCreated(View view, Bundle savedInstanceState) {
+		super.onViewCreated(view, savedInstanceState);
+	}
+		
+
 	@Override
 	public void onCreateContextMenu(ContextMenu menu, View v,	ContextMenuInfo menuInfo) {
 		super.onCreateContextMenu(menu, v, menuInfo);
@@ -105,14 +115,28 @@ public class SyndicationsFragment extends AbstractFragment implements
 
 	
 	@Override
-	public Loader<Cursor> onCreateLoader(int id, Bundle args) {
+	public Loader<Cursor> onCreateLoader(int id, Bundle bundle) {
 		
+		String selection = null;
+		String[] args = null;
+		
+		if (!TextUtils.isEmpty(getFilterText())) {
+			selection = SyndicationTable.COLUMN_NAME + " like ? ";
+			args = new String[1];
+			args[0] = "%" + getFilterText().toString() + "%";
+		}
+
 		CursorLoader cursorLoader = new CursorLoader(getActivity(),
 				SyndicationsProvider.URI,
 				SyndicationsProvider.syndicationProjection, 
-				null, null, null);
+				selection, args, null);
 
 		return cursorLoader;
+	}
+	
+	@Override
+	protected void queryTheTextChange() {
+		getLoaderManager().restartLoader(0, null, this);
 	}
 	
 	/*
@@ -250,7 +274,7 @@ public class SyndicationsFragment extends AbstractFragment implements
 
 	private String filterText;
 
-	@Override
+	@Override @Deprecated
 	public void filterSyndications(String text) {
 		if (this.getListView() != null) {
 			if (TextUtils.isEmpty(text)) {
@@ -270,5 +294,7 @@ public class SyndicationsFragment extends AbstractFragment implements
 	public void setFilterText(String filterText) {
 		this.filterText = filterText;
 	}
+
+	
 	
 }

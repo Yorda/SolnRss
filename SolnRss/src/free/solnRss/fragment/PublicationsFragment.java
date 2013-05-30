@@ -73,9 +73,11 @@ public class PublicationsFragment extends AbstractFragment implements
 		
 		getListView().setTextFilterEnabled(true);
 		
-		((SolnRss)getActivity()).setPublicationsFragmentListener2(this);
+		((SolnRss)getActivity()).setPublicationsFragmentListener(this);
 		
 		setListShown(false);
+		
+		setHasOptionsMenu(true);
 		
 		// Start the service for retrieve new publications
 		Intent service = new Intent(getActivity(), PublicationsFinderService.class);
@@ -222,11 +224,10 @@ public class PublicationsFragment extends AbstractFragment implements
 	protected void initAdapter() {
 		final String[] from = { PublicationTable.COLUMN_TITLE,  PublicationTable.COLUMN_LINK };
 		final int[] to = { android.R.id.text1, android.R.id.text2 };
-
 		simpleCursorAdapter = new PublicationAdapter(getActivity(),R.layout.publications, null, from, to, 0);
 		setListAdapter((PublicationAdapter)simpleCursorAdapter);
-		((PublicationAdapter)simpleCursorAdapter).setSelectedCategoryId(selectedCategoryID);
-		((PublicationAdapter)simpleCursorAdapter).setSelectedSyndicationId(selectedSyndicationID);
+		//((PublicationAdapter)simpleCursorAdapter).setSelectedCategoryId(selectedCategoryID);
+		//((PublicationAdapter)simpleCursorAdapter).setSelectedSyndicationId(selectedSyndicationID);
 		
 	}
 
@@ -257,6 +258,19 @@ public class PublicationsFragment extends AbstractFragment implements
 				PublicationsProvider.projection, selection, args, null);
 		
 		return cursorLoader;
+	}
+	
+	@Override
+	protected void queryTheTextChange() {
+		Bundle bundle = new Bundle();
+		if (selectedSyndicationID != null) {
+			bundle.putInt("selectedSyndicationID", selectedSyndicationID);
+		}
+		if (selectedCategoryID != null) {
+			bundle.putInt("selectedCategoryID", selectedCategoryID);
+		}
+
+		getLoaderManager().restartLoader(0, bundle, this);
 	}
 	
 	/*
@@ -321,8 +335,9 @@ public class PublicationsFragment extends AbstractFragment implements
 		getListView().setSelection(0);
 	}
 
+	@Override @Deprecated
 	public void filterPublications(String text) {
-		makeFilterInListView(text);
+		//makeFilterInListView(text);
 	}
 	
 	public void loadPublications() {

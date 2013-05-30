@@ -6,7 +6,7 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.view.ViewGroup;
 import free.solnRss.R;
-import free.solnRss.fragment.CategoriesFragment2;
+import free.solnRss.fragment.CategoriesFragment;
 import free.solnRss.fragment.PublicationsFragment;
 import free.solnRss.fragment.SyndicationsFragment;
 
@@ -24,14 +24,14 @@ public class SectionsPagerAdapter extends FragmentPagerAdapter {
 
 	private PublicationsFragment publicationsFragment;
 	private SyndicationsFragment syndicationsFragment;
-	private CategoriesFragment2 categoriesFragment;
+	private CategoriesFragment categoriesFragment;
 	private Resources r;
 
 	public SectionsPagerAdapter(FragmentManager fm, Resources r) {
 		super(fm);
 		syndicationsFragment = new SyndicationsFragment();
 		publicationsFragment = new PublicationsFragment();
-		categoriesFragment   = new CategoriesFragment2();
+		categoriesFragment   = new CategoriesFragment();
 		this.r = r;
 	}
 

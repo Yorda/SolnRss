@@ -18,14 +18,11 @@ import android.support.v4.app.FragmentActivity;
 import android.support.v4.view.ViewPager;
 import android.text.TextUtils;
 import android.util.Log;
-import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.SearchView;
 import android.widget.Toast;
 import free.solnRss.R;
 import free.solnRss.adapter.SectionsPagerAdapter;
-import free.solnRss.adapter.SectionsPagerAdapter.TAB_SELECTED;
 import free.solnRss.dialog.AddItemDialog;
 import free.solnRss.dialog.AddItemDialog.NewAddItemDialogListener;
 import free.solnRss.fragment.listener.CategoriesFragmentListener;
@@ -44,9 +41,9 @@ public class SolnRss extends FragmentActivity implements ActionBar.TabListener,
 
 	private SectionsPagerAdapter sectionPageAdapter;
 	private ViewPager viewPager;
-	private SearchView searchView;
 	
-	private TAB_SELECTED tabSelected;
+	//private SearchView searchView;
+	//private TAB_SELECTED tabSelected;
 	
 	
 	@Override
@@ -166,18 +163,16 @@ public class SolnRss extends FragmentActivity implements ActionBar.TabListener,
 		}
 	}
 	
-	@Override
+	/*@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 		// Inflate the menu; this adds items to the action bar if it is present.
 		getMenuInflater().inflate(R.menu.activity_soln_rss, menu);
 		MenuItem searchItem = menu.findItem(R.id.action_search);
-		
 		searchView = (SearchView) searchItem.getActionView();
 		setupSearchView(searchItem);
-		
 		return true;
-	}
-
+	}*/
+	
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
 		switch (item.getItemId()) {
@@ -299,16 +294,16 @@ public class SolnRss extends FragmentActivity implements ActionBar.TabListener,
 			if (categoriesListener != null) {
 				categoriesListener.loadCategories();
 			}
-			tabSelected = TAB_SELECTED.values()[0];
+			//tabSelected = TAB_SELECTED.values()[0];
 			break;
 		case 1:
-			tabSelected = TAB_SELECTED.values()[1];
+			//tabSelected = TAB_SELECTED.values()[1];
 			break;
 		case 2:
 			if (syndicationsListener != null) {
 				syndicationsListener.loadSyndications();
 			}
-			tabSelected = TAB_SELECTED.values()[2];
+			//tabSelected = TAB_SELECTED.values()[2];
 			break;
 		}
 		viewPager.setCurrentItem(tab.getPosition());
@@ -387,7 +382,7 @@ public class SolnRss extends FragmentActivity implements ActionBar.TabListener,
 	/*
 	 * The search view in action bar 
 	 */
-	private void setupSearchView(MenuItem searchItem) {
+	/*private void setupSearchView(MenuItem searchItem) {
 
 		boolean isAlwaysExpanded = false;
 		if (isAlwaysExpanded) {
@@ -422,12 +417,12 @@ public class SolnRss extends FragmentActivity implements ActionBar.TabListener,
 				return true;
 			}
 		});
-	}
+	}*/
 	
 	/*
 	 * Apply the text for filter in publication's list
 	 */
-	private void filterPublications(String text) {
+	/*private void filterPublications(String text) {
 		publicationsListener.filterPublications(text);
 	}
 
@@ -441,7 +436,7 @@ public class SolnRss extends FragmentActivity implements ActionBar.TabListener,
 	
 	public CategoriesFragmentListener getCategoriesFragmentListener() {
 		return categoriesListener;
-	}
+	}*/
 
 	public void setCategoriesFragmentListener(CategoriesFragmentListener categoriesFragmentListener) {
 		this.categoriesListener = categoriesFragmentListener;
@@ -456,7 +451,7 @@ public class SolnRss extends FragmentActivity implements ActionBar.TabListener,
 		this.syndicationsListener = syndicationsFragmentListener;
 	}
 
-	public void setPublicationsFragmentListener2(
+	public void setPublicationsFragmentListener(
 			PublicationsFragmentListener publicationsFragmentListener2) {
 		this.publicationsListener = publicationsFragmentListener2;
 		

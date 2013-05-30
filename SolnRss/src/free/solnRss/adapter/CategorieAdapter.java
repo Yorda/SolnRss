@@ -3,20 +3,14 @@ package free.solnRss.adapter;
 import android.content.Context;
 import android.database.Cursor;
 import android.graphics.Typeface;
-import android.net.Uri;
 import android.support.v4.widget.SimpleCursorAdapter;
-import android.text.TextUtils;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.FilterQueryProvider;
 import android.widget.TextView;
 import free.solnRss.R;
-import free.solnRss.provider.CategoryProvider;
-import free.solnRss.provider.PublicationsProvider;
-import free.solnRss.repository.CategoryTable;
 
-public class CategorieAdapter extends SimpleCursorAdapter implements
-		FilterQueryProvider {
+public class CategorieAdapter extends SimpleCursorAdapter //implements FilterQueryProvider
+{
 
 	private Typeface tf = null;
 	protected Cursor cursor;
@@ -30,7 +24,7 @@ public class CategorieAdapter extends SimpleCursorAdapter implements
 		this.cursor = c;
 		this.context = context;
 		this.layout = layout;
-		setFilterQueryProvider(this);
+		//setFilterQueryProvider(this);
 		tf = Typeface.createFromAsset(context.getAssets(), "fonts/MONOF55.TTF");
 	}
 
@@ -79,6 +73,7 @@ public class CategorieAdapter extends SimpleCursorAdapter implements
 		return convertView;
 	}
 
+	/*
 	@Override
 	public Cursor runQuery(CharSequence constraint) {
 		Cursor cursor = null;
@@ -98,6 +93,6 @@ public class CategorieAdapter extends SimpleCursorAdapter implements
 				PublicationsProvider.projection, selection, args, null);
 
 		return cursor;
-	}
+	}*/
 
 }

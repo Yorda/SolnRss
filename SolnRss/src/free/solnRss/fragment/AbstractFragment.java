@@ -1,23 +1,35 @@
 package free.solnRss.fragment;
 
+import android.annotation.TargetApi;
 import android.database.Cursor;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.app.ListFragment;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.Loader;
 import android.support.v4.widget.SimpleCursorAdapter;
 import android.text.TextUtils;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.animation.AnimationUtils;
 import android.widget.LinearLayout;
+import android.widget.SearchView;
+import android.widget.SearchView.OnQueryTextListener;
+import free.solnRss.R;
 
 
-public abstract class AbstractFragment extends ListFragment implements
+public abstract class AbstractFragment extends ListFragment implements	OnQueryTextListener, 
 		LoaderManager.LoaderCallbacks<Cursor> {
+	
+	private String filterText;
+	
+	protected SimpleCursorAdapter simpleCursorAdapter;
 	
 	protected abstract void initAdapter();
 	
-	protected SimpleCursorAdapter simpleCursorAdapter;
+	protected abstract void queryTheTextChange();
 	
 	@Override
 	public abstract Loader<Cursor> onCreateLoader(int id, Bundle bundle);
@@ -64,39 +76,80 @@ public abstract class AbstractFragment extends ListFragment implements
 		}
 		simpleCursorAdapter.swapCursor(null);
 	}
+
+	@Override
+	public void onPrepareOptionsMenu(Menu menu) {
+		onQueryTextChange("");
+		super.onPrepareOptionsMenu(menu);
+	}
 	
-	private String filterText;
+	@Override public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+		inflater.inflate(R.menu.activity_soln_rss, menu);
+		MenuItem searchItem = menu.findItem(R.id.action_search);
+		searchView = (SearchView) searchItem.getActionView();
+		setupSearchView(searchItem);
+    }
 
-	public void makeFilterInListView(String newText) {
-		if (this.getListView() != null) {
-			
-			String newFilter = !TextUtils.isEmpty(newText) ? newText : null;
-			
-			if (getFilterText() == null && newFilter == null) {
-				return;
+	private SearchView searchView;
+	
+	private void setupSearchView(MenuItem searchItem) {
+		searchItem.setShowAsAction(
+				MenuItem.SHOW_AS_ACTION_IF_ROOM
+				| MenuItem.SHOW_AS_ACTION_COLLAPSE_ACTION_VIEW
+			);
+		searchView.setOnQueryTextListener(this);
+		
+		addCloseSearchViewEvent(searchItem);
+		
+		searchView.setOnCloseListener(new SearchView.OnCloseListener() {
+			@Override
+			public boolean onClose() {
+				 onQueryTextChange("");
+				return false;
 			}
-			if (getFilterText() != null && getFilterText().equals(newFilter)) {
-				return;
-			}
-
-			setFilterText(newText);
-			this.getListView().setFilterText(newText);
-			
-			/*if (TextUtils.isEmpty(newText)) {
-				setFilterText(null);
-				this.getListView().clearTextFilter();
-			} 
-			else {
-				if (getFilterText() == null || getFilterText().compareTo(newText) != 0) {
-					setFilterText(newText);
-					this.getListView().setFilterText(newText);
+		});
+		
+	}
+	
+	/*
+	 * A bug in Android made the [searchView.setOnCloseListener] not working
+	 */
+	@TargetApi(Build.VERSION_CODES.ICE_CREAM_SANDWICH)
+	private void addCloseSearchViewEvent(MenuItem searchItem) {
+		int apiVersion = android.os.Build.VERSION.SDK_INT;
+		if (apiVersion >= android.os.Build.VERSION_CODES.ICE_CREAM_SANDWICH) {
+			searchItem.setOnActionExpandListener(new MenuItem.OnActionExpandListener() {
+				@Override
+				public boolean onMenuItemActionCollapse(MenuItem item) {
+					onQueryTextChange("");
+					return true;
 				}
-			}*/
+						@Override
+						public boolean onMenuItemActionExpand(MenuItem item) {
+							return true;
+						}
+					});
 		}
 	}
 
+	@Override public boolean onQueryTextChange(String newText) {
+        String newFilter = !TextUtils.isEmpty(newText) ? newText : null;
+        if (getFilterText() == null && newFilter == null) {
+        	this.getListView().clearTextFilter();
+            return true;
+        }
+        if (getFilterText() != null && getFilterText().equals(newFilter)) {
+            return true;
+        }
+        setFilterText(newFilter);
+        queryTheTextChange();
+        return true;
+    }
 	
-	
+    @Override public boolean onQueryTextSubmit(String query) {
+        return true;
+    }
+    
 	public String getFilterText() {
 		return filterText;
 	}
@@ -142,4 +195,21 @@ public abstract class AbstractFragment extends ListFragment implements
 	public void setListShownNoAnimation(boolean shown) {
 		setListShown(shown, false);
 	}
+	
+	/*public void makeFilterInListView(String newText) {
+		if (this.getListView() != null) {
+			
+			String newFilter = !TextUtils.isEmpty(newText) ? newText : null;
+			
+			if (getFilterText() == null && newFilter == null) {
+				return;
+			}
+			if (getFilterText() != null && getFilterText().equals(newFilter)) {
+				return;
+			}
+
+			setFilterText(newText);
+			this.getListView().setFilterText(newText);
+		}
+	}*/
 }

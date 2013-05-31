@@ -23,9 +23,13 @@ import free.solnRss.R;
 public abstract class AbstractFragment extends ListFragment implements	OnQueryTextListener, 
 		LoaderManager.LoaderCallbacks<Cursor> {
 	
+	protected SimpleCursorAdapter simpleCursorAdapter;
+	
+	private SearchView searchView;
+	
 	private String filterText;
 	
-	protected SimpleCursorAdapter simpleCursorAdapter;
+	protected int emptyLayoutId;
 	
 	protected abstract void initAdapter();
 	
@@ -57,8 +61,6 @@ public abstract class AbstractFragment extends ListFragment implements	OnQueryTe
 		}
 	}
 	
-	protected int emptyLayoutId;
-	
 	private void displayEmptyMessage() {
 		LinearLayout l = (LinearLayout) getActivity().findViewById(emptyLayoutId);
 		l.setVisibility(View.VISIBLE);
@@ -89,8 +91,6 @@ public abstract class AbstractFragment extends ListFragment implements	OnQueryTe
 		searchView = (SearchView) searchItem.getActionView();
 		setupSearchView(searchItem);
     }
-
-	private SearchView searchView;
 	
 	private void setupSearchView(MenuItem searchItem) {
 		searchItem.setShowAsAction(

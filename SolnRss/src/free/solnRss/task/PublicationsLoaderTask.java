@@ -46,7 +46,7 @@ public class PublicationsLoaderTask extends
 			new PublicationAdapter(context,	R.layout.publications, c, from, to, 0);
 
 		// Keep the syndication id in adapter for filter
-		publicationAdapter.setSelectedSyndicationId((Integer)id);
+		//publicationAdapter.setSelectedSyndicationId((Integer)id);
 
 		return publicationAdapter;
 	}

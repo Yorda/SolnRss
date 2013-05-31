@@ -3,6 +3,7 @@ package free.solnRss.fragment;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.AsyncTask;
@@ -110,13 +111,13 @@ public class PublicationsFragment extends AbstractFragment implements
 		String link = getPublicationUrl(cursor);
 		String description = hasPublicationContentToDisplay(cursor);
 		
-	    if (description != null && description.trim().length() > 0) {
+		if (description != null && description.trim().length() > 0) {
 
-	    	if(isPreferenceToDisplayOnAppReader()){
-	    		displayOnApplicationReader(description, link);
-	    	}else{
-	    		displayOnSystemBrowser(link);
-	    	}			
+			if (isPreferenceToDisplayOnAppReader()) {
+				displayOnApplicationReader(description, link);
+			} else {
+				displayOnSystemBrowser(link);
+			}
 		} else {
 			displayOnSystemBrowser(link);
 		}
@@ -177,7 +178,6 @@ public class PublicationsFragment extends AbstractFragment implements
 			} else {
 				markSyndicationPublicationsAsRead(nextSelectedSyndicationID);
 			}
-
 			break;
 
 		default:
@@ -186,9 +186,34 @@ public class PublicationsFragment extends AbstractFragment implements
 		return super.onContextItemSelected(item);
 	}
 	
+	@Override public void onPause() {
+		super.onPause();
+		SharedPreferences.Editor editor = getActivity().getPreferences(0)
+				.edit();
+		if (selectedSyndicationID != null) {
+			editor.putInt("selectedSyndicationID", selectedSyndicationID);
+		} else {
+			editor.putInt("selectedSyndicationID", -1);
+		}
+
+		if (selectedCategoryID != null) {
+			editor.putInt("selectedCategoryID", selectedCategoryID);
+		} else {
+			editor.putInt("selectedCategoryID", -1);
+		}
+		
+		if (!TextUtils.isEmpty(getFilterText())) {
+			editor.putString("filterText", getFilterText());
+		} else {
+			editor.putString("filterText", null);
+		}
+
+		editor.commit();
+	}
+	
 	private void restoreOrFirstDisplay(Bundle save) {
 		
-		if (save != null) {
+		/*if (save != null) {
 			if(save.getInt("selectedSyndicationID") != 0 ){
 				selectedSyndicationID = save.getInt("selectedSyndicationID");
 			}
@@ -203,13 +228,23 @@ public class PublicationsFragment extends AbstractFragment implements
 				selectedCategoryID = null;
 			}
 			
-			if(!TextUtils.isEmpty(save.getString("filterText"))){
-				setFilterText( save.getString("filterText"));
-			}else{
+			if (!TextUtils.isEmpty(save.getString("filterText"))) {
+				setFilterText(save.getString("filterText"));
+			} else {
 				setFilterText(null);
 			}
-		}
+		}*/
 
+		SharedPreferences prefs = getActivity().getPreferences(0);
+		if (prefs.getInt("selectedSyndicationID", -1) != -1) {
+			selectedSyndicationID = prefs.getInt("selectedSyndicationID", -1);
+		}
+		if (prefs.getInt("selectedCategoryID", -1) != -1) {
+			selectedCategoryID = prefs.getInt("selectedCategoryID", -1);
+		}
+		setFilterText(prefs.getString("filterText", null));
+		
+		
 		if (selectedSyndicationID != null) {
 			loadPublicationsBySyndication();
 		} else if (selectedCategoryID != null) {

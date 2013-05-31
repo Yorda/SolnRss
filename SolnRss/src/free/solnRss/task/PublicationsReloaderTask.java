@@ -49,7 +49,7 @@ public class PublicationsReloaderTask extends AsyncTask<Object, Void, Cursor> {
 		//}
 
 		// Keep the syndication id in adapter for filter
-		((PublicationAdapter) fragment.getListAdapter()).setSelectedSyndicationId(syndicationId);
+		//((PublicationAdapter) fragment.getListAdapter()).setSelectedSyndicationId(syndicationId);
 		return repository.fetchFilteredPublication(syndicationId, null, displayUnread());
 	}
 

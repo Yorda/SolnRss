@@ -39,7 +39,7 @@ public class PublicationsByCategoryReloaderTask extends AsyncTask<Integer, Void,
 		}
 		
 		// Keep the category id in adapter for filter
-		((PublicationAdapter) fragment.getListAdapter()).setSelectedCategoryId(ids[0]);
+		//((PublicationAdapter) fragment.getListAdapter()).setSelectedCategoryId(ids[0]);
 		
 		return repository.fetchPublicationByCategorie(ids[0], null,
 				mustDisplayUnread());

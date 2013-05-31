@@ -76,6 +76,8 @@ public class PublicationsProvider extends ContentProvider {
 		
 		switch (uriMatcher.match(uri)) {
 			case PUBLICATIONS:
+				// For all publications filter who are authorized to be displayed on main time line
+				where = addWhereClauses(where, SyndicationTable.COLUMN_DISPLAY_ON_TIMELINE + "= 1 ");
 			break;
 				
 			case PUBLICATION_IN_SYNDICATION:

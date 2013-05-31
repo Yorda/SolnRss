@@ -11,19 +11,24 @@ public class SyndicationTable {
 	public static final String COLUMN_SITE_URL = "syn_website_url";
 	public static final String COLUMN_IS_ACTIVE = "syn_is_active";
 	public static final String COLUMN_NUMBER_CLICK = "syn_number_click";
-	public static final String COLUMN_LAST_EXTRACT_TIME = "syn_last_extract_time";
-	public static final String COLUMN_LAST_EXTRACT_DATE = "syn_creation_date";
+	public static final String COLUMN_LAST_EXTRACT_TIME    = "syn_last_extract_time";
+	public static final String COLUMN_LAST_EXTRACT_DATE   = "syn_creation_date";
+	public static final String COLUMN_DISPLAY_ON_TIMELINE = "syn_display_on_timeline";
+	public static final String COLUMN_LAST_RSS_PUBLISHED  = "syn_last_rss_published";
 	
 	
-	private static final String DATABASE_CREATE = "create table d_syndication (\r\n"
-			+ "	_id INTEGER PRIMARY KEY autoincrement,\r\n"
-			+ "	syn_name text NOT NULL,	\r\n"
-			+ "	syn_url text NOT NULL,\r\n"
-			+ "	syn_website_url text NOT NULL,\r\n"
-			+ "	syn_is_active INTEGER NOT NULL,\r\n"
-			+ "	syn_number_click INTEGER NOT NULL,\r\n"
-			+ "	syn_last_extract_time datetime NOT NULL,\r\n"
-			+ "	syn_creation_date datetime NOT NULL\r\n" + ");";
+	private static final String DATABASE_CREATE ="create table d_syndication (\r\n" + 
+			"	_id INTEGER PRIMARY KEY autoincrement,\r\n" + 
+			"	syn_name text NOT NULL,	\r\n" + 
+			"	syn_url text NOT NULL,\r\n" + 
+			"	syn_website_url text NOT NULL,\r\n" + 
+			"	syn_is_active INTEGER NOT NULL,\r\n" + 
+			"	syn_number_click INTEGER NOT NULL,\r\n" + 
+			"	syn_last_extract_time datetime NOT NULL,\r\n" + 
+			"	syn_creation_date datetime NOT NULL,\r\n" + 
+			"   syn_display_on_timeline INTEGER NOT NULL, \r\n" +
+			"  	syn_last_rss_published text \r\n" +
+			");";
 
 	public static void onCreate(SQLiteDatabase database) {
 		database.execSQL(DATABASE_CREATE);

@@ -13,7 +13,7 @@ import android.util.Log;
 
 public class Database extends SQLiteOpenHelper {
 
-	public static int VERSION = 6;
+	public static int VERSION = 9;
 	public static String DATABASE_NAME = "SOLNRSS.db";
 	
 	//private String SCHEMA_NAME = "schema.sql";
@@ -36,6 +36,24 @@ public class Database extends SQLiteOpenHelper {
 	@Override
 	public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
 		
+		/*if (oldVersion < newVersion) {
+			if (newVersion == 8) {
+				String req = "alter table d_syndication add syn_display_on_timeline INTEGER NOT NULL default 1; ";
+				db.execSQL(req);
+				req = "alter table d_syndication add syn_last_rss_published text ";
+				db.execSQL(req);
+			}
+			
+			if (newVersion == 9) {
+				db.execSQL("alter table d_publication rename to d_publication_tmp; ");
+				db.execSQL(tables[1]);
+				db.execSQL("INSERT INTO d_publication ( _id, pub_link,pub_title,pub_already_read,pub_publication,pub_publication_date,syn_syndication_id ) " +
+						"SELECT " +
+						" _id, pub_link,pub_title, pub_already_read,pub_publication,pub_publication_date,syn_syndication_id FROM d_publication_tmp ;");
+				 db.execSQL("DROP TABLE d_publication_tmp  ;");
+			}
+		}*/
+		
 	}
 
 	String[] tables = { "create table d_syndication (\r\n" + 
@@ -46,7 +64,9 @@ public class Database extends SQLiteOpenHelper {
 			"	syn_is_active INTEGER NOT NULL,\r\n" + 
 			"	syn_number_click INTEGER NOT NULL,\r\n" + 
 			"	syn_last_extract_time datetime NOT NULL,\r\n" + 
-			"	syn_creation_date datetime NOT NULL\r\n" + 
+			"	syn_creation_date datetime NOT NULL,\r\n" + 
+			"   syn_display_on_timeline INTEGER NOT NULL, \r\n" +
+			"  	syn_last_rss_published text \r\n" +
 			"); \r\n"
 			,
 			

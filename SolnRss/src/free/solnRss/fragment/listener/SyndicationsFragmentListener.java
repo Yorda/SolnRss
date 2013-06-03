@@ -16,10 +16,4 @@ public interface SyndicationsFragmentListener {
 	 * @param context
 	 */
 	public void reloadSyndications();
-
-	/**
-	 * 
-	 * @param text
-	 */
-	public void filterSyndications(String text);
 }

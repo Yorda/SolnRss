@@ -42,11 +42,16 @@ public class SyndicationAdapter extends SimpleCursorAdapter //implements	FilterQ
 
 		String title = getCursor().getString(
 				getCursor().getColumnIndex("syn_name"));
+		
 		Integer numberOfClick = getCursor().getInt(
 				getCursor().getColumnIndex("syn_number_click"));
+		
 		Integer isActive = getCursor().getInt(
 				getCursor().getColumnIndex("syn_is_active"));
-
+		
+		/*Integer IsDisplayOnMainTimeLine= getCursor().getInt(
+				getCursor().getColumnIndex("syn_display_on_timeline"));*/
+		
 		if (convertView == null) {
 
 			convertView = View.inflate(context, layout, null);

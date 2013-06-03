@@ -48,9 +48,11 @@
     <!-- Syndication manager activity -->
     <string name="site_parameter">%1$s</string>
     <string name="clean_articles_btn">Remove publications</string>
-    <string name="delete_articles_btn">Delete</string>
-    <string name="active_articles_btn">Start</string>
-    <string name="unactive_articles_btn">Pause</string>
+    <string name="delete_articles_btn">Delete this syndications</string>
+    <string name="active_articles_btn">Start search new publications</string>
+    <string name="unactive_articles_btn">Pause search new publications</string>
+    <string name="display_articles_on_time_line">Display on publication\'s tab</string>
+    <string name="undisplay_articles_on_time_line">Undisplay on publication\'s tab</string>
     <string name="delete_ok">Your deletetion is well done</string>
     <string name="clean_confirm">Would you like to remove articles list ?</string>
     <string name="delete_confirm">Would you like to delete this syndication ?</string>

@@ -332,6 +332,10 @@ public class SolnRss extends FragmentActivity implements ActionBar.TabListener,
 		publicationsListener.moveListViewToTop();
 	}
 	
+	public void refreshPublications() {
+		publicationsListener.refreshPublications();
+	}
+	
 	public void reLoadAllPublications() {
 		publicationsListener.reloadPublications();
 		publicationsListener.moveListViewToTop();
@@ -456,4 +460,6 @@ public class SolnRss extends FragmentActivity implements ActionBar.TabListener,
 		this.publicationsListener = publicationsFragmentListener2;
 		
 	}
+
+	
 }

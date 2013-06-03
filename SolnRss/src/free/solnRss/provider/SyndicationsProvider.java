@@ -26,6 +26,7 @@ public class SyndicationsProvider extends ContentProvider {
 	private final int SYNDICATION_ID             = 20;
 	private final int ADD_CLICK_SYNDICATION_ID   = 30;
 	private final int SYNDICATION_BY_CATEGORY_ID = 40;
+	private final int CHANGE_SYNDICATION_DISPLAY_MODE = 50;
 	
 	final static String syndicationTable = SyndicationTable.SYNDICATION_TABLE;
 	public static String syndicationProjection[] = 
@@ -34,7 +35,8 @@ public class SyndicationsProvider extends ContentProvider {
 			syndicationTable + "." + SyndicationTable.COLUMN_NAME,
 			syndicationTable + "." + SyndicationTable.COLUMN_URL,
 			syndicationTable + "." + SyndicationTable.COLUMN_IS_ACTIVE,
-			syndicationTable + "." + SyndicationTable.COLUMN_NUMBER_CLICK
+			syndicationTable + "." + SyndicationTable.COLUMN_NUMBER_CLICK,
+			syndicationTable + "." + SyndicationTable.COLUMN_DISPLAY_ON_TIMELINE
 		};
 	
 	final static String CategorySyndicationTable = CategorySyndicationsTable.CATEGORY_SYNDICATION_TABLE;
@@ -53,6 +55,7 @@ public class SyndicationsProvider extends ContentProvider {
 		uriMatcher.addURI(AUTHORITY, SYNDICATION_PATH + "/#", SYNDICATION_ID);
 		uriMatcher.addURI(AUTHORITY, SYNDICATION_PATH + "/click/#", ADD_CLICK_SYNDICATION_ID);
 		uriMatcher.addURI(AUTHORITY, SYNDICATION_PATH + "/selectedCategoryId/#", SYNDICATION_BY_CATEGORY_ID);
+		uriMatcher.addURI(AUTHORITY, SYNDICATION_PATH + "/displayMode/#", CHANGE_SYNDICATION_DISPLAY_MODE);
 		return true;
 	}
 	
@@ -90,7 +93,6 @@ public class SyndicationsProvider extends ContentProvider {
 					+ "=" + uri.getLastPathSegment());
 
 			break;
-				
 			default: throw new IllegalArgumentException("Unknown URI: " + uri);
 		}
 		
@@ -118,11 +120,19 @@ public class SyndicationsProvider extends ContentProvider {
 		
 		SQLiteDatabase db = repository.getWritableDatabase();
 		int rowsUpdated = 0;
+		String id = null;
 		int uriType = uriMatcher.match(uri);
 		switch (uriType) {
 
+			case CHANGE_SYNDICATION_DISPLAY_MODE:
+				id = uri.getLastPathSegment();
+				String[] whereArgs = new String[1];
+				whereArgs[0] = id.toString();
+				db.update("d_syndication", values, "_id = ? ", whereArgs);
+			break;
+			
 			case ADD_CLICK_SYNDICATION_ID:
-				String id = uri.getLastPathSegment();
+				id = uri.getLastPathSegment();
 				String[] args = new String[1];
 				args[0] = id.toString();
 				db.execSQL("update d_syndication set syn_number_click = (syn_number_click +1) where _id = ?", args);

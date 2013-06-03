@@ -1,10 +1,12 @@
 package free.solnRss.fragment;
 
 import android.app.AlertDialog;
+import android.content.ContentValues;
 import android.content.DialogInterface;
 import android.content.DialogInterface.OnClickListener;
 import android.content.Intent;
 import android.database.Cursor;
+import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.content.CursorLoader;
@@ -39,7 +41,7 @@ public class SyndicationsFragment extends AbstractFragment implements
 	
 	private Integer selectedSyndicationID;
 	private Integer activeStatus;
-	//private SyndicationAdapter syndicationAdapter;
+	private Integer isDisplayOnMainTimeLine;
 	
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup vg, Bundle save) {
@@ -74,7 +76,6 @@ public class SyndicationsFragment extends AbstractFragment implements
 
 		registerForContextMenu(getListView());
 		((SolnRss) getActivity()).setSyndicationsFragmentListener(this);
-		// getListView().setTextFilterEnabled(true);
 		setHasOptionsMenu(true);
 		setListShown(false);
 	}
@@ -95,14 +96,17 @@ public class SyndicationsFragment extends AbstractFragment implements
 		
 		selectedSyndicationID = c.getInt(c.getColumnIndex("_id"));
 		activeStatus =  c.getInt(c.getColumnIndex("syn_is_active"));
+		isDisplayOnMainTimeLine = c.getInt(c.getColumnIndex("syn_display_on_timeline"));
+		
 		
 		menu.setHeaderTitle(c.getString(c.getColumnIndex("syn_name")));
 		MenuInflater inflater = getActivity().getMenuInflater();
 		inflater.inflate(R.menu.syndications_context, menu);
 		
 		setLabelContextMenuActivation(menu);
+		setLabelContextMenuForDisplayOnMainTimeLine(menu);
 	}
-	
+
 	@Override
 	protected void initAdapter() {
 		final String[] from = { "syn_name", "syn_number_click" };
@@ -151,6 +155,15 @@ public class SyndicationsFragment extends AbstractFragment implements
 			itemActive.setTitle(getResources().getString(R.string.active_articles_btn));
 		}
 	}
+	
+	private void setLabelContextMenuForDisplayOnMainTimeLine(ContextMenu menu) {
+		boolean isDisplayed = isDisplayOnMainTimeLine == 1 ? true : false;
+		MenuItem itemActive = menu.getItem(1);
+		if (!isDisplayed) {
+			itemActive.setTitle(getResources().getString(R.string.display_articles_on_time_line));
+		}
+		
+	}
 
 	@Override
 	public boolean onContextItemSelected(MenuItem item) {
@@ -159,6 +172,10 @@ public class SyndicationsFragment extends AbstractFragment implements
 			changeStatus(item);
 			break;
 
+		case R.id.menu_display_on_time_line:
+			changeDisplayMode(item);
+			break;
+			
 		case R.id.menu_clean:
 			clean();
 			break;
@@ -172,6 +189,17 @@ public class SyndicationsFragment extends AbstractFragment implements
 		}
 		return super.onContextItemSelected(item);
 	}	
+
+	private void changeDisplayMode(final MenuItem item) {
+		
+		Uri uri = Uri.parse(SyndicationsProvider.URI + "/displayMode/" + selectedSyndicationID);
+		ContentValues values = new ContentValues();
+		values.put("syn_display_on_timeline",  isDisplayOnMainTimeLine == 0 ? 1: 0);
+		getActivity().getContentResolver().update(uri, values, null, null);
+		getLoaderManager().restartLoader(0, null, this);
+		// Reload publications list
+		((SolnRss) getActivity()).refreshPublications();
+	}
 
 	public void changeStatus(final MenuItem item) {
 
@@ -271,30 +299,4 @@ public class SyndicationsFragment extends AbstractFragment implements
 			getLoaderManager().restartLoader(0, null, this);
 		}
 	}
-
-	private String filterText;
-
-	@Override @Deprecated
-	public void filterSyndications(String text) {
-		if (this.getListView() != null) {
-			if (TextUtils.isEmpty(text)) {
-				setFilterText(null);
-				this.getListView().clearTextFilter();
-			} else {
-				setFilterText(text);
-				this.getListView().setFilterText(text);
-			}
-		}
-	}
-
-	public String getFilterText() {
-		return filterText;
-	}
-
-	public void setFilterText(String filterText) {
-		this.filterText = filterText;
-	}
-
-	
-	
 }

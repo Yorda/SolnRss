@@ -46,6 +46,6 @@ public interface PublicationsFragmentListener {
 	 * 
 	 * @param text
 	 */
-	public void filterPublications(String text);
+	//public void filterPublications(String text);
 
 }

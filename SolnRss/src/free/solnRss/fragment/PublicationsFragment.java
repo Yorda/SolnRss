@@ -45,6 +45,7 @@ public class PublicationsFragment extends AbstractFragment implements
 	private Integer selectedSyndicationID;
 	private Integer nextSelectedSyndicationID; // selected by context menu
 	private Integer selectedCategoryID;
+
 	
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup vg, Bundle save) {
@@ -91,15 +92,6 @@ public class PublicationsFragment extends AbstractFragment implements
 	@Override
 	public void onSaveInstanceState(Bundle outState) {
 		super.onSaveInstanceState(outState);
-		if (selectedSyndicationID != null) {
-			outState.putInt("selectedSyndicationID", selectedSyndicationID);
-		}
-		if (selectedCategoryID != null) {
-			outState.putInt("selectedCategoryID", selectedCategoryID);
-		}
-		if (getFilterText() != null) {
-			outState.putString("filterText", getFilterText());
-		}
 	}
 
 	@Override
@@ -208,33 +200,12 @@ public class PublicationsFragment extends AbstractFragment implements
 			editor.putString("filterText", null);
 		}
 
+		savePositionOnScreen(editor);
 		editor.commit();
 	}
 	
 	private void restoreOrFirstDisplay(Bundle save) {
 		
-		/*if (save != null) {
-			if(save.getInt("selectedSyndicationID") != 0 ){
-				selectedSyndicationID = save.getInt("selectedSyndicationID");
-			}
-			else {
-				selectedSyndicationID = null;
-			}
-
-			if(save.getInt("selectedCategoryID") != 0 ){
-				selectedCategoryID = save.getInt("selectedCategoryID");
-			}
-			else {
-				selectedCategoryID = null;
-			}
-			
-			if (!TextUtils.isEmpty(save.getString("filterText"))) {
-				setFilterText(save.getString("filterText"));
-			} else {
-				setFilterText(null);
-			}
-		}*/
-
 		SharedPreferences prefs = getActivity().getPreferences(0);
 		if (prefs.getInt("selectedSyndicationID", -1) != -1) {
 			selectedSyndicationID = prefs.getInt("selectedSyndicationID", -1);
@@ -255,15 +226,40 @@ public class PublicationsFragment extends AbstractFragment implements
 		
 	}
 	
+	private void savePositionOnScreen(SharedPreferences.Editor editor) {
+
+		getListView().setScrollbarFadingEnabled(false);
+		int index = getListView().getFirstVisiblePosition();
+		editor.putInt("publicationsListViewIndex", index);
+
+		View v = getListView().getChildAt(0);
+		int position = (v == null) ? 0 : v.getTop();
+		editor.putInt("publicationsListViewPosition", position);
+	}
+	
+	@Override
+	protected void setListPositionOnScreen() {
+		SharedPreferences prefs = getActivity().getPreferences(0);
+		int index = prefs.getInt("publicationsListViewIndex", -1);
+		int position = prefs.getInt("publicationsListViewPosition", -1);
+
+		if (index != -1) {
+			// Set list view at position
+			getListView().setSelectionFromTop(index, position);
+			// Reset position save
+			SharedPreferences.Editor editor = prefs.edit();
+			editor.putInt("publicationsListViewIndex", -1);
+			editor.putInt("publicationsListViewPosition", -1);
+			editor.commit();
+		}
+	}
+	
 	@Override
 	protected void initAdapter() {
 		final String[] from = { PublicationTable.COLUMN_TITLE,  PublicationTable.COLUMN_LINK };
 		final int[] to = { android.R.id.text1, android.R.id.text2 };
 		simpleCursorAdapter = new PublicationAdapter(getActivity(),R.layout.publications, null, from, to, 0);
-		setListAdapter((PublicationAdapter)simpleCursorAdapter);
-		//((PublicationAdapter)simpleCursorAdapter).setSelectedCategoryId(selectedCategoryID);
-		//((PublicationAdapter)simpleCursorAdapter).setSelectedSyndicationId(selectedSyndicationID);
-		
+		setListAdapter((PublicationAdapter)simpleCursorAdapter);		
 	}
 
 	@Override
@@ -370,11 +366,6 @@ public class PublicationsFragment extends AbstractFragment implements
 		getListView().setSelection(0);
 	}
 
-	@Override @Deprecated
-	public void filterPublications(String text) {
-		//makeFilterInListView(text);
-	}
-	
 	public void loadPublications() {
 		getLoaderManager().initLoader(0, null, this);
 	}

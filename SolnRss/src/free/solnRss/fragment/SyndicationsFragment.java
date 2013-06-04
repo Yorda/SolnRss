@@ -299,4 +299,10 @@ public class SyndicationsFragment extends AbstractFragment implements
 			getLoaderManager().restartLoader(0, null, this);
 		}
 	}
+
+	@Override
+	protected void setListPositionOnScreen() {
+		// TODO Auto-generated method stub
+		
+	}
 }

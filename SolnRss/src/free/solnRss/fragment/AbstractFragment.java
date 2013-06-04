@@ -37,6 +37,8 @@ public abstract class AbstractFragment extends ListFragment implements	OnQueryTe
 	
 	@Override
 	public abstract Loader<Cursor> onCreateLoader(int id, Bundle bundle);
+	
+	protected abstract void setListPositionOnScreen();
 
 	@Override
 	public void onLoadFinished(Loader<Cursor> arg0, Cursor arg1) {
@@ -58,6 +60,7 @@ public abstract class AbstractFragment extends ListFragment implements	OnQueryTe
 			displayEmptyMessage();
 		} else {
 			hideEmptyMessage();
+			setListPositionOnScreen();
 		}
 	}
 	

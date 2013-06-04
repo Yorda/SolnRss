@@ -202,6 +202,12 @@ public class CategoriesFragment extends AbstractFragment implements
 	public void setFilterText(String filterText) {
 		this.filterText = filterText;
 	}
+
+	@Override
+	protected void setListPositionOnScreen() {
+		// TODO Auto-generated method stub
+		
+	}
 	
 }
 

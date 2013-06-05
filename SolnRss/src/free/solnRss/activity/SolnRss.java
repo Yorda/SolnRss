@@ -163,16 +163,6 @@ public class SolnRss extends FragmentActivity implements ActionBar.TabListener,
 		}
 	}
 	
-	/*@Override
-	public boolean onCreateOptionsMenu(Menu menu) {
-		// Inflate the menu; this adds items to the action bar if it is present.
-		getMenuInflater().inflate(R.menu.activity_soln_rss, menu);
-		MenuItem searchItem = menu.findItem(R.id.action_search);
-		searchView = (SearchView) searchItem.getActionView();
-		setupSearchView(searchItem);
-		return true;
-	}*/
-	
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
 		switch (item.getItemId()) {
@@ -383,65 +373,6 @@ public class SolnRss extends FragmentActivity implements ActionBar.TabListener,
 	       cm.getActiveNetworkInfo().isConnectedOrConnecting();
 	}
 	
-	/*
-	 * The search view in action bar 
-	 */
-	/*private void setupSearchView(MenuItem searchItem) {
-
-		boolean isAlwaysExpanded = false;
-		if (isAlwaysExpanded) {
-			searchView.setIconifiedByDefault(false);
-		} else {
-			searchItem.setShowAsAction(
-					MenuItem.SHOW_AS_ACTION_IF_ROOM
-					| MenuItem.SHOW_AS_ACTION_COLLAPSE_ACTION_VIEW
-				);
-		}
-		
-		searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
-			@Override
-			public boolean onQueryTextSubmit(String query) {
-				return false;
-			}
-
-			@Override
-			public boolean onQueryTextChange(String newText) {
-				switch (tabSelected) {
-				case Categories:
-					filterCategories(newText);
-					break;
-				case Publications:
-					filterPublications(newText);
-					break;
-				case Syndications:
-					filterSyndications(newText);
-					break;
-				}
-
-				return true;
-			}
-		});
-	}*/
-	
-	/*
-	 * Apply the text for filter in publication's list
-	 */
-	/*private void filterPublications(String text) {
-		publicationsListener.filterPublications(text);
-	}
-
-	private void filterCategories(String text) {
-		categoriesListener.filterCategories(text);
-	}
-	
-	private void filterSyndications(String text) {
-		syndicationsListener.filterSyndications(text);
-	}
-	
-	public CategoriesFragmentListener getCategoriesFragmentListener() {
-		return categoriesListener;
-	}*/
-
 	public void setCategoriesFragmentListener(CategoriesFragmentListener categoriesFragmentListener) {
 		this.categoriesListener = categoriesFragmentListener;
 	}
@@ -458,8 +389,5 @@ public class SolnRss extends FragmentActivity implements ActionBar.TabListener,
 	public void setPublicationsFragmentListener(
 			PublicationsFragmentListener publicationsFragmentListener2) {
 		this.publicationsListener = publicationsFragmentListener2;
-		
 	}
-
-	
 }

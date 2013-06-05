@@ -12,6 +12,7 @@ import free.solnRss.business.SyndicationBusiness;
 import free.solnRss.exception.ExtractFeedException;
 import free.solnRss.model.Publication;
 import free.solnRss.model.Syndication;
+import free.solnRss.tools.StringTools;
 import free.solnRss.utility.HttpUtil;
 import free.solnRss.utility.SyndicateUtil;
 import free.solnRss.utility.WebSiteUtil;
@@ -24,7 +25,52 @@ public class SyndicationBusinessImpl implements SyndicationBusiness {
 	}	
 	
 	
-	public List<Publication> getLastPublications(String rssUrl) throws ExtractFeedException {
+	public Syndication getLastPublications(Syndication syndication) throws ExtractFeedException {
+
+		List<Publication> publications = new ArrayList<Publication>();
+		
+		if (!HttpUtil.isValidUrl(syndication.getUrl())) {
+			throw new ExtractFeedException(ExtractFeedException.Error.BAD_URL);
+		}
+
+		String rss = null;
+		try {
+			rss = HttpUtil.htmlFromSite(syndication.getUrl());
+			syndication.setRss(rss);
+			
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw new ExtractFeedException(ExtractFeedException.Error.GET_HTTP_DATA);
+		}
+		
+		try {
+			syndicateUtil.init(rss);
+			List<SyndEntry> entries = syndicateUtil.lastEntries();
+			Publication publication = null;
+			String description;
+			for (SyndEntry entry : entries) {
+				
+				description = entry.getDescription() != null 
+						? entry.getDescription().getValue() : null;
+						
+				if(entry.getContents() != null && entry.getContents().size() > 0){
+					description = ((SyndContent) entry.getContents().get(0)).getValue();
+				}
+					
+				publication = new Publication(entry.getLink(),
+						entry.getPublishedDate(), StringTools.unescapeHTML(entry.getTitle()), description);
+				publications.add(publication);
+			}
+			syndication.setPublications(publications);
+		} catch (Exception e) {
+			System.err.println("Search new publication error: " + e.getCause() + ", " + e.getMessage());
+			throw new ExtractFeedException(ExtractFeedException.Error.GET_FEED_INFO);
+		}		
+		return syndication;
+
+	}
+	
+	public List<Publication> getLastPublicationsBak(String rssUrl) throws ExtractFeedException {
 		List<Publication> publications = new ArrayList<Publication>();
 		
 		if (!HttpUtil.isValidUrl(rssUrl)) {
@@ -104,6 +150,7 @@ public class SyndicationBusinessImpl implements SyndicationBusiness {
 		if (syndicateUtil.isFeed(html)) {
 			syndication.setUrl(url);
 			syndicateUtil.init(html);
+			syndication.setRss(html);
 		} else {
 			String syndicationUrl = WebSiteUtil.searchSyndicate(html, url);
 			if (syndicationUrl == null) {

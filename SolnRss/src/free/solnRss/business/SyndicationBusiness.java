@@ -1,9 +1,6 @@
 package free.solnRss.business;
 
-import java.util.List;
-
 import free.solnRss.exception.ExtractFeedException;
-import free.solnRss.model.Publication;
 import free.solnRss.model.Syndication;
 
 
@@ -25,6 +22,8 @@ public interface SyndicationBusiness {
 	 * @param url
 	 * @return
 	 */
-	public List<Publication> getLastPublications(String url) throws ExtractFeedException ;
+	//public List<Publication> getLastPublications(String url) throws ExtractFeedException ;
+	
+	public Syndication getLastPublications(Syndication syndication) throws ExtractFeedException ;
 
 }

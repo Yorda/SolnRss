@@ -28,6 +28,7 @@ import android.os.IBinder;
 import android.os.ResultReceiver;
 import android.preference.PreferenceManager;
 import android.support.v4.app.NotificationCompat;
+import android.text.TextUtils;
 import android.util.Log;
 import android.util.SparseArray;
 import free.solnRss.R;
@@ -40,11 +41,11 @@ import free.solnRss.provider.PublicationsProvider;
 import free.solnRss.provider.SyndicationsProvider;
 import free.solnRss.repository.PublicationTable;
 import free.solnRss.repository.SyndicationTable;
-import free.solnRss.tools.StringTools;
 
 public class PublicationsFinderService extends Service implements
 		SharedPreferences.OnSharedPreferenceChangeListener {
 
+	private SyndicationBusiness syndicationBusiness = new SyndicationBusinessImpl();
 	final DateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.FRENCH);
 	private boolean isWorking = false;
 	
@@ -154,7 +155,14 @@ public class PublicationsFinderService extends Service implements
 		refreshPublications(syndications);
 	}
 	
+	@Override
+	public boolean onUnbind(Intent intent) {
+		return super.onUnbind(intent);
+	}
 	
+	// --
+	//
+	// --
 	private List<Syndication> findSyndicationsToRefresh() {
 		
 		// Period in minute
@@ -167,6 +175,8 @@ public class PublicationsFinderService extends Service implements
 
 		String projection[] = new String[] {
 				SyndicationTable.SYNDICATION_TABLE + "." + SyndicationTable.COLUMN_ID,
+				SyndicationTable.SYNDICATION_TABLE + "." + SyndicationTable.COLUMN_NAME,
+				SyndicationTable.SYNDICATION_TABLE + "." + SyndicationTable.COLUMN_LAST_RSS_PUBLISHED,
 				SyndicationTable.SYNDICATION_TABLE + "." + SyndicationTable.COLUMN_URL, };
 
 		String selection = "syn_last_extract_time < Datetime(?) and syn_is_active = ? ";
@@ -187,6 +197,12 @@ public class PublicationsFinderService extends Service implements
 				syndication = new Syndication();
 				syndication.setId(cursor.getInt(cursor
 						.getColumnIndex(SyndicationTable.COLUMN_ID)));
+				syndication.setName(cursor.getString(cursor
+						.getColumnIndex(SyndicationTable.COLUMN_NAME)));
+				syndication.setOldRss(cursor.getString(cursor
+						.getColumnIndex(SyndicationTable.COLUMN_LAST_RSS_PUBLISHED)));
+				syndication.setId(cursor.getInt(cursor
+						.getColumnIndex(SyndicationTable.COLUMN_ID)));
 				syndication.setUrl(cursor.getString(cursor
 						.getColumnIndex(SyndicationTable.COLUMN_URL)));
 				syndications.add(syndication);
@@ -196,7 +212,8 @@ public class PublicationsFinderService extends Service implements
 		return syndications;
 	}
 
-	SparseArray<List<Publication>> map = new SparseArray<List<Publication>>();
+	//SparseArray<List<Publication>> map = new SparseArray<List<Publication>>();
+	//List<Syndication> syndications = new ArrayList<Syndication>();
 	
 	private void refreshPublications(List<Syndication> syndications) {
 
@@ -205,10 +222,11 @@ public class PublicationsFinderService extends Service implements
 		}
 		try {
 			isWorking = true;
-			map.clear();
+			//map.clear();
+			//syndications.clear();
 			for (Syndication syndication : syndications) {
 				if (isOnline()) {
-					Log.e(this.getClass().getName(),"Get new publications for syndication id "+ syndication.getId());
+					Log.e(this.getClass().getName(),"Get new publications for syndication name "+ syndication.getName());
 					findNewPublication(syndication);
 				}
 				else {
@@ -216,10 +234,53 @@ public class PublicationsFinderService extends Service implements
 				}
 			}
 			
-			List<ContentValues> arr = new ArrayList<ContentValues>();
+			List<ContentValues> contentValues = new ArrayList<ContentValues>();
 			ContentValues values = null;
 			
-			List<Publication> publications = null;
+			for (Syndication syndication : syndications) {
+				for (Publication publication : syndication.getPublications()) {
+					boolean isAlreadyRecorded = false;
+					
+					if (!TextUtils.isEmpty(syndication.getOldRss())) {
+						try {
+							isAlreadyRecorded = syndication
+									.isPublicationAlreadyRecorded(
+											publication.getTitle(),
+											publication.getUrl());
+						} catch (Exception e) {
+							// In case of error keep old method who's search in
+							// database
+							isAlreadyRecorded = isPublicationAlreadyRecorded(
+									syndication.getId(),
+									publication.getTitle(),
+									publication.getUrl());
+						}
+						
+					} else {
+						isAlreadyRecorded = isPublicationAlreadyRecorded(
+								syndication.getId(), publication.getTitle(),
+								publication.getUrl());
+					}
+
+					if (!isAlreadyRecorded) {
+						values = addNewPublication(syndication.getId(),
+								publication);
+						contentValues.add(values);
+					}
+				}
+			}
+			
+			if (contentValues.size() > 0) {
+				notifyNewPublications(insertNewPublications(contentValues));
+			}
+			
+			// Must refresh syndication (update last extract date and rss)
+			updateSyndicationsAfterExtractRSS(syndications);
+			
+			/*
+			 * List<Publication> publications = null;
+			
+		
 			for (int i = 0; i < map.size(); i++) {
 				
 				int syndicationId = map.keyAt(i);
@@ -235,16 +296,40 @@ public class PublicationsFinderService extends Service implements
 						arr.add(values);
 					}
 				}
-			}
-			
-			int newInserted = 0;
-			if(arr.size() > 0){
-				newInserted = insertNewPublications(arr);
-				notifyNewPublications(newInserted);
-			}
+			}*/
 			
 		} finally {
 			isWorking = false;
+		}
+	}
+	
+	private void updateSyndicationsAfterExtractRSS(List<Syndication> syndications) {
+		
+		Uri uri = SyndicationsProvider.URI;
+		for (Syndication syndication : syndications) {
+
+			ContentValues values = new ContentValues();
+
+			values.put(SyndicationTable.COLUMN_LAST_RSS_PUBLISHED,
+					syndication.getRss());
+
+			values.put(SyndicationTable.COLUMN_LAST_EXTRACT_TIME,
+					sdf.format(new Date()));
+
+			String where = " _id = ? ";
+			String[] selectionArgs = { syndication.getId().toString() };
+
+			getContentResolver().update(uri, values, where, selectionArgs);
+		}
+	}
+
+	private void findNewPublication(Syndication syndication) {
+		try {
+			// Get the new rss
+			syndication = syndicationBusiness.getLastPublications(syndication);
+		} catch (Exception e) {
+			Log.e("LoadArticlesService", "Error when trying to refresh "
+					+ syndication.getName() + " - " + e.getCause());
 		}
 	}
 
@@ -261,16 +346,8 @@ public class PublicationsFinderService extends Service implements
 		values.put(PublicationTable.COLUMN_TITLE, publication.getTitle());
 		values.put(PublicationTable.COLUMN_ALREADY_READ, 0);
 		
-		values.put(PublicationTable.COLUMN_PUBLICATION_DATE,sdf.format(new Date()));
-		
-		/*
-		if (publication.getPublicationDate() == null) {
-			values.put(PublicationTable.COLUMN_PUBLICATION_DATE,
-					sdf.format(new Date()));
-		} else {
-			values.put(PublicationTable.COLUMN_PUBLICATION_DATE,
-					sdf.format(publication.getPublicationDate()));
-		}*/
+		values.put(PublicationTable.COLUMN_PUBLICATION_DATE,
+				sdf.format(new Date()));
 		
 		return values;
 	}
@@ -293,27 +370,6 @@ public class PublicationsFinderService extends Service implements
 		}
 		cursor.close();
 		return isAlreadyRecorded;
-	}
-	
-	private SyndicationBusiness syndicationBusiness = new SyndicationBusinessImpl();
-	
-	private void findNewPublication(Syndication syndication) {
-
-		try {
-			// Get the new rss
-			List<Publication>publications = syndicationBusiness.getLastPublications(syndication.getUrl());
-			
-			// Escape HTML
-			for (Publication p : publications) {
-				p.setTitle(StringTools.unescapeHTML(p.getTitle()));
-			}
-			
-			map.put(syndication.getId(), publications);
-
-		} catch (Exception e) {
-			Log.e("LoadArticlesService", 
-					"Error when trying to refresh "	+ syndication.getId() + " - " + e.getCause());
-		}
 	}
 	
 	private void notifyNewPublications(Integer newPublicationsNumber) {
@@ -372,11 +428,6 @@ public class PublicationsFinderService extends Service implements
 	        getApplication().getSystemService(Context.CONNECTIVITY_SERVICE);
 	    return cm.getActiveNetworkInfo() != null && 
 	       cm.getActiveNetworkInfo().isConnected();
-	}
-	
-	@Override
-	public boolean onUnbind(Intent intent) {
-		return super.onUnbind(intent);
 	}
 	
 	public boolean mustDisplayNotification() {

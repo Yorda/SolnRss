@@ -124,6 +124,10 @@ public class SyndicationsProvider extends ContentProvider {
 		int uriType = uriMatcher.match(uri);
 		switch (uriType) {
 
+		case SYNDICATIONS:
+			db.update("d_syndication", values, selection, selectionArgs);
+			break;
+			
 			case CHANGE_SYNDICATION_DISPLAY_MODE:
 				id = uri.getLastPathSegment();
 				String[] whereArgs = new String[1];

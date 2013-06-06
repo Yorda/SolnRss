@@ -70,7 +70,7 @@ public class SyndicationBusinessImpl implements SyndicationBusiness {
 
 	}
 	
-	public List<Publication> getLastPublicationsBak(String rssUrl) throws ExtractFeedException {
+	/*public List<Publication> getLastPublicationsBak(String rssUrl) throws ExtractFeedException {
 		List<Publication> publications = new ArrayList<Publication>();
 		
 		if (!HttpUtil.isValidUrl(rssUrl)) {
@@ -109,12 +109,11 @@ public class SyndicationBusinessImpl implements SyndicationBusiness {
 		}		
 		return publications;
 
-	}
+	}*/
 	
 	public Syndication searchSyndication(String url) throws ExtractFeedException {
 
-		Syndication syndication = new Syndication();
-		syndication.setWebsiteUrl(url);
+		Syndication syndication = null;
 		
 		if (!HttpUtil.isValidUrl(url)) {
 			throw new ExtractFeedException(ExtractFeedException.Error.BAD_URL);
@@ -144,20 +143,27 @@ public class SyndicationBusinessImpl implements SyndicationBusiness {
 	 * information found
 	 * @throws Exception
 	 */
-	private Syndication setSyndication(String html, String url) throws Exception {
+	private Syndication setSyndication(String html, String url)
+			throws Exception {
 		Syndication syndication = new Syndication();
-
+		syndication.setWebsiteUrl(url);
+		
+		// If html is already a feed
 		if (syndicateUtil.isFeed(html)) {
 			syndication.setUrl(url);
 			syndicateUtil.init(html);
 			syndication.setRss(html);
+
 		} else {
+			// Try to find rss url in html
 			String syndicationUrl = WebSiteUtil.searchSyndicate(html, url);
 			if (syndicationUrl == null) {
 				return null;
 			}
+
 			syndication.setUrl(syndicationUrl);
 			syndicateUtil.init(new URL(syndicationUrl));
+			syndication.setRss(HttpUtil.htmlFromSite(url));
 		}
 		
 		syndication.setName(syndicateUtil.syndicationName());
@@ -165,8 +171,14 @@ public class SyndicationBusinessImpl implements SyndicationBusiness {
 		Publication publication = null;
 		String description;
 		for (SyndEntry entry : entries) {
+
 			description = entry.getDescription() != null 
 					? entry.getDescription().getValue() : null;
+					
+			if(entry.getContents() != null && entry.getContents().size() > 0){
+				description = ((SyndContent) entry.getContents().get(0)).getValue();
+			}
+			
 			publication = new Publication(entry.getLink(), entry.getPublishedDate(), entry.getTitle(), description);
 			syndication.addPublication(publication);
 		}

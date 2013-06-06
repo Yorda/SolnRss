@@ -9,12 +9,11 @@ import java.util.GregorianCalendar;
 import java.util.List;
 import java.util.Locale;
 
-import free.solnRss.model.Publication;
-import free.solnRss.model.Syndication;
-
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
+import free.solnRss.model.Publication;
+import free.solnRss.model.Syndication;
 
 public class SyndicationRepository extends Repository {
 
@@ -164,11 +163,13 @@ public class SyndicationRepository extends Repository {
 			siteValues.put("syn_creation_date", now);
 			siteValues.put("syn_last_extract_time", now);  
 			siteValues.put("syn_is_active", 0); 
+			siteValues.put("syn_display_on_timeline", 1);
 			siteValues.put("syn_number_click", 0); 
 			
 			sqLiteDatabase.beginTransaction();
 			
 			Long id = sqLiteDatabase.insert("d_syndication", null, siteValues);
+			
 			
 			ContentValues contentValues = null;
 			for (Publication publication : syndication.getPublications()) {
@@ -178,7 +179,8 @@ public class SyndicationRepository extends Repository {
 				contentValues.put("pub_link", publication.getUrl());
 				contentValues.put("pub_title", publication.getTitle());
 				contentValues.put("pub_already_read", 0);
-				contentValues.put("syn_display_on_timeline", 1);
+				contentValues.put("pub_publication", publication.getDescription());
+				
 				contentValues.put("pub_publication_date", sdf.format(
 						(publication.getPublicationDate() == null 
 							? new Date() : publication.getPublicationDate())));

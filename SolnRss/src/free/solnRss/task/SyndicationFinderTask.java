@@ -90,7 +90,7 @@ public class SyndicationFinderTask extends AsyncTask<String, Void, String> {
 		} else {
 			String success = resources.getString(R.string.feed_search_ok);
 			Toast.makeText(context.getApplicationContext(), success, len).show();
-			((SolnRss)context).displaySyndications(null);
+			((SolnRss)context).displaySyndications();
 		}
 		
 	}
@@ -157,7 +157,7 @@ public class SyndicationFinderTask extends AsyncTask<String, Void, String> {
 		try {
 			syndicationBusiness = new SyndicationBusinessImpl();
 			syndication = syndicationBusiness.searchSyndication(url);
-			syndication.setWebsiteUrl(url);
+			// syndication.setWebsiteUrl(url);
 		} catch (ExtractFeedException e) {
 			err = error(e.getError().getId());
 		}

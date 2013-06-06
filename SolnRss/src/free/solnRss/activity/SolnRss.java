@@ -147,7 +147,7 @@ public class SolnRss extends FragmentActivity implements ActionBar.TabListener,
 					String deleteMsg = getResources().getString(R.string.delete_ok);
 					Toast.makeText(this, deleteMsg, Toast.LENGTH_LONG).show();
 					reLoadAllPublications();
-					displaySyndications(null);
+					displaySyndications();
 					break;
 
 				case CLEAN:
@@ -335,9 +335,10 @@ public class SolnRss extends FragmentActivity implements ActionBar.TabListener,
 		reLoadAllPublications();
 	}
 
-	public void displaySyndications(Integer syndicationID) {
+	public void displaySyndications() {
 		syndicationsListener.loadSyndications();
 		viewPager.setCurrentItem(2);
+		reLoadAllPublications();
 	}
 
 	/**

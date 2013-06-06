@@ -88,7 +88,7 @@ public class SyndicateUtil {
 		try {
 			StringReader sr = new StringReader(text);
 			sfi.build(sr);
-		} catch (FeedException e) {
+		} catch (Exception e) {
 			return false;
 		}
 		return true;

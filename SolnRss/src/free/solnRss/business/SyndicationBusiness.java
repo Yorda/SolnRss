@@ -22,8 +22,6 @@ public interface SyndicationBusiness {
 	 * @param url
 	 * @return
 	 */
-	//public List<Publication> getLastPublications(String url) throws ExtractFeedException ;
-	
 	public Syndication getLastPublications(Syndication syndication) throws ExtractFeedException ;
 
 }

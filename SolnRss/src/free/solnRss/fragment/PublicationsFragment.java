@@ -35,8 +35,6 @@ import free.solnRss.repository.PublicationRepository;
 import free.solnRss.repository.PublicationTable;
 import free.solnRss.repository.SyndicationTable;
 import free.solnRss.service.PublicationsFinderService;
-import free.solnRss.task.PublicationsByCategoryReloaderTask;
-import free.solnRss.task.PublicationsReloaderTask;
 
 public class PublicationsFragment extends AbstractFragment implements
 		PublicationsFragmentListener {
@@ -325,9 +323,11 @@ public class PublicationsFragment extends AbstractFragment implements
 	private void markPublicationAsRead(int publicationId) {
 		ContentValues values = new ContentValues();
 		values.put(PublicationTable.COLUMN_ALREADY_READ, "1");
-		Uri uri = Uri.parse(PublicationsProvider.URI + "/publicationId/" + publicationId);
-		getActivity().getContentResolver().update(uri, values, null, null);
 		
+		String where = PublicationTable.COLUMN_ID + " = ? ";
+		String args[] = { String.valueOf(publicationId) };
+		
+		getActivity().getContentResolver().update(PublicationsProvider.URI, values, where, args);
 		refreshPublicationsAfterMarkAsRead(getActivity());
 	}
 	
@@ -344,7 +344,7 @@ public class PublicationsFragment extends AbstractFragment implements
 	 */
 	private void refreshPublicationsAfterMarkAsRead(Context context) {
 
-		if (this.selectedSyndicationID != null) {
+		/*if (this.selectedSyndicationID != null) {
 			PublicationsReloaderTask task = new PublicationsReloaderTask(
 					this, context);
 			task.execute(this.selectedSyndicationID);
@@ -358,7 +358,8 @@ public class PublicationsFragment extends AbstractFragment implements
 			PublicationsReloaderTask task = new PublicationsReloaderTask(
 					this, context);
 			task.execute(selectedSyndicationID);
-		}
+		}*/
+		refreshPublications();
 	}
 	
 	
@@ -496,6 +497,15 @@ public class PublicationsFragment extends AbstractFragment implements
 			};
 		}.execute();
 		
+	}
+
+	@Override
+	public void markAllPublicationsAsRead() {
+		ContentValues values = new ContentValues();
+		values.put(PublicationTable.COLUMN_ALREADY_READ, "1");
+		//Uri uri = Uri.parse();
+		getActivity().getContentResolver().update(PublicationsProvider.URI, values, null, null);
+		getLoaderManager().restartLoader(0, null, this);
 	}
 
 }

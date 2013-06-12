@@ -15,8 +15,7 @@ import free.solnRss.R;
  * @author jftomasi
  * 
  */
-public class SyndicationAdapter extends SimpleCursorAdapter //implements	FilterQueryProvider 
-{
+public class SyndicationAdapter extends SimpleCursorAdapter {
 
 	private final int titleID = R.id.syndication_title;
 	private final int numberOfClickID = R.id.syndication_number_of_click;
@@ -31,7 +30,6 @@ public class SyndicationAdapter extends SimpleCursorAdapter //implements	FilterQ
 		this.context = context;
 		this.layout = layout;
 		tf = Typeface.createFromAsset(context.getAssets(), "fonts/MONOF55.TTF");
-		//setFilterQueryProvider(this);
 		pause = context.getResources().getDrawable(R.drawable.ic_pause);
 	}
 
@@ -42,24 +40,20 @@ public class SyndicationAdapter extends SimpleCursorAdapter //implements	FilterQ
 
 		String title = getCursor().getString(
 				getCursor().getColumnIndex("syn_name"));
-		
+
 		Integer numberOfClick = getCursor().getInt(
 				getCursor().getColumnIndex("syn_number_click"));
-		
+
 		Integer isActive = getCursor().getInt(
 				getCursor().getColumnIndex("syn_is_active"));
-		
-		/*Integer IsDisplayOnMainTimeLine= getCursor().getInt(
-				getCursor().getColumnIndex("syn_display_on_timeline"));*/
-		
+
 		if (convertView == null) {
 
 			convertView = View.inflate(context, layout, null);
 			item = new SyndicationItem();
 
 			item.setTitle((TextView) convertView.findViewById(titleID));
-			item.setNumberOfClick((TextView) convertView
-					.findViewById(numberOfClickID));
+			item.setNumberOfClick((TextView) convertView.findViewById(numberOfClickID));
 
 			convertView.setTag(item);
 
@@ -79,33 +73,12 @@ public class SyndicationAdapter extends SimpleCursorAdapter //implements	FilterQ
 		item.getTitle().setTypeface(tf);
 		String s = context.getResources().getString(
 				R.string.syndication_number_of_click);
-		
+
 		item.getNumberOfClick().setText(
 				String.format(s, String.valueOf(numberOfClick)));
-		
+
 		item.getNumberOfClick().setTypeface(tf);
 
 		return convertView;
 	}
-
-	/*
-	@Override
-	public Cursor runQuery(CharSequence constraint) {
-		Cursor cursor = null;
-		Uri uri = SyndicationsProvider.URI;
-
-		String selection = null;
-		String[] args = null;
-		
-		if (!TextUtils.isEmpty(constraint.toString())) {
-			selection = SyndicationTable.COLUMN_NAME + " like ? ";
-			args = new String[1];
-			args[0] = "%" + constraint.toString() + "%";
-		}
-
-		cursor = context.getContentResolver().query(uri, 
-				SyndicationsProvider.syndicationProjection, selection, args, null);
-
-		return cursor;
-	}*/
 }

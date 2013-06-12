@@ -153,24 +153,11 @@ public class PublicationsProvider extends ContentProvider {
 	}
 	
 	@Override
-	public int update(Uri uri, ContentValues values, String selection, String[] selectionArgs) {
+	public int update(Uri uri, ContentValues values, String selection,
+			String[] selectionArgs) {
 		SQLiteDatabase db = repository.getWritableDatabase();
-		int rowsUpdated = 0;
-		int uriType = uriMatcher.match(uri);
-		switch (uriType) {
-
-			case PUBLICATIONS:
-			break;
-	
-			case PUBLICATION_ID:
-				String id = uri.getLastPathSegment();
-				rowsUpdated = db.update(
-						PublicationTable.PUBLICATION_TABLE, values,
-						PublicationTable.COLUMN_ID + "=" + id, null);
-			break;
-	
-			default: throw new IllegalArgumentException("Unknown URI: " + uri);
-		}
+		int rowsUpdated = db.update(PublicationTable.PUBLICATION_TABLE, 
+				values,	selection, selectionArgs);
 		getContext().getContentResolver().notifyChange(uri, null);
 		return rowsUpdated;
 	}

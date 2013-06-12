@@ -116,10 +116,12 @@ public class PublicationRepository extends Repository {
 		sb.append("a.syn_syndication_id ");		
 		sb.append("from d_syndication s left join d_publication a on s._id = a.syn_syndication_id ");
 		sb.append(" where 1 = 1 ");
-		
+
 		if (syndicationId != null) {
 			sb.append(" and a.syn_syndication_id = ? ");
 			arr.add(syndicationId.toString());
+		} else {
+			sb.append(" and s.syn_display_on_timeline = 1 ");
 		}
 
 		if (filter != null && filter.trim().length() > 0) {
@@ -127,6 +129,7 @@ public class PublicationRepository extends Repository {
 			arr.add("%" + filter + "%");
 		}
 
+		
 		if (!displayUnread) {
 			sb.append(" and a.pub_already_read = 0 ");
 		}
@@ -157,7 +160,7 @@ public class PublicationRepository extends Repository {
 
 		sb.append(" a.syn_syndication_id in (select syn_syndication_id from d_categorie_syndication where cas_categorie_id = ?) ");
 		arr.add(categorieId.toString());
-
+		
 		if (filter != null && filter.trim().length() > 0) {
 			sb.append("and a.pub_title like ? ");
 			arr.add("%" + filter + "%");

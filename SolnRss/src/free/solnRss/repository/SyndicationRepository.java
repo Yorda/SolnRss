@@ -169,7 +169,7 @@ public class SyndicationRepository extends Repository {
 			sqLiteDatabase.beginTransaction();
 			
 			Long id = sqLiteDatabase.insert("d_syndication", null, siteValues);
-			
+			syndication.setId(Integer.valueOf(id.toString()));
 			
 			ContentValues contentValues = null;
 			for (Publication publication : syndication.getPublications()) {
@@ -205,68 +205,4 @@ public class SyndicationRepository extends Repository {
 				new String[] { id.toString() });
 		close();
 	}
-	
-	/*private Cursor fetchAllSiteBUG() {
-	open(context);
-	List<String> arr = new ArrayList<String>();
-
-	StringBuilder sb = new StringBuilder();
-	
-	sb.append("select s._id, "
-	+ "s.syn_last_extract_time , "
-	+ "s.syn_creation_date, "
-	+ "max(a.pub_publication_date), "
-	+ "s.syn_name, "
-	+ "s.syn_is_active, "
-	+ "s.syn_number_click "
-	+ " from d_publication a right join d_syndication s  on s._id = a.syn_syndication_id  ");
-	
-	sb.append("select ");
-	sb.append("s._id, ");
-	sb.append("s.syn_name, ");
-	sb.append("s.syn_url, ");
-	sb.append("s.syn_is_active, ");
-	sb.append("s.syn_number_click, ");
-	sb.append("max(p.pub_publication_date) ");
-	sb.append("from d_syndication s, d_publication p where p.syn_syndication_id = s._id ");
-
-	sb.append(" order by s.syn_number_click desc");
-
-	return sqLiteDatabase.rawQuery(sb.toString(),
-			arr.toArray(new String[arr.size()]));
-}*/
-
-/*public List<Syndication> findAllActiveSyndication() {
-Date now = new Date();
-// Period in minute
-// 
-int refresh = 10;
-
-GregorianCalendar calendar = new GregorianCalendar();
-calendar.setTime(now);
-calendar.add(Calendar.MINUTE, -refresh);
-
-open(context);
-Cursor c = sqLiteDatabase.rawQuery(
-			"select * from d_syndication where syn_is_active = 0",
-			new String[]{});
-
-List<Syndication> syndications = new ArrayList<Syndication>();
-Syndication s = null;
-
-if (c.getCount() > 0) {
-	c.moveToFirst();
-	do {
-
-		s = new Syndication();
-		s.setId(c.getInt(c.getColumnIndex("_id")));
-		s.setUrl(c.getString(c.getColumnIndex("syn_url")));
-		syndications.add(s);
-
-	} while (c.moveToNext());
-}
-
-close();
-return syndications;
-}*/
 }

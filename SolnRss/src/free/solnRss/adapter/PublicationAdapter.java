@@ -25,7 +25,6 @@ public class PublicationAdapter extends SimpleCursorAdapter //implements FilterQ
 		this.cursor = c;
 		this.context = context;
 		this.layout = layout;
-		//setFilterQueryProvider(this);
 		tf = Typeface.createFromAsset(context.getAssets(), "fonts/MONOF55.TTF");
 	}
 
@@ -76,44 +75,4 @@ public class PublicationAdapter extends SimpleCursorAdapter //implements FilterQ
 		return PreferenceManager.getDefaultSharedPreferences(context)
 				.getBoolean("pref_display_unread", true);
 	}
-	
-	
-	/*
-	@Override
-	public Cursor runQuery(CharSequence constraint) {		
-		
-		Cursor cursor = null;
-		Uri uri = PublicationsProvider.URI;
-		if (selectedSyndicationID != null) {
-			uri = Uri.parse(PublicationsProvider.URI + "/" + selectedSyndicationID);
-		} else if (selectedCategoryId != null) {
-			uri = Uri.parse(PublicationsProvider.URI + "/categoryId/" + selectedCategoryId);
-		}
-
-		String selection = null;
-		String[] args = null;
-		
-		if (!TextUtils.isEmpty(constraint.toString())) {
-			selection = PublicationTable.COLUMN_TITLE + " like ? ";
-			args = new String[1];
-			args[0] = "%" + constraint.toString() + "%";
-		}
-
-		cursor = context.getContentResolver().query(uri, 
-				PublicationsProvider.projection, selection, args, null);
-
-		return cursor;
-	}*/
-	
-	/*private Integer selectedSyndicationID, selectedCategoryId;
-	public void setSelectedSyndicationId(Integer selectedSyndicationID) {
-		this.selectedCategoryId = null;
-		this.selectedSyndicationID = selectedSyndicationID;
-	}
-
-	public void setSelectedCategoryId(Integer selectedCategoryId) {
-		this.selectedSyndicationID = null;
-		this.selectedCategoryId = selectedCategoryId;
-	}*/
-	
 }

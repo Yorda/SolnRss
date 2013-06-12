@@ -211,9 +211,6 @@ public class PublicationsFinderService extends Service implements
 		}
 		return syndications;
 	}
-
-	//SparseArray<List<Publication>> map = new SparseArray<List<Publication>>();
-	//List<Syndication> syndications = new ArrayList<Syndication>();
 	
 	private void refreshPublications(List<Syndication> syndications) {
 
@@ -222,8 +219,6 @@ public class PublicationsFinderService extends Service implements
 		}
 		try {
 			isWorking = true;
-			//map.clear();
-			//syndications.clear();
 			for (Syndication syndication : syndications) {
 				if (isOnline()) {
 					Log.e(this.getClass().getName(),"Get new publications for syndication name "+ syndication.getName());
@@ -277,27 +272,6 @@ public class PublicationsFinderService extends Service implements
 			// Must refresh syndication (update last extract date and rss)
 			updateSyndicationsAfterExtractRSS(syndications);
 			
-			/*
-			 * List<Publication> publications = null;
-			
-		
-			for (int i = 0; i < map.size(); i++) {
-				
-				int syndicationId = map.keyAt(i);
-				publications = map.get(syndicationId);
-				
-				for (Publication publication : publications){
-					
-					boolean isAlreadyRecorded = isPublicationAlreadyRecorded(
-							syndicationId, publication.getTitle(),publication.getUrl());
-					
-					if (!isAlreadyRecorded) {
-						values = addNewPublication(syndicationId,publication);
-						arr.add(values);
-					}
-				}
-			}*/
-			
 		} finally {
 			isWorking = false;
 		}
@@ -310,9 +284,12 @@ public class PublicationsFinderService extends Service implements
 
 			ContentValues values = new ContentValues();
 
-			values.put(SyndicationTable.COLUMN_LAST_RSS_PUBLISHED,
-					syndication.getRss());
-
+			// If we have found a new RSS
+			if (!TextUtils.isEmpty(syndication.getRss())) {
+				values.put(SyndicationTable.COLUMN_LAST_RSS_PUBLISHED,
+						syndication.getRss());
+			}
+			
 			values.put(SyndicationTable.COLUMN_LAST_EXTRACT_TIME,
 					sdf.format(new Date()));
 

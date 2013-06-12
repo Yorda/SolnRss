@@ -6,7 +6,6 @@ import java.util.List;
 
 import com.google.code.rome.android.repackaged.com.sun.syndication.feed.synd.SyndEntry;
 
-import free.solnRss.utility.StringUtil;
 import free.solnRss.utility.SyndicateUtil;
 
 public class Syndication implements Serializable {
@@ -30,12 +29,12 @@ public class Syndication implements Serializable {
 			entries = syndicateUtil.lastEntries();
 		}
 
-		String buff = null;
+		//String buff = null;
 		boolean isAlreadyRecorded = false;
 		for (SyndEntry entry : entries) {
-			buff = StringUtil.unescapeHTML(entry.getTitle());
-			if (entry.getLink().trim().compareTo(url.trim()) == 0
-					 && buff.trim().compareTo(title.trim()) == 0) {
+			//buff = StringUtil.unescapeHTML(entry.getTitle());
+			if (entry.getLink().trim().compareTo(url.trim()) == 0 ){
+					// && buff.trim().compareTo(title.trim()) == 0) {
 				isAlreadyRecorded = true;
 				break;
 			}

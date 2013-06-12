@@ -11,13 +11,13 @@ import android.content.DialogInterface.OnClickListener;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.net.ConnectivityManager;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.view.ViewPager;
 import android.text.TextUtils;
 import android.util.Log;
+import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Toast;
@@ -28,7 +28,6 @@ import free.solnRss.dialog.AddItemDialog.NewAddItemDialogListener;
 import free.solnRss.fragment.listener.CategoriesFragmentListener;
 import free.solnRss.fragment.listener.PublicationsFragmentListener;
 import free.solnRss.fragment.listener.SyndicationsFragmentListener;
-import free.solnRss.repository.PublicationRepository;
 import free.solnRss.task.SyndicationFinderTask;
 
 public class SolnRss extends FragmentActivity implements ActionBar.TabListener,
@@ -45,6 +44,11 @@ public class SolnRss extends FragmentActivity implements ActionBar.TabListener,
 	//private SearchView searchView;
 	//private TAB_SELECTED tabSelected;
 	
+	
+	@Override
+	public boolean onCreateOptionsMenu(Menu menu) {
+		return super.onCreateOptionsMenu(menu);
+	}
 	
 	@Override
 	protected void onResume() {
@@ -185,9 +189,9 @@ public class SolnRss extends FragmentActivity implements ActionBar.TabListener,
 			reLoadAllPublications();
 			return true;
 			
-		/*case R.id.menu_all_read:
+		case R.id.menu_all_read:
 			markAllPublicationsAsRead();
-			return true;*/
+			return true;
 			
 		default:
 			return super.onOptionsItemSelected(item);
@@ -230,20 +234,8 @@ public class SolnRss extends FragmentActivity implements ActionBar.TabListener,
 	/**
 	 * All unread publication set to read
 	 */
-	protected void markAllPublicationsAsRead() {
-
-		new AsyncTask<Void, Void, Void>() {
-			@Override
-			protected Void doInBackground(Void... params) {
-				
-				PublicationRepository publicationRepository = new PublicationRepository(SolnRss.this);
-				publicationRepository.markAllPublicationsAsRead();
-				return null;
-			}
-			protected void onPostExecute(Void result) {
-				reLoadPublicationsBySyndication(null);
-			};
-		}.execute();		
+	private void markAllPublicationsAsRead() {
+		publicationsListener.markAllPublicationsAsRead();
 	}
 	
 	void addCategorie(String newCatgorie) {

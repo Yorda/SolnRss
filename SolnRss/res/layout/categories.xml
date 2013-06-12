@@ -4,19 +4,18 @@
     android:orientation="vertical"
     android:padding="12dp" >
 
-      <TextView
+    <TextView
         android:id="@+id/categorie_name"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:paddingBottom="5dp"
-        android:textSize="18sp" 
-       />
-      
-      <TextView
+        android:paddingBottom="6dp"
+        android:textSize="17sp" />
+
+    <TextView
         android:id="@+id/categorie_number_of_use"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:textColor="#047a7a"
+        android:textColor="#ff0099cc"
         android:textStyle="italic" />
-      
+
 </LinearLayout>

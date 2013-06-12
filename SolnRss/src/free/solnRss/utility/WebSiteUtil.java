@@ -70,7 +70,7 @@ public class WebSiteUtil {
 		if (begin.endsWith("/")) {
 			begin = url.substring(0, url.length() - 1);
 		}
-		String end = feeds.substring(1, feeds.length());
+		String end = feeds; //substring(1, feeds.length()); ???
 		if (end.startsWith("/")) {
 			end = feeds.substring(1, feeds.length());
 		}

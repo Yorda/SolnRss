@@ -70,47 +70,6 @@ public class SyndicationBusinessImpl implements SyndicationBusiness {
 
 	}
 	
-	/*public List<Publication> getLastPublicationsBak(String rssUrl) throws ExtractFeedException {
-		List<Publication> publications = new ArrayList<Publication>();
-		
-		if (!HttpUtil.isValidUrl(rssUrl)) {
-			throw new ExtractFeedException(ExtractFeedException.Error.BAD_URL);
-		}
-
-		String html = null;
-		try {
-			html = HttpUtil.htmlFromSite(rssUrl);
-		} catch (Exception e) {
-			e.printStackTrace();
-			throw new ExtractFeedException(ExtractFeedException.Error.GET_HTTP_DATA);
-		}
-		
-		try {
-			syndicateUtil.init(html);
-			List<SyndEntry> entries = syndicateUtil.lastEntries();
-			Publication publication = null;
-			String description;
-			for (SyndEntry entry : entries) {
-				
-				description = entry.getDescription() != null 
-						? entry.getDescription().getValue() : null;
-						
-				if(entry.getContents() != null && entry.getContents().size() > 0){
-					description = ((SyndContent) entry.getContents().get(0)).getValue();
-				}
-					
-				publication = new Publication(entry.getLink(),
-						entry.getPublishedDate(), entry.getTitle(), description);
-				publications.add(publication);
-			}
-		} catch (Exception e) {
-			System.err.println("Search new publication error: " + e.getCause() + ", " + e.getMessage());
-			throw new ExtractFeedException(ExtractFeedException.Error.GET_FEED_INFO);
-		}		
-		return publications;
-
-	}*/
-	
 	public Syndication searchSyndication(String url) throws ExtractFeedException {
 
 		Syndication syndication = null;

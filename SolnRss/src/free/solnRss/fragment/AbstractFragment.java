@@ -61,6 +61,7 @@ public abstract class AbstractFragment extends ListFragment implements	OnQueryTe
 		} else {
 			hideEmptyMessage();
 			setListPositionOnScreen();
+			simpleCursorAdapter.notifyDataSetChanged();
 		}
 	}
 	

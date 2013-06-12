@@ -40,12 +40,10 @@ public interface PublicationsFragmentListener {
 	 * 
 	 */
 	public void moveListViewToTop();
-	
 
 	/**
 	 * 
-	 * @param text
 	 */
-	//public void filterPublications(String text);
+	public void markAllPublicationsAsRead();
 
 }

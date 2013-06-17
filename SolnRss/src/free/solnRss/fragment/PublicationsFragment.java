@@ -6,12 +6,10 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.net.Uri;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.ResultReceiver;
 import android.preference.PreferenceManager;
-import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
 import android.text.TextUtils;
 import android.view.ContextMenu;
@@ -22,15 +20,19 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
+import android.widget.LinearLayout;
 import android.widget.ListView;
+import android.widget.TextView;
 import android.widget.Toast;
 import free.solnRss.R;
 import free.solnRss.activity.ReaderActivity;
 import free.solnRss.activity.SolnRss;
 import free.solnRss.adapter.PublicationAdapter;
 import free.solnRss.fragment.listener.PublicationsFragmentListener;
+import free.solnRss.provider.CategoryProvider;
 import free.solnRss.provider.PublicationsProvider;
 import free.solnRss.provider.SyndicationsProvider;
+import free.solnRss.repository.CategoryTable;
 import free.solnRss.repository.PublicationRepository;
 import free.solnRss.repository.PublicationTable;
 import free.solnRss.repository.SyndicationTable;
@@ -44,6 +46,61 @@ public class PublicationsFragment extends AbstractFragment implements
 	private Integer nextSelectedSyndicationID; // selected by context menu
 	private Integer selectedCategoryID;
 
+	@Override protected void displayEmptyMessage() {
+		LinearLayout l = (LinearLayout) getActivity().findViewById(emptyLayoutId);
+		l.setVisibility(View.VISIBLE);
+		
+		// If a syndication is selected and it's empty
+		if (selectedSyndicationID != null) {
+			
+			setEmptyMessage(getResources().getString(
+					R.string.empty_publications_with_syndication,syndicationName()));
+			
+			// If already read publications are hidden display button for display them
+
+		} // If a category is selected and it's empty
+		else if (selectedCategoryID != null) {
+			setEmptyMessage(getResources().getString(
+					R.string.empty_publications_with_category, categoryName()));
+			
+			// If already read publications are hidden display button for display them
+			
+		}
+		// If all publications are empty
+		else {
+			setEmptyMessage(getResources().getString(
+					R.string.empty_publications));
+			// Hide display all button
+			// If already read publications are hidden display button for display them
+		}
+	}
+	
+	private void setEmptyMessage(String msg) {
+		TextView tv = (TextView)getActivity().findViewById(R.id.emptyPublicationsMessage);
+		tv.setText(msg);
+	}
+
+	private String categoryName() {
+		Uri uri = Uri.parse(CategoryProvider.URI + "/" + selectedCategoryID);
+		String[] projection = { CategoryTable.COLUMN_NAME };
+		Cursor c = getActivity().getContentResolver().query(uri, projection,
+				null, null, null);
+		c.moveToFirst();
+		String name = c.getString(0) != null ? c.getString(0) : "this";
+		c.close();
+		return name;
+	}
+
+	private String syndicationName() {
+		Uri uri = Uri.parse(SyndicationsProvider.URI + "/" + selectedSyndicationID);
+		String[] projection = { SyndicationTable.COLUMN_NAME };
+		Cursor c = getActivity().getContentResolver().query(uri, projection,
+				null, null, null);
+		c.moveToFirst();
+		String name = c.getString(0) != null ? c.getString(0) : "this";
+		c.close();
+		return name;
+	}
 	
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup vg, Bundle save) {
@@ -58,7 +115,7 @@ public class PublicationsFragment extends AbstractFragment implements
 	
 	@Override
 	public void onViewCreated(View view, Bundle save) {
-		
+
 	}
 	
 	@Override
@@ -66,9 +123,9 @@ public class PublicationsFragment extends AbstractFragment implements
 		
 		super.onActivityCreated(savedInstanceState);
 		
+		publicationRepository = new PublicationRepository(getActivity());
 		restoreOrFirstDisplay(savedInstanceState);
-	    publicationRepository = new PublicationRepository(getActivity());
-	    
+		
 		registerForContextMenu(getListView());
 		
 		getListView().setTextFilterEnabled(true);
@@ -164,7 +221,7 @@ public class PublicationsFragment extends AbstractFragment implements
 
 		case R.id.menu_mark_read:
 			if (selectedCategoryID != null) {
-				markCategoryPublicationsAsRead(selectedCategoryID);
+				markCategoryPublicationsAsRead();
 			} else {
 				markSyndicationPublicationsAsRead(nextSelectedSyndicationID);
 			}
@@ -221,7 +278,6 @@ public class PublicationsFragment extends AbstractFragment implements
 		} else {
 			loadPublications();
 		}
-		
 	}
 	
 	private void savePositionOnScreen(SharedPreferences.Editor editor) {
@@ -259,34 +315,26 @@ public class PublicationsFragment extends AbstractFragment implements
 		simpleCursorAdapter = new PublicationAdapter(getActivity(),R.layout.publications, null, from, to, 0);
 		setListAdapter((PublicationAdapter)simpleCursorAdapter);		
 	}
-
+	
 	@Override
 	public Loader<Cursor> onCreateLoader(int id, Bundle bundle) {
-		Uri uri = PublicationsProvider.URI;
 		
 		if (bundle != null) {
 			if (bundle.getInt("selectedSyndicationID") != 0) {
-				selectedSyndicationID = bundle.getInt("selectedSyndicationID");
-				uri = Uri.parse(uri + "/" + selectedSyndicationID);
-				
+				selectedSyndicationID = bundle.getInt("selectedSyndicationID");				
 			} else if (bundle.getInt("selectedCategoryID") != 0) {
 				selectedCategoryID = bundle.getInt("selectedCategoryID");
-				uri = Uri.parse(uri + "/categoryId/" + selectedCategoryID);
 			}
 		}
 
-		String selection = null;
-		String[] args = null;
-		if (!TextUtils.isEmpty(getFilterText())) {
-			selection = PublicationTable.COLUMN_TITLE + " like ? ";
-			args = new String[1];
-			args[0] = "%" + getFilterText() + "%";
-		}
-		
-		CursorLoader cursorLoader = new CursorLoader(getActivity(), uri,
-				PublicationsProvider.projection, selection, args, null);
-		
-		return cursorLoader;
+		return publicationRepository.loadPublications(getFilterText(),
+				selectedSyndicationID, selectedCategoryID,
+				displayAlreadyReadPublications());
+	}
+	
+	private boolean displayAlreadyReadPublications() {
+		return PreferenceManager.getDefaultSharedPreferences(getActivity())
+					.getBoolean("pref_display_unread", true);
 	}
 	
 	@Override
@@ -379,6 +427,29 @@ public class PublicationsFragment extends AbstractFragment implements
 		}
 	}
 
+	@Override
+	public void reloadPublicationsWithAlreadyRead() {
+		
+		/*SharedPreferences.Editor editor = PreferenceManager
+				.getDefaultSharedPreferences(getActivity()).edit();
+		editor.putBoolean("pref_display_unread", true);
+		editor.commit();
+		*/
+		
+		Cursor c = publicationRepository.reloadPublications(getFilterText(),
+				selectedSyndicationID, selectedCategoryID, true);
+		
+		// Some already read publications found
+		if (c.getCount() > 0) {
+			hideEmptyMessage();
+			simpleCursorAdapter.swapCursor(c);
+		} else {
+			// Nothing found
+			// hide button display a message
+		}
+
+	}
+	
 	public void refreshPublications() {
 		if (this.selectedSyndicationID != null) {
 			reLoadPublicationsBySyndication(this.selectedSyndicationID);
@@ -470,40 +541,35 @@ public class PublicationsFragment extends AbstractFragment implements
 		return false;
 	}
 	
-	private void markSyndicationPublicationsAsRead(final Integer id) {
-		new AsyncTask<Void, Void, Void>() {
-			@Override
-			protected Void doInBackground(Void... params) {
-				// TODO USE PROVIDER
-				publicationRepository.markSyndicationPublicationsAsRead(id);
-				return null;
-			}
-			protected void onPostExecute(Void result) {
-				refreshPublications();
-			};
-		}.execute();
+	private void markSyndicationPublicationsAsRead(final Integer syndicationId) {
+		ContentValues values = new ContentValues();
+		values.put(PublicationTable.COLUMN_ALREADY_READ, "1");
+		String selection = null;
+		String[] args = null;
+		if (syndicationId != null) {
+			selection = " syn_syndication_id = ? ";
+			args = new String[1];
+			args[0] = syndicationId.toString();
+
+		}
+		getActivity().getContentResolver().update(PublicationsProvider.URI, values, selection, args);
+		getLoaderManager().restartLoader(0, null, this);
 	}
 	
-	private void markCategoryPublicationsAsRead(final Integer id) {
-		new AsyncTask<Void, Void, Void>() {
-			@Override
-			protected Void doInBackground(Void... params) {
-				// TODO USE PROVIDER
-				publicationRepository.markCategoryPublicationsAsRead(id);
-				return null;
-			}
-			protected void onPostExecute(Void result) {
-				refreshPublications();
-			};
-		}.execute();
+	private void markCategoryPublicationsAsRead() {
+		ContentValues values = new ContentValues();
+		values.put(PublicationTable.COLUMN_ALREADY_READ, "1");
+		String selection = " syn_syndication_id in (select syn_syndication_id from d_categorie_syndication where cas_categorie_id = ?) ";
+		String[] args = {selectedCategoryID.toString()};
 		
+		getActivity().getContentResolver().update(PublicationsProvider.URI, values, selection, args);
+		getLoaderManager().restartLoader(0, null, this);
 	}
 
 	@Override
 	public void markAllPublicationsAsRead() {
 		ContentValues values = new ContentValues();
 		values.put(PublicationTable.COLUMN_ALREADY_READ, "1");
-		//Uri uri = Uri.parse();
 		getActivity().getContentResolver().update(PublicationsProvider.URI, values, null, null);
 		getLoaderManager().restartLoader(0, null, this);
 	}

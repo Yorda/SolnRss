@@ -8,10 +8,13 @@ import java.util.List;
 import java.util.Locale;
 
 import free.solnRss.model.Publication;
+import free.solnRss.provider.PublicationsProvider;
 
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
+import android.support.v4.content.CursorLoader;
+import android.text.TextUtils;
 
 public class PublicationRepository extends Repository {
 	final private DateFormat sdf = 
@@ -21,6 +24,7 @@ public class PublicationRepository extends Repository {
 		super.context = context;
 	}
 
+	
 	/**
 	 * Set one publication as read
 	 * @param id
@@ -47,6 +51,7 @@ public class PublicationRepository extends Repository {
 	/**
 	 * Set all publications in database as read
 	 */
+	@Deprecated
 	public void markAllPublicationsAsRead() {
 		open(context);
 		ContentValues values = new ContentValues();
@@ -59,6 +64,7 @@ public class PublicationRepository extends Repository {
 	 * Set all publication for one syndication as read
 	 * @param syndicationId
 	 */
+	@Deprecated
 	public void markSyndicationPublicationsAsRead(Integer syndicationId) {
 		open(context);
 		ContentValues values = new ContentValues();
@@ -73,6 +79,7 @@ public class PublicationRepository extends Repository {
 	 * 
 	 * @param syndicationId
 	 */
+	@Deprecated
 	public void markCategoryPublicationsAsRead(Integer categoryId) {
 		open(context);
 
@@ -99,6 +106,7 @@ public class PublicationRepository extends Repository {
 		close();
 	}
 
+	
 	public Cursor fetchFilteredPublication(Integer syndicationId,
 			String filter, boolean displayUnread) {
 		open(context);
@@ -216,5 +224,116 @@ public class PublicationRepository extends Repository {
 		}
 		close();
 		return num;
+	}
+
+
+	private StringBuilder selection = new StringBuilder();
+	private List<String> args = new ArrayList<String>();
+	
+	public Cursor reloadPublications(String filterText,
+			Integer selectedSyndicationID, Integer selectedCategoryID,
+			Boolean displayAlreadyRead) {
+		
+		
+		selection.setLength(0);
+		selection.append(" 1 = 1 ") ;
+		
+		args.clear();
+		
+		if (!TextUtils.isEmpty(filterText)) {
+			
+			selection.append(" and ");
+			selection.append( PublicationTable.COLUMN_TITLE);
+			selection.append(" like ? ");
+			args.add("%" + filterText + "%");
+		}
+		
+		// Display on time line
+		if (selectedSyndicationID == null && selectedCategoryID == null) {
+			selection.append(" and ");
+			selection.append(SyndicationTable.COLUMN_DISPLAY_ON_TIMELINE);
+			selection.append(" = 1 ");
+		}
+
+		else if (selectedSyndicationID != null) {
+			selection.append(" and ");
+			selection.append( PublicationTable.COLUMN_SYNDICATION_ID);
+			selection.append(" = ? ");
+			
+			args.add(selectedSyndicationID.toString());
+		}
+
+		else if (selectedCategoryID != null) {
+			selection.append(" and ");
+			selection.append( PublicationTable.COLUMN_SYNDICATION_ID);
+			selection.append(" in (select syn_syndication_id from d_categorie_syndication where cas_categorie_id = ?) ");
+			args.add(selectedCategoryID.toString());
+		}
+
+		if (!displayAlreadyRead) {	
+			selection.append(" and ");
+			selection.append( PublicationTable.COLUMN_ALREADY_READ);
+			selection.append(" = 0 ");
+		}
+		
+
+		open(context);
+		return sqLiteDatabase.query(PublicationsProvider.tables,
+				PublicationsProvider.projection, 
+				selection.toString(),
+				args.toArray(new String[args.size()]), null, null,
+				PublicationTable.COLUMN_PUBLICATION_DATE + " desc");
+				
+	}
+	
+	public CursorLoader loadPublications(String filterText,
+			Integer selectedSyndicationID, Integer selectedCategoryID,
+			Boolean displayAlreadyRead) {
+		
+		selection.setLength(0);
+		selection.append(" 1 = 1 ") ;
+		
+		args.clear();
+		
+		if (!TextUtils.isEmpty(filterText)) {
+			
+			selection.append(" and ");
+			selection.append( PublicationTable.COLUMN_TITLE);
+			selection.append(" like ? ");
+			args.add("%" + filterText + "%");
+		}
+		
+		// Display on time line
+		if (selectedSyndicationID == null && selectedCategoryID == null) {
+			selection.append(" and ");
+			selection.append(SyndicationTable.COLUMN_DISPLAY_ON_TIMELINE);
+			selection.append(" = 1 ");
+		}
+
+		else if (selectedSyndicationID != null) {
+			selection.append(" and ");
+			selection.append( PublicationTable.COLUMN_SYNDICATION_ID);
+			selection.append(" = ? ");
+			
+			args.add(selectedSyndicationID.toString());
+		}
+
+		else if (selectedCategoryID != null) {
+			selection.append(" and ");
+			selection.append( PublicationTable.COLUMN_SYNDICATION_ID);
+			selection.append(" in (select syn_syndication_id from d_categorie_syndication where cas_categorie_id = ?) ");
+			args.add(selectedCategoryID.toString());
+		}
+
+		if (!displayAlreadyRead) {	
+			selection.append(" and ");
+			selection.append( PublicationTable.COLUMN_ALREADY_READ);
+			selection.append(" = 0 ");
+		}
+		
+		return new CursorLoader(context, PublicationsProvider.URI,
+				PublicationsProvider.projection, selection.toString(),
+				args.toArray(new String[args.size()]), null);
+		
 	}
 }

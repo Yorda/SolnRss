@@ -9,7 +9,6 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteQueryBuilder;
 import android.net.Uri;
-import android.preference.PreferenceManager;
 import free.solnRss.repository.Database;
 import free.solnRss.repository.PublicationTable;
 import free.solnRss.repository.SyndicationTable;
@@ -30,11 +29,6 @@ public class PublicationsProvider extends ContentProvider {
 	private UriMatcher uriMatcher;
 	// Used for the UriMacher
 	private final int PUBLICATIONS     = 10;
-	private final int SYNDICATION_ID   = 20;
-	private final int PUBLICATION_ID   = 30;
-	private final int CATEGORY_ID      = 40;
-	private final int PUBLICATION_IN_SYNDICATION = 50;
-
 	final public static String projection[] = new String[] {
 			publicationTable + "." + PublicationTable.COLUMN_ID,
 			publicationTable + "." + PublicationTable.COLUMN_TITLE, 
@@ -49,62 +43,21 @@ public class PublicationsProvider extends ContentProvider {
 		repository = new Database(getContext());
 		uriMatcher = new UriMatcher(UriMatcher.NO_MATCH);
 		uriMatcher.addURI(AUTHORITY, PUBLICATION_PATH, PUBLICATIONS);
-		uriMatcher.addURI(AUTHORITY, PUBLICATION_PATH + "/#", SYNDICATION_ID);
-		uriMatcher.addURI(AUTHORITY, PUBLICATION_PATH + "/publicationId/#", PUBLICATION_ID);
-		uriMatcher.addURI(AUTHORITY, PUBLICATION_PATH + "/categoryId/#", CATEGORY_ID);
-		uriMatcher.addURI(AUTHORITY, PUBLICATION_PATH + "/publicationInSyndication/#", PUBLICATION_IN_SYNDICATION);
 		return true;
 	}
 	
-	private final String tables = publicationTable + " LEFT JOIN "
+	public static final String tables = publicationTable + " LEFT JOIN "
 			+ syndicationTable + " ON " + syndicationTable + "."
 			+ SyndicationTable.COLUMN_ID + " = " + publicationTable + "."
 			+ PublicationTable.COLUMN_SYNDICATION_ID;
-	
+
 	@Override
 	public Cursor query(Uri uri, String[] projection, String selection, String[] args, String sort) {
-		SQLiteQueryBuilder queryBuilder = new SQLiteQueryBuilder();
 		
+		SQLiteQueryBuilder queryBuilder = new SQLiteQueryBuilder();
 		// Set the table
 		queryBuilder.setTables(tables);
 
-		StringBuilder where = new StringBuilder();
-		if (!displayUnreadPublications()) {
-			where.append(PublicationTable.COLUMN_ALREADY_READ);
-			where.append(" = 0 ");
-		}
-		
-		switch (uriMatcher.match(uri)) {
-			case PUBLICATIONS:
-				// For all publications filter who are authorized to be displayed on main time line
-				where = addWhereClauses(where, SyndicationTable.COLUMN_DISPLAY_ON_TIMELINE + "= 1 ");
-			break;
-				
-			case PUBLICATION_IN_SYNDICATION:
-				// No filter read / unread
-				where = new StringBuilder();
-			break;
-				
-			case SYNDICATION_ID:
-				String syndicationId =  uri.getLastPathSegment();
-				where = addWhereClauses(where, PublicationTable.COLUMN_SYNDICATION_ID + "=" + syndicationId);
-			break;
-			
-			case CATEGORY_ID:
-				String categoryId =  uri.getLastPathSegment();
-				where = addWhereClauses(where, 
-						PublicationTable.COLUMN_SYNDICATION_ID
-						+ " in (select syn_syndication_id from d_categorie_syndication where cas_categorie_id = " 
-						+ categoryId + ")");
-			break;
-			
-			default: throw new IllegalArgumentException("Unknown URI: " + uri);
-		}
-
-		if (where.length() != 0) {
-			queryBuilder.appendWhere(where.toString());
-		}
-		
 		SQLiteDatabase db = repository.getReadableDatabase();
 		Cursor cursor = queryBuilder.query(db, projection, selection,
 				args, null, null,
@@ -112,22 +65,6 @@ public class PublicationsProvider extends ContentProvider {
 		
 		cursor.setNotificationUri(getContext().getContentResolver(), uri);
 		return cursor;
-	}
-
-	/*
-	 * Add a where clause to string builder
-	 */
-	private StringBuilder addWhereClauses(StringBuilder where, String clause) {
-		if (where.length() != 0) {
-			where.append(" and ");
-		}
-		where.append(clause);
-		return where;
-	}
-	
-	private boolean displayUnreadPublications() {
-		return PreferenceManager.getDefaultSharedPreferences(getContext())
-					.getBoolean("pref_display_unread", true);
 	}
 	
 	@Override

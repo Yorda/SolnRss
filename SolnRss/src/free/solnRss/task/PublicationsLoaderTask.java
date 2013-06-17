@@ -13,6 +13,7 @@ import free.solnRss.activity.SolnRss;
 import free.solnRss.adapter.PublicationAdapter;
 import free.solnRss.repository.PublicationRepository;
 
+@Deprecated
 public class PublicationsLoaderTask extends
 		AsyncTask<Object, Void, PublicationAdapter> {
 

@@ -12,6 +12,7 @@ import free.solnRss.activity.SolnRss;
 import free.solnRss.adapter.PublicationAdapter;
 import free.solnRss.repository.PublicationRepository;
 
+@Deprecated
 public class PublicationsByCategoryLoaderTask extends AsyncTask<Integer, Void, PublicationAdapter> {
 
 	final int emptyMessageID = R.id.emptyPublicationsMessage;

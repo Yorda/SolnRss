@@ -18,6 +18,7 @@ import free.solnRss.repository.PublicationRepository;
  * @author jftomasi
  * 
  */
+@Deprecated
 public class PublicationsByCategoryReloaderTask extends AsyncTask<Integer, Void, Cursor> {
 	final int emptyMessageID = R.id.emptyPublicationsMessage;
 	private PublicationRepository repository;

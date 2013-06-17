@@ -65,12 +65,12 @@ public abstract class AbstractFragment extends ListFragment implements	OnQueryTe
 		}
 	}
 	
-	private void displayEmptyMessage() {
+	protected void displayEmptyMessage() {
 		LinearLayout l = (LinearLayout) getActivity().findViewById(emptyLayoutId);
 		l.setVisibility(View.VISIBLE);
 	}
 
-	private void hideEmptyMessage() {
+	protected void hideEmptyMessage() {
 		LinearLayout l = (LinearLayout) getActivity().findViewById(emptyLayoutId);
 		l.setVisibility(View.INVISIBLE);
 	}
@@ -199,21 +199,4 @@ public abstract class AbstractFragment extends ListFragment implements	OnQueryTe
 	public void setListShownNoAnimation(boolean shown) {
 		setListShown(shown, false);
 	}
-	
-	/*public void makeFilterInListView(String newText) {
-		if (this.getListView() != null) {
-			
-			String newFilter = !TextUtils.isEmpty(newText) ? newText : null;
-			
-			if (getFilterText() == null && newFilter == null) {
-				return;
-			}
-			if (getFilterText() != null && getFilterText().equals(newFilter)) {
-				return;
-			}
-
-			setFilterText(newText);
-			this.getListView().setFilterText(newText);
-		}
-	}*/
 }

@@ -322,6 +322,11 @@ public class SolnRss extends FragmentActivity implements ActionBar.TabListener,
 		publicationsListener.reloadPublications();
 		publicationsListener.moveListViewToTop();
 	}
+	
+	public void reloadPublicationsWithAlreadyRead(View v) {
+		publicationsListener.reloadPublicationsWithAlreadyRead();
+		publicationsListener.moveListViewToTop();
+	}
 
 	public void reLoadAllPublications(View v) {
 		reLoadAllPublications();

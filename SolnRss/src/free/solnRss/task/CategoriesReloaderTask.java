@@ -13,6 +13,7 @@ import free.solnRss.repository.CategoryRepository;
 /**
  * @author jftomasi
  */
+@Deprecated
 public class CategoriesReloaderTask extends AsyncTask<Integer, Void, Cursor> {
 
 	private CategoryRepository repository;

@@ -42,6 +42,7 @@
             android:requiresFadingEdge="vertical" >
         </ListView>
 
+        <!-- Display when list is empty -->
         <LinearLayout
             android:id="@+id/emptyPublicationsLayout"
             android:layout_width="match_parent"
@@ -68,6 +69,16 @@
                 android:onClick="reLoadAllPublications"
                 android:text="@string/display_all_publication"
                 android:typeface="monospace" />
+            
+            <Button
+                android:id="@+id/displayAlreadyReadButton"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="20dp"
+                android:onClick="reloadPublicationsWithAlreadyRead"
+                android:text="Display already read"
+                android:typeface="monospace" />
+            
         </LinearLayout>
     </FrameLayout>
 

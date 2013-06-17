@@ -170,43 +170,20 @@ public class CategoriesFragment extends AbstractFragment implements
 	
 	public void addCategorie(Context context, String newCatgorie) {
 		// TODO USE PROVIDER
-		CategoriesAddAndReloaderTask task = new CategoriesAddAndReloaderTask(this, context);
+		CategoriesAddAndReloaderTask task = new CategoriesAddAndReloaderTask(
+				this, context);
 		task.execute(newCatgorie);
 	}
-	
+
 	public void deleteCategorie(Context context, Integer categorieId) {
 		// TODO USE PROVIDER
-		CategoriesDeleteAndReloaderTask task = new CategoriesDeleteAndReloaderTask(this, context);
+		CategoriesDeleteAndReloaderTask task = new CategoriesDeleteAndReloaderTask(
+				this, context);
 		task.execute(categorieId);
-	}
-	
-	private String filterText;
-
-	@Override @Deprecated
-	public void filterCategories(String text) {
-		if (this.getListView() != null) {
-			if (TextUtils.isEmpty(text)) {
-				setFilterText(null);
-				this.getListView().clearTextFilter();
-			} else {
-				setFilterText(text);
-				this.getListView().setFilterText(text);
-			}
-		}
-	}
-
-	public String getFilterText() {
-		return filterText;
-	}
-
-	public void setFilterText(String filterText) {
-		this.filterText = filterText;
 	}
 
 	@Override
 	protected void setListPositionOnScreen() {
-		// TODO Auto-generated method stub
-		
 	}
 	
 }

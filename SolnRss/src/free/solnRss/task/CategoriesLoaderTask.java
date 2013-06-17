@@ -15,6 +15,7 @@ import free.solnRss.repository.CategoryRepository;
  * @author jf.tomasi
  * 
  */
+@Deprecated
 public class CategoriesLoaderTask extends
 		AsyncTask<Void, Void, CategorieAdapter> {
 

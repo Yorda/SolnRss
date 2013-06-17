@@ -19,17 +19,18 @@ import free.solnRss.repository.PublicationRepository;
  * @author jftomasi
  * 
  */
+@Deprecated
 public class PublicationsReloaderTask extends AsyncTask<Object, Void, Cursor> {
-	
+
 	final int emptyMessageID = R.id.emptyPublicationsMessage;
 	final int emptyPublicationsLayoutID = R.id.emptyPublicationsLayout;
 	final int displayAllButtonID = R.id.displayAllButton;
-	
+
 	private PublicationRepository repository;
 	private Context context;
 	private ListFragment fragment;
 	private String filter;
-	
+
 	public PublicationsReloaderTask(ListFragment fragment, Context context) {
 		this.context = context;
 		this.fragment = fragment;
@@ -39,24 +40,17 @@ public class PublicationsReloaderTask extends AsyncTask<Object, Void, Cursor> {
 	protected Cursor doInBackground(Object... params) {
 
 		Integer syndicationId = (Integer) params[0];
-		filter = params.length > 2 && params[2] != null ? (String) params[2] : null;
+		filter = params.length > 2 && params[2] != null ? (String) params[2]
+				: null;
 		repository = new PublicationRepository(context);
-		
-		// Set this publication as read and reload cursor for adapter
-		//Integer publicationId = params.length > 1 && params[1] != null ? (Integer) params[1] : null;
-		//if (publicationId != null) {
-		//	repository.markClickedPublicationRead(publicationId);
-		//}
-
-		// Keep the syndication id in adapter for filter
-		//((PublicationAdapter) fragment.getListAdapter()).setSelectedSyndicationId(syndicationId);
-		return repository.fetchFilteredPublication(syndicationId, null, displayUnread());
+		return repository.fetchFilteredPublication(syndicationId, null,
+				displayUnread());
 	}
 
 	@Override
 	protected void onPostExecute(Cursor result) {
 		((PublicationAdapter) fragment.getListAdapter()).swapCursor(result);
-		
+
 		if (fragment.getListAdapter().isEmpty()) {
 			displayEmptyMessage();
 		} else {
@@ -67,7 +61,7 @@ public class PublicationsReloaderTask extends AsyncTask<Object, Void, Cursor> {
 				fragment.getListView().clearTextFilter();
 			}
 		}
-		
+
 		((PublicationAdapter) fragment.getListAdapter()).notifyDataSetChanged();
 		repository.close();
 	}
@@ -78,28 +72,14 @@ public class PublicationsReloaderTask extends AsyncTask<Object, Void, Cursor> {
 	}
 
 	private void displayEmptyMessage() {
-		LinearLayout l = (LinearLayout) ((SolnRss) context).findViewById(R.id.emptyPublicationsLayout);
+		LinearLayout l = (LinearLayout) ((SolnRss) context)
+				.findViewById(R.id.emptyPublicationsLayout);
 		l.setVisibility(View.VISIBLE);
 	}
 
 	private void hideEmptyMessage() {
-		LinearLayout l = (LinearLayout) ((SolnRss) context).findViewById(R.id.emptyPublicationsLayout);
+		LinearLayout l = (LinearLayout) ((SolnRss) context)
+				.findViewById(R.id.emptyPublicationsLayout);
 		l.setVisibility(View.INVISIBLE);
 	}
-	
-	/*private void displayEmptyPublicationsMessage() {
-		((TextView) ((SolnRss) context).findViewById(emptyMessageID))
-				.setVisibility(View.VISIBLE);
-		
-		((View) ((SolnRss) context).findViewById(emptyPublicationsLayoutID))
-				.setVisibility(View.VISIBLE);
-	}
-
-	private void hideEmptyPublicationsMessage() {
-		((TextView) ((SolnRss) context).findViewById(emptyMessageID))
-				.setVisibility(View.INVISIBLE);
-
-		((View) ((SolnRss) context).findViewById(emptyPublicationsLayoutID))
-				.setVisibility(View.INVISIBLE);
-	}*/
 }

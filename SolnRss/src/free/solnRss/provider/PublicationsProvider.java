@@ -61,7 +61,7 @@ public class PublicationsProvider extends ContentProvider {
 		SQLiteDatabase db = repository.getReadableDatabase();
 		Cursor cursor = queryBuilder.query(db, projection, selection,
 				args, null, null,
-				PublicationTable.COLUMN_PUBLICATION_DATE + " desc");
+				PublicationTable.COLUMN_PUBLICATION_DATE + " desc","100");
 		
 		cursor.setNotificationUri(getContext().getContentResolver(), uri);
 		return cursor;

@@ -41,13 +41,21 @@ public class SolnRss extends FragmentActivity implements ActionBar.TabListener,
 	private SectionsPagerAdapter sectionPageAdapter;
 	private ViewPager viewPager;
 	
-	//private SearchView searchView;
-	//private TAB_SELECTED tabSelected;
-	
-	
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 		return super.onCreateOptionsMenu(menu);
+	}
+	
+	@Override
+	public boolean onMenuOpened(int featureId, Menu menu) {
+		if (displayAlreadyReadPublications()) {
+			menu.getItem(3).setTitle(
+					getResources().getString(R.string.menu_hide_already_read));
+		} else {
+			menu.getItem(3).setTitle(
+					getResources().getString(R.string.menu_show_already_read));
+		}
+		return super.onMenuOpened(featureId, menu);
 	}
 	
 	@Override
@@ -85,9 +93,13 @@ public class SolnRss extends FragmentActivity implements ActionBar.TabListener,
 		else if (key.compareTo("pref_sort_categories") == 0) {
 			categoriesListener.reloadCategories();
 		}
-		
 	}
 
+	private boolean displayAlreadyReadPublications() {
+		return PreferenceManager.getDefaultSharedPreferences(this)
+					.getBoolean("pref_display_unread", true);
+	}
+	
 	private void removeNotification(){
 		NotificationManager notificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
 		notificationManager.cancel(0x000001);
@@ -103,7 +115,10 @@ public class SolnRss extends FragmentActivity implements ActionBar.TabListener,
 		// Set up the action bar.
 		final ActionBar actionBar = getActionBar();
 		actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_TABS);
-
+		
+		//actionBar.setBackgroundDrawable(new ColorDrawable(0xeeeeee));
+		//actionBar.setStackedBackgroundDrawable(new ColorDrawable(0xeeeeee));
+		
 		// Set up the ViewPager with the sections adapter.
 		viewPager = (ViewPager) findViewById(R.id.pager);
 
@@ -181,6 +196,10 @@ public class SolnRss extends FragmentActivity implements ActionBar.TabListener,
 			openDialogForAddCategorie(); 
 			return true;
 			
+		case R.id.menu_already_read:
+			 updateOptionDisplayPublicationsAlreadyRead();
+			return true;
+			
 		case R.id.menu_add_site:
 			openDialogForAddSyndication();
 			return true;
@@ -192,10 +211,20 @@ public class SolnRss extends FragmentActivity implements ActionBar.TabListener,
 		case R.id.menu_all_read:
 			markAllPublicationsAsRead();
 			return true;
-			
+		
 		default:
 			return super.onOptionsItemSelected(item);
 		}
+	}
+	
+	private void updateOptionDisplayPublicationsAlreadyRead() {
+
+		Boolean isShow = displayAlreadyReadPublications() ? false : true;
+		
+		SharedPreferences.Editor editor = PreferenceManager
+				.getDefaultSharedPreferences(this).edit();
+		editor.putBoolean("pref_display_unread", isShow);
+		editor.commit();
 	}
 	
 	void openDialogForAddCategorie() {
@@ -269,26 +298,24 @@ public class SolnRss extends FragmentActivity implements ActionBar.TabListener,
 	@Override
 	public void onTabSelected(Tab tab, 
 			FragmentTransaction fragmentTransaction) {
-		// When the given tab is selected, switch to the corresponding page in the ViewPager.
-		//Fragment fragment = null;
 		switch(tab.getPosition()){
 		case 0:
 			if (categoriesListener != null) {
 				categoriesListener.loadCategories();
 			}
-			//tabSelected = TAB_SELECTED.values()[0];
 			break;
 		case 1:
-			//tabSelected = TAB_SELECTED.values()[1];
 			break;
 		case 2:
 			if (syndicationsListener != null) {
 				syndicationsListener.loadSyndications();
 			}
-			//tabSelected = TAB_SELECTED.values()[2];
 			break;
 		}
-		viewPager.setCurrentItem(tab.getPosition());
+
+		if (viewPager.getCurrentItem() != tab.getPosition()){
+		    viewPager.setCurrentItem(tab.getPosition());
+		}
 	}
 
 	@Override
@@ -300,7 +327,6 @@ public class SolnRss extends FragmentActivity implements ActionBar.TabListener,
 	public void onTabReselected(Tab tab, 
 			FragmentTransaction fragmentTransaction) {
 	}
-	
 	
 	public void reLoadPublicationsBySyndication(Integer syndicationID) {
 		publicationsListener.reLoadPublicationsBySyndication(syndicationID);
@@ -385,7 +411,7 @@ public class SolnRss extends FragmentActivity implements ActionBar.TabListener,
 	}
 
 	public void setPublicationsFragmentListener(
-			PublicationsFragmentListener publicationsFragmentListener2) {
-		this.publicationsListener = publicationsFragmentListener2;
+			PublicationsFragmentListener publicationsFragmentListener) {
+		this.publicationsListener = publicationsFragmentListener;
 	}
 }

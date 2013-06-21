@@ -230,7 +230,7 @@ public class PublicationRepository extends Repository {
 	private StringBuilder selection = new StringBuilder();
 	private List<String> args = new ArrayList<String>();
 	
-	public Cursor reloadPublications(String filterText,
+	/*public Cursor reloadPublications(String filterText,
 			Integer selectedSyndicationID, Integer selectedCategoryID,
 			Boolean displayAlreadyRead) {
 		
@@ -284,7 +284,7 @@ public class PublicationRepository extends Repository {
 				args.toArray(new String[args.size()]), null, null,
 				PublicationTable.COLUMN_PUBLICATION_DATE + " desc");
 				
-	}
+	}*/
 	
 	public CursorLoader loadPublications(String filterText,
 			Integer selectedSyndicationID, Integer selectedCategoryID,

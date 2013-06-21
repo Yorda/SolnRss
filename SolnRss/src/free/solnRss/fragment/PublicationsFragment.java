@@ -12,6 +12,7 @@ import android.os.ResultReceiver;
 import android.preference.PreferenceManager;
 import android.support.v4.content.Loader;
 import android.text.TextUtils;
+import android.util.DisplayMetrics;
 import android.view.ContextMenu;
 import android.view.ContextMenu.ContextMenuInfo;
 import android.view.LayoutInflater;
@@ -19,6 +20,8 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.Animation;
+import android.view.animation.TranslateAnimation;
 import android.widget.AdapterView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
@@ -56,22 +59,43 @@ public class PublicationsFragment extends AbstractFragment implements
 			setEmptyMessage(getResources().getString(
 					R.string.empty_publications_with_syndication,syndicationName()));
 			
+			getActivity().findViewById(R.id.displayAllButton).setVisibility(
+					View.VISIBLE);
+			
 			// If already read publications are hidden display button for display them
-
+			displayAlreadyReadPublicationsButton();
+			
 		} // If a category is selected and it's empty
 		else if (selectedCategoryID != null) {
+			
+			// Set nothing found message
 			setEmptyMessage(getResources().getString(
 					R.string.empty_publications_with_category, categoryName()));
 			
-			// If already read publications are hidden display button for display them
+			getActivity().findViewById(R.id.displayAllButton).setVisibility(
+					View.VISIBLE);
 			
+			displayAlreadyReadPublicationsButton();			
 		}
 		// If all publications are empty
 		else {
-			setEmptyMessage(getResources().getString(
-					R.string.empty_publications));
-			// Hide display all button
-			// If already read publications are hidden display button for display them
+			setEmptyMessage(getResources().getString(R.string.empty_publications));
+			
+			getActivity().findViewById(R.id.displayAllButton).setVisibility(
+					View.INVISIBLE);
+			
+			displayAlreadyReadPublicationsButton();	
+		}
+	}
+	
+	private void displayAlreadyReadPublicationsButton() {
+		if (displayAlreadyReadPublications()) {
+			getActivity().findViewById(R.id.displayAlreadyReadButton)
+					.setVisibility(View.INVISIBLE);
+
+		} else {
+			getActivity().findViewById(R.id.displayAlreadyReadButton)
+					.setVisibility(View.VISIBLE);
 		}
 	}
 	
@@ -157,6 +181,15 @@ public class PublicationsFragment extends AbstractFragment implements
 		
 		String link = getPublicationUrl(cursor);
 		String description = hasPublicationContentToDisplay(cursor);
+		
+		DisplayMetrics metrics = new DisplayMetrics();
+		getActivity().getWindowManager().getDefaultDisplay()
+				.getMetrics(metrics);
+
+		Animation animation = null;
+		animation = new TranslateAnimation(0, metrics.widthPixels, 0, 0);
+		animation.setDuration(700);
+		v.startAnimation(animation);
 		
 		if (description != null && description.trim().length() > 0) {
 
@@ -430,24 +463,10 @@ public class PublicationsFragment extends AbstractFragment implements
 	@Override
 	public void reloadPublicationsWithAlreadyRead() {
 		
-		/*SharedPreferences.Editor editor = PreferenceManager
+		SharedPreferences.Editor editor = PreferenceManager
 				.getDefaultSharedPreferences(getActivity()).edit();
 		editor.putBoolean("pref_display_unread", true);
 		editor.commit();
-		*/
-		
-		Cursor c = publicationRepository.reloadPublications(getFilterText(),
-				selectedSyndicationID, selectedCategoryID, true);
-		
-		// Some already read publications found
-		if (c.getCount() > 0) {
-			hideEmptyMessage();
-			simpleCursorAdapter.swapCursor(c);
-		} else {
-			// Nothing found
-			// hide button display a message
-		}
-
 	}
 	
 	public void refreshPublications() {

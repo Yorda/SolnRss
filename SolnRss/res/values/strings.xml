@@ -7,23 +7,27 @@
     <string name="title_syndications">Sites</string>
     <string name="title_categories">Categories</string>
     <string name="menu_settings">Settings</string>
-    <string name="menu_add_categorie">Add a categorie</string>
-    <string name="menu_add_site">Add a site</string>
+    <string name="menu_add_categorie">Add a new categorie</string>
+    <string name="menu_add_site">Add a new site</string>
+    <string name="menu_show_already_read">Show already read publications</string>
+    <string name="menu_hide_already_read">Hide already read publications</string>
+      
+
 
     <!-- Publication's tab label -->
     <string name="empty_publications">No publications to display. </string>
     <string name="empty_publications_with_syndication">No publications for %1$s syndication to display. </string>
     <string name="empty_publications_with_category">No publications for %1$s category to display. </string>
-    <string name="open_browser_bad_url">Unable to open browser, this link seems to be wrong.</string>
+    <string name="open_browser_bad_url">Unable to open browser, this url seems to be wrong.</string>
 
     <!-- Context publication's context menu -->
-    <string name="display_one_publication">Display only his publications</string>
-    <string name="display_all_publication">Display all publications</string>
+    <string name="display_one_publication">Show only his publications</string>
+    <string name="display_all_publication">Show all publications</string>
     <string name="display_syndications_screen">Display syndication\'s screen</string>
-    <string name="mark_all_read">Mark all publication as read</string>
-    <string name="mark_as_read">Mark as read</string>
+    <string name="mark_all_read">Mark all publications as read</string>
+    <string name="mark_as_read">Mark it as read</string>
     <string name="mark_selected_syndication_read">Mark this site publications as read</string>
-    <string name="mark_selected_category_read">Mark this category\'s publications as read</string>
+    <string name="mark_selected_category_read">This category as read</string>
 
     <!-- New publication notification -->
     <string name="notify_new_pub_title">New publications</string>

@@ -1,5 +1,6 @@
 package free.solnRss.activity;
 
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Intent;
 import android.net.Uri;
@@ -7,8 +8,10 @@ import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.webkit.WebChromeClient;
 import android.webkit.WebSettings;
 import android.webkit.WebSettings.LayoutAlgorithm;
+import android.webkit.WebSettings.PluginState;
 import android.webkit.WebView;
 import android.widget.Toast;
 import free.solnRss.R;
@@ -22,28 +25,27 @@ import free.solnRss.R;
 public class ReaderActivity extends Activity {
 	
 	private String link;
-	final int layoutID = R.layout.activity_reader;
 
+	@SuppressLint("SetJavaScriptEnabled")
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		setContentView(layoutID);
+		setContentView(R.layout.activity_reader);
 		 
 		String text = getIntent().getStringExtra("read");
 		link = getIntent().getStringExtra("link");
-
-		/*TextView textView = (TextView) findViewById(R.id.reader);
-		textView.setText(Html.fromHtml(text));
-		textView.setMovementMethod(LinkMovementMethod.getInstance());*/
-		
+	
 		WebView webView = (WebView) findViewById(R.id.reader);		
 		WebSettings settings = webView.getSettings();
 		settings.setDefaultTextEncodingName("utf-8");
+		
+		// For enable video
+		webView.setWebChromeClient(new WebChromeClient());
+		settings.setPluginState(PluginState.ON);
+		settings.setJavaScriptEnabled(true);
+		
 		webView.getSettings().setLayoutAlgorithm(LayoutAlgorithm.SINGLE_COLUMN);
 		webView.loadDataWithBaseURL(null, text, "text/html", "utf-8", null);
-		
-		// webView.setBackgroundColor(0x00000000);
-		// webView.setLayerType(WebView.LAYER_TYPE_SOFTWARE, null);
 	}
 
 	private void goToSite() {

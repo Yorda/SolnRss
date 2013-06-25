@@ -97,6 +97,7 @@ public abstract class AbstractFragment extends ListFragment implements	OnQueryTe
     }
 	
 	private void setupSearchView(MenuItem searchItem) {
+		//searchItem.setIcon(icon)
 		searchItem.setShowAsAction(
 				MenuItem.SHOW_AS_ACTION_IF_ROOM
 				| MenuItem.SHOW_AS_ACTION_COLLAPSE_ACTION_VIEW

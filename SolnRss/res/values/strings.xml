@@ -27,7 +27,7 @@
     <string name="mark_all_read">Mark all publications as read</string>
     <string name="mark_as_read">Mark it as read</string>
     <string name="mark_selected_syndication_read">Mark this site publications as read</string>
-    <string name="mark_selected_category_read">This category as read</string>
+    <string name="mark_selected_category_read">Mark this category as read</string>
 
     <!-- New publication notification -->
     <string name="notify_new_pub_title">New publications</string>

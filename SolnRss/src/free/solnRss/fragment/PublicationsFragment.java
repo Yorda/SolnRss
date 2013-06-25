@@ -229,9 +229,11 @@ public class PublicationsFragment extends AbstractFragment implements
 			// If user is on a category the menu display a "mark as read" for all
 			// syndication in category
 			if (selectedCategoryID != null) {
-				menu.getItem(1).setTitle(
+				/*menu.getItem(1).setTitle(
 						getResources().getString(
-								R.string.mark_selected_category_read));
+								R.string.mark_selected_category_read));*/
+				
+				menu.getItem(2).setVisible(true);
 			}
 		}
 	}
@@ -253,13 +255,17 @@ public class PublicationsFragment extends AbstractFragment implements
 			break;
 
 		case R.id.menu_mark_read:
-			if (selectedCategoryID != null) {
+			markSyndicationPublicationsAsRead(nextSelectedSyndicationID);
+			/*if (selectedCategoryID != null) {
 				markCategoryPublicationsAsRead();
 			} else {
 				markSyndicationPublicationsAsRead(nextSelectedSyndicationID);
 			}
+			break;*/
 			break;
-
+		case R.id.menu_mark_category_read:
+			markCategoryPublicationsAsRead();
+			break;
 		default:
 			break;
 		}

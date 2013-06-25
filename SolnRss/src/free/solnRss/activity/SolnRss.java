@@ -138,9 +138,25 @@ public class SolnRss extends FragmentActivity implements ActionBar.TabListener,
 				});
 
 		// For each of the sections in the app, add a tab to the action bar.
+		int iconId = -1;
 		for (int i = 0; i < sectionPageAdapter.getCount(); i++) {
+			switch (i) {
+			case 0:
+				iconId = R.drawable.ic_tab_folder;
+				break;
+			case 1:
+				iconId = R.drawable.ic_tab_file;
+				break;
+			case 2:
+				iconId = R.drawable.ic_tab_earth;
+				break;
+			default:
+				break;
+			}
+			
 			actionBar.addTab(actionBar.newTab()
-					.setText(sectionPageAdapter.getPageTitle(i))
+					//.setText(sectionPageAdapter.getPageTitle(i))
+					.setIcon(iconId)
 					.setTabListener(this));
 		}
 		

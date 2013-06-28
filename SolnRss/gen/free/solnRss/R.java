@@ -12,13 +12,14 @@ public final class R {
     }
     public static final class drawable {
         public static final int button=0x7f020000;
-        public static final int ic_action_example=0x7f020001;
-        public static final int ic_launcher=0x7f020002;
-        public static final int ic_pause=0x7f020003;
-        public static final int ic_tab_earth=0x7f020004;
-        public static final int ic_tab_file=0x7f020005;
-        public static final int ic_tab_folder=0x7f020006;
-        public static final int input=0x7f020007;
+        public static final int ic_abar_search=0x7f020001;
+        public static final int ic_action_example=0x7f020002;
+        public static final int ic_launcher=0x7f020003;
+        public static final int ic_pause=0x7f020004;
+        public static final int ic_tab_earth=0x7f020005;
+        public static final int ic_tab_file=0x7f020006;
+        public static final int ic_tab_folder=0x7f020007;
+        public static final int input=0x7f020008;
     }
     public static final class id {
         public static final int action_search=0x7f07001f;

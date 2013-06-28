@@ -92,6 +92,7 @@ public abstract class AbstractFragment extends ListFragment implements	OnQueryTe
 	@Override public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
 		inflater.inflate(R.menu.activity_soln_rss, menu);
 		MenuItem searchItem = menu.findItem(R.id.action_search);
+		searchItem.setIcon(R.drawable.ic_abar_search);
 		searchView = (SearchView) searchItem.getActionView();
 		setupSearchView(searchItem);
     }

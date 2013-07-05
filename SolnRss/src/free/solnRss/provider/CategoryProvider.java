@@ -9,7 +9,7 @@ import android.database.sqlite.SQLiteQueryBuilder;
 import android.net.Uri;
 import android.preference.PreferenceManager;
 import free.solnRss.repository.CategoryTable;
-import free.solnRss.repository.Database;
+import free.solnRss.repository.RepositoryHelper;
 
 public class CategoryProvider extends ContentProvider {
 	private final static String AUTHORITY = "com.solnRss.provider.categoryprovider",
@@ -21,12 +21,9 @@ public class CategoryProvider extends ContentProvider {
 	private UriMatcher uriMatcher;
 	private final int CATEGORIES  = 10;
 	private final int CATEGORY_ID = 20;
-
-	private Database repository;
 	
 	@Override
 	public boolean onCreate() {
-		repository = new Database(getContext());
 		uriMatcher = new UriMatcher(UriMatcher.NO_MATCH);
 		uriMatcher.addURI(AUTHORITY, CATEGORY_PATH, CATEGORIES);
 		uriMatcher.addURI(AUTHORITY, CATEGORY_PATH + "/#", CATEGORY_ID);
@@ -39,7 +36,7 @@ public class CategoryProvider extends ContentProvider {
 
 		SQLiteQueryBuilder queryBuilder = null;
 		Cursor cursor = null;
-		SQLiteDatabase db = repository.getReadableDatabase();
+		SQLiteDatabase db = RepositoryHelper.getInstance(getContext()).getReadableDatabase();
 		
 		switch (uriMatcher.match(uri)) {
 		case CATEGORIES:

@@ -15,6 +15,7 @@ import free.solnRss.R;
 import free.solnRss.provider.SyndicationsProvider;
 import free.solnRss.repository.SyndicationTable;
 
+
 public class SyndicationsCategorieAdapter extends SimpleCursorAdapter implements
 		FilterQueryProvider {
 

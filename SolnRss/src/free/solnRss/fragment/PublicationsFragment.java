@@ -11,8 +11,8 @@ import android.os.Handler;
 import android.os.ResultReceiver;
 import android.preference.PreferenceManager;
 import android.support.v4.content.Loader;
+import android.text.Html;
 import android.text.TextUtils;
-import android.util.DisplayMetrics;
 import android.view.ContextMenu;
 import android.view.ContextMenu.ContextMenuInfo;
 import android.view.LayoutInflater;
@@ -20,8 +20,6 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.animation.Animation;
-import android.view.animation.TranslateAnimation;
 import android.widget.AdapterView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
@@ -53,42 +51,54 @@ public class PublicationsFragment extends AbstractFragment implements
 		LinearLayout l = (LinearLayout) getActivity().findViewById(emptyLayoutId);
 		l.setVisibility(View.VISIBLE);
 		
+		String filter = getFilterText();
+		getActivity().findViewById(R.id.displayAllButton).setVisibility(View.VISIBLE);
+		
 		// If a syndication is selected and it's empty
 		if (selectedSyndicationID != null) {
-			
-			setEmptyMessage(getResources().getString(
-					R.string.empty_publications_with_syndication,syndicationName()));
-			
-			getActivity().findViewById(R.id.displayAllButton).setVisibility(
-					View.VISIBLE);
-			
-			// If already read publications are hidden display button for display them
-			displayAlreadyReadPublicationsButton();
-			
+			if (TextUtils.isEmpty(filter)) {
+				setEmptyMessage(getResources().getString(
+						R.string.empty_publications_with_syndication,
+						syndicationName()));
+			} else {
+				setEmptyMessage(getResources().getString(
+						R.string.empty_publications_with_syndication_with_filter,
+						syndicationName(), filter));
+			}
+
 		} // If a category is selected and it's empty
 		else if (selectedCategoryID != null) {
-			
-			// Set nothing found message
-			setEmptyMessage(getResources().getString(
-					R.string.empty_publications_with_category, categoryName()));
-			
-			getActivity().findViewById(R.id.displayAllButton).setVisibility(
-					View.VISIBLE);
-			
-			displayAlreadyReadPublicationsButton();			
+			if (TextUtils.isEmpty(filter)) {
+				setEmptyMessage(getResources().getString(
+						R.string.empty_publications_with_category,
+						categoryName()));
+			} else {
+				setEmptyMessage(getResources().getString(
+						R.string.empty_publications_with_category_with_filter,
+						categoryName(), filter));
+			}
+
 		}
 		// If all publications are empty
 		else {
-			setEmptyMessage(getResources().getString(R.string.empty_publications));
 			
-			getActivity().findViewById(R.id.displayAllButton).setVisibility(
-					View.INVISIBLE);
+			if (TextUtils.isEmpty(filter)) {
+				setEmptyMessage(getResources().getString(
+						R.string.empty_publications));
+			} else {
+				setEmptyMessage(getResources().getString(
+						R.string.empty_publications_with_filter, filter));
+			}
 			
-			displayAlreadyReadPublicationsButton();	
+			getActivity().findViewById(R.id.displayAllButton)
+					.setVisibility(View.GONE);
 		}
+		// If already read publications are hidden display button for display them
+		displayAlreadyReadPublicationsButton();
 	}
 	
 	private void displayAlreadyReadPublicationsButton() {
+		
 		if (displayAlreadyReadPublications()) {
 			getActivity().findViewById(R.id.displayAlreadyReadButton)
 					.setVisibility(View.INVISIBLE);
@@ -174,22 +184,26 @@ public class PublicationsFragment extends AbstractFragment implements
 	}
 
 	@Override
-	public void onListItemClick(ListView l, View v, int position, long id) {
-	
-		Cursor cursor = ((PublicationAdapter) l.getAdapter()).getCursor();
-		clickOnPublicationItem(cursor, l, v, position, id);
+	public void onListItemClick(final ListView l, final View v, final int position, final long id) {
 		
-		String link = getPublicationUrl(cursor);
-		String description = hasPublicationContentToDisplay(cursor);
-		
-		DisplayMetrics metrics = new DisplayMetrics();
+		/*DisplayMetrics metrics = new DisplayMetrics();
 		getActivity().getWindowManager().getDefaultDisplay()
 				.getMetrics(metrics);
 
 		Animation animation = null;
 		animation = new TranslateAnimation(0, metrics.widthPixels, 0, 0);
 		animation.setDuration(700);
-		v.startAnimation(animation);
+		v.startAnimation(animation);*/
+		
+		//final Animation animation = AnimationUtils.loadAnimation(v.getContext(), R.drawable.input);
+		//v.startAnimation(animation);
+		
+		//--
+    	Cursor cursor = ((PublicationAdapter) l.getAdapter()).getCursor();
+		clickOnPublicationItem(cursor, l, v, position, id);
+		
+		String link = getPublicationUrl(cursor);
+		String description = hasPublicationContentToDisplay(cursor);
 		
 		if (description != null && description.trim().length() > 0) {
 
@@ -201,6 +215,7 @@ public class PublicationsFragment extends AbstractFragment implements
 		} else {
 			displayOnSystemBrowser(link);
 		}
+		//--
 	}
 	
 	@Override
@@ -256,16 +271,12 @@ public class PublicationsFragment extends AbstractFragment implements
 
 		case R.id.menu_mark_read:
 			markSyndicationPublicationsAsRead(nextSelectedSyndicationID);
-			/*if (selectedCategoryID != null) {
-				markCategoryPublicationsAsRead();
-			} else {
-				markSyndicationPublicationsAsRead(nextSelectedSyndicationID);
-			}
-			break;*/
 			break;
+			
 		case R.id.menu_mark_category_read:
 			markCategoryPublicationsAsRead();
 			break;
+			
 		default:
 			break;
 		}
@@ -463,6 +474,7 @@ public class PublicationsFragment extends AbstractFragment implements
 		this.selectedCategoryID = null;
 		if (isAdded()) {
 			getLoaderManager().restartLoader(0, null, this);
+			updateActionBarTitle();
 		}
 	}
 
@@ -489,6 +501,7 @@ public class PublicationsFragment extends AbstractFragment implements
 		Bundle bundle = new Bundle();
 		bundle.putInt("selectedCategoryID",selectedCategoryID);
 		getLoaderManager().initLoader(0, bundle, this);
+		updateActionBarTitle();
 	}
 	
 	public void reLoadPublicationsByCategory(Integer categoryID) {
@@ -498,6 +511,7 @@ public class PublicationsFragment extends AbstractFragment implements
 		bundle.putInt("selectedCategoryID",this.selectedCategoryID);
 		if(isAdded()){
 			getLoaderManager().restartLoader(0, bundle, this);
+			updateActionBarTitle();
 		}
 	}
 
@@ -505,6 +519,7 @@ public class PublicationsFragment extends AbstractFragment implements
 		Bundle bundle = new Bundle();
 		bundle.putInt("selectedSyndicationID", selectedSyndicationID);
 		getLoaderManager().initLoader(0, bundle, this);
+		updateActionBarTitle();
 	}
 	
 	public void reLoadPublicationsBySyndication(Integer syndicationID) {
@@ -514,6 +529,19 @@ public class PublicationsFragment extends AbstractFragment implements
 		bundle.putInt("selectedSyndicationID", this.selectedSyndicationID);
 		if (isAdded()) {
 			getLoaderManager().restartLoader(0, bundle, this);
+			updateActionBarTitle();
+		}
+	}
+	
+	private void updateActionBarTitle() {
+		if (this.selectedSyndicationID != null) {
+			getActivity().getActionBar().setTitle(
+					Html.fromHtml("<b>-> (" + syndicationName() + ")<b>"));
+		} else if (this.selectedCategoryID != null) {
+			getActivity().getActionBar().setTitle(
+					Html.fromHtml("<b>-> [" + categoryName() + "]<b>"));
+		} else {
+			getActivity().getActionBar().setTitle(getActivity().getTitle());
 		}
 	}
 	

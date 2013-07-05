@@ -17,7 +17,7 @@ import free.solnRss.activity.SolnRss;
 
 public class AddItemDialog extends DialogFragment implements OnEditorActionListener {
 	public static enum Item {
-		Site("Site"), Categorie("Categorie");
+		Site("Site"), Category("Category");
 		private Item(String s) {
 		};
 	};
@@ -54,10 +54,9 @@ public class AddItemDialog extends DialogFragment implements OnEditorActionListe
 			editText.setHint(getResources().getString(R.string.new_syndication_hint));
 			break;
 
-		case Categorie:
+		case Category:
 			getDialog().setTitle(getResources().getString(R.string.add_categorie));
 			label.setText(getResources().getString(R.string.add_categorie_explain));
-			
 			editText.setHint(getResources().getString(R.string.new_category_hint));
 			break;
 

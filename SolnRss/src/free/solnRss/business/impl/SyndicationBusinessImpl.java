@@ -36,6 +36,8 @@ public class SyndicationBusinessImpl implements SyndicationBusiness {
 		String rss = null;
 		try {
 			rss = HttpUtil.htmlFromSite(syndication.getUrl());
+			// Be sure to have a valid RSS. It is possible to get a WLAN welcome
+			// page
 			syndication.setRss(rss);
 			
 		} catch (Exception e) {
@@ -67,7 +69,6 @@ public class SyndicationBusinessImpl implements SyndicationBusiness {
 			throw new ExtractFeedException(ExtractFeedException.Error.GET_FEED_INFO);
 		}		
 		return syndication;
-
 	}
 	
 	public Syndication searchSyndication(String url) throws ExtractFeedException {

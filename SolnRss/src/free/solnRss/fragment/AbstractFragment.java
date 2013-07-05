@@ -18,6 +18,7 @@ import android.widget.LinearLayout;
 import android.widget.SearchView;
 import android.widget.SearchView.OnQueryTextListener;
 import free.solnRss.R;
+import free.solnRss.dialog.AddItemDialog;
 
 
 public abstract class AbstractFragment extends ListFragment implements	OnQueryTextListener, 
@@ -192,6 +193,15 @@ public abstract class AbstractFragment extends ListFragment implements	OnQueryTe
 			progressContainer.setVisibility(View.VISIBLE);
 			listContainer.setVisibility(View.INVISIBLE);
 		}
+	}
+	
+	void displayAddItemDialog(AddItemDialog.Item item) {
+		
+		AddItemDialog dialog = new AddItemDialog();
+		Bundle args = new Bundle();
+		args.putString("item", item.toString());
+		dialog.setArguments(args);
+		dialog.show(getActivity().getSupportFragmentManager(), "dialog_add_item");
 	}
 
 	public void setListShown(boolean shown) {

@@ -53,7 +53,6 @@ public class CategoriesFragment extends AbstractFragment implements
 		((SolnRss)getActivity()).setCategoriesFragmentListener(this);
 		
 		setListShown(false);
-		//getListView().setTextFilterEnabled(true);
 		setHasOptionsMenu(true);
 	}
 	

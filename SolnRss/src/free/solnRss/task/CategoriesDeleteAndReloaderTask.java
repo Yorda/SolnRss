@@ -10,6 +10,7 @@ import free.solnRss.activity.SolnRss;
 import free.solnRss.adapter.CategorieAdapter;
 import free.solnRss.repository.CategoryRepository;
 
+@Deprecated
 public class CategoriesDeleteAndReloaderTask extends
 		AsyncTask<Integer, Void, Cursor> {
 
@@ -42,7 +43,6 @@ public class CategoriesDeleteAndReloaderTask extends
 		} else {
 			hideEmptyMessage();
 		}
-		repository.close();
 	}
 
 	private void displayEmptyMessage() {

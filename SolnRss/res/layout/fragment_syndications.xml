@@ -53,9 +53,17 @@
                 android:layout_height="wrap_content"
                 android:text="@string/empty_syndications"
                 android:textSize="16sp"
-                android:textStyle="bold|italic"
-                android:typeface="monospace"
                 android:visibility="visible" />
+
+            <Button
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="20dp"
+                android:background="#33b5e5"
+                android:onClick="openDialogForAddSyndication"
+                android:text="@string/add_site"
+                android:textColor="@android:color/white"
+                android:textStyle="bold" />
         </LinearLayout>
     </FrameLayout>
 

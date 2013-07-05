@@ -1,5 +1,6 @@
 package free.solnRss.activity;
 
+import android.annotation.SuppressLint;
 import android.app.ActionBar;
 import android.app.ActionBar.Tab;
 import android.app.AlertDialog;
@@ -10,6 +11,7 @@ import android.content.DialogInterface;
 import android.content.DialogInterface.OnClickListener;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.drawable.ColorDrawable;
 import android.net.ConnectivityManager;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
@@ -105,6 +107,7 @@ public class SolnRss extends FragmentActivity implements ActionBar.TabListener,
 		notificationManager.cancel(0x000001);
 	}
 	
+	@SuppressLint("NewApi")
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		
@@ -116,8 +119,10 @@ public class SolnRss extends FragmentActivity implements ActionBar.TabListener,
 		final ActionBar actionBar = getActionBar();
 		actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_TABS);
 		
-		//actionBar.setBackgroundDrawable(new ColorDrawable(0xeeeeee));
-		//actionBar.setStackedBackgroundDrawable(new ColorDrawable(0xeeeeee));
+		actionBar.setBackgroundDrawable(new ColorDrawable(0xeeeeee));
+		actionBar.setStackedBackgroundDrawable(new ColorDrawable(0xeeeeee));
+		
+		//actionBar.setTitle(Html.fromHtml("<i><b>Need sexy women</b></i>"));
 		
 		// Set up the ViewPager with the sections adapter.
 		viewPager = (ViewPager) findViewById(R.id.pager);
@@ -244,13 +249,21 @@ public class SolnRss extends FragmentActivity implements ActionBar.TabListener,
 	}
 	
 	void openDialogForAddCategorie() {
-		displayAddItemDialog(AddItemDialog.Item.Categorie);
+		displayAddItemDialog(AddItemDialog.Item.Category);
 	}
 
 	void openDialogForAddSyndication() {
 		displayAddItemDialog(AddItemDialog.Item.Site);
 	}
 
+	public void openDialogForAddSyndication(View v) {
+		displayAddItemDialog(AddItemDialog.Item.Site);
+	}
+	
+	public void openDialogForAddCategory(View v) {
+		displayAddItemDialog(AddItemDialog.Item.Category);
+	}
+	
 	void displayAddItemDialog(AddItemDialog.Item item) {
 		
 		AddItemDialog dialog = new AddItemDialog();
@@ -267,7 +280,7 @@ public class SolnRss extends FragmentActivity implements ActionBar.TabListener,
 			addSyndication(seq.toString());
 			break;
 
-		case Categorie:
+		case Category:
 			addCategorie(seq.toString());
 			break;
 
@@ -328,7 +341,6 @@ public class SolnRss extends FragmentActivity implements ActionBar.TabListener,
 			}
 			break;
 		}
-
 		if (viewPager.getCurrentItem() != tab.getPosition()){
 		    viewPager.setCurrentItem(tab.getPosition());
 		}

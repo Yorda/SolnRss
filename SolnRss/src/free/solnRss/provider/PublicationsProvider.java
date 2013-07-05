@@ -9,8 +9,8 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteQueryBuilder;
 import android.net.Uri;
-import free.solnRss.repository.Database;
 import free.solnRss.repository.PublicationTable;
+import free.solnRss.repository.RepositoryHelper;
 import free.solnRss.repository.SyndicationTable;
 
 public class PublicationsProvider extends ContentProvider {
@@ -22,13 +22,14 @@ public class PublicationsProvider extends ContentProvider {
 	public  final static Uri URI = 
 			Uri.parse("content://" + AUTHORITY + "/" + PUBLICATION_PATH);
 	
-	private Database repository;
+	//private Database repository;
 	private final static String syndicationTable = SyndicationTable.SYNDICATION_TABLE;
 	private final static String publicationTable = PublicationTable.PUBLICATION_TABLE;
 	
 	private UriMatcher uriMatcher;
 	// Used for the UriMacher
 	private final int PUBLICATIONS     = 10;
+	
 	final public static String projection[] = new String[] {
 			publicationTable + "." + PublicationTable.COLUMN_ID,
 			publicationTable + "." + PublicationTable.COLUMN_TITLE, 
@@ -40,7 +41,6 @@ public class PublicationsProvider extends ContentProvider {
 	
 	@Override
 	public boolean onCreate() {
-		repository = new Database(getContext());
 		uriMatcher = new UriMatcher(UriMatcher.NO_MATCH);
 		uriMatcher.addURI(AUTHORITY, PUBLICATION_PATH, PUBLICATIONS);
 		return true;
@@ -58,7 +58,7 @@ public class PublicationsProvider extends ContentProvider {
 		// Set the table
 		queryBuilder.setTables(tables);
 
-		SQLiteDatabase db = repository.getReadableDatabase();
+		SQLiteDatabase db = RepositoryHelper.getInstance(getContext()).getReadableDatabase();
 		Cursor cursor = queryBuilder.query(db, projection, selection,
 				args, null, null,
 				PublicationTable.COLUMN_PUBLICATION_DATE + " desc","100");
@@ -75,10 +75,10 @@ public class PublicationsProvider extends ContentProvider {
 	@Override
 	public Uri insert(Uri uri, ContentValues values) {
 		
-		SQLiteDatabase db = repository.getWritableDatabase();
 	    long id = 0;
 	    switch (uriMatcher.match(uri)) {
 			case PUBLICATIONS:
+				SQLiteDatabase db = RepositoryHelper.getInstance(getContext()).getWritableDatabase();
 				id = db.insert(PublicationTable.PUBLICATION_TABLE, null, values);
 			break;
 		
@@ -92,9 +92,11 @@ public class PublicationsProvider extends ContentProvider {
 	@Override
 	public int update(Uri uri, ContentValues values, String selection,
 			String[] selectionArgs) {
-		SQLiteDatabase db = repository.getWritableDatabase();
-		int rowsUpdated = db.update(PublicationTable.PUBLICATION_TABLE, 
-				values,	selection, selectionArgs);
+		
+		int rowsUpdated = 0;
+		SQLiteDatabase db = RepositoryHelper.getInstance(getContext()).getWritableDatabase();
+		rowsUpdated = db.update(PublicationTable.PUBLICATION_TABLE,
+					values, selection, selectionArgs);
 		getContext().getContentResolver().notifyChange(uri, null);
 		return rowsUpdated;
 	}

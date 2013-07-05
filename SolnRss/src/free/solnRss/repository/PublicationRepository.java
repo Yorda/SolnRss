@@ -1,291 +1,36 @@
 package free.solnRss.repository;
 
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
-import java.util.Locale;
 
-import free.solnRss.model.Publication;
-import free.solnRss.provider.PublicationsProvider;
-
-import android.content.ContentValues;
 import android.content.Context;
-import android.database.Cursor;
 import android.support.v4.content.CursorLoader;
 import android.text.TextUtils;
+import free.solnRss.provider.PublicationsProvider;
 
-public class PublicationRepository extends Repository {
-	final private DateFormat sdf = 
-			new SimpleDateFormat("yyyy-MM-dd HH:mm:ss",	Locale.FRENCH);
+public class PublicationRepository {
 
+	private Context context;
+	
 	public PublicationRepository(Context context) {
-		super.context = context;
+		this.context = context;
 	}
 
-	
-	/**
-	 * Set one publication as read
-	 * @param id
-	 */
-	public void markClickedPublicationRead(Integer id) {
-		open(context);
-		
-		// Set publication as read
-		ContentValues values = new ContentValues();
-		values.put("pub_already_read", 1);
-		sqLiteDatabase.update("d_publication", values, " _id = ? ",	new String[] { id.toString() });
+	private StringBuilder selection = new StringBuilder();
+	private List<String> args = new ArrayList<String>();
 
-		// Add one to syndication's number of click
-		String[] args = new String[1];
-		args[0] = id.toString();
-
-		sqLiteDatabase.execSQL(
-" update d_syndication set syn_number_click = (syn_number_click +1) where _id = (select syn_syndication_id from d_publication where _id = ?)",
-						args);
-		
-		close();
-	}
-
-	/**
-	 * Set all publications in database as read
-	 */
-	@Deprecated
-	public void markAllPublicationsAsRead() {
-		open(context);
-		ContentValues values = new ContentValues();
-		values.put("pub_already_read", 1);
-		sqLiteDatabase.update("d_publication", values, null, null);
-		close();
-	}
-	
-	/**
-	 * Set all publication for one syndication as read
-	 * @param syndicationId
-	 */
-	@Deprecated
-	public void markSyndicationPublicationsAsRead(Integer syndicationId) {
-		open(context);
-		ContentValues values = new ContentValues();
-		values.put("pub_already_read", 1);
-		sqLiteDatabase.update("d_publication", values,
-				" syn_syndication_id = ? ",
-				new String[] { syndicationId.toString() });
-		close();
-	}
-	
-	/**
-	 * 
-	 * @param syndicationId
-	 */
-	@Deprecated
-	public void markCategoryPublicationsAsRead(Integer categoryId) {
-		open(context);
-
-		String[] args = new String[1];
-		args[0] = categoryId.toString();
-
-		sqLiteDatabase.execSQL(
-				" update d_publication set "
-						+ " pub_already_read = 1 "
-						+ " where syn_syndication_id in "
-						+ "(select syn_syndication_id from d_categorie_syndication where cas_categorie_id = ?)",
-						args);
-		close();
-	}
 	
 	/**
 	 * Clean the publications list in table for a syndication
 	 * @param id
 	 */
 	public void clean(Integer id) {
-		open(context);
-		sqLiteDatabase.delete(
-			"d_publication", " syn_syndication_id = ? ", new String[] { id.toString() });
-		close();
+
+		 RepositoryHelper.getInstance(context).getWritableDatabase()
+		.delete("d_publication", " syn_syndication_id = ? ", new String[] { id.toString() });
+
 	}
 
-	
-	public Cursor fetchFilteredPublication(Integer syndicationId,
-			String filter, boolean displayUnread) {
-		open(context);
-		
-		List<String> arr = new ArrayList<String>();
-
-		StringBuilder sb = new StringBuilder();
-		sb.append("select ");
-		sb.append("a._id, ");
-		sb.append("a.pub_title, ");
-		sb.append("a.pub_link, ");
-		sb.append("a.pub_already_read, ");
-		sb.append("s.syn_name, ");
-		sb.append("a.pub_publication, ");
-		sb.append("a.syn_syndication_id ");		
-		sb.append("from d_syndication s left join d_publication a on s._id = a.syn_syndication_id ");
-		sb.append(" where 1 = 1 ");
-
-		if (syndicationId != null) {
-			sb.append(" and a.syn_syndication_id = ? ");
-			arr.add(syndicationId.toString());
-		} else {
-			sb.append(" and s.syn_display_on_timeline = 1 ");
-		}
-
-		if (filter != null && filter.trim().length() > 0) {
-			sb.append("and a.pub_title like ? ");
-			arr.add("%" + filter + "%");
-		}
-
-		
-		if (!displayUnread) {
-			sb.append(" and a.pub_already_read = 0 ");
-		}
-		
-		sb.append("order by a.pub_publication_date desc");
-
-		return sqLiteDatabase.rawQuery(sb.toString(),
-				arr.toArray(new String[arr.size()]));
-	}
-	
-	public Cursor fetchPublicationByCategorie(Integer categorieId,
-			String filter, boolean displayUnread) {
-		open(context);
-
-		List<String> arr = new ArrayList<String>();
-
-		StringBuilder sb = new StringBuilder();
-		sb.append("select ");
-		sb.append("a._id, ");
-		sb.append("a.pub_title, ");
-		sb.append("a.pub_link, ");
-		sb.append("a.pub_already_read, ");
-		sb.append("s.syn_name, ");
-		sb.append("a.pub_publication, ");
-		sb.append("a.syn_syndication_id ");
-		sb.append("from d_syndication s left outer join d_publication a on s._id = a.syn_syndication_id ");
-		sb.append(" where ");
-
-		sb.append(" a.syn_syndication_id in (select syn_syndication_id from d_categorie_syndication where cas_categorie_id = ?) ");
-		arr.add(categorieId.toString());
-		
-		if (filter != null && filter.trim().length() > 0) {
-			sb.append("and a.pub_title like ? ");
-			arr.add("%" + filter + "%");
-		}
-
-		if (!displayUnread) {
-			sb.append(" and a.pub_already_read = 0 ");
-		}
-
-		sb.append("order by a.pub_publication_date desc");
-		
-		return sqLiteDatabase.rawQuery(sb.toString(),
-				arr.toArray(new String[arr.size()]));
-	}
-
-	/**
-	 * 
-	 * @param publications 
-	 * An publications list found in rss or atom xml file
-	 * @param 
-	 * id The id of syndication
-	 * @param numberOfnewPublications 
-	 * For know how many new publications founded
-	 */
-	public int refresh(List<Publication> publications, Integer id, Integer numberOfnewPublications) {	
-		
-		open(context);
-		Cursor cursor;
-		ContentValues values = new ContentValues();
-		int num = 0;
-		for (Publication publication : publications) {
-			
-			// If publications not exist add a new one
-			String[] columns = { "_id", "pub_title" };
-			cursor = sqLiteDatabase.query("d_publication", columns,
-					"pub_title = ? and pub_link = ?",
-					new String[] { publication.getTitle(), publication.getUrl() },
-					null, null, null, null);
-			
-			if (cursor.getCount() < 1) {
-				
-				values.put("syn_syndication_id", id);
-				values.put("pub_link", publication.getUrl());
-				values.put("pub_title", publication.getTitle());
-				values.put("pub_publication", publication.getDescription());
-				values.put("pub_already_read", 0);
-				values.put("pub_publication_date",sdf.format(publication.getPublicationDate() == null ? new Date() : publication.getPublicationDate()));
-				
-				sqLiteDatabase.insert("d_publication", null, values);
-				values.clear();
-				num++;
-			}
-		}
-		close();
-		return num;
-	}
-
-
-	private StringBuilder selection = new StringBuilder();
-	private List<String> args = new ArrayList<String>();
-	
-	/*public Cursor reloadPublications(String filterText,
-			Integer selectedSyndicationID, Integer selectedCategoryID,
-			Boolean displayAlreadyRead) {
-		
-		
-		selection.setLength(0);
-		selection.append(" 1 = 1 ") ;
-		
-		args.clear();
-		
-		if (!TextUtils.isEmpty(filterText)) {
-			
-			selection.append(" and ");
-			selection.append( PublicationTable.COLUMN_TITLE);
-			selection.append(" like ? ");
-			args.add("%" + filterText + "%");
-		}
-		
-		// Display on time line
-		if (selectedSyndicationID == null && selectedCategoryID == null) {
-			selection.append(" and ");
-			selection.append(SyndicationTable.COLUMN_DISPLAY_ON_TIMELINE);
-			selection.append(" = 1 ");
-		}
-
-		else if (selectedSyndicationID != null) {
-			selection.append(" and ");
-			selection.append( PublicationTable.COLUMN_SYNDICATION_ID);
-			selection.append(" = ? ");
-			
-			args.add(selectedSyndicationID.toString());
-		}
-
-		else if (selectedCategoryID != null) {
-			selection.append(" and ");
-			selection.append( PublicationTable.COLUMN_SYNDICATION_ID);
-			selection.append(" in (select syn_syndication_id from d_categorie_syndication where cas_categorie_id = ?) ");
-			args.add(selectedCategoryID.toString());
-		}
-
-		if (!displayAlreadyRead) {	
-			selection.append(" and ");
-			selection.append( PublicationTable.COLUMN_ALREADY_READ);
-			selection.append(" = 0 ");
-		}
-		
-
-		open(context);
-		return sqLiteDatabase.query(PublicationsProvider.tables,
-				PublicationsProvider.projection, 
-				selection.toString(),
-				args.toArray(new String[args.size()]), null, null,
-				PublicationTable.COLUMN_PUBLICATION_DATE + " desc");
-				
-	}*/
-	
 	public CursorLoader loadPublications(String filterText,
 			Integer selectedSyndicationID, Integer selectedCategoryID,
 			Boolean displayAlreadyRead) {

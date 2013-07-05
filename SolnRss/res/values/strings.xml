@@ -3,21 +3,25 @@
 
     <!-- Global app label -->
     <string name="app_name">SolnRss</string>
+    
     <string name="title_publications">Publications</string>
     <string name="title_syndications">Sites</string>
     <string name="title_categories">Categories</string>
     <string name="menu_settings">Settings</string>
-    <string name="menu_add_categorie">Add a new categorie</string>
+    <string name="menu_add_categorie">Add a new category</string>
     <string name="menu_add_site">Add a new site</string>
     <string name="menu_show_already_read">Show already read publications</string>
     <string name="menu_hide_already_read">Hide already read publications</string>
-      
-
-
+    
     <!-- Publication's tab label -->
     <string name="empty_publications">No publications to display. </string>
     <string name="empty_publications_with_syndication">No publications for %1$s syndication to display. </string>
     <string name="empty_publications_with_category">No publications for %1$s category to display. </string>
+    
+    <string name="empty_publications_with_filter">No publications to display with search %1$s</string>
+    <string name="empty_publications_with_syndication_with_filter">No publications for %1$s syndication with search %2$s to display. </string>
+    <string name="empty_publications_with_category_with_filter">No publications for %1$s category with search %2$s to display. </string>
+    
     <string name="open_browser_bad_url">Unable to open browser, this url seems to be wrong.</string>
 
     <!-- Context publication's context menu -->
@@ -69,7 +73,9 @@
     <string name="action_bar_search">Search</string>
     <string name="continue_reading">View article</string>
     <string name="syndication_number_of_click">%1$s article(s) read</string>
-    <string name="empty_syndications">You don\'t follow any web site. Please add some. </string>
+    
+    <string name="empty_syndications">No syndications to display. </string>
+    <string name="empty_syndications_with_filter">No syndications to display with search %1$s</string>
     
     <!-- Settings -->
     <!-- View Read / Unread -->
@@ -94,18 +100,19 @@
     <string name="pref_search_publication_time">Search new articles every:</string>
     
     <!-- Category -->
-    <string name="empty_categories">No categories found</string>
+    <string name="empty_categories">No categories to display</string>
+    <string name="empty_categories_with_filter">No categories to display with search %1$s</string>
+    
     <string name="delete_categorie">Delete this category</string>
     <string name="add_to_categorie">Add or remove syndication(s)</string>
 
     <!-- Dialog add item -->
-    <string name="add_categorie_explain">Add a new categorie</string>
+    <string name="add_categorie_explain">Add a new category</string>
     <string name="add_site_explain">Please enter a valid URL</string>
-    <string name="add_categorie">New Categorie</string>
+    <string name="add_categorie">New Category</string>
     <string name="add_site">New Site</string>
     <string name="new_syndication_hint">Enter a valid web site or Rss url</string>
     <string name="new_category_hint">Add a new category name</string>
-    
     
     <string name="pref_sort_syndications_most_use">The most use</string>
     <string name="pref_sort_syndications_alphabetic">Alphabetical</string>

@@ -9,7 +9,7 @@ import android.database.sqlite.SQLiteQueryBuilder;
 import android.net.Uri;
 import android.preference.PreferenceManager;
 import free.solnRss.repository.CategorySyndicationsTable;
-import free.solnRss.repository.Database;
+import free.solnRss.repository.RepositoryHelper;
 import free.solnRss.repository.SyndicationTable;
 
 public class SyndicationsProvider extends ContentProvider {
@@ -19,8 +19,6 @@ public class SyndicationsProvider extends ContentProvider {
 	public final static Uri URI = Uri.parse("content://" + AUTHORITY + "/"
 			+ SYNDICATION_PATH);
 
-	private Database repository;
-	
 	private UriMatcher uriMatcher;
 	private final int SYNDICATIONS               = 10;
 	private final int SYNDICATION_ID             = 20;
@@ -49,7 +47,7 @@ public class SyndicationsProvider extends ContentProvider {
 	
 	@Override
 	public boolean onCreate() {
-		repository = new Database(getContext());
+		//repository = new Database(getContext());
 		uriMatcher = new UriMatcher(UriMatcher.NO_MATCH);
 		uriMatcher.addURI(AUTHORITY, SYNDICATION_PATH, SYNDICATIONS);
 		uriMatcher.addURI(AUTHORITY, SYNDICATION_PATH + "/#", SYNDICATION_ID);
@@ -103,7 +101,7 @@ public class SyndicationsProvider extends ContentProvider {
 			sort = SyndicationTable.COLUMN_NAME + " asc";
 		}
 
-		SQLiteDatabase db = repository.getReadableDatabase();
+		SQLiteDatabase db = RepositoryHelper.getInstance(getContext()).getReadableDatabase();
 		Cursor cursor = queryBuilder.query(db, projection, selection, args, null, null, sort);
 		cursor.setNotificationUri(getContext().getContentResolver(), uri);
 		return cursor;
@@ -118,31 +116,43 @@ public class SyndicationsProvider extends ContentProvider {
 	public int update(Uri uri, ContentValues values, 
 			String selection, String[] selectionArgs) {
 		
-		SQLiteDatabase db = repository.getWritableDatabase();
+		
 		int rowsUpdated = 0;
 		String id = null;
 		int uriType = uriMatcher.match(uri);
+
 		switch (uriType) {
 
 		case SYNDICATIONS:
-			db.update("d_syndication", values, selection, selectionArgs);
+
+			 RepositoryHelper.getInstance(getContext()).getWritableDatabase()
+			 .update("d_syndication", values, selection, selectionArgs);
+
 			break;
-			
-			case CHANGE_SYNDICATION_DISPLAY_MODE:
-				id = uri.getLastPathSegment();
-				String[] whereArgs = new String[1];
-				whereArgs[0] = id.toString();
-				db.update("d_syndication", values, "_id = ? ", whereArgs);
+
+		case CHANGE_SYNDICATION_DISPLAY_MODE:
+			id = uri.getLastPathSegment();
+			String[] whereArgs = new String[1];
+			whereArgs[0] = id.toString();
+			 RepositoryHelper.getInstance(getContext()).getWritableDatabase()
+			 .update("d_syndication", values, "_id = ? ", whereArgs);
+
+
 			break;
-			
-			case ADD_CLICK_SYNDICATION_ID:
-				id = uri.getLastPathSegment();
-				String[] args = new String[1];
-				args[0] = id.toString();
-				db.execSQL("update d_syndication set syn_number_click = (syn_number_click +1) where _id = ?", args);
+
+		case ADD_CLICK_SYNDICATION_ID:
+			id = uri.getLastPathSegment();
+			String[] args = new String[1];
+			args[0] = id.toString();
+			 RepositoryHelper.getInstance(getContext()).getWritableDatabase()
+			 .execSQL(
+					"update d_syndication set syn_number_click = (syn_number_click +1) where _id = ?",
+					args);
+
 			break;
-	
-			default: throw new IllegalArgumentException("Unknown URI: " + uri);
+
+		default:
+			throw new IllegalArgumentException("Unknown URI: " + uri);
 		}
 		
 		getContext().getContentResolver().notifyChange(uri, null);

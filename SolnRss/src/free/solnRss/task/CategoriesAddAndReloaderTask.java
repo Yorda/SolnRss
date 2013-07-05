@@ -13,6 +13,7 @@ import free.solnRss.repository.CategoryRepository;
 /**
  * @author jftomasi
  */
+@Deprecated
 public class CategoriesAddAndReloaderTask extends
 		AsyncTask<String, Void, Cursor> {
 	
@@ -44,7 +45,6 @@ public class CategoriesAddAndReloaderTask extends
 		} else {
 			hideEmptyMessage();
 		}
-		repository.close();
 	}
 
 	private void displayEmptyMessage() {

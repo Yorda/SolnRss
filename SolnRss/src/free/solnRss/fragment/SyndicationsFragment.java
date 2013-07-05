@@ -227,8 +227,8 @@ public class SyndicationsFragment extends AbstractFragment implements
 		AsyncTask<Integer, Void, ActivityResult> t = new AsyncTask<Integer, Void, ActivityResult>() {
 			@Override
 			protected ActivityResult doInBackground(Integer... arg0) {
-				SyndicationRepository dao = new SyndicationRepository(getActivity());
-				dao.delete(arg0[0]);
+				SyndicationRepository repository = new SyndicationRepository(getActivity());
+				repository.delete(arg0[0]);
 				return ActivityResult.DELETE;
 			};
 			@Override

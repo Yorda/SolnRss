@@ -51,6 +51,8 @@
 
         <!-- SERVICE -->
         <service android:name="free.solnRss.service.PublicationsFinderService" />
+        <service android:name="free.solnRss.service.RefreshService" />
+        <service android:name="free.solnRss.service.PublicationsRefresh" />
         
         <!-- service android:name="free.solnRss.service.PublicationsCursorCacheService" / -->
         <!--

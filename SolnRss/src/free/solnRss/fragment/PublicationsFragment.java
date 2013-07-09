@@ -1,5 +1,9 @@
 package free.solnRss.fragment;
 
+import java.util.Calendar;
+
+import android.app.AlarmManager;
+import android.app.PendingIntent;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
@@ -38,6 +42,7 @@ import free.solnRss.repository.PublicationRepository;
 import free.solnRss.repository.PublicationTable;
 import free.solnRss.repository.SyndicationTable;
 import free.solnRss.service.PublicationsFinderService;
+import free.solnRss.service.PublicationsRefresh;
 
 public class PublicationsFragment extends AbstractFragment implements
 		PublicationsFragmentListener {
@@ -176,6 +181,18 @@ public class PublicationsFragment extends AbstractFragment implements
 		service.putExtra("ResultReceiver", resultReceiver);
 		service.putExtra("ResultReceiver_ID", hashCode());
 		getActivity().startService(service);
+		
+	
+		//Intent service2 = new Intent(getActivity(), RefreshService.class);
+		//getActivity().startService(service2);
+		
+		/*Calendar cal = Calendar.getInstance();
+		Intent intent = new Intent(getActivity(), PublicationsRefresh.class);
+		PendingIntent pendingIntent = PendingIntent.getService(getActivity(), 0, intent, 0);
+		
+		AlarmManager alarmManager = (AlarmManager)getActivity().getSystemService(Context.ALARM_SERVICE);*/
+		// Start every 30 seconds
+		//alarmManager.setRepeating(AlarmManager.RTC_WAKEUP, cal.getTimeInMillis(), 30*1000, pendingIntent); 
 	}
 	
 	@Override
@@ -243,11 +260,7 @@ public class PublicationsFragment extends AbstractFragment implements
 			
 			// If user is on a category the menu display a "mark as read" for all
 			// syndication in category
-			if (selectedCategoryID != null) {
-				/*menu.getItem(1).setTitle(
-						getResources().getString(
-								R.string.mark_selected_category_read));*/
-				
+			if (selectedCategoryID != null) {				
 				menu.getItem(2).setVisible(true);
 			}
 		}
@@ -530,6 +543,24 @@ public class PublicationsFragment extends AbstractFragment implements
 		if (isAdded()) {
 			getLoaderManager().restartLoader(0, bundle, this);
 			updateActionBarTitle();
+		}
+	}
+	
+	@Override
+	public void reLoadPublicationsAfterCatgoryDeleted(Integer deletedCategoryId) {
+		if (selectedCategoryID != null
+				&& selectedCategoryID.compareTo(deletedCategoryId) == 0) {
+			selectedCategoryID = null;
+			reloadPublications();
+		}
+	}
+
+	@Override
+	public void reLoadPublicationsAfterSyndicationDeleted(Integer deletedSyndicationId) {
+		if (selectedSyndicationID != null
+				&& selectedSyndicationID.compareTo(deletedSyndicationId) == 0) {
+			selectedSyndicationID = null;
+			reloadPublications();
 		}
 	}
 	

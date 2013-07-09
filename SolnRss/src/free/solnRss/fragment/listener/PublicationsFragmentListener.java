@@ -51,4 +51,16 @@ public interface PublicationsFragmentListener {
 	 */
 	public void reloadPublicationsWithAlreadyRead();
 
+	/**
+	 * 
+	 * @param deletedCategoryId
+	 */
+	public void reLoadPublicationsAfterCatgoryDeleted(Integer deletedCategoryId);
+
+	/**
+	 * 
+	 * @param deletedSyndicationId
+	 */
+	public void reLoadPublicationsAfterSyndicationDeleted(Integer deletedSyndicationId);
+
 }

@@ -181,6 +181,9 @@ public class CategoriesFragment extends AbstractFragment implements
 				CategoryTable.COLUMN_ID + " = ? ",
 				new String[] { categorieId.toString() });
 		getLoaderManager().restartLoader(0, null, this);
+		
+		// Must warn publications time line to reload all publications if this deleted category
+		((SolnRss)getActivity()).reLoadAllPublications();
 	}
 
 	@Override

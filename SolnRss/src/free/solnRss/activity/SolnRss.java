@@ -171,6 +171,7 @@ public class SolnRss extends FragmentActivity implements ActionBar.TabListener,
 		
 		removeNotification();
 		viewPager.setCurrentItem(1);
+		
 	}
 
 	@Override
@@ -370,6 +371,14 @@ public class SolnRss extends FragmentActivity implements ActionBar.TabListener,
 	
 	public void refreshPublications() {
 		publicationsListener.refreshPublications();
+	}
+	
+	public void reLoadPublicationsAfterCatgoryDeleted(Integer deletedCategoryId) {
+		publicationsListener.reLoadPublicationsAfterCatgoryDeleted(deletedCategoryId);
+	}
+	
+	public void reLoadPublicationsAfterSyndicationDeleted(Integer deletedSyndicationId) {
+		publicationsListener.reLoadPublicationsAfterSyndicationDeleted(deletedSyndicationId);
 	}
 	
 	public void reLoadAllPublications() {

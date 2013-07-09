@@ -170,7 +170,7 @@ public class PublicationsFinderService extends Service implements
 				"pref_search_publication_time", 15);
 
 		GregorianCalendar calendar = new GregorianCalendar();
-		calendar.setTime( new Date());
+		calendar.setTime(new Date());
 		calendar.add(Calendar.MINUTE, -refresh);
 
 		String projection[] = new String[] {

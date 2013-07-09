@@ -1,5 +1,6 @@
 package free.solnRss.fragment;
 
+import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
@@ -23,8 +24,6 @@ import free.solnRss.adapter.CategorieAdapter;
 import free.solnRss.fragment.listener.CategoriesFragmentListener;
 import free.solnRss.provider.CategoryProvider;
 import free.solnRss.repository.CategoryTable;
-import free.solnRss.task.CategoriesAddAndReloaderTask;
-import free.solnRss.task.CategoriesDeleteAndReloaderTask;
 
 public class CategoriesFragment extends AbstractFragment implements
 		CategoriesFragmentListener {
@@ -168,17 +167,20 @@ public class CategoriesFragment extends AbstractFragment implements
 	}
 	
 	public void addCategorie(Context context, String newCatgorie) {
-		// TODO USE PROVIDER
-		CategoriesAddAndReloaderTask task = new CategoriesAddAndReloaderTask(
-				this, context);
-		task.execute(newCatgorie);
+		ContentValues values = new ContentValues();
+		values.put(CategoryTable.COLUMN_NAME, newCatgorie);
+		getActivity().getContentResolver().insert(CategoryProvider.URI , values);
+		getLoaderManager().restartLoader(0, null, this);
 	}
 
 	public void deleteCategorie(Context context, Integer categorieId) {
-		// TODO USE PROVIDER
-		CategoriesDeleteAndReloaderTask task = new CategoriesDeleteAndReloaderTask(
-				this, context);
-		task.execute(categorieId);
+		
+		ContentValues values = new ContentValues();
+		values.put(CategoryTable.COLUMN_ID, categorieId);
+		getActivity().getContentResolver().delete(CategoryProvider.URI,
+				CategoryTable.COLUMN_ID + " = ? ",
+				new String[] { categorieId.toString() });
+		getLoaderManager().restartLoader(0, null, this);
 	}
 
 	@Override

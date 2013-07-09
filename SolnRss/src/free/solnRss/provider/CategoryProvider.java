@@ -8,6 +8,7 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteQueryBuilder;
 import android.net.Uri;
 import android.preference.PreferenceManager;
+import free.solnRss.repository.CategorySyndicationsTable;
 import free.solnRss.repository.CategoryTable;
 import free.solnRss.repository.RepositoryHelper;
 
@@ -89,7 +90,19 @@ public class CategoryProvider extends ContentProvider {
 	
 	@Override
 	public int delete(Uri uri, String selection, String[] selectionArgs) {
-		return 0;
+	
+		SQLiteDatabase db = RepositoryHelper.getInstance(getContext())
+				.getWritableDatabase();
+		
+		db.delete(CategorySyndicationsTable.CATEGORY_SYNDICATION_TABLE,
+				CategorySyndicationsTable.COLUMN_CATEGORY_ID + " = ? ",
+				selectionArgs);
+		
+		int rowsUpdated =  db.delete(CategoryTable.CATEGORY_TABLE, selection,
+				selectionArgs);
+		
+		getContext().getContentResolver().notifyChange(uri, null);
+		return rowsUpdated;
 	}
 
 	@Override
@@ -99,6 +112,13 @@ public class CategoryProvider extends ContentProvider {
 
 	@Override
 	public Uri insert(Uri uri, ContentValues values) {
+		//long id = 0;
+
+		SQLiteDatabase db = RepositoryHelper.getInstance(getContext())
+				.getWritableDatabase();
+		db.insert(CategoryTable.CATEGORY_TABLE, null, values);
+		getContext().getContentResolver().notifyChange(uri, null);
+
 		return null;
 	}
 

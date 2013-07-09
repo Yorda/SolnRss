@@ -64,15 +64,15 @@
     <string name="display_articles_on_time_line">Display on publication\'s tab</string>
     <string name="undisplay_articles_on_time_line">Undisplay on publication\'s tab</string>
     <string name="delete_ok">Your deletetion is well done</string>
-    <string name="clean_confirm">Would you like to remove articles list ?</string>
+    <string name="clean_confirm">Would you like to remove publications list ?</string>
     <string name="delete_confirm">Would you like to delete this syndication ?</string>
     <string name="creation_date">Create: %1$s</string>
     <string name="last_refresh_date">Last refresh date: %1$s</string>
     <string name="last_publication_date">Last publication date: %1$s</string>
-    <string name="num_of_articles_found">Number of articles found: %1$s</string>
+    <string name="num_of_articles_found">Number of publications found: %1$s</string>
     <string name="action_bar_search">Search</string>
-    <string name="continue_reading">View article</string>
-    <string name="syndication_number_of_click">%1$s article(s) read</string>
+    <string name="continue_reading">View publication</string>
+    <string name="syndication_number_of_click">%1$s publication(s) read</string>
     
     <string name="empty_syndications">No syndications to display. </string>
     <string name="empty_syndications_with_filter">No syndications to display with search %1$s</string>
@@ -97,7 +97,7 @@
     <string name="pref_display_publication_browser">Display on the browser</string>
     <string name="pref_display_publication_app">Display on screen in app</string>
    
-    <string name="pref_search_publication_time">Search new articles every:</string>
+    <string name="pref_search_publication_time">Search new publications every:</string>
     
     <!-- Category -->
     <string name="empty_categories">No categories to display</string>

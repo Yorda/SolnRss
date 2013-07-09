@@ -35,11 +35,7 @@ public class SyndicationBusinessImpl implements SyndicationBusiness {
 
 		String rss = null;
 		try {
-			rss = HttpUtil.htmlFromSite(syndication.getUrl());
-			// Be sure to have a valid RSS. It is possible to get a WLAN welcome
-			// page
-			syndication.setRss(rss);
-			
+			rss = HttpUtil.htmlFromSite(syndication.getUrl());			
 		} catch (Exception e) {
 			e.printStackTrace();
 			throw new ExtractFeedException(ExtractFeedException.Error.GET_HTTP_DATA);
@@ -64,6 +60,8 @@ public class SyndicationBusinessImpl implements SyndicationBusiness {
 				publications.add(publication);
 			}
 			syndication.setPublications(publications);
+			syndication.setRss(rss);
+			
 		} catch (Exception e) {
 			System.err.println("Search new publication error: " + e.getCause() + ", " + e.getMessage());
 			throw new ExtractFeedException(ExtractFeedException.Error.GET_FEED_INFO);

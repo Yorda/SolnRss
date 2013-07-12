@@ -144,10 +144,11 @@ public class SyndicationRepository {
 		return false;
 	}
 	
-	public void addWebSite(Syndication syndication) throws Exception {
+	public long addWebSite(Syndication syndication) throws Exception {
 		
 		String now = sdf.format(new Date());
 		SQLiteDatabase db  = RepositoryHelper.getInstance(context).getWritableDatabase();
+		Long newIdInserted = null;
 		try {
 			ContentValues siteValues = new ContentValues();
 			siteValues.put("syn_name", syndication.getName());
@@ -161,14 +162,14 @@ public class SyndicationRepository {
 			
 			db.beginTransaction();
 			
-			Long id = db.insert("d_syndication", null, siteValues);
-			syndication.setId(Integer.valueOf(id.toString()));
+			newIdInserted = db.insert("d_syndication", null, siteValues);
+			syndication.setId(Integer.valueOf(newIdInserted.toString()));
 			
 			ContentValues contentValues = null;
 			for (Publication publication : syndication.getPublications()) {
 				
 				contentValues = new ContentValues();
-				contentValues.put("syn_syndication_id", id);
+				contentValues.put("syn_syndication_id", newIdInserted);
 				contentValues.put("pub_link", publication.getUrl());
 				contentValues.put("pub_title", publication.getTitle());
 				contentValues.put("pub_already_read", 0);
@@ -186,6 +187,7 @@ public class SyndicationRepository {
 			db.endTransaction();
 			
 		}
+		return newIdInserted;
 	}
 
 	public void updateLastExtractTime(Integer id) {

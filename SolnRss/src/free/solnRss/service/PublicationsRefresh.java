@@ -9,17 +9,6 @@ import java.util.GregorianCalendar;
 import java.util.List;
 import java.util.Locale;
 
-import free.solnRss.R;
-import free.solnRss.activity.SolnRss;
-import free.solnRss.business.SyndicationBusiness;
-import free.solnRss.business.impl.SyndicationBusinessImpl;
-import free.solnRss.model.Publication;
-import free.solnRss.model.Syndication;
-import free.solnRss.provider.PublicationsProvider;
-import free.solnRss.provider.SyndicationsProvider;
-import free.solnRss.repository.PublicationTable;
-import free.solnRss.repository.SyndicationTable;
-
 import android.app.IntentService;
 import android.app.Notification;
 import android.app.NotificationManager;
@@ -27,6 +16,7 @@ import android.app.PendingIntent;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.res.Resources;
 import android.database.Cursor;
 import android.net.ConnectivityManager;
@@ -38,6 +28,16 @@ import android.support.v4.app.NotificationCompat;
 import android.text.TextUtils;
 import android.util.Log;
 import android.util.SparseArray;
+import free.solnRss.R;
+import free.solnRss.activity.SolnRss;
+import free.solnRss.business.SyndicationBusiness;
+import free.solnRss.business.impl.SyndicationBusinessImpl;
+import free.solnRss.model.Publication;
+import free.solnRss.model.Syndication;
+import free.solnRss.provider.PublicationsProvider;
+import free.solnRss.provider.SyndicationsProvider;
+import free.solnRss.repository.PublicationTable;
+import free.solnRss.repository.SyndicationTable;
 
 public class PublicationsRefresh extends IntentService {
 
@@ -51,14 +51,22 @@ public class PublicationsRefresh extends IntentService {
 
 	@Override
 	public void onStart(Intent intent, int startId) {
-		// TODO Auto-generated method stub
 		super.onStart(intent, startId);
+		registerOrUnregisterReceiver(intent);
 	}
 	
 	@Override
 	protected void onHandleIntent(Intent intent) {
 		DateFormat sdf = new SimpleDateFormat("dd/MM/yyyy", Locale.FRANCE);
 		Log.e(this.getClass().getName(), "CALL INTENT SERVICE BY ALARM MANAGER TIME " + sdf.format(new Date()));
+		List<Syndication> syndications = findSyndicationsToRefresh(); 
+		refreshPublications(syndications);
+		
+		SharedPreferences pref = this.getSharedPreferences(getPackageName() +  "_preferences", Context.MODE_PRIVATE);
+		SharedPreferences.Editor editor = pref.edit();
+		editor.putLong("publicationsLastRefresh", Calendar.getInstance().getTimeInMillis());
+		editor.commit();
+		Log.e(this.getClass().getName(), "INTENT SERVICE BY ALARM MANAGER TIME LAST REFRESH " + Calendar.getInstance().getTimeInMillis());
 	}
 
 	

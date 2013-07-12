@@ -5,7 +5,7 @@
         android:id="@+id/read_on_site"
         android:orderInCategory="0"
         android:showAsAction="always"
-        android:title="Read on web site">
+        android:title="@string/menu_read_on_web_site">
     </item>
 
 </menu>

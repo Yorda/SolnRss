@@ -3,9 +3,11 @@ package free.solnRss.activity;
 import android.annotation.SuppressLint;
 import android.app.ActionBar;
 import android.app.ActionBar.Tab;
+import android.app.AlarmManager;
 import android.app.AlertDialog;
 import android.app.FragmentTransaction;
 import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.DialogInterface.OnClickListener;
@@ -14,6 +16,7 @@ import android.content.SharedPreferences;
 import android.graphics.drawable.ColorDrawable;
 import android.net.ConnectivityManager;
 import android.os.Bundle;
+import android.os.SystemClock;
 import android.preference.PreferenceManager;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.view.ViewPager;
@@ -30,6 +33,7 @@ import free.solnRss.dialog.AddItemDialog.NewAddItemDialogListener;
 import free.solnRss.fragment.listener.CategoriesFragmentListener;
 import free.solnRss.fragment.listener.PublicationsFragmentListener;
 import free.solnRss.fragment.listener.SyndicationsFragmentListener;
+import free.solnRss.service.PublicationsRefresh;
 import free.solnRss.task.SyndicationFinderTask;
 
 public class SolnRss extends FragmentActivity implements ActionBar.TabListener,
@@ -95,8 +99,57 @@ public class SolnRss extends FragmentActivity implements ActionBar.TabListener,
 		else if (key.compareTo("pref_sort_categories") == 0) {
 			categoriesListener.reloadCategories();
 		}
+		
+		else if (key.compareTo("pref_search_publication_time") == 0) {
+			mamageRefreshPublicationTimer();
+		}
+		
 	}
 
+	public void mamageRefreshPublicationTimer() {
+
+		SharedPreferences pref = PreferenceManager
+				.getDefaultSharedPreferences(this);
+
+		int timeInMinute = pref.getInt("pref_search_publication_time", 15);
+
+		Intent intent = new Intent(this, PublicationsRefresh.class);
+		
+		/*intent.setAction("REGISTER_RECEIVER");
+		intent.putExtra("ResultReceiver", resultReceiver);
+		intent.putExtra("ResultReceiver_ID", hashCode());*/
+		
+		PendingIntent pendingIntent = PendingIntent.getService(this, 0, intent, 0);
+
+		AlarmManager alarmManager = (AlarmManager) this	.getSystemService(Context.ALARM_SERVICE);
+
+		if (timeInMinute == 0) {
+			// Stop the search
+			alarmManager.cancel(pendingIntent);			
+		} else {
+
+			long lastRefreshTime = pref.getLong("publicationsLastRefresh", 0);
+			long nextRefreshTime = SystemClock.elapsedRealtime() + 10000;
+			long timeInMili = 60000 * timeInMinute;
+
+			if (lastRefreshTime > 0) {
+				nextRefreshTime = Math.max(nextRefreshTime, lastRefreshTime
+						+ timeInMili);
+			}
+
+			alarmManager.setRepeating(AlarmManager.RTC_WAKEUP, nextRefreshTime,
+					timeInMili, pendingIntent);
+					
+		}
+	}
+	
+	/*private ResultReceiver resultReceiver = new ResultReceiver(new Handler()) {
+		protected void onReceiveResult(int resultCode, Bundle resultData) {
+			
+		};
+	};*/
+	
+	
 	private boolean displayAlreadyReadPublications() {
 		return PreferenceManager.getDefaultSharedPreferences(this)
 					.getBoolean("pref_display_unread", true);
@@ -172,6 +225,8 @@ public class SolnRss extends FragmentActivity implements ActionBar.TabListener,
 		removeNotification();
 		viewPager.setCurrentItem(1);
 		
+		
+		mamageRefreshPublicationTimer();
 	}
 
 	@Override

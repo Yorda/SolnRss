@@ -1,9 +1,5 @@
 package free.solnRss.fragment;
 
-import java.util.Calendar;
-
-import android.app.AlarmManager;
-import android.app.PendingIntent;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
@@ -11,8 +7,6 @@ import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
-import android.os.Handler;
-import android.os.ResultReceiver;
 import android.preference.PreferenceManager;
 import android.support.v4.content.Loader;
 import android.text.Html;
@@ -41,8 +35,6 @@ import free.solnRss.repository.CategoryTable;
 import free.solnRss.repository.PublicationRepository;
 import free.solnRss.repository.PublicationTable;
 import free.solnRss.repository.SyndicationTable;
-import free.solnRss.service.PublicationsFinderService;
-import free.solnRss.service.PublicationsRefresh;
 
 public class PublicationsFragment extends AbstractFragment implements
 		PublicationsFragmentListener {
@@ -173,26 +165,7 @@ public class PublicationsFragment extends AbstractFragment implements
 		
 		setListShown(false);
 		
-		setHasOptionsMenu(true);
-		
-		// Start the service for retrieve new publications
-		Intent service = new Intent(getActivity(), PublicationsFinderService.class);
-		service.setAction("REGISTER_RECEIVER");
-		service.putExtra("ResultReceiver", resultReceiver);
-		service.putExtra("ResultReceiver_ID", hashCode());
-		getActivity().startService(service);
-		
-	
-		//Intent service2 = new Intent(getActivity(), RefreshService.class);
-		//getActivity().startService(service2);
-		
-		/*Calendar cal = Calendar.getInstance();
-		Intent intent = new Intent(getActivity(), PublicationsRefresh.class);
-		PendingIntent pendingIntent = PendingIntent.getService(getActivity(), 0, intent, 0);
-		
-		AlarmManager alarmManager = (AlarmManager)getActivity().getSystemService(Context.ALARM_SERVICE);*/
-		// Start every 30 seconds
-		//alarmManager.setRepeating(AlarmManager.RTC_WAKEUP, cal.getTimeInMillis(), 30*1000, pendingIntent); 
+		setHasOptionsMenu(true);		
 	}
 	
 	@Override
@@ -220,12 +193,13 @@ public class PublicationsFragment extends AbstractFragment implements
 		clickOnPublicationItem(cursor, l, v, position, id);
 		
 		String link = getPublicationUrl(cursor);
+		String title = getPublicationTitle(cursor);
 		String description = hasPublicationContentToDisplay(cursor);
 		
 		if (description != null && description.trim().length() > 0) {
 
 			if (isPreferenceToDisplayOnAppReader()) {
-				displayOnApplicationReader(description, link);
+				displayOnApplicationReader(description, link, title);
 			} else {
 				displayOnSystemBrowser(link);
 			}
@@ -576,17 +550,16 @@ public class PublicationsFragment extends AbstractFragment implements
 		}
 	}
 	
-	private ResultReceiver resultReceiver = new ResultReceiver(new Handler()) {
-		protected void onReceiveResult(int resultCode, Bundle resultData) {
-			
-		};
-	};
-	
 	public String getPublicationUrl(Cursor cursor) {
 		return cursor.getString(cursor
 				.getColumnIndex(PublicationTable.COLUMN_LINK));
 	}
 
+	public String getPublicationTitle(Cursor cursor) {
+		return cursor.getString(cursor
+				.getColumnIndex(PublicationTable.COLUMN_TITLE));
+	}
+	
 	public String hasPublicationContentToDisplay(Cursor cursor) {
 		return cursor.getString(cursor
 				.getColumnIndex(PublicationTable.COLUMN_PUBLICATION));
@@ -597,10 +570,11 @@ public class PublicationsFragment extends AbstractFragment implements
 				.getBoolean("pref_display_publication", true);
 	}
 
-	private void displayOnApplicationReader(String text, String link) {
+	private void displayOnApplicationReader(String text, String link,String title) {
 		Intent i = new Intent(getActivity(), ReaderActivity.class);
 		i.putExtra("read", text);
 		i.putExtra("link", link);
+		i.putExtra("title", title);
 		startActivity(i);
 	}
 

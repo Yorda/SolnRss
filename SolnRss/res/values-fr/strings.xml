@@ -1,0 +1,122 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <!-- Global app label -->
+    <string name="app_name">SolnRss</string>
+    
+    <string name="title_publications">Publications</string>
+    <string name="title_syndications">Sites</string>
+    <string name="title_categories">Catégorie</string>
+    <string name="menu_settings">Réglages</string>
+    <string name="menu_add_categorie">Nouvelle catégorie.</string>
+    <string name="menu_add_site">Nouveau site.</string>
+    <string name="menu_show_already_read">Voir les publications déjà lus.</string>
+    <string name="menu_hide_already_read">Cacher les publications déjà lus.</string>
+    <string name="menu_read_on_web_site">Lire sur le site web.</string>
+    
+    <!-- Publication's tab label -->
+    <string name="empty_publications">Aucune publication à afficher.</string>
+    <string name="empty_publications_with_syndication">Aucune publication trouvé pour le site %1$s. </string>
+    <string name="empty_publications_with_category">Aucune publication trouvé pour la catégorie %1$s. </string>
+    
+    <string name="empty_publications_with_filter">Aucune publication trouvé avec la recherche: %1$s.</string>
+    <string name="empty_publications_with_syndication_with_filter">Aucune publication trouvé pour le site %1$s avec la recherche %2$s.</string>
+    <string name="empty_publications_with_category_with_filter">Aucune publication trouvé pour la catégorie %1$s avec la recherche %2$s.</string>
+    
+    <string name="open_browser_bad_url">Affichage impossible sur le navigateur, le lien semble être corrompu.</string>
+
+    <!-- Context publication's context menu -->
+    <string name="display_one_publication">Voir ses publications</string>
+    <string name="display_all_publication">Voir toutes les publications</string>
+    <!-- string name="display_syndications_screen">Afficher l\'onglet des sites</string-->
+    <string name="mark_all_read">Marquer tous comme lu</string>
+    <string name="mark_as_read">Marquer comme lu</string>
+    <!--  string name="mark_selected_syndication_read">Toutes les publications du site comme lus</string -->
+    <string name="mark_selected_category_read">Marquer la catégorie comme lu</string>
+
+    <!-- New publication notification -->
+    <string name="notify_new_pub_title">Nouvelles publications</string>
+    <string name="notify_new_pub_msg">%1$s publications non lus</string>
+
+
+    <!-- Search syndication task result -->
+    <string name="feed_search_error">Erreur impossible de récupérer les informations de diffusion du site.</string>
+    <string name="feed_search_ok">Les informations de diffusion du site ont bien été trouvé.</string>
+    <string name="feed_not_found">Désolé mais les informations de diffusion du site n\'ont pas été trouvé.</string>
+    <string name="site_record_error">Erreur avec la base de donné insertion des nouvelles publications impossible.</string>
+    <string name="site_already_recorded">Un site avec cette adresse existe déjà.</string>
+    <string name="load_syndication">Recherche des informations de diffusion. Attendez SVP.</string>
+    <string name="no_connection">Aucune connection internet n\'est active.</string>
+    <string name="http_get_error">Erreur impossible de contacter le site.</string>
+    <string name="bad_url">Erreur impossible de contacter le site, vérifiez l\'adresse.</string>
+    <string name="empty_url">Entrer une adresse de site correcte.</string>
+
+    <!-- Syndication manager activity -->
+    <string name="site_parameter">%1$s</string>
+    <string name="clean_articles_btn">Supprimer ses publications</string>
+    <string name="delete_articles_btn">Supprimer ce site</string>
+    <string name="active_articles_btn">Activer la recherche</string>
+    <string name="unactive_articles_btn">Désactiver la recherche</string>
+    <string name="display_articles_on_time_line">Afficher dans le flux principal</string>
+    <string name="undisplay_articles_on_time_line">Ne pas Afficher dans le flux principal</string>
+    <string name="delete_ok">La supprésssion à été faite</string>
+    <string name="clean_confirm">Voulez vous supprimer toutes ses publications ?</string>
+    <string name="delete_confirm">Voulez vous supprimer ce site et toutes ses publications ?</string>
+    <string name="creation_date">Créer: %1$s</string>
+    
+    <string name="syndication_number_of_click">%1$s publication(s) lu</string>
+     
+    <string name="empty_syndications">Aucun site à afficher</string>
+    <string name="empty_syndications_with_filter">Aucune site trouvé pour le site %1$s avec la recherche %2$s.</string>
+    
+    <string name="sleep_img">Search new publication for this syndication is on pause.</string>
+    <string name="stealth_img">This syndication\'s publications are not displayed in main time line.</string>
+    
+
+    <!-- Settings -->
+    <!-- View Read / Unread -->
+    <string name="pref_view_unread">Gestion de la lecture</string>
+    <string name="pref_summ_view_unread_off">Afficher seulement les publications non lus</string>
+    <string name="pref_summ_view_unread_on">Afficher toutes les publications lus et non lus</string>
+    
+    <!-- Unread font weight -->
+    <string name="pref_view_font_weight">Graisse police de caractère</string>
+    <string name="pref_view_font_weight_off">les publications non lus sont affichées en gras</string>
+    <string name="pref_view_font_weight_on">les publications non lus ne sont pas affichées en gras</string>
+
+    <!-- Display a notification after found new publications -->
+    <string name="pref_display_notify">Notification</string>
+    <string name="pref_summ_display_notify_on">Une notification apparait après avoir trouvé des nouvelles publications</string>
+    <string name="pref_summ_display_notify_off">Pas de notification après avoir trouvé des nouvelles publications</string>
+
+    <string name="pref_display_publication">Lecture du contenu</string>
+    <string name="pref_display_publication_browser">Afficher directement dans un navigateur</string>
+    <string name="pref_display_publication_app">Afficher dans un écran de l\'application</string>
+   
+    <string name="pref_search_publication_time">Chercher des nouvelles publication chaque:</string>
+    
+    <!-- Category -->
+    <string name="empty_categories">Aucune catégorie à afficher</string>
+    <string name="empty_categories_with_filter">Aucune catégorie trouvé avec la recherche: %1$s</string>
+    
+    <string name="delete_categorie">Supprimer cette catégorie</string>
+    <string name="add_to_categorie">Ajouter ou supprimer des sites</string>
+
+    <!-- Dialog add item -->
+    <string name="add_categorie_explain">Ajouter une nouvelle catégorie</string>
+    <string name="add_site_explain">Entrer une adresse de site valide</string>
+    <string name="add_categorie">Nouvelle Catégorie</string>
+    <string name="add_site">Nouveau site</string>
+    <string name="new_syndication_hint">Entrer une adresse de site ou de flux RSS valide</string>
+    <string name="new_category_hint">Entrer le nouveau nom de la catégorie</string>
+    
+    <string name="pref_sort_syndications_most_use">Les plus utilisés</string>
+    <string name="pref_sort_syndications_alphabetic">Ordre alphabétique</string>
+    <string name="pref_sort_syndications">Trier les sites par:</string>
+    
+    <string name="pref_sort_categories">Trier les categories par:</string>
+    <string name="pref_sort_categories_most_use">Les plus utilisées</string>
+    <string name="pref_sort_categories_alphabetic">Ordre alphabétique</string>
+    
+    
+</resources>

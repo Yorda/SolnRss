@@ -22,6 +22,7 @@ public class SyndicationFinderTask extends AsyncTask<String, Void, String> {
 	private final ProgressDialog dialog;;
 	private Activity context;
 	private Resources resources;
+	private Long newSyndicationId = null;
 	
 
 	public SyndicationFinderTask(Activity activity, Resources resources) {
@@ -90,7 +91,10 @@ public class SyndicationFinderTask extends AsyncTask<String, Void, String> {
 		} else {
 			String success = resources.getString(R.string.feed_search_ok);
 			Toast.makeText(context.getApplicationContext(), success, len).show();
-			((SolnRss)context).displaySyndications();
+			
+			//((SolnRss)context).displaySyndications();
+			
+			((SolnRss)context).reLoadPublicationsBySyndication(newSyndicationId.intValue());
 		}
 		
 	}
@@ -173,6 +177,6 @@ public class SyndicationFinderTask extends AsyncTask<String, Void, String> {
 	 */
 	public void recordNewSite(Syndication syndication) throws Exception{
 		SyndicationRepository repository = new SyndicationRepository(context);
-		repository.addWebSite(syndication);
+		newSyndicationId = repository.addWebSite(syndication);
 	}
 }

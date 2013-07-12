@@ -5,6 +5,7 @@ import android.app.Activity;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
+import android.text.TextUtils;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -33,6 +34,11 @@ public class ReaderActivity extends Activity {
 		setContentView(R.layout.activity_reader);
 		 
 		String text = getIntent().getStringExtra("read");
+		String title = getIntent().getStringExtra("title");
+		if(!TextUtils.isEmpty(title)){
+			getActionBar().setTitle(title);
+		}
+		
 		link = getIntent().getStringExtra("link");
 	
 		WebView webView = (WebView) findViewById(R.id.reader);		

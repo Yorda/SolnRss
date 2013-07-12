@@ -33,7 +33,6 @@ public class PublicationAdapter extends SimpleCursorAdapter //implements FilterQ
 		PublicationItem publicationItem = null;
 
 		if (convertView == null) {
-			
 			convertView = View.inflate(context, layout, null);
 			publicationItem = new PublicationItem();
 			// Title of syndication
@@ -41,6 +40,7 @@ public class PublicationAdapter extends SimpleCursorAdapter //implements FilterQ
 			// Title of publication
 			publicationItem.setTitle((TextView) convertView.findViewById(R.id.title));
 			convertView.setTag(publicationItem);
+			
 		} else {
 			publicationItem = (PublicationItem) convertView.getTag();
 		}
@@ -63,6 +63,7 @@ public class PublicationAdapter extends SimpleCursorAdapter //implements FilterQ
 			publicationItem.getName() .setTypeface(tf, Typeface.NORMAL);
 			publicationItem.getTitle().setTypeface(tf, Typeface.NORMAL);
 		}
+		
 		return convertView;
 	}
 

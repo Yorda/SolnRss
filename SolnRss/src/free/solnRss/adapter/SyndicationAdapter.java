@@ -3,7 +3,6 @@ package free.solnRss.adapter;
 import android.content.Context;
 import android.database.Cursor;
 import android.graphics.Typeface;
-import android.graphics.drawable.Drawable;
 import android.support.v4.widget.SimpleCursorAdapter;
 import android.view.View;
 import android.view.ViewGroup;
@@ -22,7 +21,8 @@ public class SyndicationAdapter extends SimpleCursorAdapter {
 	private Context context;
 	private int layout;
 	private Typeface tf = null;
-	private Drawable pause;
+	//private Drawable pause;
+	//private Drawable stealth;
 
 	public SyndicationAdapter(Context context, int layout, Cursor c,
 			String[] from, int[] to, int flags) {
@@ -30,7 +30,9 @@ public class SyndicationAdapter extends SimpleCursorAdapter {
 		this.context = context;
 		this.layout = layout;
 		tf = Typeface.createFromAsset(context.getAssets(), "fonts/MONOF55.TTF");
-		pause = context.getResources().getDrawable(R.drawable.ic_pause);
+		//pause = context.getResources().getDrawable(R.drawable.ic_sleep);
+		//stealth = context.getResources().getDrawable(R.drawable.ic_stealth);
+		
 	}
 
 	@Override
@@ -38,14 +40,11 @@ public class SyndicationAdapter extends SimpleCursorAdapter {
 		SyndicationItem item = null;
 		getCursor().moveToPosition(position);
 
-		String title = getCursor().getString(
-				getCursor().getColumnIndex("syn_name"));
-
-		Integer numberOfClick = getCursor().getInt(
-				getCursor().getColumnIndex("syn_number_click"));
-
-		Integer isActive = getCursor().getInt(
-				getCursor().getColumnIndex("syn_is_active"));
+		// String title = getCursor().getString(1); //1 syn_name
+		// Integer numberOfClick = getCursor().getInt(4); //4 syn_number_click
+		// Integer isActive = getCursor().getInt(3); // 3 syn_is_active
+		// Integer isDisplayOnMainTL = getCursor().getInt(5); //5
+		// syn_display_on_timeline
 
 		if (convertView == null) {
 
@@ -61,24 +60,32 @@ public class SyndicationAdapter extends SimpleCursorAdapter {
 			item = (SyndicationItem) convertView.getTag();
 		}
 
-		item.getTitle().setText(title);
-		if (isActive != 0) {
-			item.getTitle().setCompoundDrawablesWithIntrinsicBounds(null, null,
-					pause, null);
+		item.getTitle().setText(getCursor().getString(1));
+
+		if (getCursor().getInt(3) != 0) {
+			convertView.findViewWithTag("sleepImage").setVisibility(
+					View.VISIBLE);
 		} else {
-			item.getTitle().setCompoundDrawablesWithIntrinsicBounds(null, null,
-					null, null);
+			convertView.findViewWithTag("sleepImage").setVisibility(
+					View.GONE);
 		}
 
 		item.getTitle().setTypeface(tf);
-		String s = context.getResources().getString(
-				R.string.syndication_number_of_click);
+		
+		String s = context.getResources().getString(R.string.syndication_number_of_click);
 
 		item.getNumberOfClick().setText(
-				String.format(s, String.valueOf(numberOfClick)));
+				String.format(s, String.valueOf(getCursor().getInt(4))));
 
+		if (getCursor().getInt(5) != 0) {
+			convertView.findViewWithTag("stealthImage").setVisibility(
+					View.GONE);
+		} else {
+			convertView.findViewWithTag("stealthImage").setVisibility(
+					View.VISIBLE);
+		}
+		
 		item.getNumberOfClick().setTypeface(tf);
-
 		return convertView;
 	}
 }

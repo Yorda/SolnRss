@@ -12,15 +12,16 @@
     <string name="menu_add_site">Add a new site</string>
     <string name="menu_show_already_read">Show already read publications</string>
     <string name="menu_hide_already_read">Hide already read publications</string>
+    <string name="menu_read_on_web_site">Read on web site.</string>
     
     <!-- Publication's tab label -->
     <string name="empty_publications">No publications to display. </string>
-    <string name="empty_publications_with_syndication">No publications for %1$s syndication to display. </string>
-    <string name="empty_publications_with_category">No publications for %1$s category to display. </string>
+    <string name="empty_publications_with_syndication">No publications found for %1$s syndication. </string>
+    <string name="empty_publications_with_category">No publications found for %1$s category. </string>
     
-    <string name="empty_publications_with_filter">No publications to display with search %1$s</string>
-    <string name="empty_publications_with_syndication_with_filter">No publications for %1$s syndication with search %2$s to display. </string>
-    <string name="empty_publications_with_category_with_filter">No publications for %1$s category with search %2$s to display. </string>
+    <string name="empty_publications_with_filter">No publications to display with %1$s search</string>
+    <string name="empty_publications_with_syndication_with_filter">No publications found for %1$s syndication with %2$s search.</string>
+    <string name="empty_publications_with_category_with_filter">No publications found for %1$s category with %2$s search.</string>
     
     <string name="open_browser_bad_url">Unable to open browser, this url seems to be wrong.</string>
 
@@ -59,12 +60,12 @@
     <string name="site_parameter">%1$s</string>
     <string name="clean_articles_btn">Remove publications</string>
     <string name="delete_articles_btn">Delete this syndications</string>
-    <string name="active_articles_btn">Start search new publications</string>
-    <string name="unactive_articles_btn">Pause search new publications</string>
+    <string name="active_articles_btn">Enable search new publications</string>
+    <string name="unactive_articles_btn">Disable search new publications</string>
     <string name="display_articles_on_time_line">Display on publication\'s tab</string>
-    <string name="undisplay_articles_on_time_line">Undisplay on publication\'s tab</string>
-    <string name="delete_ok">Your deletetion is well done</string>
-    <string name="clean_confirm">Would you like to remove publications list ?</string>
+    <string name="undisplay_articles_on_time_line">Not display on publication\'s tab</string>
+    <string name="delete_ok">The deletion is made</string>
+    <string name="clean_confirm">Would you like to delete all publications ?</string>
     <string name="delete_confirm">Would you like to delete this syndication ?</string>
     <string name="creation_date">Create: %1$s</string>
     <string name="last_refresh_date">Last refresh date: %1$s</string>
@@ -74,8 +75,13 @@
     <string name="continue_reading">View publication</string>
     <string name="syndication_number_of_click">%1$s publication(s) read</string>
     
-    <string name="empty_syndications">No syndications to display. </string>
-    <string name="empty_syndications_with_filter">No syndications to display with search %1$s</string>
+    <string name="empty_syndications">No syndications to display.</string>
+    <string name="empty_syndications_with_filter">No syndications found with %1$s search</string>
+    
+    <string name="sleep_img">Search new publication for this syndication is on pause.</string>
+    <string name="stealth_img">This syndication\'s publications are not displayed in main time line.</string>
+    
+    
     
     <!-- Settings -->
     <!-- View Read / Unread -->
@@ -101,7 +107,7 @@
     
     <!-- Category -->
     <string name="empty_categories">No categories to display</string>
-    <string name="empty_categories_with_filter">No categories to display with search %1$s</string>
+    <string name="empty_categories_with_filter">No categories found with %1$s search</string>
     
     <string name="delete_categorie">Delete this category</string>
     <string name="add_to_categorie">Add or remove syndication(s)</string>
@@ -114,11 +120,11 @@
     <string name="new_syndication_hint">Enter a valid web site or Rss url</string>
     <string name="new_category_hint">Add a new category name</string>
     
-    <string name="pref_sort_syndications_most_use">The most use</string>
+    <string name="pref_sort_syndications_most_use">The most used</string>
     <string name="pref_sort_syndications_alphabetic">Alphabetical</string>
     <string name="pref_sort_syndications">Sort syndications by:</string>
     
-    <string name="pref_sort_categories_most_use">The most use</string>
+    <string name="pref_sort_categories_most_use">The most used</string>
     <string name="pref_sort_categories_alphabetic">Alphabetical</string>
     <string name="pref_sort_categories">Sort categories by:</string>
     

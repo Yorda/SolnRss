@@ -2,106 +2,96 @@
 <resources>
 
     <!-- Global app label -->
-    <string name="app_name">SolnRss</string>
+    <string name="app_name">Soln.R</string>
     
     <string name="title_publications">Publications</string>
-    <string name="title_syndications">Sites</string>
+    <string name="title_syndications">RSS feed</string>
     <string name="title_categories">Categories</string>
     <string name="menu_settings">Settings</string>
     <string name="menu_add_categorie">Add a new category</string>
     <string name="menu_add_site">Add a new site</string>
-    <string name="menu_show_already_read">Show already read publications</string>
-    <string name="menu_hide_already_read">Hide already read publications</string>
-    <string name="menu_read_on_web_site">Read on web site.</string>
+    <string name="menu_show_already_read">See publications already read</string>
+    <string name="menu_hide_already_read">Hide publications already read</string>
+    <string name="menu_read_on_web_site">Read on the website.</string>
     
+	<string name="action_bar_search" >Recherche</string>
+	
+     <string name="stop_search">Set the interval to zero stops the search for new publications</string>
+     
     <!-- Publication's tab label -->
-    <string name="empty_publications">No publications to display. </string>
-    <string name="empty_publications_with_syndication">No publications found for %1$s syndication. </string>
-    <string name="empty_publications_with_category">No publications found for %1$s category. </string>
+    <string name="empty_publications">No publications to display.</string>
+    <string name="empty_publications_with_syndication">No publications found for syndication %1$s. </string>
+    <string name="empty_publications_with_category">No publications found for category %1$s. </string>
     
-    <string name="empty_publications_with_filter">No publications to display with %1$s search</string>
-    <string name="empty_publications_with_syndication_with_filter">No publications found for %1$s syndication with %2$s search.</string>
-    <string name="empty_publications_with_category_with_filter">No publications found for %1$s category with %2$s search.</string>
+    <string name="empty_publications_with_filter">No publications found with the search: %1$s</string>
+    <string name="empty_publications_with_syndication_with_filter">No publications found for syndication %1$s and %2$s research.</string>
+    <string name="empty_publications_with_category_with_filter">No publications found for category %1$s and %2$s research.</string>
     
-    <string name="open_browser_bad_url">Unable to open browser, this url seems to be wrong.</string>
+    <string name="open_browser_bad_url">Can not display on the browser, the link appears to be corrupt.</string>
 
     <!-- Context publication's context menu -->
-    <string name="display_one_publication">Show only his publications</string>
-    <string name="display_all_publication">Show all publications</string>
-    <string name="display_syndications_screen">Display syndication\'s screen</string>
-    <string name="mark_all_read">Mark all publications as read</string>
-    <string name="mark_as_read">Mark it as read</string>
-    <string name="mark_selected_syndication_read">Mark this site publications as read</string>
-    <string name="mark_selected_category_read">Mark this category as read</string>
+    <string name="display_one_publication">View publications</string>
+    <string name="display_all_publication">View all publications</string>
+    <string name="mark_all_read">Mark all as read</string>
+    <string name="mark_as_read">Mark as read</string>
+    <string name="mark_selected_category_read">Mark category as read</string>
 
     <!-- New publication notification -->
     <string name="notify_new_pub_title">New publications</string>
-    <string name="notify_new_pub_msg">%1$s unread publications</string>
-
-    <!-- Syndication's tab label -->
-    <string name="search_syndication_info">Get it</string>
-    <string name="display_syndication">Display</string>
-    <string name="manage_syndication">Manage</string>
-    <string name="startOrPause">Start or pause button</string>
+    <string name="notify_new_pub_msg">%1$s publications unread</string>
 
     <!-- Search syndication task result -->
-    <string name="feed_search_error">An error occurred when searching a web site\'s publication informations.</string>
-    <string name="feed_search_ok">Success, publication informations found.</string>
-    <string name="feed_not_found">Sorry, unable to retrieve publication informations</string>
-    <string name="site_record_error">An error occurred when recording the site\'s publication informations in internal database</string>
-    <string name="site_already_recorded">An site with this link still recorded in application</string>
-    <string name="load_syndication">Search publication informations. Please wait</string>
-    <string name="no_connection">No internet connection seems to be avialable, please active it.</string>
-    <string name="http_get_error">Error occurred when trying to get website informations.</string>
-    <string name="bad_url">Error occurred when trying to get website informations.</string>
-    <string name="empty_url">Please enter a valid url</string>
+    <string name="feed_search_error">Error, could not retrieve information from RSS feeds on this website.</string>
+    <string name="feed_search_ok">The RSS feed of the site being found.</string>
+    <string name="feed_not_found">Sorry, but the website\'s RSS feed was not found.</string>
+    <string name="site_record_error">Error with the database. The insertion of new publications failed</string>
+    <string name="site_already_recorded">A website with the address already exists</string>
+    <string name="load_syndication">Research RSS. Please wait</string>
+    <string name="no_connection">No internet connection in operation.</string>
+    <string name="http_get_error">Error, unable to contact the website.</string>
+    <string name="bad_url">Error, Unable to contact the web site, please check your input.</string>
+    <string name="empty_url">Enter a correct website address, please check your input</string>
 
     <!-- Syndication manager activity -->
     <string name="site_parameter">%1$s</string>
-    <string name="clean_articles_btn">Remove publications</string>
-    <string name="delete_articles_btn">Delete this syndications</string>
-    <string name="active_articles_btn">Enable search new publications</string>
-    <string name="unactive_articles_btn">Disable search new publications</string>
-    <string name="display_articles_on_time_line">Display on publication\'s tab</string>
-    <string name="undisplay_articles_on_time_line">Not display on publication\'s tab</string>
-    <string name="delete_ok">The deletion is made</string>
-    <string name="clean_confirm">Would you like to delete all publications ?</string>
-    <string name="delete_confirm">Would you like to delete this syndication ?</string>
+    <string name="clean_articles_btn">Delete publications</string>
+    <string name="delete_articles_btn">Delete this RSS feed</string>
+    <string name="active_articles_btn">Enable search for new publications</string>
+    <string name="unactive_articles_btn">Disable the search for new publications</string>
+    <string name="display_articles_on_time_line">Visible in the main flow</string>
+    <string name="undisplay_articles_on_time_line">Invisible in the main flow</string>
+    <string name="delete_ok">The deletion was made</string>
+    <string name="clean_confirm">Want to delete all its publications ?</string>
+    <string name="delete_confirm">Want to remove this RSS and all its publications ?</string>
     <string name="creation_date">Create: %1$s</string>
-    <string name="last_refresh_date">Last refresh date: %1$s</string>
-    <string name="last_publication_date">Last publication date: %1$s</string>
-    <string name="num_of_articles_found">Number of publications found: %1$s</string>
-    <string name="action_bar_search">Search</string>
-    <string name="continue_reading">View publication</string>
-    <string name="syndication_number_of_click">%1$s publication(s) read</string>
+	
+    <string name="syndication_number_of_click">%1$s publication(s) already read</string>
     
-    <string name="empty_syndications">No syndications to display.</string>
-    <string name="empty_syndications_with_filter">No syndications found with %1$s search</string>
+    <string name="empty_syndications">No RSS feed to display.</string>
+    <string name="empty_syndications_with_filter">No RSS feed found for the site %1$s with %2$s research.</string>
     
-    <string name="sleep_img">Search new publication for this syndication is on pause.</string>
+    <string name="sleep_img">The search for new publications for this RSS feed is paused.</string>
     <string name="stealth_img">This syndication\'s publications are not displayed in main time line.</string>
-    
-    
     
     <!-- Settings -->
     <!-- View Read / Unread -->
-    <string name="pref_view_unread">View unread</string>
-    <string name="pref_summ_view_unread_off">View only unread publications</string>
-    <string name="pref_summ_view_unread_on">View all read and unread publications</string>
+    <string name="pref_view_unread">Management of the main flow</string>
+    <string name="pref_summ_view_unread_off">Show only unread publications</string>
+    <string name="pref_summ_view_unread_on">View all publications read and unread</string>
     
     <!-- Unread font weight -->
     <string name="pref_view_font_weight">Publication font weight</string>
-    <string name="pref_view_font_weight_off">View unread publications in normal font weight</string>
-    <string name="pref_view_font_weight_on">View unread publications in bold font weight</string>
+    <string name="pref_view_font_weight_off">Unread publications are displayed in bold</string>
+    <string name="pref_view_font_weight_on">Unread publications are not displayed in bold</string>
 
     <!-- Display a notification after found new publications -->
     <string name="pref_display_notify">Notify</string>
-    <string name="pref_summ_display_notify_on">Display a notification when new publications found</string>
-    <string name="pref_summ_display_notify_off">No notification displayed when new publications found</string>
+    <string name="pref_summ_display_notify_on">A notification appears after finding new publications</string>
+    <string name="pref_summ_display_notify_off">No notification after finding new publications</string>
 
-    <string name="pref_display_publication">Display publications</string>
-    <string name="pref_display_publication_browser">Display on the browser</string>
-    <string name="pref_display_publication_app">Display on screen in app</string>
+    <string name="pref_display_publication">Read the publication</string>
+    <string name="pref_display_publication_browser">Show directly in a browser</string>
+    <string name="pref_display_publication_app">View in Application Screen</string>
    
     <string name="pref_search_publication_time">Search new publications every:</string>
     
@@ -110,21 +100,25 @@
     <string name="empty_categories_with_filter">No categories found with %1$s search</string>
     
     <string name="delete_categorie">Delete this category</string>
-    <string name="add_to_categorie">Add or remove syndication(s)</string>
+    <string name="add_to_categorie">Add or Remove RSS</string>
 
+    <string name="categorie_not_use">Not used</string>
+    <string name="categorie_use_by_one">Used by a single RSS feed</string>
+    <string name="categorie_use_by_many">Used by %1$s RSS</string>
+    
     <!-- Dialog add item -->
     <string name="add_categorie_explain">Add a new category</string>
-    <string name="add_site_explain">Please enter a valid URL</string>
+    <string name="add_site_explain">Enter a valid website address</string>
     <string name="add_categorie">New Category</string>
-    <string name="add_site">New Site</string>
-    <string name="new_syndication_hint">Enter a valid web site or Rss url</string>
-    <string name="new_category_hint">Add a new category name</string>
+    <string name="add_site">New RSS feed</string>
+    <string name="new_syndication_hint">A website address or valid RSS feed</string>
+    <string name="new_category_hint">Enter the new category name</string>
     
-    <string name="pref_sort_syndications_most_use">The most used</string>
+    <string name="pref_sort_syndications_most_use">The most commonly used</string>
     <string name="pref_sort_syndications_alphabetic">Alphabetical</string>
-    <string name="pref_sort_syndications">Sort syndications by:</string>
+    <string name="pref_sort_syndications">Sort RSS by:</string>
     
-    <string name="pref_sort_categories_most_use">The most used</string>
+    <string name="pref_sort_categories_most_use">The most commonly used</string>
     <string name="pref_sort_categories_alphabetic">Alphabetical</string>
     <string name="pref_sort_categories">Sort categories by:</string>
     

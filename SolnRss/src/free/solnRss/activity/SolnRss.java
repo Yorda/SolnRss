@@ -172,11 +172,13 @@ public class SolnRss extends FragmentActivity implements ActionBar.TabListener,
 		final ActionBar actionBar = getActionBar();
 		actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_TABS);
 		
-		actionBar.setBackgroundDrawable(new ColorDrawable(0xeeeeee));
-		actionBar.setStackedBackgroundDrawable(new ColorDrawable(0xeeeeee));
-		
-		//actionBar.setTitle(Html.fromHtml("<i><b>Need sexy women</b></i>"));
-		
+		int apiVersion = android.os.Build.VERSION.SDK_INT;
+		if (apiVersion >= android.os.Build.VERSION_CODES.ICE_CREAM_SANDWICH) {
+			
+			actionBar.setBackgroundDrawable(new ColorDrawable(0xeeeeee));
+			actionBar.setStackedBackgroundDrawable(new ColorDrawable(0xeeeeee));
+		}
+	
 		// Set up the ViewPager with the sections adapter.
 		viewPager = (ViewPager) findViewById(R.id.pager);
 

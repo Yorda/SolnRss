@@ -1,6 +1,7 @@
 package free.solnRss.adapter;
 
 import android.content.Context;
+import android.content.res.Resources;
 import android.database.Cursor;
 import android.graphics.Typeface;
 import android.support.v4.widget.SimpleCursorAdapter;
@@ -47,23 +48,23 @@ public class CategorieAdapter extends SimpleCursorAdapter
 
 		getCursor().moveToPosition(position);
 
-		String name = getCursor().getString(
-				getCursor().getColumnIndex("cat_name"));
+		String name = getCursor().getString(getCursor().getColumnIndex("cat_name"));
 
 		categorieItem.getName().setText(name);
 		categorieItem.getName().setTypeface(tf, Typeface.NORMAL);
 
-		Integer numberOfUse = getCursor().getInt(
-				getCursor().getColumnIndex("number_of_use"));
+		Integer numberOfUse = getCursor().getInt(getCursor().getColumnIndex("number_of_use"));
 
 		String use = new String();
-		// TODO get resource string
+		
+		Resources r = context.getResources();
+
 		if (numberOfUse == null || numberOfUse == 0) {
-			use = "Not use";
+			use = r.getString(R.string.categorie_not_use);
 		} else if (numberOfUse == 1) {
-			use = "Use by 1 syndication";
+			use = r.getString(R.string.categorie_use_by_one);
 		} else {
-			use = "Use by " + numberOfUse + " syndications";
+			use = r.getString(R.string.categorie_use_by_many, numberOfUse);
 		}
 
 		categorieItem.getNumberOfUse().setText(use);

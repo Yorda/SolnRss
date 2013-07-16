@@ -13,6 +13,8 @@ import android.widget.LinearLayout;
 import android.widget.SeekBar;
 import android.widget.SeekBar.OnSeekBarChangeListener;
 import android.widget.TextView;
+import android.widget.Toast;
+import free.solnRss.R;
 
 public class SeekBarPreference extends Preference implements
 		OnSeekBarChangeListener {
@@ -142,6 +144,14 @@ public class SeekBarPreference extends Preference implements
 	public void onStopTrackingTouch(SeekBar seekBar) {
 		//Log.e(SeekBarPreference.class.getName() , "------> STOP TRACKING !!!! ");
 		updatePreference(this.oldValue);
+		
+		if (this.oldValue == 0) {
+			// Warn user, the new publication search is deactivate
+			Toast.makeText(getContext(),
+					getContext().getResources().getString(R.string.stop_search),
+					Toast.LENGTH_LONG).show();
+		}
+		
 		notifyChanged();
 	}
 }

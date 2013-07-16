@@ -78,7 +78,7 @@ public abstract class AbstractFragment extends ListFragment implements	OnQueryTe
 	
 	@Override
 	public void onLoaderReset(Loader<Cursor> arg0) {
-		if(simpleCursorAdapter == null){
+		if (simpleCursorAdapter == null) {
 			initAdapter();
 		}
 		simpleCursorAdapter.swapCursor(null);
@@ -103,7 +103,7 @@ public abstract class AbstractFragment extends ListFragment implements	OnQueryTe
 		searchItem.setShowAsAction(
 				MenuItem.SHOW_AS_ACTION_IF_ROOM
 				| MenuItem.SHOW_AS_ACTION_COLLAPSE_ACTION_VIEW
-			);
+		);
 		searchView.setOnQueryTextListener(this);
 		
 		addCloseSearchViewEvent(searchItem);
@@ -131,11 +131,11 @@ public abstract class AbstractFragment extends ListFragment implements	OnQueryTe
 					onQueryTextChange("");
 					return true;
 				}
-						@Override
-						public boolean onMenuItemActionExpand(MenuItem item) {
-							return true;
-						}
-					});
+				@Override
+				public boolean onMenuItemActionExpand(MenuItem item) {
+					return true;
+				}
+			});
 		}
 	}
 

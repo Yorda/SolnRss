@@ -50,11 +50,11 @@ public class CategoriesFragment extends AbstractFragment implements
 		super.onActivityCreated(savedInstanceState);
 		registerForContextMenu(getListView());
 		((SolnRss)getActivity()).setCategoriesFragmentListener(this);
-		
-		setListShown(false);
+
 		setHasOptionsMenu(true);
+		setListShown(false);
 	}
-	
+
 	@Override
 	public void onViewCreated(View view, Bundle savedInstanceState) {
 		super.onViewCreated(view, savedInstanceState);
@@ -173,21 +173,28 @@ public class CategoriesFragment extends AbstractFragment implements
 		getLoaderManager().restartLoader(0, null, this);
 	}
 
-	public void deleteCategorie(Context context, Integer categorieId) {
+	public void deleteCategorie(Context context, Integer deletedCategoryId) {
 		
 		ContentValues values = new ContentValues();
-		values.put(CategoryTable.COLUMN_ID, categorieId);
+		values.put(CategoryTable.COLUMN_ID, deletedCategoryId);
 		getActivity().getContentResolver().delete(CategoryProvider.URI,
 				CategoryTable.COLUMN_ID + " = ? ",
-				new String[] { categorieId.toString() });
+				new String[] { deletedCategoryId.toString() });
+		
 		getLoaderManager().restartLoader(0, null, this);
 		
 		// Must warn publications time line to reload all publications if this deleted category
-		((SolnRss)getActivity()).reLoadAllPublications();
+		((SolnRss)getActivity()).reLoadPublicationsAfterCatgoryDeleted(deletedCategoryId);
 	}
 
 	@Override
+	public void reLoadCategoriesAfterSyndicationDeleted() {
+		getLoaderManager().restartLoader(0, null, this);
+	}
+	
+	@Override
 	protected void setListPositionOnScreen() {
+		
 	}
 	
 }

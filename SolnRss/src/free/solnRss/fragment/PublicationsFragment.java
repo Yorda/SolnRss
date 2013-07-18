@@ -534,8 +534,8 @@ public class PublicationsFragment extends AbstractFragment implements
 		if (selectedSyndicationID != null
 				&& selectedSyndicationID.compareTo(deletedSyndicationId) == 0) {
 			selectedSyndicationID = null;
-			reloadPublications();
 		}
+		refreshPublications();
 	}
 	
 	private void updateActionBarTitle() {

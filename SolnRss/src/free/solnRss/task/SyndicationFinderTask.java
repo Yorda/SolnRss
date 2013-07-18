@@ -91,9 +91,9 @@ public class SyndicationFinderTask extends AsyncTask<String, Void, String> {
 		} else {
 			String success = resources.getString(R.string.feed_search_ok);
 			Toast.makeText(context.getApplicationContext(), success, len).show();
-			
-			//((SolnRss)context).displaySyndications();
-			
+			// Refresh the syndication tab
+			((SolnRss)context).refreshSyndications();
+			// Display his publications 
 			((SolnRss)context).reLoadPublicationsBySyndication(newSyndicationId.intValue());
 		}
 		

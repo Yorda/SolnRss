@@ -25,7 +25,6 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.Toast;
 import free.solnRss.R;
 import free.solnRss.adapter.SectionsPagerAdapter;
 import free.solnRss.dialog.AddItemDialog;
@@ -172,6 +171,8 @@ public class SolnRss extends FragmentActivity implements ActionBar.TabListener,
 		final ActionBar actionBar = getActionBar();
 		actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_TABS);
 		
+		//actionBar.setIcon(null);
+		
 		int apiVersion = android.os.Build.VERSION.SDK_INT;
 		if (apiVersion >= android.os.Build.VERSION_CODES.ICE_CREAM_SANDWICH) {
 			
@@ -218,6 +219,7 @@ public class SolnRss extends FragmentActivity implements ActionBar.TabListener,
 					//.setText(sectionPageAdapter.getPageTitle(i))
 					.setIcon(iconId)
 					.setTabListener(this));
+			//(new TabListener<PublicationsFragment>(this, "t"+1, PublicationsFragment.class))
 		}
 		
 		PreferenceManager
@@ -226,11 +228,10 @@ public class SolnRss extends FragmentActivity implements ActionBar.TabListener,
 		
 		removeNotification();
 		viewPager.setCurrentItem(1);
-		
-		
 		mamageRefreshPublicationTimer();
 	}
 
+	/*
 	@Override
 	public void onActivityResult(int requestCode, int resultCode, Intent data) {
 		super.onActivityResult(requestCode, resultCode, data);
@@ -259,7 +260,7 @@ public class SolnRss extends FragmentActivity implements ActionBar.TabListener,
 		default:
 			break;
 		}
-	}
+	}*/
 	
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
@@ -399,6 +400,7 @@ public class SolnRss extends FragmentActivity implements ActionBar.TabListener,
 			}
 			break;
 		}
+
 		if (viewPager.getCurrentItem() != tab.getPosition()){
 		    viewPager.setCurrentItem(tab.getPosition());
 		}
@@ -412,6 +414,7 @@ public class SolnRss extends FragmentActivity implements ActionBar.TabListener,
 	@Override
 	public void onTabReselected(Tab tab, 
 			FragmentTransaction fragmentTransaction) {
+		Log.e(this.getClass().getName(), "RESELECTED TAB");
 	}
 	
 	public void reLoadPublicationsBySyndication(Integer syndicationID) {
@@ -424,6 +427,10 @@ public class SolnRss extends FragmentActivity implements ActionBar.TabListener,
 		publicationsListener.reLoadPublicationsByCategory(categorieID);
 		viewPager.setCurrentItem(1);
 		publicationsListener.moveListViewToTop();
+	}
+	
+	public void reLoadCategoriesAfterSyndicationDeleted() {
+		categoriesListener.reLoadCategoriesAfterSyndicationDeleted();
 	}
 	
 	public void refreshPublications() {
@@ -458,6 +465,10 @@ public class SolnRss extends FragmentActivity implements ActionBar.TabListener,
 		reLoadAllPublications();
 	}
 
+	public void refreshSyndications() {
+		syndicationsListener.reloadSyndications();
+	}
+	
 	/**
 	 * Call by a click on notification for refresh publication list
 	 */
@@ -508,4 +519,13 @@ public class SolnRss extends FragmentActivity implements ActionBar.TabListener,
 			PublicationsFragmentListener publicationsFragmentListener) {
 		this.publicationsListener = publicationsFragmentListener;
 	}
+
+	
+	
+
+	
+	
+	
+	
+	
 }

@@ -22,7 +22,6 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ListView;
 import free.solnRss.R;
-import free.solnRss.activity.ActivityResult;
 import free.solnRss.activity.SolnRss;
 import free.solnRss.adapter.SyndicationAdapter;
 import free.solnRss.fragment.listener.SyndicationsFragmentListener;
@@ -224,15 +223,17 @@ public class SyndicationsFragment extends AbstractFragment implements
 
 	public void delete() {
 		
-		AsyncTask<Integer, Void, ActivityResult> t = new AsyncTask<Integer, Void, ActivityResult>() {
+		AsyncTask<Integer, Void, Integer> t = new AsyncTask<Integer, Void, Integer>() {
 			@Override
-			protected ActivityResult doInBackground(Integer... arg0) {
+			protected Integer doInBackground(Integer... arg0) {
 				SyndicationRepository repository = new SyndicationRepository(getActivity());
-				repository.delete(arg0[0]);
-				return ActivityResult.DELETE;
+				repository.delete(selectedSyndicationID);
+				return selectedSyndicationID;
 			};
 			@Override
-			protected void onPostExecute(ActivityResult result) {
+			protected void onPostExecute(Integer result) {
+				((SolnRss)getActivity()).reLoadPublicationsAfterSyndicationDeleted(selectedSyndicationID);
+				((SolnRss)getActivity()).reLoadCategoriesAfterSyndicationDeleted();
 				reloadSyndications();
 			};
 		};
@@ -242,15 +243,15 @@ public class SyndicationsFragment extends AbstractFragment implements
 	
 	public void clean() {
 		
-		AsyncTask<Integer, Void, ActivityResult> t = new AsyncTask<Integer, Void, ActivityResult>() {
+		AsyncTask<Integer, Void, Integer> t = new AsyncTask<Integer, Void, Integer>() {
 			@Override
-			protected ActivityResult doInBackground(Integer... arg0) {
+			protected Integer doInBackground(Integer... arg0) {
 				PublicationRepository repository = new PublicationRepository(getActivity());
 				repository.clean(selectedSyndicationID);
-				return ActivityResult.CLEAN;
+				return selectedSyndicationID;
 			};
 			@Override
-			protected void onPostExecute(ActivityResult result) {
+			protected void onPostExecute(Integer result) {
 				((SolnRss)getActivity()).reLoadAllPublications();
 			};
 		};
@@ -259,7 +260,7 @@ public class SyndicationsFragment extends AbstractFragment implements
 	}
 	
 	public void dialogBox(String message,
-			final AsyncTask<Integer, Void, ActivityResult> task) {
+			final AsyncTask<Integer, Void, Integer> task) {
 
 		AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
 		builder.setMessage(message);

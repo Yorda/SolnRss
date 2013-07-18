@@ -9,7 +9,7 @@
     <string name="title_categories">Categories</string>
     <string name="menu_settings">Settings</string>
     <string name="menu_add_categorie">Add a new category</string>
-    <string name="menu_add_site">Add a new site</string>
+    <string name="menu_add_site">Add a new RSS feed</string>
     <string name="menu_show_already_read">See publications already read</string>
     <string name="menu_hide_already_read">Hide publications already read</string>
     <string name="menu_read_on_web_site">Read on the website.</string>
@@ -61,8 +61,8 @@
     <string name="display_articles_on_time_line">Visible in the main flow</string>
     <string name="undisplay_articles_on_time_line">Invisible in the main flow</string>
     <string name="delete_ok">The deletion was made</string>
-    <string name="clean_confirm">Want to delete all its publications ?</string>
-    <string name="delete_confirm">Want to remove this RSS and all its publications ?</string>
+    <string name="clean_confirm">Do you want to delete all its publications ?</string>
+    <string name="delete_confirm">Do you Want to delete this RSS and all its publications ?</string>
     <string name="creation_date">Create: %1$s</string>
 	
     <string name="syndication_number_of_click">%1$s publication(s) already read</string>

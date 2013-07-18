@@ -6,6 +6,7 @@ package free.solnRss.activity;
  * @author jftomasi
  * 
  */
+@Deprecated
 public enum ActivityResult {
 
 	ERROR, 

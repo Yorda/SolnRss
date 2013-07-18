@@ -21,4 +21,9 @@ public interface CategoriesFragmentListener {
 	 * @param newCatgorie
 	 */
 	public void addCategorie(Context contex, String newCatgorie);
+
+	/**
+	 * 
+	 */
+	public void reLoadCategoriesAfterSyndicationDeleted();
 }

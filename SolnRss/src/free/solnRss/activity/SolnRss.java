@@ -1,8 +1,8 @@
 package free.solnRss.activity;
 
-import android.annotation.SuppressLint;
 import android.app.ActionBar;
 import android.app.ActionBar.Tab;
+import android.app.Activity;
 import android.app.AlarmManager;
 import android.app.AlertDialog;
 import android.app.FragmentTransaction;
@@ -18,7 +18,6 @@ import android.net.ConnectivityManager;
 import android.os.Bundle;
 import android.os.SystemClock;
 import android.preference.PreferenceManager;
-import android.support.v4.app.FragmentActivity;
 import android.support.v4.view.ViewPager;
 import android.text.TextUtils;
 import android.util.Log;
@@ -35,7 +34,7 @@ import free.solnRss.fragment.listener.SyndicationsFragmentListener;
 import free.solnRss.service.PublicationsRefresh;
 import free.solnRss.task.SyndicationFinderTask;
 
-public class SolnRss extends FragmentActivity implements ActionBar.TabListener,
+public class SolnRss extends Activity implements ActionBar.TabListener,
 		SharedPreferences.OnSharedPreferenceChangeListener,
 		NewAddItemDialogListener {
 	
@@ -159,7 +158,7 @@ public class SolnRss extends FragmentActivity implements ActionBar.TabListener,
 		notificationManager.cancel(0x000001);
 	}
 	
-	@SuppressLint("NewApi")
+	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		
@@ -184,9 +183,10 @@ public class SolnRss extends FragmentActivity implements ActionBar.TabListener,
 		viewPager = (ViewPager) findViewById(R.id.pager);
 
 		// Create the adapter that will return a fragment for each of the three
-		// primary sections of the app.
-		sectionPageAdapter = new SectionsPagerAdapter(getSupportFragmentManager(), getResources());
+		// primary sections of the app.		
+		sectionPageAdapter = new SectionsPagerAdapter(getFragmentManager(), getResources());
 		viewPager.setAdapter(sectionPageAdapter);
+		viewPager.setOffscreenPageLimit(3);
 		
 		// When swiping between different sections, select the corresponding
 		// tab. We can also use ActionBar.Tab#select() to do this if we have
@@ -204,12 +204,21 @@ public class SolnRss extends FragmentActivity implements ActionBar.TabListener,
 			switch (i) {
 			case 0:
 				iconId = R.drawable.ic_tab_folder;
+				/*actionBar.addTab(actionBar.newTab()
+						.setIcon(iconId)
+						.setTabListener((new TabListener<CategoriesFragment>(this, "t" + i, CategoriesFragment.class))));*/
 				break;
 			case 1:
 				iconId = R.drawable.ic_tab_file;
+				/*actionBar.addTab(actionBar.newTab()
+						.setIcon(iconId)
+						.setTabListener((new TabListener<PublicationsFragment>(this, "t" + i, PublicationsFragment.class))));*/
 				break;
 			case 2:
 				iconId = R.drawable.ic_tab_earth;
+				/*actionBar.addTab(actionBar.newTab()
+						.setIcon(iconId)
+						.setTabListener((new TabListener<SyndicationsFragment>(this, "t" + i, SyndicationsFragment.class))));*/
 				break;
 			default:
 				break;
@@ -219,7 +228,7 @@ public class SolnRss extends FragmentActivity implements ActionBar.TabListener,
 					//.setText(sectionPageAdapter.getPageTitle(i))
 					.setIcon(iconId)
 					.setTabListener(this));
-			//(new TabListener<PublicationsFragment>(this, "t"+1, PublicationsFragment.class))
+			
 		}
 		
 		PreferenceManager
@@ -329,7 +338,7 @@ public class SolnRss extends FragmentActivity implements ActionBar.TabListener,
 		Bundle args = new Bundle();
 		args.putString("item", item.toString());
 		dialog.setArguments(args);
-		dialog.show(getSupportFragmentManager(), "dialog_add_item");
+		dialog.show(getFragmentManager(), "dialog_add_item");
 	}
 	
 	@Override
@@ -414,7 +423,6 @@ public class SolnRss extends FragmentActivity implements ActionBar.TabListener,
 	@Override
 	public void onTabReselected(Tab tab, 
 			FragmentTransaction fragmentTransaction) {
-		Log.e(this.getClass().getName(), "RESELECTED TAB");
 	}
 	
 	public void reLoadPublicationsBySyndication(Integer syndicationID) {
@@ -519,13 +527,5 @@ public class SolnRss extends FragmentActivity implements ActionBar.TabListener,
 			PublicationsFragmentListener publicationsFragmentListener) {
 		this.publicationsListener = publicationsFragmentListener;
 	}
-
-	
-	
-
-	
-	
-	
-	
 	
 }

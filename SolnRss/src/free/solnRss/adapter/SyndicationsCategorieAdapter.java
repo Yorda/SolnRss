@@ -4,7 +4,7 @@ import android.content.Context;
 import android.database.Cursor;
 import android.graphics.Typeface;
 import android.net.Uri;
-import android.support.v4.widget.SimpleCursorAdapter;
+import android.widget.SimpleCursorAdapter;
 import android.text.TextUtils;
 import android.view.View;
 import android.view.ViewGroup;

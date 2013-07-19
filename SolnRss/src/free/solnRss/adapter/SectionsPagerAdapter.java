@@ -1,9 +1,9 @@
 package free.solnRss.adapter;
 
+import android.app.Fragment;
+import android.app.FragmentManager;
 import android.content.res.Resources;
-import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentPagerAdapter;
+import android.support.v13.app.FragmentPagerAdapter;
 import android.view.ViewGroup;
 import free.solnRss.R;
 import free.solnRss.fragment.CategoriesFragment;
@@ -11,7 +11,7 @@ import free.solnRss.fragment.PublicationsFragment;
 import free.solnRss.fragment.SyndicationsFragment;
 
 public class SectionsPagerAdapter extends FragmentPagerAdapter {
-
+     
 	public static enum TAB_SELECTED {
 		Categories(0), 
 		Publications(1), 
@@ -22,16 +22,16 @@ public class SectionsPagerAdapter extends FragmentPagerAdapter {
 		}
 	}
 
-	private PublicationsFragment publicationsFragment;
-	private SyndicationsFragment syndicationsFragment;
-	private CategoriesFragment categoriesFragment;
+	private PublicationsFragment publicationsFragment  = new PublicationsFragment();
+	private SyndicationsFragment syndicationsFragment  = new SyndicationsFragment();
+	private CategoriesFragment categoriesFragment      = new CategoriesFragment();
 	private Resources r;
 
 	public SectionsPagerAdapter(FragmentManager fm, Resources r) {
 		super(fm);
-		syndicationsFragment = new SyndicationsFragment();
+		/*syndicationsFragment = new SyndicationsFragment();
 		publicationsFragment = new PublicationsFragment();
-		categoriesFragment   = new CategoriesFragment();
+		categoriesFragment   = new CategoriesFragment();*/
 		this.r = r;
 	}
 
@@ -48,24 +48,23 @@ public class SectionsPagerAdapter extends FragmentPagerAdapter {
 	@Override
 	public Fragment getItem(int position) {
 		// Method getItem is called to instantiate the fragment for the given page.
-		Fragment fragment = null;
+		//Fragment fragment = null;
 		switch (TAB_SELECTED.values()[position]) {
 		case Categories:
-			fragment = categoriesFragment;
-			break;
+			return categoriesFragment;
+
 		case Publications:
-			fragment = publicationsFragment;
-			break;
+			return publicationsFragment;
+
 		case Syndications:
-			fragment = syndicationsFragment;
-			break;
+			return syndicationsFragment;
 		}
-		return fragment;
+		return null;
 	}
 	
 	@Override
 	public int getCount() {
-		return TAB_SELECTED.values().length;
+		return 3;
 	}
 
 	@Override

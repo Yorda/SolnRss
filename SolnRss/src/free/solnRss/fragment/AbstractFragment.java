@@ -4,10 +4,10 @@ import android.annotation.TargetApi;
 import android.database.Cursor;
 import android.os.Build;
 import android.os.Bundle;
-import android.support.v4.app.ListFragment;
-import android.support.v4.app.LoaderManager;
-import android.support.v4.content.Loader;
-import android.support.v4.widget.SimpleCursorAdapter;
+import android.app.ListFragment;
+import android.app.LoaderManager;
+import android.content.Loader;
+import android.widget.SimpleCursorAdapter;
 import android.text.TextUtils;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -201,7 +201,7 @@ public abstract class AbstractFragment extends ListFragment implements	OnQueryTe
 		Bundle args = new Bundle();
 		args.putString("item", item.toString());
 		dialog.setArguments(args);
-		dialog.show(getActivity().getSupportFragmentManager(), "dialog_add_item");
+		dialog.show(getActivity().getFragmentManager(), "dialog_add_item");
 	}
 
 	public void setListShown(boolean shown) {

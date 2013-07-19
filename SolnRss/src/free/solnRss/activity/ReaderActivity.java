@@ -3,6 +3,7 @@ package free.solnRss.activity;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Intent;
+import android.graphics.drawable.ColorDrawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.text.TextUtils;
@@ -32,10 +33,12 @@ public class ReaderActivity extends Activity {
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_reader);
-		 
+
+		getActionBar().setBackgroundDrawable(new ColorDrawable(0xeeeeee));
+		
 		String text = getIntent().getStringExtra("read");
 		String title = getIntent().getStringExtra("title");
-		if(!TextUtils.isEmpty(title)){
+		if (!TextUtils.isEmpty(title)) {
 			getActionBar().setTitle(title);
 		}
 		

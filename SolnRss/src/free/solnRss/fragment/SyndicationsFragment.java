@@ -9,8 +9,8 @@ import android.database.Cursor;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.support.v4.content.CursorLoader;
-import android.support.v4.content.Loader;
+import android.content.CursorLoader;
+import android.content.Loader;
 import android.text.TextUtils;
 import android.view.ContextMenu;
 import android.view.ContextMenu.ContextMenuInfo;
@@ -252,7 +252,9 @@ public class SyndicationsFragment extends AbstractFragment implements
 			};
 			@Override
 			protected void onPostExecute(Integer result) {
-				((SolnRss)getActivity()).reLoadAllPublications();
+				//((SolnRss)getActivity()).reLoadAllPublications();
+				//((SolnRss)getActivity()).reLoadPublicationsAfterSyndicationDeleted(selectedSyndicationID);
+				((SolnRss)getActivity()).refreshPublications();
 			};
 		};
 		

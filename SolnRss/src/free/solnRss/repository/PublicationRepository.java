@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import android.content.Context;
-import android.support.v4.content.CursorLoader;
+import android.content.CursorLoader;
 import android.text.TextUtils;
 import free.solnRss.provider.PublicationsProvider;
 

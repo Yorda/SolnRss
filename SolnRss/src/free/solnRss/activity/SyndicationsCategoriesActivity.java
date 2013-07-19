@@ -5,6 +5,7 @@ import android.app.LoaderManager;
 import android.content.CursorLoader;
 import android.content.Loader;
 import android.database.Cursor;
+import android.graphics.drawable.ColorDrawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.text.TextUtils;
@@ -32,6 +33,7 @@ public class SyndicationsCategoriesActivity extends ListActivity implements
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(layoutID);
+		getActionBar().setBackgroundDrawable(new ColorDrawable(0xeeeeee));
 		selectedCategorieID = getIntent().getIntExtra("selectedCategorieID", -1);
 		if (selectedCategorieID == -1) {
 			finish();

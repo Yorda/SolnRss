@@ -1,0 +1,261 @@
+package free.solnRss.service;
+
+import android.app.IntentService;
+import android.app.Notification;
+import android.app.NotificationManager;
+import android.app.PendingIntent;
+import android.content.Context;
+import android.content.Intent;
+import android.net.ConnectivityManager;
+import android.os.Bundle;
+import android.os.ResultReceiver;
+import android.support.v4.app.NotificationCompat;
+import android.util.Log;
+import android.util.SparseArray;
+import free.solnRss.R;
+import free.solnRss.activity.SolnRss;
+import free.solnRss.business.SyndicationBusiness;
+import free.solnRss.business.impl.SyndicationBusinessImpl;
+import free.solnRss.model.Syndication;
+import free.solnRss.repository.SyndicationRepository;
+import free.solnRss.utility.HttpUtil;
+
+public class SyndicationFinderService extends IntentService {
+
+	public static Integer isAlreadyRunning = 0;
+	private final Integer numberOfSteps = 100;
+
+	private SyndicationBusiness syndicationBusiness = new SyndicationBusinessImpl();
+	private NotificationCompat.Builder builder;
+	private NotificationManager notificationManager;
+	
+	public SyndicationFinderService(String name) {
+		super(name);
+	}
+
+	public SyndicationFinderService() {
+		super("SyndicationFinderService");
+	}
+
+	// Create the notification
+	protected void createNotification() {
+
+		builder = new NotificationCompat.Builder(this);
+		notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+		
+		builder = new NotificationCompat.Builder(this);
+		
+		builder.setContentTitle(getString(R.string.load_syndication))
+				.setContentText(getString(R.string.retrieve_http))  
+				.setSmallIcon(R.drawable.ic_launcher);
+		
+		// Begin the download progress bar
+		builder.setProgress(numberOfSteps, 0, false);
+		builder.build().flags |= Notification.FLAG_AUTO_CANCEL;
+		 
+		// Displays the progress bar for the first time.
+		notificationManager.notify(0, builder.build());
+	}
+
+	private void processNotification(Integer level, String text) {
+		if (level.compareTo(numberOfSteps) == 0) {
+			builder.setContentText(text).setProgress(0, 0, false);
+		} else {
+			builder.setContentText(text).setProgress(numberOfSteps, level,
+					false);
+		}
+		notificationManager.notify(0, builder.build());
+	}
+
+	// 1 - Is the device connected ?
+	public boolean isOnline() {
+		ConnectivityManager cm = (ConnectivityManager) getApplication()
+				.getSystemService(Context.CONNECTIVITY_SERVICE);
+		if (cm.getActiveNetworkInfo() != null
+				&& cm.getActiveNetworkInfo().isConnected()) {
+			return true;
+		}
+
+		processNotification(numberOfSteps, 
+				getString(R.string.no_connection));
+		return false;
+	}
+
+	// 2 - Is the URL is ok ?
+	protected boolean isUrlIsright(String url) {
+		if (!HttpUtil.isValidUrl(url)) {
+			processNotification(numberOfSteps, 
+					getString(R.string.bad_url));
+			return false;
+		}
+		return true;
+	}
+
+	// 3 - Is already a syndication with this url ?
+	protected boolean isAlreadyInDatabase(String url) {
+		SyndicationRepository repository = new SyndicationRepository(getApplicationContext());
+
+		if (repository.isStillRecorded(url)) {
+			processNotification(numberOfSteps,
+					getString(R.string.site_already_recorded));
+			return true;
+		}
+		return false;
+
+	}
+
+	// 4 - Retrieve content
+	protected String retrieveHttpContent(String url) {
+		String contentFromHttp = null;
+		try {
+			contentFromHttp = HttpUtil.htmlFromSite(url);
+			if (contentFromHttp == null) {
+				processNotification(numberOfSteps,
+						getString(R.string.feed_not_found));
+			}
+		} catch (Exception e) {
+			processNotification(numberOfSteps,
+					getString(R.string.feed_not_found));
+		}
+		return contentFromHttp;
+	}
+
+	// 5 - Search the RSS feed
+	protected Syndication searchRssFeed(String html, String url) {
+		Syndication syndication = null;
+		try {
+			syndication = syndicationBusiness.retrieveSyndicationContent(html,url);
+			if (syndication == null) {
+				processNotification(numberOfSteps,
+						getString(R.string.feed_search_error));
+			}
+		} catch (Exception e) {
+			processNotification(numberOfSteps,
+					getString(R.string.feed_search_error));
+		}
+		return syndication;
+	}
+
+	// 6 - Record new syndication
+	protected Long recordNewSyndication(Syndication syndication) {
+		SyndicationRepository repository = new SyndicationRepository(
+				getApplicationContext());
+
+		Long newSyndicationId = null;
+		try {
+			newSyndicationId = repository.addWebSite(syndication);
+		} catch (Exception e) {
+			processNotification(numberOfSteps,
+					getString(R.string.site_record_error));
+		}
+		return newSyndicationId;
+	}
+
+	// 7 - End process
+	protected void refreshActivity(Syndication syndication) {
+		notifyNewSyndication(syndication);
+	}
+
+	private SparseArray<ResultReceiver> receiverMap = new SparseArray<ResultReceiver>();
+	private int resultReceiverId = -1;
+
+	private void registerOrUnregisterReceiver(Intent intent) {
+		if (intent == null) {
+			receiverMap = new SparseArray<ResultReceiver>();
+		} else if ("UNREGISTER_RECEIVER".equals(intent.getAction())) {
+			// Extract the ResultReceiver ID and remove it from the map
+			resultReceiverId = intent.getIntExtra("ResultReceiver_ID", 0);
+			receiverMap.remove(resultReceiverId);
+			
+		} else if ("REGISTER_RECEIVER".equals(intent.getAction())) {
+			// Extract the ResultReceiver and store it into the map
+			ResultReceiver receiver = intent.getParcelableExtra("ResultReceiver");
+			resultReceiverId = intent.getIntExtra("ResultReceiver_ID", 0);
+			receiverMap.put(resultReceiverId, receiver);
+		}
+	}
+	
+	private void notifyNewSyndication(Syndication syndication) {
+		
+		if (receiverMap.get(resultReceiverId) != null) {
+			ResultReceiver resultReceiver = receiverMap.get(resultReceiverId);
+			int resultCode = 0;
+			Bundle resultData = new Bundle();
+			resultData.putInt("newSyndicationId", syndication.getId());
+			resultData.putString("newSyndicationName", syndication.getName());
+			resultData.putInt("newPublicationsNumber", syndication.getPublications() != null 
+					? syndication.getPublications().size() : 0);
+			resultReceiver.send(resultCode, resultData);
+		}
+		
+		// Create pending intent for going back on screen
+		Intent intent = new Intent(this, SolnRss.class);
+		intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP
+				| Intent.FLAG_ACTIVITY_SINGLE_TOP);
+		
+		intent.putExtra("SERVICE_RESULT", SolnRss.SERVICE_RESULT.NEW_SYNDICATION);
+		Log.e(SyndicationFinderService.this.getClass().getName(), "ID SEND TO ACTIVITY: " + syndication.getId().toString());
+		intent.putExtra("newSyndicationId", syndication.getId().toString());
+		PendingIntent pendingIntent = PendingIntent.getActivity(this, 2,intent, PendingIntent.FLAG_UPDATE_CURRENT);
+		
+		builder.setContentIntent(pendingIntent);
+		builder.build();
+		
+	}	
+	
+	@Override
+	protected void onHandleIntent(Intent intent) {
+		try {
+
+			isAlreadyRunning = 1 ;
+			
+			registerOrUnregisterReceiver(intent);
+			
+			createNotification();
+
+			// step = 0;
+			String url = intent.getStringExtra("url");
+
+			if (!isOnline()) {
+				return;
+			}
+
+			if (!isUrlIsright(url)) {
+				return;
+			}
+
+			if (isAlreadyInDatabase(url)) {
+				return;
+			}
+
+			processNotification(20, "Searching rss feed");
+
+			String contentRetrievedFormUrl = retrieveHttpContent(url);
+			if (contentRetrievedFormUrl == null) {
+				return;
+			}
+
+			processNotification(50, "Found rss information try to retrieve feed ");
+
+			Syndication syndication = searchRssFeed(contentRetrievedFormUrl, url);
+			if (syndication == null) {
+				return;
+			}
+
+			processNotification(70, " Record in application ");
+			Long newSyndicationId = recordNewSyndication(syndication);
+			if (newSyndicationId == null) {
+				return;
+			}
+			syndication.setId(newSyndicationId.intValue());
+
+			refreshActivity(syndication);
+			processNotification(numberOfSteps, "Process ok ");
+			
+			
+		} catch (Exception e) {
+		} finally {
+			isAlreadyRunning = 0;
+		}
+	}
+}

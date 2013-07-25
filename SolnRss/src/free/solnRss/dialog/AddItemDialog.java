@@ -1,8 +1,7 @@
 package free.solnRss.dialog;
 
-import android.os.Bundle;
 import android.app.DialogFragment;
-import android.util.Log;
+import android.os.Bundle;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -36,9 +35,7 @@ public class AddItemDialog extends DialogFragment implements OnEditorActionListe
 			Bundle savedInstanceState) {
 
 		item = Item.valueOf(getArguments().getString("item"));
-
 		View view = inflater.inflate(layoutID, vg);
-
 		getDialog().getWindow().setSoftInputMode(LayoutParams.SOFT_INPUT_STATE_VISIBLE);
 
 		editText = (EditText) view.findViewById(R.id.text_add_new_item);
@@ -71,7 +68,6 @@ public class AddItemDialog extends DialogFragment implements OnEditorActionListe
 	public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
 		
 		if (EditorInfo.IME_ACTION_DONE == actionId) {
-			Log.e(AddItemDialog.this.getClass().getName(), " DONE !");
 			SolnRss activity = (SolnRss) getActivity();
 			activity.onFinishEditDialog(editText.getText(), item);
 			this.dismiss();

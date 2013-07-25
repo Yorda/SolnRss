@@ -41,16 +41,17 @@
     <string name="notify_new_pub_msg">%1$s publications unread</string>
 
     <!-- Search syndication task result -->
-    <string name="feed_search_error">Error, could not retrieve information from RSS feeds on this website.</string>
+    <string name="feed_search_error">Error, could not retrieve RSS information.</string>
     <string name="feed_search_ok">The RSS feed of the site being found.</string>
     <string name="feed_not_found">Sorry, but the website\'s RSS feed was not found.</string>
     <string name="site_record_error">Error with the database. The insertion of new publications failed</string>
     <string name="site_already_recorded">A website with the address already exists</string>
-    <string name="load_syndication">Research RSS. Please wait</string>
+    <string name="load_syndication">Search RSS. Please wait</string>
     <string name="no_connection">No internet connection in operation.</string>
     <string name="http_get_error">Error, unable to contact the website.</string>
     <string name="bad_url">Error, Unable to contact the web site, please check your input.</string>
     <string name="empty_url">Enter a correct website address, please check your input</string>
+    <string name="retrieve_http">Try to connect</string>
 
     <!-- Syndication manager activity -->
     <string name="site_parameter">%1$s</string>

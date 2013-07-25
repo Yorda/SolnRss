@@ -15,7 +15,7 @@ import org.apache.http.params.HttpParams;
 public class HttpUtil {
 	
 
-	public static String htmlFromSite(String url) throws Exception{
+	public static String htmlFromSite(String url) throws Exception {
 		
 		final HttpParams httpParams = new BasicHttpParams();
 	    HttpConnectionParams.setConnectionTimeout(httpParams, 6000);

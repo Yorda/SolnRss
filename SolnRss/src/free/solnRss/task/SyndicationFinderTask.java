@@ -71,10 +71,20 @@ public class SyndicationFinderTask extends AsyncTask<String, Void, String> {
 						if(dialog.isShowing()){  
 							dialog.dismiss();  
 				        } 
-					}
+						// Something was found delete what it recorded
+						if (newSyndicationId != null) {
+							delete();
+						}
+					}					
 				});
        
         this.dialog.show();	
+	}
+	
+	private void delete() {	
+		SyndicationRepository repository = new SyndicationRepository(context);
+		repository.delete(Integer.valueOf(newSyndicationId.toString()));
+		newSyndicationId = null;
 	}
 	
 	@Override
@@ -167,15 +177,15 @@ public class SyndicationFinderTask extends AsyncTask<String, Void, String> {
 		}
 		return syndication;
 	}
-	
+
 	/**
-	 * Syndication found so record the informations in database with the
-	 * last articles published
+	 * Syndication found so record the informations in database with the last
+	 * articles published
 	 * 
 	 * @param syndication
 	 * @throws Exception
 	 */
-	public void recordNewSite(Syndication syndication) throws Exception{
+	public void recordNewSite(Syndication syndication) throws Exception {
 		SyndicationRepository repository = new SyndicationRepository(context);
 		newSyndicationId = repository.addWebSite(syndication);
 	}

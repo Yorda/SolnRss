@@ -39,13 +39,13 @@ import free.solnRss.provider.SyndicationsProvider;
 import free.solnRss.repository.PublicationTable;
 import free.solnRss.repository.SyndicationTable;
 
-public class PublicationsRefresh extends IntentService {
+public class PublicationsFinderService extends IntentService {
 
 	private SyndicationBusiness syndicationBusiness = new SyndicationBusinessImpl();
 	final DateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.FRENCH);
 	private boolean isWorking = false;
 	
-	public PublicationsRefresh() {
+	public PublicationsFinderService() {
 		super("PublicationsRefresh");
 	}
 
@@ -315,7 +315,9 @@ public class PublicationsRefresh extends IntentService {
 		intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP
 				| Intent.FLAG_ACTIVITY_SINGLE_TOP);
 
-		PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, intent, 0);
+		intent.putExtra("SERVICE_RESULT", SolnRss.SERVICE_RESULT.NEW_PUBLICATIONS);
+		
+		PendingIntent pendingIntent = PendingIntent.getActivity(this, 3, intent, PendingIntent.FLAG_UPDATE_CURRENT);
 		builder.setContentIntent(pendingIntent);
 
 		Notification notification = builder.build();

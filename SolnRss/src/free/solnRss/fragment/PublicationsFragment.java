@@ -117,7 +117,7 @@ public class PublicationsFragment extends AbstractFragment implements
 		Cursor c = getActivity().getContentResolver().query(uri, projection,
 				null, null, null);
 		c.moveToFirst();
-		String name = c.getString(0) != null ? c.getString(0) : "this";
+		String name =  c.getCount() > 0 && c.getString(0) != null ? c.getString(0) : null;
 		c.close();
 		return name;
 	}
@@ -128,7 +128,7 @@ public class PublicationsFragment extends AbstractFragment implements
 		Cursor c = getActivity().getContentResolver().query(uri, projection,
 				null, null, null);
 		c.moveToFirst();
-		String name = c.getString(0) != null ? c.getString(0) : "this";
+		String name = c.getCount() > 0 && c.getString(0) != null ? c.getString(0) : null;
 		c.close();
 		return name;
 	}
@@ -539,12 +539,23 @@ public class PublicationsFragment extends AbstractFragment implements
 	}
 	
 	private void updateActionBarTitle() {
+		String label = null;
 		if (this.selectedSyndicationID != null) {
-			getActivity().getActionBar().setTitle(
-					Html.fromHtml("<b>-> (" + syndicationName() + ")<b>"));
+			label = syndicationName();
+			if (label != null) {
+				getActivity().getActionBar().setTitle(
+						Html.fromHtml("<b><u>" + syndicationName() + "</u><b>"));
+			} else
+				getActivity().getActionBar().setTitle(getActivity().getTitle());
+			
 		} else if (this.selectedCategoryID != null) {
-			getActivity().getActionBar().setTitle(
-					Html.fromHtml("<b>-> [" + categoryName() + "]<b>"));
+			label = categoryName();
+			if (label != null) {
+				getActivity().getActionBar().setTitle(
+						Html.fromHtml("<b><u>" + categoryName() + "</u><b>"));
+			} else
+				getActivity().getActionBar().setTitle(getActivity().getTitle());
+			
 		} else {
 			getActivity().getActionBar().setTitle(getActivity().getTitle());
 		}

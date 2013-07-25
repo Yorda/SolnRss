@@ -93,6 +93,12 @@ public class SyndicationBusinessImpl implements SyndicationBusiness {
 		return syndication;
 	}
 
+	@Override
+	public Syndication retrieveSyndicationContent(String html, String url)
+			throws Exception {
+		return setSyndication(html, url);
+	}
+	
 	/**
 	 * 
 	 * @param html

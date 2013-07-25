@@ -9,7 +9,7 @@ import android.util.Log;
 public class RepositoryHelper extends SQLiteOpenHelper {
 
 	public static int VERSION = 9;
-	public static String DATABASE_NAME = "SOLNRSS.db";
+	public static String DATABASE_NAME = "SOLNRSS2.db";
 
 	private static RepositoryHelper instance;
 

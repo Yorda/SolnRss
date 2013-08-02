@@ -51,20 +51,25 @@ public class SyndicationFinderService extends IntentService {
 		
 		// Begin the download progress bar
 		builder.setProgress(numberOfSteps, 0, false);
-		builder.build().flags |= Notification.FLAG_AUTO_CANCEL;
+		
+		Notification notification = builder.build();
+		notification.flags |= Notification.FLAG_AUTO_CANCEL;
 		 
 		// Displays the progress bar for the first time.
-		notificationManager.notify(0, builder.build());
+		notificationManager.notify(0,notification);
 	}
 
 	private void processNotification(Integer level, String text) {
 		if (level.compareTo(numberOfSteps) == 0) {
 			builder.setContentText(text).setProgress(0, 0, false);
 		} else {
-			builder.setContentText(text).setProgress(numberOfSteps, level,
-					false);
+			builder.setContentText(text).setProgress(numberOfSteps, level, false);
 		}
-		notificationManager.notify(0, builder.build());
+		
+		Notification notification = builder.build();
+		notification.flags |= Notification.FLAG_AUTO_CANCEL;
+		
+		notificationManager.notify(0, notification);
 	}
 
 	// 1 - Is the device connected ?
@@ -228,21 +233,21 @@ public class SyndicationFinderService extends IntentService {
 				return;
 			}
 
-			processNotification(20, "Searching rss feed");
+			processNotification(20, getString(R.string.searching_feed));
 
 			String contentRetrievedFormUrl = retrieveHttpContent(url);
 			if (contentRetrievedFormUrl == null) {
 				return;
 			}
 
-			processNotification(50, "Found rss information try to retrieve feed ");
+			processNotification(50, getString(R.string.found_feed));
 
 			Syndication syndication = searchRssFeed(contentRetrievedFormUrl, url);
 			if (syndication == null) {
 				return;
 			}
 
-			processNotification(70, " Record in application ");
+			processNotification(70, getString(R.string.record_feed));
 			Long newSyndicationId = recordNewSyndication(syndication);
 			if (newSyndicationId == null) {
 				return;
@@ -250,7 +255,7 @@ public class SyndicationFinderService extends IntentService {
 			syndication.setId(newSyndicationId.intValue());
 
 			refreshActivity(syndication);
-			processNotification(numberOfSteps, "Process ok ");
+			processNotification(numberOfSteps, getString(R.string.process_ok));
 			
 			
 		} catch (Exception e) {

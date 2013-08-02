@@ -52,6 +52,10 @@
     <string name="bad_url">Error, Unable to contact the web site, please check your input.</string>
     <string name="empty_url">Enter a correct website address, please check your input</string>
     <string name="retrieve_http">Try to connect</string>
+    <string name="searching_feed">Searching rss feed</string>
+    <string name="found_feed">Found rss information try to retrieve feed </string>
+    <string name="record_feed">Record in application</string>
+    <string name="process_ok">Search new feed ended with success</string>
 
     <!-- Syndication manager activity -->
     <string name="site_parameter">%1$s</string>

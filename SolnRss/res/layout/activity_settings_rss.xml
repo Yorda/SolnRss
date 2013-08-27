@@ -36,18 +36,28 @@
         android:summaryOff="@string/pref_sort_syndications_alphabetic"
         android:summaryOn="@string/pref_sort_syndications_most_use"
         android:title="@string/pref_sort_syndications" />
-    
+
     <CheckBoxPreference
         android:defaultValue="true"
         android:key="pref_sort_categories"
         android:summaryOff="@string/pref_sort_categories_alphabetic"
         android:summaryOn="@string/pref_sort_categories_most_use"
         android:title="@string/pref_sort_categories" />
-    
-    
+
     <free.solnRss.preference.SeekBarPreference
         android:defaultValue="15"
         android:key="pref_search_publication_time"
         android:title="@string/pref_search_publication_time" />
+
+    
+    <free.solnRss.preference.DeleteAllPublicationsPreferences
+        android:title="@string/pref_delete_all_publications"
+        android:key="pref_delete_all_publications"
+        android:dialogIcon="@android:drawable/ic_dialog_alert"
+        android:dialogMessage="You will delete all publications stored in database. Are you sure"
+        android:dialogTitle="Confirm"
+        android:negativeButtonText="@android:string/cancel"
+        android:positiveButtonText="@android:string/ok" 
+     />
 
 </PreferenceScreen>

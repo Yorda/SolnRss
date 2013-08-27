@@ -18,7 +18,8 @@
         android:id="@+id/title"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:textSize="17sp" />
+        android:textSize="17sp" 
+      />
 
     <!-- 
     <TextView

@@ -10,7 +10,7 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 import free.solnRss.R;
 
-public class PublicationAdapter extends SimpleCursorAdapter //implements FilterQueryProvider 
+public class PublicationAdapter extends SimpleCursorAdapter
 {
 	
 	protected Cursor cursor;

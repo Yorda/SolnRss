@@ -103,6 +103,8 @@ public class PublicationsProvider extends ContentProvider {
 
 	@Override
 	public int delete(Uri uri, String selection, String[] selectionArgs) {
+		SQLiteDatabase db = RepositoryHelper.getInstance(getContext()).getWritableDatabase();
+		db.delete(PublicationTable.PUBLICATION_TABLE, null, null);
 		return 0;
 	}
 	

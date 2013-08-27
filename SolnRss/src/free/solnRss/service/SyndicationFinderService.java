@@ -10,7 +10,6 @@ import android.net.ConnectivityManager;
 import android.os.Bundle;
 import android.os.ResultReceiver;
 import android.support.v4.app.NotificationCompat;
-import android.util.Log;
 import android.util.SparseArray;
 import free.solnRss.R;
 import free.solnRss.activity.SolnRss;
@@ -199,13 +198,16 @@ public class SyndicationFinderService extends IntentService {
 				| Intent.FLAG_ACTIVITY_SINGLE_TOP);
 		
 		intent.putExtra("SERVICE_RESULT", SolnRss.SERVICE_RESULT.NEW_SYNDICATION);
-		Log.e(SyndicationFinderService.this.getClass().getName(), "ID SEND TO ACTIVITY: " + syndication.getId().toString());
 		intent.putExtra("newSyndicationId", syndication.getId().toString());
 		PendingIntent pendingIntent = PendingIntent.getActivity(this, 2,intent, PendingIntent.FLAG_UPDATE_CURRENT);
 		
 		builder.setContentIntent(pendingIntent);
 		builder.build();
 		
+		String ok = getResources().getString(R.string.process_ok, syndication.getName(), syndication.getPublications() != null 
+				? syndication.getPublications().size() : 0);
+		
+		processNotification(numberOfSteps, ok);
 	}	
 	
 	@Override
@@ -255,9 +257,7 @@ public class SyndicationFinderService extends IntentService {
 			syndication.setId(newSyndicationId.intValue());
 
 			refreshActivity(syndication);
-			processNotification(numberOfSteps, getString(R.string.process_ok));
-			
-			
+
 		} catch (Exception e) {
 		} finally {
 			isAlreadyRunning = 0;

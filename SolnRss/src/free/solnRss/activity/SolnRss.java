@@ -22,6 +22,7 @@ import android.os.ResultReceiver;
 import android.os.SystemClock;
 import android.preference.PreferenceManager;
 import android.support.v4.view.ViewPager;
+import android.text.Html;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.Menu;
@@ -100,6 +101,10 @@ public class SolnRss extends Activity implements ActionBar.TabListener,
 		}
 		else if (key.compareTo("pref_search_publication_time") == 0) {
 			mamageRefreshPublicationTimer();
+		}
+		else if (key.compareTo("pref_delete_all_publications") == 0) {
+			Log.e(SolnRss.this.getClass().getName(), "DELETE ALL PUBLICATIONS ASKED");
+			refreshPublications();
 		}
 	}
 
@@ -181,29 +186,19 @@ public class SolnRss extends Activity implements ActionBar.TabListener,
 						actionBar.setSelectedNavigationItem(position);
 					}
 				});
-
-		// For each of the sections in the app, add a tab to the action bar.
-		int iconId = -1;
-		for (int i = 0; i < sectionPageAdapter.getCount(); i++) {
-			switch (i) {
-			case 0:
-				iconId = R.drawable.ic_tab_folder;
-				break;
-			case 1:
-				iconId = R.drawable.ic_tab_file;
-				break;
-			case 2:
-				iconId = R.drawable.ic_tab_earth;
-				break;
-			default:
-				break;
-			}
-			actionBar.addTab(actionBar.newTab().setIcon(iconId).setTabListener(this));
-		}
 		
+		actionBar.addTab(actionBar.newTab().setIcon(R.drawable.ic_tab_folder)
+				.setTabListener(this));
+		actionBar.addTab(actionBar.newTab().setIcon(R.drawable.ic_tab_file)
+				.setTabListener(this));
+		actionBar.addTab(actionBar.newTab().setIcon(R.drawable.ic_tab_earth)
+				.setTabListener(this));
+		
+		actionBar.setTitle(Html.fromHtml("<b><u>" + getTitle() + "</u><b>"));
+
 		PreferenceManager.getDefaultSharedPreferences(this)
 				.registerOnSharedPreferenceChangeListener(this);
-
+		
 		removeNotification();
 		viewPager.setCurrentItem(1);
 		mamageRefreshPublicationTimer();
@@ -368,9 +363,10 @@ public class SolnRss extends Activity implements ActionBar.TabListener,
 			Integer newPublicationsNumber = resultData.getInt("newPublicationsNumber");
 			String newSyndicationName = resultData.getString("newSyndicationName");
 			
-			String text = "Found RSS feed for " + newSyndicationName + " with " + newPublicationsNumber + " new publications, Click on notification or choose display all publication in menu for view them";
-			
-			Toast.makeText(SolnRss.this, text,	Toast.LENGTH_LONG).show();
+			//String text = "Found RSS feed for " + newSyndicationName + " with " + newPublicationsNumber + " new publications.";
+			//getResources().getString(R.string.process_ok, newSyndicationName, newPublicationsNumber);
+			Toast.makeText(SolnRss.this, getResources().getString(R.string.process_ok, 
+					newSyndicationName, newPublicationsNumber),	Toast.LENGTH_LONG).show();
 		};
 	};
 	

@@ -307,7 +307,6 @@ public class PublicationsFragment extends AbstractFragment implements
 		}
 		setFilterText(prefs.getString("filterText", null));
 		
-		
 		if (selectedSyndicationID != null) {
 			loadPublicationsBySyndication();
 		} else if (selectedCategoryID != null) {
@@ -546,7 +545,8 @@ public class PublicationsFragment extends AbstractFragment implements
 				getActivity().getActionBar().setTitle(
 						Html.fromHtml("<b><u>" + syndicationName() + "</u><b>"));
 			} else
-				getActivity().getActionBar().setTitle(getActivity().getTitle());
+				getActivity().getActionBar().setTitle(
+						Html.fromHtml("<b><u>" +getActivity().getTitle()+ "</u><b>"));
 			
 		} else if (this.selectedCategoryID != null) {
 			label = categoryName();
@@ -554,10 +554,12 @@ public class PublicationsFragment extends AbstractFragment implements
 				getActivity().getActionBar().setTitle(
 						Html.fromHtml("<b><u>" + categoryName() + "</u><b>"));
 			} else
-				getActivity().getActionBar().setTitle(getActivity().getTitle());
+				getActivity().getActionBar().setTitle(
+						Html.fromHtml("<b><u>" +getActivity().getTitle()+ "</u><b>"));
 			
 		} else {
-			getActivity().getActionBar().setTitle(getActivity().getTitle());
+			getActivity().getActionBar().setTitle(
+					Html.fromHtml("<b><u>" +getActivity().getTitle()+ "</u><b>"));
 		}
 	}
 	

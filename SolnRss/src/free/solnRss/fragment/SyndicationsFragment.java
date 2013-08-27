@@ -21,6 +21,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ListView;
+import android.widget.Toast;
 import free.solnRss.R;
 import free.solnRss.activity.SolnRss;
 import free.solnRss.adapter.SyndicationAdapter;
@@ -235,6 +236,9 @@ public class SyndicationsFragment extends AbstractFragment implements
 				((SolnRss)getActivity()).reLoadPublicationsAfterSyndicationDeleted(selectedSyndicationID);
 				((SolnRss)getActivity()).reLoadCategoriesAfterSyndicationDeleted();
 				reloadSyndications();
+				Toast.makeText(getActivity(),
+						getResources().getString(R.string.delete_syndication_ok),
+						Toast.LENGTH_LONG).show();
 			};
 		};
 		
@@ -252,9 +256,10 @@ public class SyndicationsFragment extends AbstractFragment implements
 			};
 			@Override
 			protected void onPostExecute(Integer result) {
-				//((SolnRss)getActivity()).reLoadAllPublications();
-				//((SolnRss)getActivity()).reLoadPublicationsAfterSyndicationDeleted(selectedSyndicationID);
 				((SolnRss)getActivity()).refreshPublications();
+				Toast.makeText(getActivity(),
+						getResources().getString(R.string.clean_syndication_ok),
+						Toast.LENGTH_LONG).show();
 			};
 		};
 		

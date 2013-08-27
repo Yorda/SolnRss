@@ -54,7 +54,7 @@
     <string name="searching_feed">Recherche du flux d\'information</string>
     <string name="found_feed">Traitement du flux d\'information</string>
     <string name="record_feed">Enregistrement en cours</string>
-    <string name="process_ok">Succes, nouveau site ajouté.</string>
+    <string name="process_ok">Flux RSS trouvé pour %1$s avec %2$s nouvelles publications</string>
     
     <!-- Syndication manager activity -->
     <string name="site_parameter">%1$s</string>
@@ -77,6 +77,12 @@
     
     <string name="sleep_img">La recherche des nouveautés pour ce site est mis en pause.</string>
     <string name="stealth_img">Les publications de ce site ne sont affichées dans le flux principal.</string>
+    
+    <string name="hide_syndication">Caché</string>
+    <string name="pause_syndication">En pause</string>
+    
+    <string name="delete_syndication_ok">Ce site est supprimé</string>
+    <string name="clean_syndication_ok">Toutes les publications sont supprimées</string>
     
     <!-- Settings -->
     <!-- View Read / Unread -->

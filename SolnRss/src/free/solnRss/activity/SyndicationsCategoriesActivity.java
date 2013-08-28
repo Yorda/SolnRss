@@ -8,6 +8,7 @@ import android.database.Cursor;
 import android.graphics.drawable.ColorDrawable;
 import android.net.Uri;
 import android.os.Bundle;
+import android.text.Html;
 import android.text.TextUtils;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -27,14 +28,23 @@ public class SyndicationsCategoriesActivity extends ListActivity implements
 	
 	final int layoutID = R.layout.activity_syndications_categorie;
 	private Integer selectedCategorieID;
+	private String selectedCategoryName;
 	private SearchView searchView;
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(layoutID);
+		
 		getActionBar().setBackgroundDrawable(new ColorDrawable(0xeeeeee));
+		
 		selectedCategorieID = getIntent().getIntExtra("selectedCategorieID", -1);
+		selectedCategoryName = getIntent().getStringExtra("selectedCategoryName");
+		
+		if (!TextUtils.isEmpty(selectedCategoryName)) {
+			getActionBar().setTitle(Html.fromHtml("<b><u>" + selectedCategoryName + "</u><b>"));
+		}
+		
 		if (selectedCategorieID == -1) {
 			finish();
 		}

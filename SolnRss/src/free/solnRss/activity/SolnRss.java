@@ -103,7 +103,6 @@ public class SolnRss extends Activity implements ActionBar.TabListener,
 			mamageRefreshPublicationTimer();
 		}
 		else if (key.compareTo("pref_delete_all_publications") == 0) {
-			Log.e(SolnRss.this.getClass().getName(), "DELETE ALL PUBLICATIONS ASKED");
 			refreshPublications();
 		}
 	}
@@ -159,8 +158,7 @@ public class SolnRss extends Activity implements ActionBar.TabListener,
 		// Set up the action bar.
 		final ActionBar actionBar = getActionBar();
 		actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_TABS);
-		
-		//actionBar.setIcon(null);
+		actionBar.setTitle(Html.fromHtml("<b><u>" + getTitle() + "</u><b>"));
 		
 		int apiVersion = android.os.Build.VERSION.SDK_INT;
 		if (apiVersion >= android.os.Build.VERSION_CODES.ICE_CREAM_SANDWICH) {
@@ -193,8 +191,6 @@ public class SolnRss extends Activity implements ActionBar.TabListener,
 				.setTabListener(this));
 		actionBar.addTab(actionBar.newTab().setIcon(R.drawable.ic_tab_earth)
 				.setTabListener(this));
-		
-		actionBar.setTitle(Html.fromHtml("<b><u>" + getTitle() + "</u><b>"));
 
 		PreferenceManager.getDefaultSharedPreferences(this)
 				.registerOnSharedPreferenceChangeListener(this);
@@ -259,8 +255,7 @@ public class SolnRss extends Activity implements ActionBar.TabListener,
 
 		Boolean isShow = displayAlreadyReadPublications() ? false : true;
 		
-		SharedPreferences.Editor editor = 
-				PreferenceManager.getDefaultSharedPreferences(this).edit();
+		SharedPreferences.Editor editor = PreferenceManager.getDefaultSharedPreferences(this).edit();
 		editor.putBoolean("pref_display_unread", isShow);
 		editor.commit();
 	}
@@ -363,8 +358,6 @@ public class SolnRss extends Activity implements ActionBar.TabListener,
 			Integer newPublicationsNumber = resultData.getInt("newPublicationsNumber");
 			String newSyndicationName = resultData.getString("newSyndicationName");
 			
-			//String text = "Found RSS feed for " + newSyndicationName + " with " + newPublicationsNumber + " new publications.";
-			//getResources().getString(R.string.process_ok, newSyndicationName, newPublicationsNumber);
 			Toast.makeText(SolnRss.this, getResources().getString(R.string.process_ok, 
 					newSyndicationName, newPublicationsNumber),	Toast.LENGTH_LONG).show();
 		};

@@ -23,17 +23,21 @@ import free.solnRss.activity.SyndicationsCategoriesActivity;
 import free.solnRss.adapter.CategorieAdapter;
 import free.solnRss.fragment.listener.CategoriesFragmentListener;
 import free.solnRss.provider.CategoryProvider;
+import free.solnRss.provider.PublicationsProvider;
 import free.solnRss.repository.CategoryTable;
+import free.solnRss.repository.PublicationTable;
 
 public class CategoriesFragment extends AbstractFragment implements
 		CategoriesFragmentListener {
 	
 	private Integer selectedCategoryID;
+	private String selectedCategoryName;
 	
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup vg,
 			Bundle savedInstanceState) {
 		selectedCategoryID = null;
+		selectedCategoryName = null;
 		View fragment = inflater.inflate(R.layout.fragment_categories, vg, false);
 		
 		emptyLayoutId = R.id.emptycategoriesLayout;	
@@ -69,7 +73,8 @@ public class CategoriesFragment extends AbstractFragment implements
 		c.moveToPosition(info.position);
 		
 		selectedCategoryID = c.getInt(c.getColumnIndex("_id"));
-		menu.setHeaderTitle(c.getString(c.getColumnIndex("cat_name")));
+		selectedCategoryName = c.getString(c.getColumnIndex("cat_name"));
+		menu.setHeaderTitle(selectedCategoryName);
 		
 		MenuInflater inflater = getActivity().getMenuInflater();
 		inflater.inflate(R.menu.categories_context, menu);
@@ -126,10 +131,25 @@ public class CategoriesFragment extends AbstractFragment implements
 			startActivityForAddSyndication();
 			break;
 			
+		case R.id.menu_mark_category_read:
+			markCategoryPublicationsAsRead();
+		break;
+			
+			
 		default:
 			break;
 		}
 		return super.onContextItemSelected(item);
+	}
+	
+	private void markCategoryPublicationsAsRead() {
+		ContentValues values = new ContentValues();
+		values.put(PublicationTable.COLUMN_ALREADY_READ, "1");
+		String selection = " syn_syndication_id in (select syn_syndication_id from d_categorie_syndication where cas_categorie_id = ?) ";
+		String[] args = {selectedCategoryID.toString()};
+		
+		getActivity().getContentResolver().update(PublicationsProvider.URI, values, selection, args);
+		((SolnRss) getActivity()).refreshPublications();
 	}
 	
 	@Override
@@ -142,6 +162,7 @@ public class CategoriesFragment extends AbstractFragment implements
 	public void startActivityForAddSyndication() {
 		Intent i = new Intent(getActivity(), SyndicationsCategoriesActivity.class);
 		i.putExtra("selectedCategorieID", selectedCategoryID);
+		i.putExtra("selectedCategoryName", selectedCategoryName);
 		startActivityForResult(i, 0);
 	}
 	

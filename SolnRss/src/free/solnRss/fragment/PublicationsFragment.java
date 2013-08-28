@@ -226,8 +226,12 @@ public class PublicationsFragment extends AbstractFragment implements
 		MenuInflater inflater = getActivity().getMenuInflater();
 		inflater.inflate(R.menu.publications_context, menu);
 
+		if (selectedSyndicationID != null) {
+			menu.getItem(0).setTitle(getResources().getString(R.string.display_all_publication));
+		}
+		
 		// If a category or a syndication already selected change menu label
-		if (isSyndicationOrCategorySelected()) {
+		/*if (isSyndicationOrCategorySelected()) {
 			// Display all publications instead of only the syndication
 			menu.getItem(0).setTitle(
 					getResources().getString(R.string.display_all_publication));
@@ -237,7 +241,7 @@ public class PublicationsFragment extends AbstractFragment implements
 			if (selectedCategoryID != null) {				
 				menu.getItem(2).setVisible(true);
 			}
-		}
+		}*/
 	}
 
 	@Override
@@ -246,7 +250,8 @@ public class PublicationsFragment extends AbstractFragment implements
 		case R.id.menu_see_only:
 			// Make a switch between display a the selected syndication and all
 			// syndication.
-			if (!isSyndicationOrCategorySelected()) {
+			//if (!isSyndicationOrCategorySelected()) {
+			if(selectedSyndicationID == null){
 				reLoadPublicationsBySyndication(nextSelectedSyndicationID);
 				this.moveListViewToTop();
 				
@@ -260,9 +265,9 @@ public class PublicationsFragment extends AbstractFragment implements
 			markSyndicationPublicationsAsRead(nextSelectedSyndicationID);
 			break;
 			
-		case R.id.menu_mark_category_read:
+		/*case R.id.menu_mark_category_read:
 			markCategoryPublicationsAsRead();
-			break;
+			break;*/
 			
 		default:
 			break;
@@ -605,12 +610,19 @@ public class PublicationsFragment extends AbstractFragment implements
 		}
 	}
 
-	private boolean isSyndicationOrCategorySelected() {
+	/*private boolean isSyndicationOrCategorySelected() {
 		if (selectedSyndicationID != null || selectedCategoryID != null) {
 			return true;
 		}
 		return false;
 	}
+	
+	private boolean isCategorySelected() {
+		if (selectedCategoryID != null) {
+			return true;
+		}
+		return false;
+	}*/
 	
 	private void markSyndicationPublicationsAsRead(final Integer syndicationId) {
 		ContentValues values = new ContentValues();
@@ -627,7 +639,7 @@ public class PublicationsFragment extends AbstractFragment implements
 		getLoaderManager().restartLoader(0, null, this);
 	}
 	
-	private void markCategoryPublicationsAsRead() {
+	/*private void markCategoryPublicationsAsRead() {
 		ContentValues values = new ContentValues();
 		values.put(PublicationTable.COLUMN_ALREADY_READ, "1");
 		String selection = " syn_syndication_id in (select syn_syndication_id from d_categorie_syndication where cas_categorie_id = ?) ";
@@ -635,7 +647,7 @@ public class PublicationsFragment extends AbstractFragment implements
 		
 		getActivity().getContentResolver().update(PublicationsProvider.URI, values, selection, args);
 		getLoaderManager().restartLoader(0, null, this);
-	}
+	}*/
 
 	@Override
 	public void markAllPublicationsAsRead() {

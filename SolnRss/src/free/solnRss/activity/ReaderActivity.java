@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.graphics.drawable.ColorDrawable;
 import android.net.Uri;
 import android.os.Bundle;
+import android.text.Html;
 import android.text.TextUtils;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -39,7 +40,7 @@ public class ReaderActivity extends Activity {
 		String text = getIntent().getStringExtra("read");
 		String title = getIntent().getStringExtra("title");
 		if (!TextUtils.isEmpty(title)) {
-			getActionBar().setTitle(title);
+			getActionBar().setTitle(Html.fromHtml("<b><u>" + title + "</u><b>"));
 		}
 		
 		link = getIntent().getStringExtra("link");

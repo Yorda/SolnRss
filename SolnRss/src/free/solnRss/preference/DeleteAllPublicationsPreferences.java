@@ -7,6 +7,7 @@ import android.content.DialogInterface;
 import android.content.SharedPreferences;
 import android.preference.DialogPreference;
 import android.util.AttributeSet;
+import free.solnRss.R;
 import free.solnRss.provider.PublicationsProvider;
 
 public class DeleteAllPublicationsPreferences extends DialogPreference {
@@ -22,10 +23,16 @@ public class DeleteAllPublicationsPreferences extends DialogPreference {
 
 		switch (which) {
 		case DialogInterface.BUTTON_POSITIVE:
-			getContext().getContentResolver().delete( PublicationsProvider.URI, null, null);
+			
+			// 
+			setDialogMessage(getContext().getResources().getString(R.string.please_wait));
+			
+			
+			getContext().getContentResolver().delete(PublicationsProvider.URI,null, null);
 			SharedPreferences.Editor editor = getEditor();
 			editor.putLong(getKey(), new Date().getTime());
 			editor.commit();
+			
 			break;
 
 		case DialogInterface.BUTTON_NEGATIVE:

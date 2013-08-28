@@ -17,6 +17,8 @@
 	<string name="action_bar_search" >Recherche</string>
 	
      <string name="stop_search">Set the interval to zero stops the search for new publications</string>
+     <string name="please_wait">Please wait</string>
+     
      
     <!-- Publication's tab label -->
     <string name="empty_publications">No publications to display.</string>
@@ -107,6 +109,8 @@
     <string name="pref_search_publication_time">Search new publications every:</string>
     
     <string name="pref_delete_all_publications">Delete all publications</string>
+    <string name="pref_delete_all_publications_confirm">It will delete all publications stored in database. Are you sure ?</string>
+   
     
     <!-- Category -->
     <string name="empty_categories">No categories to display</string>

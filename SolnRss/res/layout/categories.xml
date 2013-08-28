@@ -4,6 +4,7 @@
     android:orientation="vertical"
     android:padding="12dp" >
 
+        
     <TextView
         android:id="@+id/categorie_name"
         android:layout_width="match_parent"

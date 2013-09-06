@@ -24,7 +24,6 @@ import android.preference.PreferenceManager;
 import android.support.v4.view.ViewPager;
 import android.text.Html;
 import android.text.TextUtils;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -57,12 +56,14 @@ public class SolnRss extends Activity implements ActionBar.TabListener,
 	
 	@Override
 	public boolean onMenuOpened(int featureId, Menu menu) {
-		if (displayAlreadyReadPublications()) {
-			menu.getItem(3).setTitle(
-					getResources().getString(R.string.menu_hide_already_read));
-		} else {
-			menu.getItem(3).setTitle(
-					getResources().getString(R.string.menu_show_already_read));
+		if(menu != null){
+			if (displayAlreadyReadPublications()) {
+				menu.getItem(3).setTitle(
+						getResources().getString(R.string.menu_hide_already_read));
+			} else {
+				menu.getItem(3).setTitle(
+						getResources().getString(R.string.menu_show_already_read));
+			}	
 		}
 		return super.onMenuOpened(featureId, menu);
 	}
@@ -70,19 +71,19 @@ public class SolnRss extends Activity implements ActionBar.TabListener,
 	@Override
 	protected void onResume() {
 		super.onResume();
-		Log.e(SolnRss.this.getClass().getName(), "RESUME");
+		//Log.e(SolnRss.this.getClass().getName(), "RESUME");
 	}
 	
 	@Override
 	protected void onStop() {
 		super.onStop();
-		Log.e(SolnRss.this.getClass().getName(), "STOP");
+		//Log.e(SolnRss.this.getClass().getName(), "STOP");
 	}
 	
 	@Override
 	protected void onDestroy() {
 		super.onDestroy();
-		Log.e(SolnRss.this.getClass().getName(), "DESTROY");
+		//Log.e(SolnRss.this.getClass().getName(), "DESTROY");
 	}
 	
 	@Override
@@ -151,12 +152,15 @@ public class SolnRss extends Activity implements ActionBar.TabListener,
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		
-		Log.e("SolnRss", "CREATE ACTIVITY ID " + this.toString());
+		//Log.e("SolnRss", "CREATE ACTIVITY ID " + this.toString());
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_soln_rss);
 
 		// Set up the action bar.
 		final ActionBar actionBar = getActionBar();
+		
+		actionBar.setDisplayHomeAsUpEnabled(true);
+		
 		actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_TABS);
 		actionBar.setTitle(Html.fromHtml("<b><u>" + getTitle() + "</u><b>"));
 		
@@ -211,6 +215,11 @@ public class SolnRss extends Activity implements ActionBar.TabListener,
 	}
 	
 	@Override
+	public void onBackPressed() {
+		super.onBackPressed();
+	}
+	
+	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
 		switch (item.getItemId()) {
 		
@@ -240,12 +249,19 @@ public class SolnRss extends Activity implements ActionBar.TabListener,
 			
 		case R.id.menu_display_all:
 			reLoadAllPublications();
+			viewPager.setCurrentItem(1);
 			return true;
 			
 		case R.id.menu_all_read:
 			markAllPublicationsAsRead();
 			return true;
 		
+		case android.R.id.home:
+			viewPager.setCurrentItem(1);
+			reLoadAllPublications();
+			return true;
+
+			 
 		default:
 			return super.onOptionsItemSelected(item);
 		}
@@ -254,7 +270,6 @@ public class SolnRss extends Activity implements ActionBar.TabListener,
 	private void updateOptionDisplayPublicationsAlreadyRead() {
 
 		Boolean isShow = displayAlreadyReadPublications() ? false : true;
-		
 		SharedPreferences.Editor editor = PreferenceManager.getDefaultSharedPreferences(this).edit();
 		editor.putBoolean("pref_display_unread", isShow);
 		editor.commit();
@@ -305,7 +320,7 @@ public class SolnRss extends Activity implements ActionBar.TabListener,
 	 * All unread publication set to read
 	 */
 	private void markAllPublicationsAsRead() {
-		publicationsListener.markAllPublicationsAsRead();
+		publicationsListener.markAsRead();
 	}
 	
 	void addCategorie(String newCatgorie) {

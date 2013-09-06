@@ -21,8 +21,8 @@ public class SeekBarPreference extends Preference implements
 
 	public static int maximum = 100;
 	public static int interval = 5;
-
 	private int oldValue = 50;
+	
 	private TextView monitorBox;
 
 	public SeekBarPreference(Context context) {
@@ -63,8 +63,8 @@ public class SeekBarPreference extends Preference implements
 
 		TextView view = new TextView(getContext());
 		view.setText(getTitle());
-		view.setTextSize(18);
-		view.setTypeface(Typeface.SANS_SERIF, Typeface.BOLD);
+		view.setTextSize(16);
+		view.setTypeface(Typeface.SANS_SERIF, Typeface.NORMAL);
 		view.setGravity(Gravity.LEFT);
 		view.setLayoutParams(params1);
 

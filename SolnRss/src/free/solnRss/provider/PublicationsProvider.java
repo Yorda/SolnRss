@@ -9,6 +9,7 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteQueryBuilder;
 import android.net.Uri;
+import android.preference.PreferenceManager;
 import free.solnRss.repository.PublicationTable;
 import free.solnRss.repository.RepositoryHelper;
 import free.solnRss.repository.SyndicationTable;
@@ -57,14 +58,20 @@ public class PublicationsProvider extends ContentProvider {
 		SQLiteQueryBuilder queryBuilder = new SQLiteQueryBuilder();
 		// Set the table
 		queryBuilder.setTables(tables);
-
+		
 		SQLiteDatabase db = RepositoryHelper.getInstance(getContext()).getReadableDatabase();
 		Cursor cursor = queryBuilder.query(db, projection, selection,
 				args, null, null,
-				PublicationTable.COLUMN_PUBLICATION_DATE + " desc","100");
+				PublicationTable.COLUMN_PUBLICATION_DATE + " desc",  maxItemsInList());
 		
 		cursor.setNotificationUri(getContext().getContentResolver(), uri);
 		return cursor;
+	}
+	
+	private String maxItemsInList() {
+		int max = PreferenceManager.getDefaultSharedPreferences(getContext())
+				.getInt("pref_max_publication_item", 100);
+		return Integer.valueOf(max).toString();
 	}
 	
 	@Override

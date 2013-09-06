@@ -1,5 +1,6 @@
 package free.solnRss.fragment;
 
+import android.app.ActionBar;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
@@ -10,6 +11,7 @@ import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.content.Loader;
 import android.text.Html;
+import android.text.Spanned;
 import android.text.TextUtils;
 import android.view.ContextMenu;
 import android.view.ContextMenu.ContextMenuInfo;
@@ -176,19 +178,6 @@ public class PublicationsFragment extends AbstractFragment implements
 	@Override
 	public void onListItemClick(final ListView l, final View v, final int position, final long id) {
 		
-		/*DisplayMetrics metrics = new DisplayMetrics();
-		getActivity().getWindowManager().getDefaultDisplay()
-				.getMetrics(metrics);
-
-		Animation animation = null;
-		animation = new TranslateAnimation(0, metrics.widthPixels, 0, 0);
-		animation.setDuration(700);
-		v.startAnimation(animation);*/
-		
-		//final Animation animation = AnimationUtils.loadAnimation(v.getContext(), R.drawable.input);
-		//v.startAnimation(animation);
-		
-		//--
     	Cursor cursor = ((PublicationAdapter) l.getAdapter()).getCursor();
 		clickOnPublicationItem(cursor, l, v, position, id);
 		
@@ -206,7 +195,7 @@ public class PublicationsFragment extends AbstractFragment implements
 		} else {
 			displayOnSystemBrowser(link);
 		}
-		//--
+
 	}
 	
 	@Override
@@ -229,28 +218,12 @@ public class PublicationsFragment extends AbstractFragment implements
 		if (selectedSyndicationID != null) {
 			menu.getItem(0).setTitle(getResources().getString(R.string.display_all_publication));
 		}
-		
-		// If a category or a syndication already selected change menu label
-		/*if (isSyndicationOrCategorySelected()) {
-			// Display all publications instead of only the syndication
-			menu.getItem(0).setTitle(
-					getResources().getString(R.string.display_all_publication));
-			
-			// If user is on a category the menu display a "mark as read" for all
-			// syndication in category
-			if (selectedCategoryID != null) {				
-				menu.getItem(2).setVisible(true);
-			}
-		}*/
 	}
 
 	@Override
 	public boolean onContextItemSelected(MenuItem item) {
 		switch (item.getItemId()) {
 		case R.id.menu_see_only:
-			// Make a switch between display a the selected syndication and all
-			// syndication.
-			//if (!isSyndicationOrCategorySelected()) {
 			if(selectedSyndicationID == null){
 				reLoadPublicationsBySyndication(nextSelectedSyndicationID);
 				this.moveListViewToTop();
@@ -264,10 +237,6 @@ public class PublicationsFragment extends AbstractFragment implements
 		case R.id.menu_mark_read:
 			markSyndicationPublicationsAsRead(nextSelectedSyndicationID);
 			break;
-			
-		/*case R.id.menu_mark_category_read:
-			markCategoryPublicationsAsRead();
-			break;*/
 			
 		default:
 			break;
@@ -426,28 +395,25 @@ public class PublicationsFragment extends AbstractFragment implements
 		getActivity().getContentResolver().update(uri, values, null, null);
 	}
 	
-	/*
-	 * Refresh publication after click on item list for hide it.
-	 * Use async task instead of content provider, because when calling intent for open browser
-	 * the loader manger don't refresh list view. why ????
-	 */
 	private void refreshPublicationsAfterMarkAsRead(Context context) {
 
-		/*if (this.selectedSyndicationID != null) {
-			PublicationsReloaderTask task = new PublicationsReloaderTask(
-					this, context);
-			task.execute(this.selectedSyndicationID);
-
-		} else if (this.selectedCategoryID != null) {
-			PublicationsByCategoryReloaderTask task = new PublicationsByCategoryReloaderTask(
-					this, context);
-			task.execute(this.selectedCategoryID);
-
-		} else {
-			PublicationsReloaderTask task = new PublicationsReloaderTask(
-					this, context);
-			task.execute(selectedSyndicationID);
-		}*/
+		/*
+		 * Refresh publication after click on item list for hide it.
+		 * Use async task instead of content provider, because when calling intent for open browser
+		 * the loader manger don't refresh list view. why ????
+		 * if (this.selectedSyndicationID != null) { PublicationsReloaderTask
+		 * task = new PublicationsReloaderTask( this, context);
+		 * task.execute(this.selectedSyndicationID);
+		 * 
+		 * } else if (this.selectedCategoryID != null) {
+		 * PublicationsByCategoryReloaderTask task = new
+		 * PublicationsByCategoryReloaderTask( this, context);
+		 * task.execute(this.selectedCategoryID);
+		 * 
+		 * } else { PublicationsReloaderTask task = new
+		 * PublicationsReloaderTask( this, context);
+		 * task.execute(selectedSyndicationID); }
+		 */
 		refreshPublications();
 	}
 	
@@ -543,29 +509,25 @@ public class PublicationsFragment extends AbstractFragment implements
 	}
 	
 	private void updateActionBarTitle() {
-		String label = null;
+		String title = null;
+		ActionBar bar = getActivity().getActionBar();
+		
 		if (this.selectedSyndicationID != null) {
-			label = syndicationName();
-			if (label != null) {
-				getActivity().getActionBar().setTitle(
-						Html.fromHtml("<b><u>" + syndicationName() + "</u><b>"));
-			} else
-				getActivity().getActionBar().setTitle(
-						Html.fromHtml("<b><u>" +getActivity().getTitle()+ "</u><b>"));
+			title = syndicationName();
 			
 		} else if (this.selectedCategoryID != null) {
-			label = categoryName();
-			if (label != null) {
-				getActivity().getActionBar().setTitle(
-						Html.fromHtml("<b><u>" + categoryName() + "</u><b>"));
-			} else
-				getActivity().getActionBar().setTitle(
-						Html.fromHtml("<b><u>" +getActivity().getTitle()+ "</u><b>"));
-			
+			title = categoryName();
+		} 
+		
+		if (TextUtils.isEmpty(title)) {
+			bar.setTitle(titleToHtml(getActivity().getTitle().toString()));
 		} else {
-			getActivity().getActionBar().setTitle(
-					Html.fromHtml("<b><u>" +getActivity().getTitle()+ "</u><b>"));
+			bar.setTitle(titleToHtml(title));
 		}
+	}
+	
+	private Spanned titleToHtml(String s) {
+		return Html.fromHtml("<b><u>" + s + "</u><b>");
 	}
 	
 	public String getPublicationUrl(Cursor cursor) {
@@ -609,20 +571,6 @@ public class PublicationsFragment extends AbstractFragment implements
 					.show();
 		}
 	}
-
-	/*private boolean isSyndicationOrCategorySelected() {
-		if (selectedSyndicationID != null || selectedCategoryID != null) {
-			return true;
-		}
-		return false;
-	}
-	
-	private boolean isCategorySelected() {
-		if (selectedCategoryID != null) {
-			return true;
-		}
-		return false;
-	}*/
 	
 	private void markSyndicationPublicationsAsRead(final Integer syndicationId) {
 		ContentValues values = new ContentValues();
@@ -633,28 +581,68 @@ public class PublicationsFragment extends AbstractFragment implements
 			selection = " syn_syndication_id = ? ";
 			args = new String[1];
 			args[0] = syndicationId.toString();
-
 		}
 		getActivity().getContentResolver().update(PublicationsProvider.URI, values, selection, args);
 		getLoaderManager().restartLoader(0, null, this);
 	}
 	
-	/*private void markCategoryPublicationsAsRead() {
-		ContentValues values = new ContentValues();
-		values.put(PublicationTable.COLUMN_ALREADY_READ, "1");
-		String selection = " syn_syndication_id in (select syn_syndication_id from d_categorie_syndication where cas_categorie_id = ?) ";
-		String[] args = {selectedCategoryID.toString()};
-		
-		getActivity().getContentResolver().update(PublicationsProvider.URI, values, selection, args);
-		getLoaderManager().restartLoader(0, null, this);
-	}*/
-
+	
 	@Override
-	public void markAllPublicationsAsRead() {
+	public void markAsRead() {
+		//String ok = null;
+		CharSequence ok = null;
+		if (selectedSyndicationID != null) {
+			markSyndicationPublicationsAsRead();
+			ok = "Les publications de la syndication: " + syndicationName()
+					+ ", sont marquées comme lus";
+		} else if (selectedCategoryID != null) {
+			markCategoryPublicationsAsRead();
+			ok = "Les publications de la categorie: " + categoryName()
+					+ ", sont marquées comme lus";
+		} else {
+			markAllPublicationsAsRead();
+			ok = "Toutes les publications sont marquées comme lus";
+		}
+		
+		Toast.makeText(getActivity(), ok, Toast.LENGTH_LONG).show();
+	}
+
+	private void markAllPublicationsAsRead() {
 		ContentValues values = new ContentValues();
 		values.put(PublicationTable.COLUMN_ALREADY_READ, "1");
-		getActivity().getContentResolver().update(PublicationsProvider.URI, values, null, null);
+		getActivity().getContentResolver().update(PublicationsProvider.URI,
+				values, null, null);
 		getLoaderManager().restartLoader(0, null, this);
 	}
 
+	private void markSyndicationPublicationsAsRead() {
+		ContentValues values = new ContentValues();
+		values.put(PublicationTable.COLUMN_ALREADY_READ, "1");
+		String selection = " syn_syndication_id  = ?  ";
+		String[] args = { selectedSyndicationID.toString() };
+
+		getActivity().getContentResolver().update(PublicationsProvider.URI,
+				values, selection, args);
+		getLoaderManager().restartLoader(0, null, this);
+	}
+
+	private void markCategoryPublicationsAsRead() {
+		ContentValues values = new ContentValues();
+		values.put(PublicationTable.COLUMN_ALREADY_READ, "1");
+		String selection = " syn_syndication_id in (select syn_syndication_id from d_categorie_syndication where cas_categorie_id = ?) ";
+		String[] args = { selectedCategoryID.toString() };
+
+		getActivity().getContentResolver().update(PublicationsProvider.URI,
+				values, selection, args);
+		getLoaderManager().restartLoader(0, null, this);
+	}
+
+	/*
+	 * private boolean isSyndicationOrCategorySelected() { if
+	 * (selectedSyndicationID != null || selectedCategoryID != null) { return
+	 * true; } return false; }
+	 * 
+	 * private boolean isCategorySelected() { if (selectedCategoryID != null) {
+	 * return true; } return false; }
+	 */
 }

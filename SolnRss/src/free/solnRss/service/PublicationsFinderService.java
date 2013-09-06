@@ -26,7 +26,6 @@ import android.os.ResultReceiver;
 import android.preference.PreferenceManager;
 import android.support.v4.app.NotificationCompat;
 import android.text.TextUtils;
-import android.util.Log;
 import android.util.SparseArray;
 import free.solnRss.R;
 import free.solnRss.activity.SolnRss;
@@ -57,8 +56,8 @@ public class PublicationsFinderService extends IntentService {
 	
 	@Override
 	protected void onHandleIntent(Intent intent) {
-		DateFormat sdf = new SimpleDateFormat("dd/MM/yyyy", Locale.FRANCE);
-		Log.e(this.getClass().getName(), "CALL INTENT SERVICE BY ALARM MANAGER TIME " + sdf.format(new Date()));
+		//DateFormat sdf = new SimpleDateFormat("dd/MM/yyyy", Locale.FRANCE);
+		
 		List<Syndication> syndications = findSyndicationsToRefresh(); 
 		refreshPublications(syndications);
 		
@@ -66,7 +65,6 @@ public class PublicationsFinderService extends IntentService {
 		SharedPreferences.Editor editor = pref.edit();
 		editor.putLong("publicationsLastRefresh", Calendar.getInstance().getTimeInMillis());
 		editor.commit();
-		Log.e(this.getClass().getName(), "INTENT SERVICE BY ALARM MANAGER TIME LAST REFRESH " + Calendar.getInstance().getTimeInMillis());
 	}
 
 	
@@ -149,7 +147,7 @@ public class PublicationsFinderService extends IntentService {
 			isWorking = true;
 			for (Syndication syndication : syndications) {
 				if (isOnline()) {
-					Log.e(this.getClass().getName(),"Get new publications for syndication name "+ syndication.getName());
+					// Log.e(this.getClass().getName(),"Get new publications for syndication name "+ syndication.getName());
 					findNewPublication(syndication);
 				}
 				else {
@@ -233,8 +231,9 @@ public class PublicationsFinderService extends IntentService {
 			// Get the new rss
 			syndication = syndicationBusiness.getLastPublications(syndication);
 		} catch (Exception e) {
-			Log.e("LoadArticlesService", "Error when trying to refresh "
-					+ syndication.getName() + " - " + e.getCause());
+			
+			/*Log.e("LoadArticlesService", "Error when trying to refresh "
+					+ syndication.getName() + " - " + e.getCause());*/
 		}
 	}
 

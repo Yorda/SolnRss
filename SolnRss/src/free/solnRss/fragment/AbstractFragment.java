@@ -1,13 +1,10 @@
 package free.solnRss.fragment;
 
-import android.annotation.TargetApi;
-import android.database.Cursor;
-import android.os.Build;
-import android.os.Bundle;
 import android.app.ListFragment;
 import android.app.LoaderManager;
 import android.content.Loader;
-import android.widget.SimpleCursorAdapter;
+import android.database.Cursor;
+import android.os.Bundle;
 import android.text.TextUtils;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -17,6 +14,7 @@ import android.view.animation.AnimationUtils;
 import android.widget.LinearLayout;
 import android.widget.SearchView;
 import android.widget.SearchView.OnQueryTextListener;
+import android.widget.SimpleCursorAdapter;
 import free.solnRss.R;
 import free.solnRss.dialog.AddItemDialog;
 
@@ -25,8 +23,6 @@ public abstract class AbstractFragment extends ListFragment implements	OnQueryTe
 		LoaderManager.LoaderCallbacks<Cursor> {
 	
 	protected SimpleCursorAdapter simpleCursorAdapter;
-	
-	private SearchView searchView;
 	
 	private String filterText;
 	
@@ -91,53 +87,16 @@ public abstract class AbstractFragment extends ListFragment implements	OnQueryTe
 	}
 	
 	@Override public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-		inflater.inflate(R.menu.activity_soln_rss, menu);
-		MenuItem searchItem = menu.findItem(R.id.action_search);
-		searchItem.setIcon(R.drawable.ic_abar_search);
-		searchView = (SearchView) searchItem.getActionView();
-		setupSearchView(searchItem);
+
+	    MenuItem item = menu.add("Search");
+	    item.setIcon(R.drawable.ic_abar_search);
+        item.setShowAsAction(MenuItem.SHOW_AS_ACTION_IF_ROOM
+                | MenuItem.SHOW_AS_ACTION_COLLAPSE_ACTION_VIEW);
+        
+        SearchView sv = new SearchView(getActivity());
+        sv.setOnQueryTextListener(this);
+        item.setActionView(sv);
     }
-	
-	private void setupSearchView(MenuItem searchItem) {
-		//searchItem.setIcon(icon)
-		searchItem.setShowAsAction(
-				MenuItem.SHOW_AS_ACTION_IF_ROOM
-				| MenuItem.SHOW_AS_ACTION_COLLAPSE_ACTION_VIEW
-		);
-		searchView.setOnQueryTextListener(this);
-		
-		addCloseSearchViewEvent(searchItem);
-		
-		searchView.setOnCloseListener(new SearchView.OnCloseListener() {
-			@Override
-			public boolean onClose() {
-				 onQueryTextChange("");
-				return false;
-			}
-		});
-		
-	}
-	
-	/*
-	 * A bug in Android made the [searchView.setOnCloseListener] not working
-	 */
-	@TargetApi(Build.VERSION_CODES.ICE_CREAM_SANDWICH)
-	private void addCloseSearchViewEvent(MenuItem searchItem) {
-		int apiVersion = android.os.Build.VERSION.SDK_INT;
-		if (apiVersion >= android.os.Build.VERSION_CODES.ICE_CREAM_SANDWICH) {
-			searchItem.setOnActionExpandListener(new MenuItem.OnActionExpandListener() {
-				@Override
-				public boolean onMenuItemActionCollapse(MenuItem item) {
-					onQueryTextChange("");
-					return true;
-				}
-				@Override
-				public boolean onMenuItemActionExpand(MenuItem item) {
-					return true;
-				}
-			});
-		}
-	}
 
 	@Override public boolean onQueryTextChange(String newText) {
         String newFilter = !TextUtils.isEmpty(newText) ? newText : null;
@@ -195,6 +154,15 @@ public abstract class AbstractFragment extends ListFragment implements	OnQueryTe
 		}
 	}
 	
+	public void setListShown(boolean shown) {
+		setListShown(shown, true);
+	}
+
+	public void setListShownNoAnimation(boolean shown) {
+		setListShown(shown, false);
+	}
+	
+	
 	void displayAddItemDialog(AddItemDialog.Item item) {
 		
 		AddItemDialog dialog = new AddItemDialog();
@@ -204,11 +172,5 @@ public abstract class AbstractFragment extends ListFragment implements	OnQueryTe
 		dialog.show(getActivity().getFragmentManager(), "dialog_add_item");
 	}
 
-	public void setListShown(boolean shown) {
-		setListShown(shown, true);
-	}
-
-	public void setListShownNoAnimation(boolean shown) {
-		setListShown(shown, false);
-	}
+	
 }

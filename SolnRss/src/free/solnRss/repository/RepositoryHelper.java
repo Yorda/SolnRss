@@ -4,7 +4,6 @@ import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteDatabase.CursorFactory;
 import android.database.sqlite.SQLiteOpenHelper;
-import android.util.Log;
 
 public class RepositoryHelper extends SQLiteOpenHelper {
 
@@ -49,7 +48,6 @@ public class RepositoryHelper extends SQLiteOpenHelper {
 			}
 
 		} catch (Exception e) {
-			Log.e(this.getClass().getName(), "Unable to create the database ");
 			e.printStackTrace();
 		}
 	}

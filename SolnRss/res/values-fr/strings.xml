@@ -18,6 +18,9 @@
     <string name="stop_search">Définir l\'intervalle à zéro arrête la recherche de nouvelles publications</string>
     <string name="please_wait">Attendez SVP</string>
     
+    <string name="item_brev">élément(s)</string>
+    <string name="minute_brev">minute(s)</string>
+    
     <!-- Publication's tab label -->
     <string name="empty_publications">Aucune publication à afficher.</string>
     <string name="empty_publications_with_syndication">Aucune publication trouvé pour le flux RSS %1$s. </string>
@@ -106,6 +109,7 @@
     <string name="pref_display_publication_app">Afficher dans un écran de l\'application</string>
    
     <string name="pref_search_publication_time">Chercher des nouvelles publication chaque:</string>
+    <string name="pref_publication_item_number">Nombres d\'éléments dans la liste des publications</string>
     
     <string name="pref_delete_all_publications">Supprimer toute les publications</string>
     <string name="pref_delete_all_publications_confirm">Vous allez supprimer toutes les publications.</string>

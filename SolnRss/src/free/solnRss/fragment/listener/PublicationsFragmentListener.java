@@ -44,7 +44,7 @@ public interface PublicationsFragmentListener {
 	/**
 	 * 
 	 */
-	public void markAllPublicationsAsRead();
+	public void markAsRead();
 
 	/**
 	 * When list view is empty user can reload publication's list with publications already read.

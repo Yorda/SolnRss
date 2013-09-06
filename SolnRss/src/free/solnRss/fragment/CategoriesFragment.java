@@ -122,26 +122,25 @@ public class CategoriesFragment extends AbstractFragment implements
 	@Override
 	public boolean onContextItemSelected(MenuItem item) {
 		switch (item.getItemId()) {
-		
-		case R.id.menu_delete_categorie:
-			deleteCategorie(getActivity(), selectedCategoryID);
+
+		case R.id.menu_mark_category_read:
+			markCategoryPublicationsAsRead();
 			break;
 
 		case R.id.menu_add_to_categorie:
 			startActivityForAddSyndication();
 			break;
 			
-		case R.id.menu_mark_category_read:
-			markCategoryPublicationsAsRead();
-		break;
-			
-			
+		case R.id.menu_delete_categorie:
+			deleteCategorie(getActivity(), selectedCategoryID);
+			break;
+
 		default:
 			break;
 		}
 		return super.onContextItemSelected(item);
 	}
-	
+
 	private void markCategoryPublicationsAsRead() {
 		ContentValues values = new ContentValues();
 		values.put(PublicationTable.COLUMN_ALREADY_READ, "1");

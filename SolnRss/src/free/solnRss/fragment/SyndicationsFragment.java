@@ -26,8 +26,10 @@ import free.solnRss.R;
 import free.solnRss.activity.SolnRss;
 import free.solnRss.adapter.SyndicationAdapter;
 import free.solnRss.fragment.listener.SyndicationsFragmentListener;
+import free.solnRss.provider.PublicationsProvider;
 import free.solnRss.provider.SyndicationsProvider;
 import free.solnRss.repository.PublicationRepository;
+import free.solnRss.repository.PublicationTable;
 import free.solnRss.repository.SyndicationRepository;
 import free.solnRss.repository.SyndicationTable;
 
@@ -55,6 +57,7 @@ public class SyndicationsFragment extends AbstractFragment implements
 		listContainer = fragment.findViewById(R.id.syndicationsListContainer);
 		progressContainer = fragment.findViewById(R.id.syndicationsProgressContainer);
 		listShown = true;
+		
 		return fragment;
 	}
 
@@ -150,7 +153,7 @@ public class SyndicationsFragment extends AbstractFragment implements
 	 */
 	private void setLabelContextMenuActivation(ContextMenu menu) {
 		boolean isActive = activeStatus == 0 ? true : false;
-		MenuItem itemActive = menu.getItem(0);
+		MenuItem itemActive = menu.getItem(1);
 		if (!isActive) {
 			itemActive.setTitle(getResources().getString(R.string.active_articles_btn));
 		}
@@ -158,7 +161,7 @@ public class SyndicationsFragment extends AbstractFragment implements
 	
 	private void setLabelContextMenuForDisplayOnMainTimeLine(ContextMenu menu) {
 		boolean isDisplayed = isDisplayOnMainTimeLine == 1 ? true : false;
-		MenuItem itemActive = menu.getItem(1);
+		MenuItem itemActive = menu.getItem(2);
 		if (!isDisplayed) {
 			itemActive.setTitle(getResources().getString(R.string.display_articles_on_time_line));
 		}
@@ -168,6 +171,11 @@ public class SyndicationsFragment extends AbstractFragment implements
 	@Override
 	public boolean onContextItemSelected(MenuItem item) {
 		switch (item.getItemId()) {
+
+		case R.id.menu_mark_syndication_as_read:
+			markSyndicationPublicationsAsRead();
+			break;
+
 		case R.id.menu_active:
 			changeStatus(item);
 			break;
@@ -175,7 +183,7 @@ public class SyndicationsFragment extends AbstractFragment implements
 		case R.id.menu_display_on_time_line:
 			changeDisplayMode(item);
 			break;
-			
+
 		case R.id.menu_clean:
 			clean();
 			break;
@@ -188,8 +196,17 @@ public class SyndicationsFragment extends AbstractFragment implements
 			break;
 		}
 		return super.onContextItemSelected(item);
-	}	
+	}
 
+	private void markSyndicationPublicationsAsRead() {
+		ContentValues values = new ContentValues();
+		values.put(PublicationTable.COLUMN_ALREADY_READ, "1");
+		String selection = " syn_syndication_id = ? ";
+		String[] args = {selectedSyndicationID.toString()};
+		getActivity().getContentResolver().update(PublicationsProvider.URI, values, selection, args);
+		((SolnRss) getActivity()).refreshPublications();
+	}
+	
 	private void changeDisplayMode(final MenuItem item) {
 		
 		Uri uri = Uri.parse(SyndicationsProvider.URI + "/displayMode/" + selectedSyndicationID);
@@ -310,7 +327,6 @@ public class SyndicationsFragment extends AbstractFragment implements
 
 	@Override
 	protected void setListPositionOnScreen() {
-		// TODO Auto-generated method stub
-		
+
 	}
 }

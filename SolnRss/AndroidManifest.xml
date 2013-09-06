@@ -24,9 +24,10 @@
 
         <!--
        android:theme="@style/Theme.Solnrss" 
-		android:theme="@style/AppTheme"
+		android:theme="@style/AppTheme"
         -->
-        
+
+
         <!-- ACTIVITY -->
         <!-- https://developer.android.com/guide/topics/manifest/activity-element.html#lmode -->
 
@@ -60,11 +61,10 @@
         <service android:name="free.solnRss.service.SyndicationFinderService" />
 
         <!-- service android:name="free.solnRss.service.PublicationsCursorCacheService" / -->
-        <!--
-        RECEIVER
+        <!-- RECEIVER -->
+        <!-- 
         <receiver android:name=".receiver.NotificationReceiver" />
         -->
-
 
         <!-- PROVIDER -->
         <provider

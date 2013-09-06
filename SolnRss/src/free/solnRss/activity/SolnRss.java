@@ -63,7 +63,7 @@ public class SolnRss extends Activity implements ActionBar.TabListener,
 			} else {
 				menu.getItem(3).setTitle(
 						getResources().getString(R.string.menu_show_already_read));
-			}	
+			}
 		}
 		return super.onMenuOpened(featureId, menu);
 	}

@@ -26,8 +26,8 @@ public final class R {
         public static final int textselector=0x7f02000c;
     }
     public static final class id {
-        public static final int action_search=0x7f07001f;
-        public static final int cancel=0x7f070023;
+        public static final int action_search=0x7f070026;
+        public static final int cancel=0x7f070022;
         public static final int categorie_name=0x7f070004;
         public static final int categorie_number_of_use=0x7f070005;
         public static final int categoriesListContainer=0x7f070009;
@@ -44,23 +44,23 @@ public final class R {
         public static final int menu_active=0x7f070028;
         public static final int menu_add_categorie=0x7f07001c;
         public static final int menu_add_site=0x7f07001d;
-        public static final int menu_add_to_categorie=0x7f070021;
+        public static final int menu_add_to_categorie=0x7f070020;
         public static final int menu_all_read=0x7f07001a;
         public static final int menu_already_read=0x7f07001b;
         public static final int menu_clean=0x7f07002a;
         public static final int menu_delete=0x7f07002b;
-        public static final int menu_delete_categorie=0x7f070022;
+        public static final int menu_delete_categorie=0x7f070021;
         public static final int menu_display_all=0x7f070019;
         public static final int menu_display_on_time_line=0x7f070029;
-        public static final int menu_mark_category_read=0x7f070020;
-        public static final int menu_mark_read=0x7f070025;
+        public static final int menu_mark_category_read=0x7f07001f;
+        public static final int menu_mark_read=0x7f070024;
         public static final int menu_mark_syndication_as_read=0x7f070027;
-        public static final int menu_see_only=0x7f070024;
+        public static final int menu_see_only=0x7f070023;
         public static final int menu_settings=0x7f07001e;
         public static final int name=0x7f070013;
         public static final int pager=0x7f070001;
         public static final int progressContainer=0x7f07000b;
-        public static final int read_on_site=0x7f070026;
+        public static final int read_on_site=0x7f070025;
         public static final int reader=0x7f070000;
         public static final int syndication_number_of_click=0x7f070016;
         public static final int syndication_title=0x7f070015;

@@ -30,11 +30,13 @@
         android:orderInCategory="100"
         android:showAsAction="never"
         android:title="@string/menu_settings"/>
+    <!-- 
     <item
         android:id="@+id/action_search"
         android:actionViewClass="android.widget.SearchView"
         android:icon="@drawable/ic_abar_search"
         android:showAsAction="ifRoom"
         android:title="@string/action_bar_search"/>
+         -->
 
 </menu>

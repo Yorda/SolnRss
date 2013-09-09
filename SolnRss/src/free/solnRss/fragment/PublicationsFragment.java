@@ -589,19 +589,19 @@ public class PublicationsFragment extends AbstractFragment implements
 	
 	@Override
 	public void markAsRead() {
-		//String ok = null;
 		CharSequence ok = null;
 		if (selectedSyndicationID != null) {
 			markSyndicationPublicationsAsRead();
-			ok = "Les publications de la syndication: " + syndicationName()
-					+ ", sont marquées comme lus";
+			ok = getResources().getString(R.string.all_publications_by_syndication_already_read, syndicationName());
+			//ok = "Les publications de la syndication: " + syndicationName() + ", sont marquées comme lus";
 		} else if (selectedCategoryID != null) {
 			markCategoryPublicationsAsRead();
-			ok = "Les publications de la categorie: " + categoryName()
-					+ ", sont marquées comme lus";
+			ok = getResources().getString(R.string.all_publications_by_category_already_read,categoryName());
+			//ok = "Les publications de la categorie: " + categoryName() + ", sont marquées comme lus";
 		} else {
 			markAllPublicationsAsRead();
-			ok = "Toutes les publications sont marquées comme lus";
+			ok = getResources().getString(R.string.all_publications_already_read);
+			//ok = "Toutes les publications sont marquées comme lus";
 		}
 		
 		Toast.makeText(getActivity(), ok, Toast.LENGTH_LONG).show();

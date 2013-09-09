@@ -15,10 +15,13 @@ import android.widget.SeekBar;
 import android.widget.SeekBar.OnSeekBarChangeListener;
 import android.widget.TextView;
 
-public class ItemSeekBarPreference extends Preference implements OnSeekBarChangeListener {
+public class ItemSeekBarPreference extends Preference implements
+		OnSeekBarChangeListener {
 
-	public int maximum = 500, interval = 50, oldValue = 100;
+	private int MINIMUM = 25, MAXIMUM = 500, DEFAULT_PROGRESS = 100;
 
+	private String elements = new String();
+	
 	private TextView monitorBox;
 
 	public ItemSeekBarPreference(Context context) {
@@ -29,7 +32,8 @@ public class ItemSeekBarPreference extends Preference implements OnSeekBarChange
 		super(context, attrs);
 	}
 
-	public ItemSeekBarPreference(Context context, AttributeSet attrs, int defStyle) {
+	public ItemSeekBarPreference(Context context, AttributeSet attrs,
+			int defStyle) {
 		super(context, attrs, defStyle);
 	}
 
@@ -66,20 +70,21 @@ public class ItemSeekBarPreference extends Preference implements OnSeekBarChange
 		view.setLayoutParams(params1);
 
 		SeekBar bar = new SeekBar(getContext());
-		bar.setMax(maximum);
-		bar.setProgress((int) this.oldValue);
+		bar.setMax(MAXIMUM);
+
+		bar.setProgress(getPersistedInt(100) - MINIMUM);
 		bar.setLayoutParams(params2);
 		bar.setOnSeekBarChangeListener(this);
 
-		this.monitorBox = new TextView(getContext());
-		this.monitorBox.setTextSize(12);
-		this.monitorBox.setTypeface(Typeface.MONOSPACE, Typeface.ITALIC);
-		this.monitorBox.setLayoutParams(params3);
-		this.monitorBox.setPadding(2, 5, 0, 0);
+		elements =  getContext().getResources().getString(R.string.item_brev);
 		
-		this.monitorBox.setText(bar.getProgress() + " "
-				+ getContext().getResources().getString(R.string.item_brev));
-		
+		monitorBox = new TextView(getContext());
+		monitorBox.setTextSize(12);
+		monitorBox.setTypeface(Typeface.MONOSPACE, Typeface.ITALIC);
+		monitorBox.setLayoutParams(params3);
+		monitorBox.setPadding(2, 5, 0, 0);
+		monitorBox.setText(getPersistedInt(100) + " " + elements);
+
 		layout.addView(view);
 		layout.addView(bar);
 		layout.addView(this.monitorBox);
@@ -92,42 +97,17 @@ public class ItemSeekBarPreference extends Preference implements OnSeekBarChange
 	public void onProgressChanged(SeekBar seekBar, int progress,
 			boolean fromUser) {
 
-		progress = Math.round(((float) progress) / interval) * interval;
-
-		if (!callChangeListener(progress)) {
-			seekBar.setProgress((int) this.oldValue);
-			return;
-		}
-
-		seekBar.setProgress(progress);
-		this.oldValue = progress;
-		this.monitorBox.setText(progress + " "
-				+ getContext().getResources().getString(R.string.item_brev));
+		monitorBox.setText(String.valueOf(progress + MINIMUM) + " " + elements);
 	}
 
 	@Override
 	protected Object onGetDefaultValue(TypedArray ta, int index) {
-		return validateValue((int) ta.getInt(index, 50));
+		return ta.getInt(index, DEFAULT_PROGRESS);
 	}
 
 	@Override
 	protected void onSetInitialValue(boolean restoreValue, Object defaultValue) {
-		int temp = restoreValue ? getPersistedInt(50) : (Integer) defaultValue;
-		if (!restoreValue)
-			persistInt(temp);
-		this.oldValue = temp;
-	}
-
-	private int validateValue(int value) {
-
-		if (value > maximum) {
-			value = maximum;
-		} else if (value < 0) {
-			value = 0;
-		} else if (value % interval != 0) {
-			value = Math.round(((float) value) / interval) * interval;
-		}
-		return value;
+		
 	}
 
 	private void updatePreference(int newValue) {
@@ -143,8 +123,7 @@ public class ItemSeekBarPreference extends Preference implements OnSeekBarChange
 
 	@Override
 	public void onStopTrackingTouch(SeekBar seekBar) {
-
-		updatePreference(this.oldValue);
+		updatePreference(seekBar.getProgress() + MINIMUM);
 		notifyChanged();
 	}
 }

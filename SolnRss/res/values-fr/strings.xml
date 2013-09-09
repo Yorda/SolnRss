@@ -7,7 +7,7 @@
     <string name="title_publications">Publications</string>
     <string name="title_syndications">Flus RSS</string>
     <string name="title_categories">Catégorie</string>
-    <string name="menu_settings">Réglages</string>
+    <string name="menu_settings">Paramètres</string>
     <string name="menu_add_categorie">Nouvelle catégorie</string>
     <string name="menu_add_site">Nouveau site</string>
     <string name="menu_show_already_read">Voir les publications déjà lus</string>
@@ -22,6 +22,10 @@
     <string name="minute_brev">minute(s)</string>
     
     <!-- Publication's tab label -->
+    <string name="all_publications_by_syndication_already_read">Les publications de la syndication: %1$s, sont marquées comme lus</string>
+    <string name="all_publications_by_category_already_read">Les publications de la categorie: %1$s, sont marquées comme lus</string>
+    <string name="all_publications_already_read">Toutes les publications sont marquées comme lus</string>
+    
     <string name="empty_publications">Aucune publication à afficher.</string>
     <string name="empty_publications_with_syndication">Aucune publication trouvé pour le flux RSS %1$s. </string>
     <string name="empty_publications_with_category">Aucune publication trouvé pour la catégorie %1$s. </string>

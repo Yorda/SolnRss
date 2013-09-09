@@ -22,6 +22,10 @@
     <string name="minute_brev">minute(s)</string>
      
     <!-- Publication's tab label -->
+    <string name="all_publications_by_syndication_already_read">All the publications of the syndication %1$s are marked as read</string>
+    <string name="all_publications_by_category_already_read">All the publications of the category %1$s are marked as read</string>
+    <string name="all_publications_already_read">All the publications are marked as read</string>
+       
     <string name="empty_publications">No publications to display.</string>
     <string name="empty_publications_with_syndication">No publications found for syndication %1$s. </string>
     <string name="empty_publications_with_category">No publications found for category %1$s. </string>
@@ -113,7 +117,6 @@
     <string name="pref_delete_all_publications">Delete all publications</string>
     <string name="pref_delete_all_publications_confirm">It will delete all publications stored in database. Are you sure ?</string>
    
-    
     <!-- Category -->
     <string name="empty_categories">No categories to display</string>
     <string name="empty_categories_with_filter">No categories found with %1$s search</string>
@@ -140,7 +143,5 @@
     <string name="pref_sort_categories_most_use">The most commonly used</string>
     <string name="pref_sort_categories_alphabetic">Alphabetical</string>
     <string name="pref_sort_categories">Sort categories by:</string>
-    
-
     
 </resources>

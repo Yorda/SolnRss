@@ -106,6 +106,9 @@ public class SolnRss extends Activity implements ActionBar.TabListener,
 		else if (key.compareTo("pref_delete_all_publications") == 0) {
 			refreshPublications();
 		}
+		else if (key.compareTo("pref_max_publication_item") == 0) {
+			refreshPublications();
+		}
 	}
 
 	public void mamageRefreshPublicationTimer() {

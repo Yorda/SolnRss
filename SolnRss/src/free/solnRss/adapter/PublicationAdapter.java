@@ -25,7 +25,7 @@ public class PublicationAdapter extends SimpleCursorAdapter
 		this.cursor = c;
 		this.context = context;
 		this.layout = layout;
-		tf = Typeface.createFromAsset(context.getAssets(), "fonts/MONOF55.TTF");
+		tf = null; //Typeface.createFromAsset(context.getAssets(), "fonts/MONOF55.TTF");
 	}
 
 	@Override
@@ -59,6 +59,7 @@ public class PublicationAdapter extends SimpleCursorAdapter
 		if (isRead == 0 && mustDisplayUnreadInBold()) {
 			publicationItem.getName() .setTypeface(tf, Typeface.BOLD);
 			publicationItem.getTitle().setTypeface(tf, Typeface.BOLD);
+
 		} else {
 			publicationItem.getName() .setTypeface(tf, Typeface.NORMAL);
 			publicationItem.getTitle().setTypeface(tf, Typeface.NORMAL);

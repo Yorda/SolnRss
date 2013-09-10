@@ -25,7 +25,7 @@ public class CategorieAdapter extends SimpleCursorAdapter
 		this.cursor = c;
 		this.context = context;
 		this.layout = layout;
-		tf = Typeface.createFromAsset(context.getAssets(), "fonts/MONOF55.TTF");
+		tf = null;//Typeface.createFromAsset(context.getAssets(), "fonts/MONOF55.TTF");
 	}
 
 	@Override

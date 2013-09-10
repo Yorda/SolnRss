@@ -90,25 +90,26 @@ public class SolnRss extends Activity implements ActionBar.TabListener,
 	public void onSharedPreferenceChanged(SharedPreferences shared, String key) {
 		if (key.compareTo("pref_unread_font_weight") == 0) {
 			publicationsListener.refreshPublications();
-		}
+		} 
 		else if (key.compareTo("pref_display_unread") == 0) {
 			publicationsListener.refreshPublications();
-		}
+		} 
+		else if (key.compareTo("pref_delete_all_publications") == 0) {
+			publicationsListener.refreshPublications();
+		} 
+		else if (key.compareTo("pref_max_publication_item") == 0) {
+			publicationsListener.refreshPublications();
+		} 
 		else if (key.compareTo("pref_sort_syndications") == 0) {
 			syndicationsListener.reloadSyndications();
-		}
+		} 
 		else if (key.compareTo("pref_sort_categories") == 0) {
 			categoriesListener.reloadCategories();
-		}
+		} 
 		else if (key.compareTo("pref_search_publication_time") == 0) {
 			mamageRefreshPublicationTimer();
 		}
-		else if (key.compareTo("pref_delete_all_publications") == 0) {
-			refreshPublications();
-		}
-		else if (key.compareTo("pref_max_publication_item") == 0) {
-			refreshPublications();
-		}
+		
 	}
 
 	public void mamageRefreshPublicationTimer() {

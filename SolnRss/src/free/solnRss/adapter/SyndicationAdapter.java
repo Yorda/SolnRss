@@ -29,7 +29,7 @@ public class SyndicationAdapter extends SimpleCursorAdapter {
 		super(context, layout, c, from, to, flags);
 		this.context = context;
 		this.layout = layout;
-		tf = Typeface.createFromAsset(context.getAssets(), "fonts/MONOF55.TTF");
+		tf = null; //Typeface.createFromAsset(context.getAssets(), "fonts/MONOF55.TTF");
 		//pause = context.getResources().getDrawable(R.drawable.ic_sleep);
 		//stealth = context.getResources().getDrawable(R.drawable.ic_stealth);
 		

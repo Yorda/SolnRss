@@ -18,8 +18,7 @@ import android.widget.TextView;
 public class ItemSeekBarPreference extends Preference implements
 		OnSeekBarChangeListener {
 
-	private int MINIMUM = 25, MAXIMUM = 500, DEFAULT_PROGRESS = 100;
-
+	private final int MINIMUM = 25, MAXIMUM = 500, DEFAULT_PROGRESS = 100;
 	private String elements = new String();
 	
 	private TextView monitorBox;
@@ -76,8 +75,8 @@ public class ItemSeekBarPreference extends Preference implements
 		bar.setLayoutParams(params2);
 		bar.setOnSeekBarChangeListener(this);
 
-		elements =  getContext().getResources().getString(R.string.item_brev);
-		
+		elements = getContext().getResources().getString(R.string.item_brev);
+
 		monitorBox = new TextView(getContext());
 		monitorBox.setTextSize(12);
 		monitorBox.setTypeface(Typeface.MONOSPACE, Typeface.ITALIC);
@@ -107,7 +106,7 @@ public class ItemSeekBarPreference extends Preference implements
 
 	@Override
 	protected void onSetInitialValue(boolean restoreValue, Object defaultValue) {
-		
+
 	}
 
 	private void updatePreference(int newValue) {

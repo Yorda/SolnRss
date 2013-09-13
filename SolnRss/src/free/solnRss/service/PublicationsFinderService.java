@@ -231,7 +231,6 @@ public class PublicationsFinderService extends IntentService {
 			// Get the new rss
 			syndication = syndicationBusiness.getLastPublications(syndication);
 		} catch (Exception e) {
-			
 			/*Log.e("LoadArticlesService", "Error when trying to refresh "
 					+ syndication.getName() + " - " + e.getCause());*/
 		}
@@ -299,8 +298,8 @@ public class PublicationsFinderService extends IntentService {
 		Resources r = getResources();
 		String title = r.getString(R.string.notify_new_pub_title);
 
-		String text = 
-			String.format(r.getString(R.string.notify_new_pub_msg), newPublicationsNumber);
+		String text = r.getQuantityString(R.plurals.notify_new_pub_msg, newPublicationsNumber, newPublicationsNumber);
+		//String.format(r.getString(R.plurals.notify_new_pub_msg), newPublicationsNumber, newPublicationsNumber);
 
 		NotificationManager notificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
 		NotificationCompat.Builder builder = new NotificationCompat.Builder(this);

@@ -45,7 +45,13 @@
 
     <!-- New publication notification -->
     <string name="notify_new_pub_title">New publications</string>
-    <string name="notify_new_pub_msg">%1$s publications unread</string>
+    
+    <!--  -->
+    <plurals name="notify_new_pub_msg">
+        <item quantity="zero">No new publication</item>
+		<item quantity="one">%1$d new publication</item>
+		<item quantity="other">%1$d news publications </item>
+	</plurals>
 
     <!-- Search syndication task result -->
     <string name="feed_search_error">Error, could not retrieve RSS information.</string>
@@ -76,7 +82,10 @@
     <string name="display_articles_on_time_line">Visible in the main flow</string>
     <string name="undisplay_articles_on_time_line">Invisible in the main flow</string>
     <string name="delete_ok">The deletion was made</string>
+    <string name="mark_as_read_ok">Publications marked as read</string>
     <string name="clean_confirm">Do you want to delete all its publications ?</string>
+    <string name="mark_as_read_confirm">Mark the publications as read ?</string>
+  
     <string name="delete_confirm">Do you Want to delete this RSS and all its publications ?</string>
     <string name="creation_date">Create: %1$s</string>
 	
@@ -99,8 +108,8 @@
     
     <!-- Unread font weight -->
     <string name="pref_view_font_weight">Publication font weight</string>
-    <string name="pref_view_font_weight_off">Unread publications are displayed in bold</string>
-    <string name="pref_view_font_weight_on">Unread publications are not displayed in bold</string>
+    <string name="pref_view_font_weight_off">Unread publications are not displayed in bold</string>
+    <string name="pref_view_font_weight_on">Unread publications are displayed in bold</string>
 
     <!-- Display a notification after found new publications -->
     <string name="pref_display_notify">Notify</string>

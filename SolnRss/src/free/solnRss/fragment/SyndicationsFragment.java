@@ -11,6 +11,7 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.content.CursorLoader;
 import android.content.Loader;
+import android.content.res.Resources;
 import android.text.TextUtils;
 import android.view.ContextMenu;
 import android.view.ContextMenu.ContextMenuInfo;
@@ -199,12 +200,29 @@ public class SyndicationsFragment extends AbstractFragment implements
 	}
 
 	private void markSyndicationPublicationsAsRead() {
-		ContentValues values = new ContentValues();
-		values.put(PublicationTable.COLUMN_ALREADY_READ, "1");
-		String selection = " syn_syndication_id = ? ";
-		String[] args = {selectedSyndicationID.toString()};
-		getActivity().getContentResolver().update(PublicationsProvider.URI, values, selection, args);
-		((SolnRss) getActivity()).refreshPublications();
+
+		OnClickListener listener = new DialogInterface.OnClickListener() {
+			@Override
+			public void onClick(DialogInterface dialog, int which) {
+				ContentValues values = new ContentValues();
+				values.put(PublicationTable.COLUMN_ALREADY_READ, "1");
+				String selection = " syn_syndication_id = ? ";
+				String[] args = {selectedSyndicationID.toString()};
+				getActivity().getContentResolver().update(PublicationsProvider.URI, values, selection, args);
+				((SolnRss) getActivity()).refreshPublications();
+				Toast.makeText(getActivity(),
+						getResources().getString(R.string.mark_as_read_confirm),
+						Toast.LENGTH_LONG).show();
+			}
+		};
+		
+		Resources r = getResources();
+		
+		AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+		builder.setMessage(r.getString(R.string.mark_as_read_confirm))
+			.setNegativeButton(r.getString(android.R.string.cancel), null)
+			.setPositiveButton(r.getString(android.R.string.ok), listener)
+			.create().show();
 	}
 	
 	private void changeDisplayMode(final MenuItem item) {
@@ -285,29 +303,20 @@ public class SyndicationsFragment extends AbstractFragment implements
 	
 	public void dialogBox(String message,
 			final AsyncTask<Integer, Void, Integer> task) {
-
-		AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-		builder.setMessage(message);
-
-		OnClickListener listener = new DialogInterface.OnClickListener() {
-			@Override
-			public void onClick(DialogInterface dialog, int which) {
-				dialog.cancel();
-			}
-		};
 		
-		listener = new DialogInterface.OnClickListener() {
+		OnClickListener listener = new DialogInterface.OnClickListener() {
 			@Override
 			public void onClick(DialogInterface dialog, int which) {
 				task.execute(selectedSyndicationID);
 			}
 		};
 		
-		builder.setNegativeButton(
-						getResources().getString(android.R.string.cancel), listener)
-				.setPositiveButton(
-						getResources().getString(android.R.string.ok), listener);
-		builder.create().show();
+		Resources r = getResources();
+		AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+		builder.setMessage(message)
+				.setNegativeButton(r.getString(android.R.string.cancel), null)
+				.setPositiveButton(r.getString(android.R.string.ok), listener)
+				.create().show();
 	}
 
 

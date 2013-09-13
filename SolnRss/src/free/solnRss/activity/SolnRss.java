@@ -109,7 +109,6 @@ public class SolnRss extends Activity implements ActionBar.TabListener,
 		else if (key.compareTo("pref_search_publication_time") == 0) {
 			mamageRefreshPublicationTimer();
 		}
-		
 	}
 
 	public void mamageRefreshPublicationTimer() {

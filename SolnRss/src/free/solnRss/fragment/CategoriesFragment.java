@@ -1,12 +1,16 @@
 package free.solnRss.fragment;
 
+import android.app.AlertDialog;
 import android.content.ContentValues;
 import android.content.Context;
+import android.content.CursorLoader;
+import android.content.DialogInterface;
+import android.content.DialogInterface.OnClickListener;
 import android.content.Intent;
+import android.content.Loader;
+import android.content.res.Resources;
 import android.database.Cursor;
 import android.os.Bundle;
-import android.content.CursorLoader;
-import android.content.Loader;
 import android.text.TextUtils;
 import android.view.ContextMenu;
 import android.view.ContextMenu.ContextMenuInfo;
@@ -142,13 +146,28 @@ public class CategoriesFragment extends AbstractFragment implements
 	}
 
 	private void markCategoryPublicationsAsRead() {
-		ContentValues values = new ContentValues();
-		values.put(PublicationTable.COLUMN_ALREADY_READ, "1");
-		String selection = " syn_syndication_id in (select syn_syndication_id from d_categorie_syndication where cas_categorie_id = ?) ";
-		String[] args = {selectedCategoryID.toString()};
 		
-		getActivity().getContentResolver().update(PublicationsProvider.URI, values, selection, args);
-		((SolnRss) getActivity()).refreshPublications();
+		OnClickListener listener = new DialogInterface.OnClickListener() {
+			@Override
+			public void onClick(DialogInterface dialog, int which) {
+				
+				ContentValues values = new ContentValues();
+				values.put(PublicationTable.COLUMN_ALREADY_READ, "1");
+				String selection = " syn_syndication_id in (select syn_syndication_id from d_categorie_syndication where cas_categorie_id = ?) ";
+				String[] args = {selectedCategoryID.toString()};
+				getActivity().getContentResolver().update(PublicationsProvider.URI, values, selection, args);
+				
+				((SolnRss) getActivity()).refreshPublications();
+			}
+		};
+		
+		Resources r = getResources();
+		
+		AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+		builder.setMessage(r.getString(R.string.mark_as_read_confirm))
+			.setNegativeButton(r.getString(android.R.string.cancel), null)
+			.setPositiveButton(r.getString(android.R.string.ok), listener)
+			.create().show();
 	}
 	
 	@Override
@@ -200,7 +219,6 @@ public class CategoriesFragment extends AbstractFragment implements
 		getActivity().getContentResolver().delete(CategoryProvider.URI,
 				CategoryTable.COLUMN_ID + " = ? ",
 				new String[] { deletedCategoryId.toString() });
-		
 		getLoaderManager().restartLoader(0, null, this);
 		
 		// Must warn publications time line to reload all publications if this deleted category

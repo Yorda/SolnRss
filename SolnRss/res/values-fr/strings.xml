@@ -46,7 +46,12 @@
 
     <!-- New publication notification -->
     <string name="notify_new_pub_title">Nouvelles publications</string>
-    <string name="notify_new_pub_msg">%1$s publications non lus</string>
+    
+	<plurals name="notify_new_pub_msg">
+		<item quantity="one">%1$s nouvelle publication</item>
+		<item quantity="other">%1s nouvelles publications</item>
+	</plurals>
+
 
     <!-- Search syndication task result -->
     <string name="feed_search_error">Erreur, impossible de récupérer le flux d\'infomation du site.</string>
@@ -72,9 +77,11 @@
     <string name="unactive_articles_btn">Désactiver la recherche</string>
     <string name="display_articles_on_time_line">Visible dans le flux principal</string>
     <string name="undisplay_articles_on_time_line">Invisible dans le flux principal</string>
+    <string name="mark_as_read_ok">Les publications sont considérées comme lu</string>
     <string name="delete_ok">La suppresssion à été faite</string>
-    <string name="clean_confirm">Voulez vous supprimer toutes ses publications ?</string>
-    <string name="delete_confirm">Voulez vous supprimer ce site et toutes ses publications ?</string>
+    <string name="clean_confirm">Supprimer toutes les publications ?</string>
+    <string name="mark_as_read_confirm">Considérer les publications comme lues ?</string>
+    <string name="delete_confirm">Supprimer ce site et toutes ses publications ?</string>
     <string name="creation_date">Créer: %1$s</string>
     
     <string name="syndication_number_of_click">%1$s publication(s) lu</string>
@@ -100,8 +107,8 @@
     
     <!-- Unread font weight -->
     <string name="pref_view_font_weight">Graisse police de caractère</string>
-    <string name="pref_view_font_weight_off">les publications non lus sont affichées en gras</string>
-    <string name="pref_view_font_weight_on">les publications non lus ne sont pas affichées en gras</string>
+    <string name="pref_view_font_weight_off">les publications non lus ne sont pas affichées en gras</string>
+    <string name="pref_view_font_weight_on">les publications non lus sont affichées en gras</string>
 
     <!-- Display a notification after found new publications -->
     <string name="pref_display_notify">Notification</string>

@@ -4,6 +4,7 @@ import android.app.ListFragment;
 import android.app.LoaderManager;
 import android.content.Loader;
 import android.database.Cursor;
+import android.net.Uri;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.view.Menu;
@@ -17,6 +18,10 @@ import android.widget.SearchView.OnQueryTextListener;
 import android.widget.SimpleCursorAdapter;
 import free.solnRss.R;
 import free.solnRss.dialog.AddItemDialog;
+import free.solnRss.provider.CategoryProvider;
+import free.solnRss.provider.SyndicationsProvider;
+import free.solnRss.repository.CategoryTable;
+import free.solnRss.repository.SyndicationTable;
 
 
 public abstract class AbstractFragment extends ListFragment implements	OnQueryTextListener, 
@@ -37,6 +42,28 @@ public abstract class AbstractFragment extends ListFragment implements	OnQueryTe
 	
 	protected abstract void setListPositionOnScreen();
 
+	protected String syndicationName(Integer id) {
+		Uri uri = Uri.parse(SyndicationsProvider.URI + "/" + id);
+		String[] projection = { SyndicationTable.COLUMN_NAME };
+		Cursor c = getActivity().getContentResolver().query(uri, projection,
+				null, null, null);
+		c.moveToFirst();
+		String name = c.getCount() > 0 && c.getString(0) != null ? c.getString(0) : null;
+		c.close();
+		return name;
+	}
+	
+	protected String categoryName(Integer id) {
+		Uri uri = Uri.parse(CategoryProvider.URI + "/" + id);
+		String[] projection = { CategoryTable.COLUMN_NAME };
+		Cursor c = getActivity().getContentResolver().query(uri, projection,
+				null, null, null);
+		c.moveToFirst();
+		String name =  c.getCount() > 0 && c.getString(0) != null ? c.getString(0) : null;
+		c.close();
+		return name;
+	}
+	
 	@Override
 	public void onLoadFinished(Loader<Cursor> arg0, Cursor arg1) {
 		
@@ -174,6 +201,5 @@ public abstract class AbstractFragment extends ListFragment implements	OnQueryTe
 		dialog.setArguments(args);
 		dialog.show(getActivity().getFragmentManager(), "dialog_add_item");
 	}
-
 	
 }

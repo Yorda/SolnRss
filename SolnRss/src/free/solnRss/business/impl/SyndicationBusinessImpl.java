@@ -24,7 +24,6 @@ public class SyndicationBusinessImpl implements SyndicationBusiness {
 		syndicateUtil = new SyndicateUtil();
 	}	
 	
-	
 	public Syndication getLastPublications(Syndication syndication) throws ExtractFeedException {
 
 		List<Publication> publications = new ArrayList<Publication>();

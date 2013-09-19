@@ -42,6 +42,7 @@
     <!-- string name="display_syndications_screen">Afficher l\'onglet des sites</string-->
     <string name="mark_all_read">Marquer tous comme lu</string>
     <string name="mark_as_read">Marquer comme lu</string>
+     <string name="confirm_mark_as_read">Marquer %1$s comme lu ?</string>
     <string name="mark_selected_category_read">Marquer la catégorie comme lu</string>
 
     <!-- New publication notification -->

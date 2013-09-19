@@ -41,6 +41,7 @@
     <string name="display_all_publication">View all publications</string>
     <string name="mark_all_read">Mark all as read</string>
     <string name="mark_as_read">Mark as read</string>
+    <string name="confirm_mark_as_read">Mark %1$s as read ?</string>
     <string name="mark_selected_category_read">Mark category as read</string>
 
     <!-- New publication notification -->

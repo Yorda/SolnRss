@@ -1,16 +1,23 @@
 package free.solnRss.utility;
 
+import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
 
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
+import org.apache.http.StatusLine;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
+import org.apache.http.client.methods.HttpUriRequest;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.params.BasicHttpParams;
 import org.apache.http.params.HttpConnectionParams;
 import org.apache.http.params.HttpParams;
+import org.apache.http.util.EntityUtils;
+
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 
 public class HttpUtil {
 	
@@ -57,5 +64,56 @@ public class HttpUtil {
 			return false;
 		}
 		return true;
+	}
+	
+	public static Bitmap downloadBitmap(String url) throws IOException {
+		
+		HttpUriRequest request = new HttpGet(url.toString());
+		HttpClient httpClient = new DefaultHttpClient();
+		HttpResponse response = httpClient.execute(request);
+
+		StatusLine statusLine = response.getStatusLine();
+		int statusCode = statusLine.getStatusCode();
+		if (statusCode == 200) {
+			HttpEntity entity = response.getEntity();
+			byte[] bytes = EntityUtils.toByteArray(entity);
+
+			Bitmap bitmap = BitmapFactory.decodeByteArray(bytes, 0,	bytes.length);
+			return bitmap;
+		} else {
+			throw new IOException("Download failed, HTTP response code "
+					+ statusCode + " - " + statusLine.getReasonPhrase());
+		}
+	}
+
+	public static String ImageSrcToBinary(String webSiteUrl, String imageTag) {
+
+		String imageTagWithBinary = new String();
+		try {
+			// Get the image url
+			String url = "";
+			
+			// Download the remote file
+			Bitmap bitmap = downloadBitmap(url);
+
+			// Transform file to binary string
+			String raw = StreamUtil.encode(bitmap);
+
+			// Replace source in image tag
+			final String regex = "src=(['\"])" // the ' or the " is in group 1
+					+ "(.*?)" // match any character in a non-greedy fashion
+					+ "\\1"; // closes with the quote that is in group 1
+
+			imageTagWithBinary = imageTag.replaceAll(regex,
+					"src=\"data:image/gif;base64," + raw + "\"");
+
+		} catch (Exception e) {
+			return imageTag;
+		}
+		return imageTagWithBinary;
+	}
+	
+	protected static String getImageUrl(String webSiteUrl, String imageTag){
+		return null;
 	}
 }

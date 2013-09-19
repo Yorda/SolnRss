@@ -219,7 +219,9 @@ public class SyndicationsFragment extends AbstractFragment implements
 		Resources r = getResources();
 		
 		AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-		builder.setMessage(r.getString(R.string.mark_as_read_confirm))
+		//builder.setMessage(r.getString(R.string.mark_as_read_confirm))
+		
+		builder.setMessage(r.getString(R.string.confirm_mark_as_read, syndicationName(selectedSyndicationID)))
 			.setNegativeButton(r.getString(android.R.string.cancel), null)
 			.setPositiveButton(r.getString(android.R.string.ok), listener)
 			.create().show();

@@ -58,10 +58,10 @@ public class SolnRss extends Activity implements ActionBar.TabListener,
 	public boolean onMenuOpened(int featureId, Menu menu) {
 		if(menu != null){
 			if (displayAlreadyReadPublications()) {
-				menu.getItem(3).setTitle(
+				menu.getItem(2).setTitle(
 						getResources().getString(R.string.menu_hide_already_read));
 			} else {
-				menu.getItem(3).setTitle(
+				menu.getItem(2).setTitle(
 						getResources().getString(R.string.menu_show_already_read));
 			}
 		}
@@ -250,10 +250,10 @@ public class SolnRss extends Activity implements ActionBar.TabListener,
 			}
 			return true;
 			
-		case R.id.menu_display_all:
+		/*case R.id.menu_display_all:
 			reLoadAllPublications();
 			viewPager.setCurrentItem(1);
-			return true;
+			return true;*/
 			
 		case R.id.menu_all_read:
 			markAllPublicationsAsRead();

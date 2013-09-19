@@ -105,7 +105,6 @@ public class SyndicationFinderService extends IntentService {
 			return true;
 		}
 		return false;
-
 	}
 
 	// 4 - Retrieve content

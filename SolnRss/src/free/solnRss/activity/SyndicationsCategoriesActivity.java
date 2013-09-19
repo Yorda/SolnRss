@@ -29,7 +29,6 @@ public class SyndicationsCategoriesActivity extends ListActivity implements
 	final int layoutID = R.layout.activity_syndications_categorie;
 	private Integer selectedCategorieID;
 	private String selectedCategoryName;
-	private SearchView searchView;
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -52,10 +51,12 @@ public class SyndicationsCategoriesActivity extends ListActivity implements
 	
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
-		getMenuInflater().inflate(R.menu.activity_soln_rss, menu);
-		MenuItem searchItem = menu.findItem(R.id.action_search);
-		searchView = (SearchView) searchItem.getActionView();
-		setupSearchView(searchItem);
+		getMenuInflater().inflate(R.menu.syndications_categories_menu, menu);
+		MenuItem item =  menu.add("Search"); 
+		item.setIcon(R.drawable.ic_abar_search);
+		SearchView searchView =  new SearchView(this);
+		setupSearchView(item, searchView);
+		item.setActionView(searchView);
 		return true;
 	}
 	
@@ -96,7 +97,7 @@ public class SyndicationsCategoriesActivity extends ListActivity implements
 		getLoaderManager().restartLoader(0, null, this);
 	}
 
-	private void setupSearchView(MenuItem searchItem) {
+	private void setupSearchView(MenuItem searchItem, SearchView searchView) {
 		boolean isAlwaysExpanded = false;
 		if (isAlwaysExpanded) {
 			searchView.setIconifiedByDefault(false);

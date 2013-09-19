@@ -1,15 +1,19 @@
 package free.solnRss.fragment;
 
 import android.app.ActionBar;
+import android.app.AlertDialog;
 import android.content.ContentValues;
 import android.content.Context;
+import android.content.DialogInterface;
+import android.content.DialogInterface.OnClickListener;
 import android.content.Intent;
+import android.content.Loader;
 import android.content.SharedPreferences;
+import android.content.res.Resources;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
-import android.content.Loader;
 import android.text.Html;
 import android.text.Spanned;
 import android.text.TextUtils;
@@ -30,10 +34,8 @@ import free.solnRss.activity.ReaderActivity;
 import free.solnRss.activity.SolnRss;
 import free.solnRss.adapter.PublicationAdapter;
 import free.solnRss.fragment.listener.PublicationsFragmentListener;
-import free.solnRss.provider.CategoryProvider;
 import free.solnRss.provider.PublicationsProvider;
 import free.solnRss.provider.SyndicationsProvider;
-import free.solnRss.repository.CategoryTable;
 import free.solnRss.repository.PublicationRepository;
 import free.solnRss.repository.PublicationTable;
 import free.solnRss.repository.SyndicationTable;
@@ -114,25 +116,11 @@ public class PublicationsFragment extends AbstractFragment implements
 	}
 
 	private String categoryName() {
-		Uri uri = Uri.parse(CategoryProvider.URI + "/" + selectedCategoryID);
-		String[] projection = { CategoryTable.COLUMN_NAME };
-		Cursor c = getActivity().getContentResolver().query(uri, projection,
-				null, null, null);
-		c.moveToFirst();
-		String name =  c.getCount() > 0 && c.getString(0) != null ? c.getString(0) : null;
-		c.close();
-		return name;
+		return categoryName(selectedCategoryID);
 	}
 
 	private String syndicationName() {
-		Uri uri = Uri.parse(SyndicationsProvider.URI + "/" + selectedSyndicationID);
-		String[] projection = { SyndicationTable.COLUMN_NAME };
-		Cursor c = getActivity().getContentResolver().query(uri, projection,
-				null, null, null);
-		c.moveToFirst();
-		String name = c.getCount() > 0 && c.getString(0) != null ? c.getString(0) : null;
-		c.close();
-		return name;
+		return syndicationName(selectedSyndicationID);
 	}
 	
 	@Override
@@ -153,7 +141,6 @@ public class PublicationsFragment extends AbstractFragment implements
 	
 	@Override
 	public void onActivityCreated(Bundle savedInstanceState) {
-		
 		super.onActivityCreated(savedInstanceState);
 		
 		publicationRepository = new PublicationRepository(getActivity());
@@ -564,15 +551,29 @@ public class PublicationsFragment extends AbstractFragment implements
 		try {
 			startActivity(openUrlIntent);
 		} catch (Exception e) {
-			Toast.makeText(
-					getActivity(),
-					getActivity().getResources().getString(
-							R.string.open_browser_bad_url), Toast.LENGTH_LONG)
-					.show();
+			Toast.makeText(getActivity(), getActivity().getResources().getString(
+				R.string.open_browser_bad_url), Toast.LENGTH_LONG).show();
 		}
 	}
 	
 	private void markSyndicationPublicationsAsRead(final Integer syndicationId) {
+		
+		final Resources r = getResources();
+		OnClickListener listener = new DialogInterface.OnClickListener() {
+			@Override
+			public void onClick(DialogInterface dialog, int which) {
+				markAsRead(syndicationId);
+			}
+		};
+
+		AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());	
+		builder.setMessage(r.getString(R.string.confirm_mark_as_read, syndicationName(syndicationId)))
+				.setNegativeButton(r.getString(android.R.string.cancel), null)
+				.setPositiveButton(r.getString(android.R.string.ok), listener)
+				.create().show();
+	}
+	
+	private void markAsRead(final Integer syndicationId){
 		ContentValues values = new ContentValues();
 		values.put(PublicationTable.COLUMN_ALREADY_READ, "1");
 		String selection = null;
@@ -586,25 +587,40 @@ public class PublicationsFragment extends AbstractFragment implements
 		getLoaderManager().restartLoader(0, null, this);
 	}
 	
-	
 	@Override
 	public void markAsRead() {
-		CharSequence ok = null;
+				
+		final Resources r = getResources();
+		OnClickListener listener = new DialogInterface.OnClickListener() {
+			@Override
+			public void onClick(DialogInterface dialog, int which) {
+				// CharSequence ok = null;
+				if (selectedSyndicationID != null) {
+					markSyndicationPublicationsAsRead();
+					//ok = r.getString(R.string.all_publications_by_syndication_already_read, syndicationName());
+				} else if (selectedCategoryID != null) {
+					markCategoryPublicationsAsRead();
+					//ok = r.getString(R.string.all_publications_by_category_already_read,categoryName());
+				} else {
+					markAllPublicationsAsRead();
+					//ok = r.getString(R.string.all_publications_already_read);
+				}
+				//Toast.makeText(getActivity(), ok, Toast.LENGTH_LONG).show();
+			}
+		};
+
+		AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+		String who = " ";
 		if (selectedSyndicationID != null) {
-			markSyndicationPublicationsAsRead();
-			ok = getResources().getString(R.string.all_publications_by_syndication_already_read, syndicationName());
-			//ok = "Les publications de la syndication: " + syndicationName() + ", sont marquées comme lus";
+			who = " " + syndicationName() + " ";
 		} else if (selectedCategoryID != null) {
-			markCategoryPublicationsAsRead();
-			ok = getResources().getString(R.string.all_publications_by_category_already_read,categoryName());
-			//ok = "Les publications de la categorie: " + categoryName() + ", sont marquées comme lus";
-		} else {
-			markAllPublicationsAsRead();
-			ok = getResources().getString(R.string.all_publications_already_read);
-			//ok = "Toutes les publications sont marquées comme lus";
+			who = " " + categoryName() + " ";
 		}
 		
-		Toast.makeText(getActivity(), ok, Toast.LENGTH_LONG).show();
+		builder.setMessage(r.getString(R.string.confirm_mark_as_read, who))
+				.setNegativeButton(r.getString(android.R.string.cancel), null)
+				.setPositiveButton(r.getString(android.R.string.ok), listener)
+				.create().show();
 	}
 
 	private void markAllPublicationsAsRead() {
@@ -637,12 +653,4 @@ public class PublicationsFragment extends AbstractFragment implements
 		getLoaderManager().restartLoader(0, null, this);
 	}
 
-	/*
-	 * private boolean isSyndicationOrCategorySelected() { if
-	 * (selectedSyndicationID != null || selectedCategoryID != null) { return
-	 * true; } return false; }
-	 * 
-	 * private boolean isCategorySelected() { if (selectedCategoryID != null) {
-	 * return true; } return false; }
-	 */
 }

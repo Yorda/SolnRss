@@ -39,8 +39,7 @@ import free.solnRss.service.PublicationsFinderService;
 import free.solnRss.service.SyndicationFinderService;
 
 public class SolnRss extends Activity implements ActionBar.TabListener,
-		SharedPreferences.OnSharedPreferenceChangeListener,
-		NewAddItemDialogListener {
+		SharedPreferences.OnSharedPreferenceChangeListener, NewAddItemDialogListener {
 	
 	private SyndicationsFragmentListener syndicationsListener;
 	private CategoriesFragmentListener categoriesListener;

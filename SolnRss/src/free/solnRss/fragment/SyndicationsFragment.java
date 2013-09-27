@@ -102,7 +102,6 @@ public class SyndicationsFragment extends AbstractFragment implements
 		activeStatus =  c.getInt(c.getColumnIndex("syn_is_active"));
 		isDisplayOnMainTimeLine = c.getInt(c.getColumnIndex("syn_display_on_timeline"));
 		
-		
 		menu.setHeaderTitle(c.getString(c.getColumnIndex("syn_name")));
 		MenuInflater inflater = getActivity().getMenuInflater();
 		inflater.inflate(R.menu.syndications_context, menu);
@@ -210,16 +209,12 @@ public class SyndicationsFragment extends AbstractFragment implements
 				String[] args = {selectedSyndicationID.toString()};
 				getActivity().getContentResolver().update(PublicationsProvider.URI, values, selection, args);
 				((SolnRss) getActivity()).refreshPublications();
-				Toast.makeText(getActivity(),
-						getResources().getString(R.string.mark_as_read_confirm),
-						Toast.LENGTH_LONG).show();
 			}
 		};
 		
 		Resources r = getResources();
 		
 		AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-		//builder.setMessage(r.getString(R.string.mark_as_read_confirm))
 		
 		builder.setMessage(r.getString(R.string.confirm_mark_as_read, syndicationName(selectedSyndicationID)))
 			.setNegativeButton(r.getString(android.R.string.cancel), null)

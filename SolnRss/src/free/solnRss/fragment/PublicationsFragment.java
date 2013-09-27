@@ -78,7 +78,6 @@ public class PublicationsFragment extends AbstractFragment implements
 						R.string.empty_publications_with_category_with_filter,
 						categoryName(), filter));
 			}
-
 		}
 		// If all publications are empty
 		else {

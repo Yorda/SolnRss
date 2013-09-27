@@ -3,17 +3,16 @@ package free.solnRss.adapter;
 import android.content.Context;
 import android.content.res.Resources;
 import android.database.Cursor;
-import android.graphics.Typeface;
-import android.widget.SimpleCursorAdapter;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.SimpleCursorAdapter;
 import android.widget.TextView;
 import free.solnRss.R;
 
 public class CategorieAdapter extends SimpleCursorAdapter
 {
 
-	private Typeface tf = null;
+	//private Typeface tf = null;
 	protected Cursor cursor;
 	private Context context;
 	private int layout;
@@ -25,7 +24,7 @@ public class CategorieAdapter extends SimpleCursorAdapter
 		this.cursor = c;
 		this.context = context;
 		this.layout = layout;
-		tf = null;//Typeface.createFromAsset(context.getAssets(), "fonts/MONOF55.TTF");
+		//tf = null;//Typeface.createFromAsset(context.getAssets(), "fonts/MONOF55.TTF");
 	}
 
 	@Override
@@ -51,7 +50,7 @@ public class CategorieAdapter extends SimpleCursorAdapter
 		String name = getCursor().getString(getCursor().getColumnIndex("cat_name"));
 
 		categorieItem.getName().setText(name);
-		categorieItem.getName().setTypeface(tf, Typeface.NORMAL);
+		//categorieItem.getName().setTypeface(tf, Typeface.NORMAL);
 
 		Integer numberOfUse = getCursor().getInt(getCursor().getColumnIndex("number_of_use"));
 
@@ -68,7 +67,7 @@ public class CategorieAdapter extends SimpleCursorAdapter
 		}
 
 		categorieItem.getNumberOfUse().setText(use);
-		categorieItem.getNumberOfUse().setTypeface(tf, Typeface.NORMAL);
+		//categorieItem.getNumberOfUse().setTypeface(tf, Typeface.NORMAL);
 
 		return convertView;
 	}

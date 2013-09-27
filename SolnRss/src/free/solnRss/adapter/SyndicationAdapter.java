@@ -2,10 +2,9 @@ package free.solnRss.adapter;
 
 import android.content.Context;
 import android.database.Cursor;
-import android.graphics.Typeface;
-import android.widget.SimpleCursorAdapter;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.SimpleCursorAdapter;
 import android.widget.TextView;
 import free.solnRss.R;
 
@@ -20,16 +19,17 @@ public class SyndicationAdapter extends SimpleCursorAdapter {
 	private final int numberOfClickID = R.id.syndication_number_of_click;
 	private Context context;
 	private int layout;
-	private Typeface tf = null;
+	//private Typeface tf = null;
 	//private Drawable pause;
 	//private Drawable stealth;
 
 	public SyndicationAdapter(Context context, int layout, Cursor c,
 			String[] from, int[] to, int flags) {
+		
 		super(context, layout, c, from, to, flags);
 		this.context = context;
 		this.layout = layout;
-		tf = null; //Typeface.createFromAsset(context.getAssets(), "fonts/MONOF55.TTF");
+		//tf = null; //Typeface.createFromAsset(context.getAssets(), "fonts/MONOF55.TTF");
 		//pause = context.getResources().getDrawable(R.drawable.ic_sleep);
 		//stealth = context.getResources().getDrawable(R.drawable.ic_stealth);
 		
@@ -70,12 +70,12 @@ public class SyndicationAdapter extends SimpleCursorAdapter {
 					View.GONE);
 		}
 
-		item.getTitle().setTypeface(tf);
+		//String s = context.getResources().getString(R.string.syndication_number_of_click);
+		//item.getNumberOfClick().setText(String.format(s, String.valueOf(getCursor().getInt(4))));
 		
-		String s = context.getResources().getString(R.string.syndication_number_of_click);
-
-		item.getNumberOfClick().setText(
-				String.format(s, String.valueOf(getCursor().getInt(4))));
+		int quantity =  getCursor().getInt(4);
+		item.getNumberOfClick().setText(context.getResources().
+				getQuantityString(R.plurals.syndication_number_of_click, quantity, quantity));
 
 		if (getCursor().getInt(5) != 0) {
 			convertView.findViewWithTag("stealthImage").setVisibility(
@@ -85,7 +85,9 @@ public class SyndicationAdapter extends SimpleCursorAdapter {
 					View.VISIBLE);
 		}
 		
-		item.getNumberOfClick().setTypeface(tf);
+		// item.getTitle().setTypeface(tf);
+		// item.getNumberOfClick().setTypeface(tf);
+		
 		return convertView;
 	}
 }

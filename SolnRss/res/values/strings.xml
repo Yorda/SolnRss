@@ -42,6 +42,7 @@
     <string name="mark_all_read">Mark all as read</string>
     <string name="mark_as_read">Mark as read</string>
     <string name="confirm_mark_as_read">Mark %1$s as read ?</string>
+    <string name="confirm_delete">Delete %1$s ?</string>
     <string name="mark_selected_category_read">Mark category as read</string>
 
     <!-- New publication notification -->
@@ -91,6 +92,11 @@
     <string name="creation_date">Create: %1$s</string>
 	
     <string name="syndication_number_of_click">%1$s publication(s) already read</string>
+    
+    <plurals name="syndication_number_of_click">
+		<item quantity="one">%1$s publication already read</item>
+		<item quantity="other">%1$s publications already read</item>
+	</plurals>
     
     <string name="empty_syndications">No RSS feed to display.</string>
     <string name="empty_syndications_with_filter">No RSS feed found for the site %1$s with %2$s research.</string>

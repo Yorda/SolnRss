@@ -43,6 +43,7 @@
     <string name="mark_all_read">Marquer tous comme lu</string>
     <string name="mark_as_read">Marquer comme lu</string>
      <string name="confirm_mark_as_read">Marquer %1$s comme lu ?</string>
+     <string name="confirm_delete">Supprimer %1$s ?</string>
     <string name="mark_selected_category_read">Marquer la catégorie comme lu</string>
 
     <!-- New publication notification -->
@@ -85,8 +86,12 @@
     <string name="delete_confirm">Supprimer ce site et toutes ses publications ?</string>
     <string name="creation_date">Créer: %1$s</string>
     
-    <string name="syndication_number_of_click">%1$s publication(s) lu</string>
-     
+
+     <plurals name="syndication_number_of_click">
+		<item quantity="one">%1$s publication lue</item>
+		<item quantity="other">%1$s publications lues</item>
+	</plurals>
+	
     <string name="empty_syndications">Aucun site à afficher</string>
 	
     <string name="empty_syndications_with_filter">Aucun site trouvé pour le site %1$s avec la recherche %2$s.</string>

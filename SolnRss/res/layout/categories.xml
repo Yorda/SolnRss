@@ -2,21 +2,21 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    android:padding="12dp" >
+    android:padding="10dp" >
 
-        
     <TextView
         android:id="@+id/categorie_name"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:paddingBottom="6dp"
-        android:textSize="17sp" />
+        android:paddingBottom="5dp"
+        android:textColor="#ff0099cc"
+        android:textSize="17sp"
+        android:textStyle="bold" />
 
     <TextView
         android:id="@+id/categorie_number_of_use"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:textColor="#ff0099cc"
         android:textStyle="italic" />
 
 </LinearLayout>

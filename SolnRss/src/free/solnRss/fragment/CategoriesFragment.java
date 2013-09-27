@@ -155,17 +155,12 @@ public class CategoriesFragment extends AbstractFragment implements
 				String selection = " syn_syndication_id in (select syn_syndication_id from d_categorie_syndication where cas_categorie_id = ?) ";
 				String[] args = {selectedCategoryID.toString()};
 				getActivity().getContentResolver().update(PublicationsProvider.URI, values, selection, args);
-				
 				((SolnRss) getActivity()).refreshPublications();
 			}
 		};
 		
 		Resources r = getResources();
-		
 		AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-		
-		//builder.setMessage(r.getString(R.string.mark_as_read_confirm))
-		
 		builder.setMessage(r.getString(R.string.confirm_mark_as_read, categoryName(selectedCategoryID)))
 			.setNegativeButton(r.getString(android.R.string.cancel), null)
 			.setPositiveButton(r.getString(android.R.string.ok), listener)
@@ -214,17 +209,33 @@ public class CategoriesFragment extends AbstractFragment implements
 		getLoaderManager().restartLoader(0, null, this);
 	}
 
-	public void deleteCategorie(Context context, Integer deletedCategoryId) {
+	public void deleteCategorie(Context context, final Integer deletedCategoryId) {
 		
-		ContentValues values = new ContentValues();
-		values.put(CategoryTable.COLUMN_ID, deletedCategoryId);
-		getActivity().getContentResolver().delete(CategoryProvider.URI,
-				CategoryTable.COLUMN_ID + " = ? ",
-				new String[] { deletedCategoryId.toString() });
-		getLoaderManager().restartLoader(0, null, this);
+		OnClickListener listener = new DialogInterface.OnClickListener() {
+			@Override
+			public void onClick(DialogInterface dialog, int which) {
+				
+				ContentValues values = new ContentValues();
+				values.put(CategoryTable.COLUMN_ID, deletedCategoryId);
+				getActivity().getContentResolver().delete(CategoryProvider.URI,
+						CategoryTable.COLUMN_ID + " = ? ",
+						new String[] { deletedCategoryId.toString() 
+				});
+				//getLoaderManager().restartLoader(0, null, this);
+				reLoadCategoriesAfterSyndicationDeleted();
+				// Must warn publications time line to reload all publications if this deleted category
+				((SolnRss)getActivity()).reLoadPublicationsAfterCatgoryDeleted(deletedCategoryId);
+			}
+		};
 		
-		// Must warn publications time line to reload all publications if this deleted category
-		((SolnRss)getActivity()).reLoadPublicationsAfterCatgoryDeleted(deletedCategoryId);
+		Resources r = getResources();
+		AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+		builder.setMessage(r.getString(R.string.confirm_delete, categoryName(deletedCategoryId)))
+				.setNegativeButton(r.getString(android.R.string.cancel), null)
+				.setPositiveButton(r.getString(android.R.string.ok), listener)
+				.create().show();
+		
+		
 	}
 
 	@Override

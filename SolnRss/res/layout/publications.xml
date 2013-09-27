@@ -2,33 +2,24 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    android:padding="12dp" >
-    
-<!--  android:background="#eeeeee" -->
+    android:padding="10dp" >
 
     <TextView
         android:id="@+id/name"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:paddingBottom="6dp"
+        android:paddingBottom="5dp"
         android:textColor="#ff0099cc"
-        android:textStyle="italic" />
+        android:textSize="12sp"
+        android:textStyle="bold"
+        android:typeface="monospace" />
 
     <TextView
         android:id="@+id/title"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:textSize="16sp" 
-      />
+        android:textSize="13.6sp"
+        android:textStyle="bold"
+        android:typeface="monospace" />
 
-    <!-- 
-    <TextView
-        android:id="@+id/right_text"
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-         android:paddingTop="5dp"
-        android:textColor="#ff0099cc"
-        android:text="Ten minutes ago" />
- -->
- 
 </LinearLayout>

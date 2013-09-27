@@ -4,9 +4,10 @@ import android.content.Context;
 import android.database.Cursor;
 import android.graphics.Typeface;
 import android.preference.PreferenceManager;
-import android.widget.SimpleCursorAdapter;
+import android.text.Html;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.SimpleCursorAdapter;
 import android.widget.TextView;
 import free.solnRss.R;
 
@@ -17,7 +18,6 @@ public class PublicationAdapter extends SimpleCursorAdapter
 	private Context context;
 	private int layout;
 	
-	private Typeface tf = null;
 	public PublicationAdapter(final Context context, int layout, Cursor c,
 			String[] from, int[] to, int flags) {
 
@@ -25,7 +25,6 @@ public class PublicationAdapter extends SimpleCursorAdapter
 		this.cursor = c;
 		this.context = context;
 		this.layout = layout;
-		tf = null; //Typeface.createFromAsset(context.getAssets(), "fonts/MONOF55.TTF");
 	}
 
 	@Override
@@ -35,10 +34,15 @@ public class PublicationAdapter extends SimpleCursorAdapter
 		if (convertView == null) {
 			convertView = View.inflate(context, layout, null);
 			publicationItem = new PublicationItem();
+			
 			// Title of syndication
 			publicationItem.setName((TextView) convertView.findViewById(R.id.name));
+			
+			//convertView.findViewById(R.id.name).setVisibility(View.GONE);
+			
 			// Title of publication
 			publicationItem.setTitle((TextView) convertView.findViewById(R.id.title));
+			
 			convertView.setTag(publicationItem);
 			
 		} else {
@@ -52,19 +56,22 @@ public class PublicationAdapter extends SimpleCursorAdapter
 		Integer isRead  = getCursor().getInt   (3); // pub_already_read
 		
 		publicationItem.getTitle().setText(title);
-		publicationItem.getName ().setText(name);
+		publicationItem.getName ().setText(Html.fromHtml("<b><u>"+name+"</b></u>"));
 		
 		publicationItem.setIsRead(isRead == null ? 0 : isRead);
+		
+		 //Typeface tf = null; //TypeFaceSingleton.getInstance(context).getUserTypeFace();
 		 
 		if (isRead == 0 && mustDisplayUnreadInBold()) {
-			publicationItem.getName() .setTypeface(tf, Typeface.BOLD);
-			publicationItem.getTitle().setTypeface(tf, Typeface.BOLD);
+           
+			//publicationItem.getName().setTypeface(tf , Typeface.BOLD);
+			//publicationItem.getTitle().setTypeface(tf , Typeface.BOLD);
 
 		} else {
-			publicationItem.getName() .setTypeface(tf, Typeface.NORMAL);
-			publicationItem.getTitle().setTypeface(tf, Typeface.NORMAL);
+			publicationItem.getName().setTypeface(null , Typeface.NORMAL);
+			publicationItem.getTitle().setTypeface(null, Typeface.NORMAL);
 		}
-		
+
 		return convertView;
 	}
 

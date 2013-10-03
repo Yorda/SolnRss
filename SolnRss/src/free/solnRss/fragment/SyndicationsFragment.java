@@ -231,6 +231,12 @@ public class SyndicationsFragment extends AbstractFragment implements
 		getLoaderManager().restartLoader(0, null, this);
 		// Reload publications list
 		((SolnRss) getActivity()).refreshPublications();
+		
+		String msg = isDisplayOnMainTimeLine == 0 ? 
+				  "La visibilité des publications est complète"
+				: "Les publications sont visibles via l'onglet catégorie ou syndication";
+		
+		Toast.makeText(getActivity(), msg, Toast.LENGTH_LONG).show();
 	}
 
 	public void changeStatus(final MenuItem item) {
@@ -245,11 +251,17 @@ public class SyndicationsFragment extends AbstractFragment implements
 
 			@Override
 			protected void onPostExecute(Void result) {
-				boolean newStatus = activeStatus == 0 ? false : true;
-				item.setTitle(newStatus 
-						? getResources().getString(R.string.unactive_articles_btn) : 
-							getResources().getString(R.string.active_articles_btn));
+
+				item.setTitle(activeStatus == 0
+						? getResources().getString(R.string.active_articles_btn)  
+							: getResources().getString(R.string.unactive_articles_btn));
 				reloadSyndications();
+				
+				String msg = activeStatus == 0 ? 
+						"La recherche de nouvelles publications est désactivé"
+						: "La recherche de nouvelles publications est activé";
+				
+				Toast.makeText(getActivity(), msg, Toast.LENGTH_LONG).show();
 			};
 		}.execute(selectedSyndicationID);
 	}

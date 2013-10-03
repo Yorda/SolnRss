@@ -10,10 +10,11 @@
     <string name="menu_settings">Paramètres</string>
     <string name="menu_add_categorie">Nouvelle catégorie</string>
     <string name="menu_add_site">Nouveau site</string>
-    <string name="menu_show_already_read">Voir les publications déjà lus</string>
-    <string name="menu_hide_already_read">Cacher les publications déjà lus</string>
+    <string name="menu_show_already_read">Voir les publications lues</string>
+    <string name="menu_hide_already_read">Cacher les publications lues</string>
     <string name="menu_read_on_web_site">Lire sur le site web</string>
-    
+    <string name="read">Lue</string>
+     
 	<string name="action_bar_search" >Recherche</string>
     <string name="stop_search">Définir l\'intervalle à zéro arrête la recherche de nouvelles publications</string>
     <string name="please_wait">Attendez SVP</string>
@@ -75,10 +76,10 @@
     <string name="site_parameter">%1$s</string>
     <string name="clean_articles_btn">Supprimer ses publications</string>
     <string name="delete_articles_btn">Supprimer ce site</string>
-    <string name="active_articles_btn">Activer la recherche</string>
-    <string name="unactive_articles_btn">Désactiver la recherche</string>
-    <string name="display_articles_on_time_line">Visible dans le flux principal</string>
-    <string name="undisplay_articles_on_time_line">Invisible dans le flux principal</string>
+    <string name="active_articles_btn">Activer</string>
+    <string name="unactive_articles_btn">Désactiver</string>
+    <string name="display_articles_on_time_line">Visibilité complète</string>
+    <string name="undisplay_articles_on_time_line">Réduire la visibilité</string>
     <string name="mark_as_read_ok">Les publications sont considérées comme lu</string>
     <string name="delete_ok">La suppresssion à été faite</string>
     <string name="clean_confirm">Supprimer toutes les publications ?</string>
@@ -99,8 +100,8 @@
     <string name="sleep_img">La recherche des nouveautés pour ce site est mis en pause.</string>
     <string name="stealth_img">Les publications de ce site ne sont affichées dans le flux principal.</string>
     
-    <string name="hide_syndication">Caché</string>
-    <string name="pause_syndication">En pause</string>
+    <string name="hide_syndication">Visibilité réduite</string>
+    <string name="pause_syndication">Inactif</string>
     
     <string name="delete_syndication_ok">Ce site est supprimé</string>
     <string name="clean_syndication_ok">Toutes les publications sont supprimées</string>

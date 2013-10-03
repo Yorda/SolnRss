@@ -187,8 +187,7 @@ public class PublicationsFinderService extends IntentService {
 					}
 
 					if (!isAlreadyRecorded) {
-						values = addNewPublication(syndication.getId(),
-								publication);
+						values = addNewPublication(syndication.getId(), publication);
 						contentValues.add(values);
 					}
 				}
@@ -246,19 +245,31 @@ public class PublicationsFinderService extends IntentService {
 		return getContentResolver().bulkInsert(PublicationsProvider.URI,
 				publications.toArray(new ContentValues[publications.size()]));
 	}
+	
+	/*
+	 * Make all fix needed by the publication's description
+	 */
+	private String makeFixInPublication(String description) {
+		if (TextUtils.isEmpty(description)) {
+			return description;
+		}
+		return replaceBadYoutubeUrlInIframe(description);
+	}
+
+	private String replaceBadYoutubeUrlInIframe(String description) {
+		return description.replaceAll("src=\"//www.youtube.com/embed",
+				"src=\"http://www.youtube.com/embed");
+	}
 
 	private ContentValues addNewPublication(Integer syndicationId,
 			Publication publication) {
 		ContentValues values = new ContentValues();
 		values.put(PublicationTable.COLUMN_SYNDICATION_ID, syndicationId);
 		values.put(PublicationTable.COLUMN_LINK, publication.getUrl());
-		values.put(PublicationTable.COLUMN_PUBLICATION,
-				publication.getDescription());
+		values.put(PublicationTable.COLUMN_PUBLICATION, makeFixInPublication(publication.getDescription()));
 		values.put(PublicationTable.COLUMN_TITLE, publication.getTitle());
 		values.put(PublicationTable.COLUMN_ALREADY_READ, 0);
-
-		values.put(PublicationTable.COLUMN_PUBLICATION_DATE,
-				sdf.format(new Date()));
+		values.put(PublicationTable.COLUMN_PUBLICATION_DATE,sdf.format(new Date()));
 
 		return values;
 	}

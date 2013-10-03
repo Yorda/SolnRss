@@ -1,11 +1,13 @@
 package free.solnRss.adapter;
 
+import android.widget.ImageView;
 import android.widget.TextView;
 
 public class PublicationItem {
 
 	private TextView title;
 	private TextView name;
+	private ImageView alreadyRead;
 	private Integer isRead;
 
 	public TextView getTitle() {
@@ -30,6 +32,14 @@ public class PublicationItem {
 
 	public void setIsRead(Integer isRead) {
 		this.isRead = isRead;
+	}
+
+	public ImageView getAlreadyRead() {
+		return alreadyRead;
+	}
+
+	public void setAlreadyRead(ImageView alreadyRead) {
+		this.alreadyRead = alreadyRead;
 	}
 
 }

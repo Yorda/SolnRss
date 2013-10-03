@@ -4,13 +4,6 @@
 
     <CheckBoxPreference
         android:defaultValue="true"
-        android:key="pref_unread_font_weight"
-        android:summaryOff="@string/pref_view_font_weight_off"
-        android:summaryOn="@string/pref_view_font_weight_on"
-        android:title="@string/pref_view_font_weight" />
-
-    <CheckBoxPreference
-        android:defaultValue="true"
         android:key="pref_display_unread"
         android:summaryOff="@string/pref_summ_view_unread_off"
         android:summaryOn="@string/pref_summ_view_unread_on"

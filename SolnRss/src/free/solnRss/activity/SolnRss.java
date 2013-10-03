@@ -87,10 +87,8 @@ public class SolnRss extends Activity implements ActionBar.TabListener,
 	
 	@Override
 	public void onSharedPreferenceChanged(SharedPreferences shared, String key) {
-		if (key.compareTo("pref_unread_font_weight") == 0) {
-			publicationsListener.refreshPublications();
-		} 
-		else if (key.compareTo("pref_display_unread") == 0) {
+
+		if (key.compareTo("pref_display_unread") == 0) {
 			publicationsListener.refreshPublications();
 		} 
 		else if (key.compareTo("pref_delete_all_publications") == 0) {

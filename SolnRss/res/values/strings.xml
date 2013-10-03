@@ -13,7 +13,8 @@
     <string name="menu_show_already_read">See publications already read</string>
     <string name="menu_hide_already_read">Hide publications already read</string>
     <string name="menu_read_on_web_site">Read on the website.</string>
-    
+    <string name="read">Read</string>
+     
     <string name="action_bar_search">Recherche</string>
     <string name="stop_search">Set the interval to zero stops the search for new publications</string>
     <string name="please_wait">Please wait</string>

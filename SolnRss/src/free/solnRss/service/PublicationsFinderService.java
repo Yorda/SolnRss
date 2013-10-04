@@ -26,6 +26,7 @@ import android.os.ResultReceiver;
 import android.preference.PreferenceManager;
 import android.support.v4.app.NotificationCompat;
 import android.text.TextUtils;
+import android.util.Log;
 import android.util.SparseArray;
 import free.solnRss.R;
 import free.solnRss.activity.SolnRss;
@@ -37,6 +38,8 @@ import free.solnRss.provider.PublicationsProvider;
 import free.solnRss.provider.SyndicationsProvider;
 import free.solnRss.repository.PublicationTable;
 import free.solnRss.repository.SyndicationTable;
+import free.solnRss.utility.HttpUtil;
+import free.solnRss.utility.ReadabilityUtil;
 
 public class PublicationsFinderService extends IntentService {
 
@@ -46,6 +49,7 @@ public class PublicationsFinderService extends IntentService {
 	final DateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss",
 			Locale.FRENCH);
 	private boolean isWorking = false;
+	private ReadabilityUtil readabilityUtil = new ReadabilityUtil();
 
 	public PublicationsFinderService() {
 		super("PublicationsRefresh");
@@ -261,12 +265,12 @@ public class PublicationsFinderService extends IntentService {
 				"src=\"http://www.youtube.com/embed");
 	}
 
-	private ContentValues addNewPublication(Integer syndicationId,
-			Publication publication) {
+	private ContentValues addNewPublication(Integer syndicationId, Publication publication) {
+		
 		ContentValues values = new ContentValues();
 		values.put(PublicationTable.COLUMN_SYNDICATION_ID, syndicationId);
 		values.put(PublicationTable.COLUMN_LINK, publication.getUrl());
-		values.put(PublicationTable.COLUMN_PUBLICATION, makeFixInPublication(publication.getDescription()));
+		values.put(PublicationTable.COLUMN_PUBLICATION, getReadable(syndicationId, publication));
 		values.put(PublicationTable.COLUMN_TITLE, publication.getTitle());
 		values.put(PublicationTable.COLUMN_ALREADY_READ, 0);
 		values.put(PublicationTable.COLUMN_PUBLICATION_DATE,sdf.format(new Date()));
@@ -274,6 +278,25 @@ public class PublicationsFinderService extends IntentService {
 		return values;
 	}
 
+	private String getReadable(Integer syndicationId, Publication publication) {
+		String html = null;
+		String toRead = null;
+		try {
+			if (syndicationId == 41) {
+				html = HttpUtil.htmlFromSite(publication.getUrl());
+				toRead = readabilityUtil.getArticleText(html);
+			}
+			else {
+				toRead = makeFixInPublication(publication.getDescription());
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			Log.e(PublicationsFinderService.class.getName(),
+					"Error unable to retrieve a redeable article");
+		}
+		return toRead;
+	}
+	
 	private boolean isPublicationAlreadyRecorded(Integer syndicationId,
 			String title, String url) {
 		Uri uri = Uri.parse(PublicationsProvider.URI

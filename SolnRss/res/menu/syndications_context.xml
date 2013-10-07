@@ -17,6 +17,11 @@
         android:showAsAction="never"
         android:title="@string/undisplay_articles_on_time_line"/>
     <item
+        android:id="@+id/menu_rename"
+        android:orderInCategory="100"
+        android:showAsAction="never"
+        android:title="@string/rename"/>
+    <item
         android:id="@+id/menu_clean"
         android:orderInCategory="100"
         android:showAsAction="never"

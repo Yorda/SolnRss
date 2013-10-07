@@ -2,16 +2,16 @@ package free.solnRss.fragment;
 
 import android.app.AlertDialog;
 import android.content.ContentValues;
+import android.content.CursorLoader;
 import android.content.DialogInterface;
 import android.content.DialogInterface.OnClickListener;
 import android.content.Intent;
+import android.content.Loader;
+import android.content.res.Resources;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.content.CursorLoader;
-import android.content.Loader;
-import android.content.res.Resources;
 import android.text.TextUtils;
 import android.view.ContextMenu;
 import android.view.ContextMenu.ContextMenuInfo;
@@ -21,11 +21,13 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
+import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.Toast;
 import free.solnRss.R;
 import free.solnRss.activity.SolnRss;
 import free.solnRss.adapter.SyndicationAdapter;
+import free.solnRss.dialog.OneEditTextDialogBox;
 import free.solnRss.fragment.listener.SyndicationsFragmentListener;
 import free.solnRss.provider.PublicationsProvider;
 import free.solnRss.provider.SyndicationsProvider;
@@ -192,12 +194,40 @@ public class SyndicationsFragment extends AbstractFragment implements
 			delete();
 			break;
 
+		case R.id.menu_rename:
+			rename();
+			break;
+			
 		default:
 			break;
 		}
 		return super.onContextItemSelected(item);
 	}
 
+	private void rename() {
+		OneEditTextDialogBox oneEditTextDialogBox;
+		oneEditTextDialogBox = new OneEditTextDialogBox(getActivity(), 
+				syndicationName(selectedSyndicationID) ,
+				"Enter the new name",  
+				new DialogInterface.OnClickListener() {
+			@Override
+			public void onClick(DialogInterface dialog, int which) {
+				EditText e = (EditText)((AlertDialog)dialog).findViewById(R.id.one_edit_text_dialog);
+				renameSyndication(e.getText().toString());
+			}
+		});
+		oneEditTextDialogBox.displayDialogBox();
+	}
+	
+	private void renameSyndication(String newName){
+		Uri uri = Uri.parse(SyndicationsProvider.URI +  "/displayMode/" + selectedSyndicationID);
+		ContentValues values = new ContentValues();
+		values.put("syn_name",  newName);
+		getActivity().getContentResolver().update(uri, values, null, null);
+		getLoaderManager().restartLoader(0, null, this);
+		((SolnRss) getActivity()).refreshPublications();
+	}
+	
 	private void markSyndicationPublicationsAsRead() {
 
 		OnClickListener listener = new DialogInterface.OnClickListener() {

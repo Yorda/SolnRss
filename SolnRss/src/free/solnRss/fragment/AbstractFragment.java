@@ -192,7 +192,6 @@ public abstract class AbstractFragment extends ListFragment implements	OnQueryTe
 		setListShown(shown, false);
 	}
 	
-	
 	void displayAddItemDialog(AddItemDialog.Item item) {
 		
 		AddItemDialog dialog = new AddItemDialog();
@@ -201,5 +200,4 @@ public abstract class AbstractFragment extends ListFragment implements	OnQueryTe
 		dialog.setArguments(args);
 		dialog.show(getActivity().getFragmentManager(), "dialog_add_item");
 	}
-	
 }

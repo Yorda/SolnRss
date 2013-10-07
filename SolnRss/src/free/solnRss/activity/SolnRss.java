@@ -275,20 +275,12 @@ public class SolnRss extends Activity implements ActionBar.TabListener,
 		editor.commit();
 	}
 	
-	void openDialogForAddCategorie() {
+	private void openDialogForAddCategorie() {
 		displayAddItemDialog(AddItemDialog.Item.Category);
 	}
 
-	void openDialogForAddSyndication() {
+	private void openDialogForAddSyndication() {
 		displayAddItemDialog(AddItemDialog.Item.Site);
-	}
-
-	public void openDialogForAddSyndication(View v) {
-		displayAddItemDialog(AddItemDialog.Item.Site);
-	}
-	
-	public void openDialogForAddCategory(View v) {
-		displayAddItemDialog(AddItemDialog.Item.Category);
 	}
 	
 	void displayAddItemDialog(AddItemDialog.Item item) {
@@ -530,5 +522,4 @@ public class SolnRss extends Activity implements ActionBar.TabListener,
 			PublicationsFragmentListener publicationsFragmentListener) {
 		this.publicationsListener = publicationsFragmentListener;
 	}
-	
 }

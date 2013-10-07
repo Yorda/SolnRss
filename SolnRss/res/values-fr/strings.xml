@@ -14,7 +14,8 @@
     <string name="menu_hide_already_read">Cacher les publications lues</string>
     <string name="menu_read_on_web_site">Lire sur le site web</string>
     <string name="read">Lue</string>
-     
+    <string name="rename">Renommer</string>
+      
 	<string name="action_bar_search" >Recherche</string>
     <string name="stop_search">Définir l\'intervalle à zéro arrête la recherche de nouvelles publications</string>
     <string name="please_wait">Attendez SVP</string>
@@ -86,8 +87,8 @@
     <string name="mark_as_read_confirm">Considérer les publications comme lues ?</string>
     <string name="delete_confirm">Supprimer ce site et toutes ses publications ?</string>
     <string name="creation_date">Créer: %1$s</string>
-    
-
+     <string name="input_new_name">Entrez le nouveau nom</string>
+     
      <plurals name="syndication_number_of_click">
 		<item quantity="one">%1$s publication lue</item>
 		<item quantity="other">%1$s publications lues</item>

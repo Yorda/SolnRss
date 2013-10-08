@@ -27,11 +27,11 @@ import android.text.TextUtils;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.EditText;
 import android.widget.Toast;
 import free.solnRss.R;
 import free.solnRss.adapter.SectionsPagerAdapter;
-import free.solnRss.dialog.AddItemDialog;
-import free.solnRss.dialog.AddItemDialog.NewAddItemDialogListener;
+import free.solnRss.dialog.OneEditTextDialogBox;
 import free.solnRss.fragment.listener.CategoriesFragmentListener;
 import free.solnRss.fragment.listener.PublicationsFragmentListener;
 import free.solnRss.fragment.listener.SyndicationsFragmentListener;
@@ -39,7 +39,9 @@ import free.solnRss.service.PublicationsFinderService;
 import free.solnRss.service.SyndicationFinderService;
 
 public class SolnRss extends Activity implements ActionBar.TabListener,
-		SharedPreferences.OnSharedPreferenceChangeListener, NewAddItemDialogListener {
+		SharedPreferences.OnSharedPreferenceChangeListener {
+	
+	//NewAddItemDialogListener
 	
 	private SyndicationsFragmentListener syndicationsListener;
 	private CategoriesFragmentListener categoriesListener;
@@ -247,11 +249,6 @@ public class SolnRss extends Activity implements ActionBar.TabListener,
 			}
 			return true;
 			
-		/*case R.id.menu_display_all:
-			reLoadAllPublications();
-			viewPager.setCurrentItem(1);
-			return true;*/
-			
 		case R.id.menu_all_read:
 			markAllPublicationsAsRead();
 			return true;
@@ -260,8 +257,7 @@ public class SolnRss extends Activity implements ActionBar.TabListener,
 			viewPager.setCurrentItem(1);
 			reLoadAllPublications();
 			return true;
-
-			 
+			
 		default:
 			return super.onOptionsItemSelected(item);
 		}
@@ -276,36 +272,37 @@ public class SolnRss extends Activity implements ActionBar.TabListener,
 	}
 	
 	private void openDialogForAddCategorie() {
-		displayAddItemDialog(AddItemDialog.Item.Category);
+		
+		OneEditTextDialogBox oneEditTextDialogBox;
+		oneEditTextDialogBox = new OneEditTextDialogBox(this, 
+				getResources().getString(R.string.add_categorie) ,
+				getResources().getString(R.string.new_category_hint),  
+				new DialogInterface.OnClickListener() {
+			@Override
+			public void onClick(DialogInterface dialog, int which) {
+				EditText e = (EditText)((AlertDialog)dialog).findViewById(R.id.one_edit_text_dialog);
+				addCategorie(e.getText().toString());
+			}
+		});
+		
+		oneEditTextDialogBox.displayDialogBox();
 	}
 
 	private void openDialogForAddSyndication() {
-		displayAddItemDialog(AddItemDialog.Item.Site);
-	}
-	
-	void displayAddItemDialog(AddItemDialog.Item item) {
 		
-		AddItemDialog dialog = new AddItemDialog();
-		Bundle args = new Bundle();
-		args.putString("item", item.toString());
-		dialog.setArguments(args);
-		dialog.show(getFragmentManager(), "dialog_add_item");
-	}
-	
-	@Override
-	public void onFinishEditDialog(CharSequence seq, AddItemDialog.Item item) {
-		switch (item) {
-		case Site:
-			addSyndication(seq.toString());
-			break;
-
-		case Category:
-			addCategorie(seq.toString());
-			break;
-
-		default:
-			break;
-		}
+		OneEditTextDialogBox oneEditTextDialogBox;
+		oneEditTextDialogBox = new OneEditTextDialogBox(this, 
+				getResources().getString(R.string.add_site) ,
+				getResources().getString(R.string.new_syndication_hint),  
+				new DialogInterface.OnClickListener() {
+			@Override
+			public void onClick(DialogInterface dialog, int which) {
+				EditText e = (EditText)((AlertDialog)dialog).findViewById(R.id.one_edit_text_dialog);
+				addSyndication(e.getText().toString());
+			}
+		});
+		
+		oneEditTextDialogBox.displayDialogBox();
 	}
 	
 	/**

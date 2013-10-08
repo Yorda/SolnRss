@@ -208,7 +208,7 @@ public class SyndicationsFragment extends AbstractFragment implements
 		OneEditTextDialogBox oneEditTextDialogBox;
 		oneEditTextDialogBox = new OneEditTextDialogBox(getActivity(), 
 				syndicationName(selectedSyndicationID) ,
-				"Enter the new name",  
+				getResources().getString(R.string.input_new_name),  
 				new DialogInterface.OnClickListener() {
 			@Override
 			public void onClick(DialogInterface dialog, int which) {

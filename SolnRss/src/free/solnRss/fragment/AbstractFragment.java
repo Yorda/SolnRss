@@ -17,7 +17,6 @@ import android.widget.SearchView;
 import android.widget.SearchView.OnQueryTextListener;
 import android.widget.SimpleCursorAdapter;
 import free.solnRss.R;
-import free.solnRss.dialog.AddItemDialog;
 import free.solnRss.provider.CategoryProvider;
 import free.solnRss.provider.SyndicationsProvider;
 import free.solnRss.repository.CategoryTable;
@@ -190,14 +189,5 @@ public abstract class AbstractFragment extends ListFragment implements	OnQueryTe
 
 	public void setListShownNoAnimation(boolean shown) {
 		setListShown(shown, false);
-	}
-	
-	void displayAddItemDialog(AddItemDialog.Item item) {
-		
-		AddItemDialog dialog = new AddItemDialog();
-		Bundle args = new Bundle();
-		args.putString("item", item.toString());
-		dialog.setArguments(args);
-		dialog.show(getActivity().getFragmentManager(), "dialog_add_item");
 	}
 }

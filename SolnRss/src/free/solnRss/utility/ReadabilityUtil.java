@@ -54,7 +54,8 @@ public class ReadabilityUtil {
 		}
 
 		String bestMatchText = bestMatch.text();
-		return bestMatchText;
+		return StringUtil.unescapeHTML(bestMatchText);
+		//return bestMatchText;
 	}
 
 	/**

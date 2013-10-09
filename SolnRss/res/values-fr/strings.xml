@@ -15,7 +15,8 @@
     <string name="menu_read_on_web_site">Lire sur le site web</string>
     <string name="read">Lue</string>
     <string name="rename">Renommer</string>
-      
+     <string name="all">tous</string>
+     
 	<string name="action_bar_search" >Recherche</string>
     <string name="stop_search">Définir l\'intervalle à zéro arrête la recherche de nouvelles publications</string>
     <string name="please_wait">Attendez SVP</string>

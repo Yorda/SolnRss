@@ -565,8 +565,9 @@ public class PublicationsFragment extends AbstractFragment implements
 			}
 		};
 
+		String name = syndicationName(syndicationId);
 		AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());	
-		builder.setMessage(r.getString(R.string.confirm_mark_as_read, syndicationName(syndicationId)))
+		builder.setMessage(r.getString(R.string.confirm_mark_as_read, name)).setTitle(name)
 				.setNegativeButton(r.getString(android.R.string.cancel), null)
 				.setPositiveButton(r.getString(android.R.string.ok), listener)
 				.create().show();
@@ -593,30 +594,32 @@ public class PublicationsFragment extends AbstractFragment implements
 		OnClickListener listener = new DialogInterface.OnClickListener() {
 			@Override
 			public void onClick(DialogInterface dialog, int which) {
-				// CharSequence ok = null;
+				
 				if (selectedSyndicationID != null) {
 					markSyndicationPublicationsAsRead();
-					//ok = r.getString(R.string.all_publications_by_syndication_already_read, syndicationName());
+					
 				} else if (selectedCategoryID != null) {
 					markCategoryPublicationsAsRead();
-					//ok = r.getString(R.string.all_publications_by_category_already_read,categoryName());
+					
 				} else {
 					markAllPublicationsAsRead();
-					//ok = r.getString(R.string.all_publications_already_read);
 				}
-				//Toast.makeText(getActivity(), ok, Toast.LENGTH_LONG).show();
 			}
 		};
 
 		AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-		String who = " ";
-		if (selectedSyndicationID != null) {
-			who = " " + syndicationName() + " ";
-		} else if (selectedCategoryID != null) {
-			who = " " + categoryName() + " ";
-		}
 		
-		builder.setMessage(r.getString(R.string.confirm_mark_as_read, who))
+		String who = r.getString(R.string.all);
+		CharSequence title = getActivity().getTitle();
+		if (selectedSyndicationID != null) {
+			who = syndicationName();
+			title = who;
+		} else if (selectedCategoryID != null) {
+			who = categoryName();
+			title = who;
+		}
+				
+		builder.setMessage(r.getString(R.string.confirm_mark_as_read, who)).setTitle(title)
 				.setNegativeButton(r.getString(android.R.string.cancel), null)
 				.setPositiveButton(r.getString(android.R.string.ok), listener)
 				.create().show();

@@ -14,6 +14,7 @@
     <string name="menu_read_on_web_site">Read on the website.</string>
     <string name="read">Read</string>
     <string name="rename">Rename</string>
+    <string name="all">all</string>
     
     <string name="action_bar_search">Recherche</string>
     <string name="stop_search">Set the interval to zero stops the search for new publications</string>

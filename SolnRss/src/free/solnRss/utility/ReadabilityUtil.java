@@ -28,7 +28,7 @@ public class ReadabilityUtil {
 	 *            minor stuff.
 	 * @returns extracted article, all HTML tags stripped
 	 */
-	public String getArticleText(String html) throws Exception {
+	public String getArticleText(String html) throws Exception {		
 		Document doc = Jsoup.parse(html);
 		prepareDocument(doc);
 		// Element longest = null;
@@ -54,8 +54,7 @@ public class ReadabilityUtil {
 		}
 
 		String bestMatchText = bestMatch.text();
-		return StringUtil.unescapeHTML(bestMatchText);
-		//return bestMatchText;
+		return bestMatchText;
 	}
 
 	/**

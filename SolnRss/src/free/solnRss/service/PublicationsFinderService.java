@@ -26,7 +26,6 @@ import android.os.ResultReceiver;
 import android.preference.PreferenceManager;
 import android.support.v4.app.NotificationCompat;
 import android.text.TextUtils;
-import android.util.Log;
 import android.util.SparseArray;
 import free.solnRss.R;
 import free.solnRss.activity.SolnRss;
@@ -38,8 +37,6 @@ import free.solnRss.provider.PublicationsProvider;
 import free.solnRss.provider.SyndicationsProvider;
 import free.solnRss.repository.PublicationTable;
 import free.solnRss.repository.SyndicationTable;
-import free.solnRss.utility.HttpUtil;
-import free.solnRss.utility.ReadabilityUtil;
 
 public class PublicationsFinderService extends IntentService {
 
@@ -49,7 +46,7 @@ public class PublicationsFinderService extends IntentService {
 	final DateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss",
 			Locale.FRENCH);
 	private boolean isWorking = false;
-	private ReadabilityUtil readabilityUtil = new ReadabilityUtil();
+	//private ReadabilityUtil readabilityUtil = new ReadabilityUtil();
 
 	public PublicationsFinderService() {
 		super("PublicationsRefresh");
@@ -279,10 +276,12 @@ public class PublicationsFinderService extends IntentService {
 	}
 
 	private String getReadable(Integer syndicationId, Publication publication) {
-		String html = null;
+		
 		String toRead = null;
-		try {
-			if (syndicationId == 41) {
+		toRead = makeFixInPublication(publication.getDescription());
+		/*try {
+		   String html = null;
+			if (syndicationId == 41 || syndicationId == 27 || syndicationId == 6) {
 				html = HttpUtil.htmlFromSite(publication.getUrl());
 				toRead = readabilityUtil.getArticleText(html);
 			}
@@ -293,7 +292,7 @@ public class PublicationsFinderService extends IntentService {
 			e.printStackTrace();
 			Log.e(PublicationsFinderService.class.getName(),
 					"Error unable to retrieve a redeable article");
-		}
+		}*/
 		return toRead;
 	}
 	

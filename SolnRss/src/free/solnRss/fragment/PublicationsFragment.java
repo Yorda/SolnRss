@@ -3,7 +3,6 @@ package free.solnRss.fragment;
 import android.app.ActionBar;
 import android.app.AlertDialog;
 import android.content.ContentValues;
-import android.content.Context;
 import android.content.DialogInterface;
 import android.content.DialogInterface.OnClickListener;
 import android.content.Intent;
@@ -194,13 +193,17 @@ public class PublicationsFragment extends AbstractFragment implements
 		Cursor c = ((PublicationAdapter) getListAdapter()).getCursor();
 		c.moveToPosition(info.position);
 		
-		menu.setHeaderTitle(c.getString(c.getColumnIndex(SyndicationTable.COLUMN_NAME)));
-		
-		nextSelectedSyndicationID = c.getInt(c.getColumnIndex(PublicationTable.COLUMN_SYNDICATION_ID));
-		
+		menu.setHeaderTitle(c.getString(c
+				.getColumnIndex(SyndicationTable.COLUMN_NAME)));
+
+		nextSelectedSyndicationID = c.getInt(c
+				.getColumnIndex(PublicationTable.COLUMN_SYNDICATION_ID));
+
+		// menu.setHeaderTitle(syndicationName(nextSelectedSyndicationID));
+
 		MenuInflater inflater = getActivity().getMenuInflater();
 		inflater.inflate(R.menu.publications_context, menu);
-
+		
 		if (selectedSyndicationID != null) {
 			menu.getItem(0).setTitle(getResources().getString(R.string.display_all_publication));
 		}
@@ -353,18 +356,20 @@ public class PublicationsFragment extends AbstractFragment implements
 	private void clickOnPublicationItem(Cursor cursor, ListView l, View v,	int position, long id) {
 		
 		// Set this publication as already read
-		int publicationId = cursor.getInt(cursor
-				.getColumnIndex(PublicationTable.COLUMN_ID));
+		int publicationId = cursor.getInt(
+				cursor.getColumnIndex(PublicationTable.COLUMN_ID));
 
 		markPublicationAsRead(publicationId);
-
+		
 		// Add a click to the syndication
-		int syndicationId = cursor.getInt(cursor
-				.getColumnIndex(PublicationTable.COLUMN_SYNDICATION_ID));
+		int syndicationId = cursor.getInt(
+				cursor.getColumnIndex(PublicationTable.COLUMN_SYNDICATION_ID));
+		
 		addOneClickToSyndication(syndicationId);
 	}
 	
 	private void markPublicationAsRead(int publicationId) {
+		
 		ContentValues values = new ContentValues();
 		values.put(PublicationTable.COLUMN_ALREADY_READ, "1");
 		
@@ -372,37 +377,14 @@ public class PublicationsFragment extends AbstractFragment implements
 		String args[] = { String.valueOf(publicationId) };
 		
 		getActivity().getContentResolver().update(PublicationsProvider.URI, values, where, args);
-		refreshPublicationsAfterMarkAsRead(getActivity());
+		refreshPublications();
 	}
 	
 	private void addOneClickToSyndication(int syndicationId){
 		Uri uri = Uri.parse(SyndicationsProvider.URI + "/click/" + syndicationId);
 		ContentValues values = new ContentValues();
 		getActivity().getContentResolver().update(uri, values, null, null);
-	}
-	
-	private void refreshPublicationsAfterMarkAsRead(Context context) {
-
-		/*
-		 * Refresh publication after click on item list for hide it.
-		 * Use async task instead of content provider, because when calling intent for open browser
-		 * the loader manger don't refresh list view. why ????
-		 * if (this.selectedSyndicationID != null) { PublicationsReloaderTask
-		 * task = new PublicationsReloaderTask( this, context);
-		 * task.execute(this.selectedSyndicationID);
-		 * 
-		 * } else if (this.selectedCategoryID != null) {
-		 * PublicationsByCategoryReloaderTask task = new
-		 * PublicationsByCategoryReloaderTask( this, context);
-		 * task.execute(this.selectedCategoryID);
-		 * 
-		 * } else { PublicationsReloaderTask task = new
-		 * PublicationsReloaderTask( this, context);
-		 * task.execute(selectedSyndicationID); }
-		 */
-		refreshPublications();
-	}
-	
+	}	
 	
 	public void moveListViewToTop() {
 		getListView().setSelection(0);

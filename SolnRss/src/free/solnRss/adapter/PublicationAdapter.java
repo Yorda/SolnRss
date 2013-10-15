@@ -59,9 +59,7 @@ public class PublicationAdapter extends SimpleCursorAdapter {
 		item.getName().setText(Html.fromHtml("<b><u>" + name + "</b></u>"));
 
 		item.setIsRead(isRead == null ? 0 : isRead);
-
-		// Typeface tf =  TypeFaceSingleton.getInstance(context).getUserTypeFace();
-
+		
 		if (isRead != 0) {
 			item.getAlreadyRead().setVisibility(View.VISIBLE);
 		} else {
@@ -70,4 +68,45 @@ public class PublicationAdapter extends SimpleCursorAdapter {
 
 		return convertView;
 	}
+	/*
+	 * 
+	 * 
+	 String timeAgo = "";
+		try {
+			timeAgo = toTime(sdf.parse(getCursor().getString(7)), new Date());
+		} catch (Exception e) {
+		}
+
+	private final DateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss",Locale.FRENCH);
+	
+	private final long MILLIS_PER_SEC = 1000;
+	private final long MILLIS_PER_MIN = 60 * MILLIS_PER_SEC;
+	private final long MILLIS_PER_HOUR = 60 * MILLIS_PER_MIN;
+	private final long MILLIS_PER_DAY = 24 * MILLIS_PER_HOUR;
+	private final long MILLIS_PER_WEEK = 7 * MILLIS_PER_DAY;
+	private final long MILLIS_PER_MONTH = 4 * MILLIS_PER_WEEK;
+	private final long MILLIS_PER_YEAR = 12 * MILLIS_PER_MONTH;
+	
+	private String toTime(Date publicationDate, Date currentDate){
+
+		long diff = currentDate.getTime() - publicationDate.getTime();
+		
+		if (diff / MILLIS_PER_SEC < 1) {
+			return "One second";
+		} else if (diff / MILLIS_PER_MIN < 1) {
+			return diff / MILLIS_PER_SEC + " sec";
+		} else if (diff / MILLIS_PER_HOUR < 1) {
+			return diff / MILLIS_PER_MIN + " min";
+		} else if (diff / MILLIS_PER_DAY < 1) {
+			return diff / MILLIS_PER_HOUR + " hour";
+		} else if (diff / MILLIS_PER_WEEK < 1) {
+			return diff / MILLIS_PER_DAY + " day";
+		} else if (diff / MILLIS_PER_MONTH < 1) {
+			return diff / MILLIS_PER_WEEK + " week";
+		} else if (diff / MILLIS_PER_YEAR < 1) {
+			return diff / MILLIS_PER_MONTH + " month";
+		} else {
+			 return diff / MILLIS_PER_YEAR + " year";
+		}
+	}*/
 }

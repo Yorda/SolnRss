@@ -1,7 +1,5 @@
 package free.solnRss.provider;
 
-
-
 import android.content.ContentProvider;
 import android.content.ContentValues;
 import android.content.UriMatcher;
@@ -23,7 +21,6 @@ public class PublicationsProvider extends ContentProvider {
 	public  final static Uri URI = 
 			Uri.parse("content://" + AUTHORITY + "/" + PUBLICATION_PATH);
 	
-	//private Database repository;
 	private final static String syndicationTable = SyndicationTable.SYNDICATION_TABLE;
 	private final static String publicationTable = PublicationTable.PUBLICATION_TABLE;
 	
@@ -39,6 +36,7 @@ public class PublicationsProvider extends ContentProvider {
 			syndicationTable + "." + SyndicationTable.COLUMN_NAME,
 			publicationTable + "." + PublicationTable.COLUMN_PUBLICATION,
 			publicationTable + "." + PublicationTable.COLUMN_SYNDICATION_ID };
+			//publicationTable + "." + PublicationTable.COLUMN_PUBLICATION_DATE};
 	
 	@Override
 	public boolean onCreate() {
@@ -68,17 +66,6 @@ public class PublicationsProvider extends ContentProvider {
 		return cursor;
 	}
 	
-	private String maxItemsInList() {
-		int max = PreferenceManager.getDefaultSharedPreferences(getContext())
-				.getInt("pref_max_publication_item", 100);
-		return Integer.valueOf(max).toString();
-	}
-	
-	@Override
-	public int bulkInsert(Uri uri, ContentValues[] values) {
-		return super.bulkInsert(uri, values);
-	}
-	
 	@Override
 	public Uri insert(Uri uri, ContentValues values) {
 		
@@ -102,8 +89,7 @@ public class PublicationsProvider extends ContentProvider {
 		
 		int rowsUpdated = 0;
 		SQLiteDatabase db = RepositoryHelper.getInstance(getContext()).getWritableDatabase();
-		rowsUpdated = db.update(PublicationTable.PUBLICATION_TABLE,
-					values, selection, selectionArgs);
+		rowsUpdated = db.update(PublicationTable.PUBLICATION_TABLE, values, selection, selectionArgs);
 		getContext().getContentResolver().notifyChange(uri, null);
 		return rowsUpdated;
 	}
@@ -113,6 +99,17 @@ public class PublicationsProvider extends ContentProvider {
 		SQLiteDatabase db = RepositoryHelper.getInstance(getContext()).getWritableDatabase();
 		db.delete(PublicationTable.PUBLICATION_TABLE, null, null);
 		return 0;
+	}
+	
+	@Override
+	public int bulkInsert(Uri uri, ContentValues[] values) {
+		return super.bulkInsert(uri, values);
+	}
+	
+	private String maxItemsInList() {
+		int max = PreferenceManager.getDefaultSharedPreferences(getContext())
+				.getInt("pref_max_publication_item", 100);
+		return Integer.valueOf(max).toString();
 	}
 	
 	@Override

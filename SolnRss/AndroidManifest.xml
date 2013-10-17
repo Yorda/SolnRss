@@ -70,6 +70,11 @@
             android:authorities="com.solnRss.provider.categoryprovider"
             android:exported="false" >
         </provider>
+        <provider
+            android:name=".provider.SolnRssProvider"
+            android:authorities="com.solnRss.provider.solnRssProvider"
+            android:exported="false" >
+        </provider>
 
         <!-- RECEIVER -->
         <receiver android:name="free.solnRss.receiver.AfterDeviceBootReceiver" >

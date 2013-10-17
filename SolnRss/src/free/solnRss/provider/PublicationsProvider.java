@@ -42,21 +42,21 @@ public class PublicationsProvider extends ContentProvider {
 	public boolean onCreate() {
 		uriMatcher = new UriMatcher(UriMatcher.NO_MATCH);
 		uriMatcher.addURI(AUTHORITY, PUBLICATION_PATH, PUBLICATIONS);
+		queryBuilder.setTables(tables);
 		return true;
 	}
+	
+	SQLiteQueryBuilder queryBuilder = new SQLiteQueryBuilder();
 	
 	public static final String tables = publicationTable + " LEFT JOIN "
 			+ syndicationTable + " ON " + syndicationTable + "."
 			+ SyndicationTable.COLUMN_ID + " = " + publicationTable + "."
 			+ PublicationTable.COLUMN_SYNDICATION_ID;
 
+	
+	
 	@Override
 	public Cursor query(Uri uri, String[] projection, String selection, String[] args, String sort) {
-		
-		SQLiteQueryBuilder queryBuilder = new SQLiteQueryBuilder();
-		// Set the table
-		queryBuilder.setTables(tables);
-		
 		SQLiteDatabase db = RepositoryHelper.getInstance(getContext()).getReadableDatabase();
 		Cursor cursor = queryBuilder.query(db, projection, selection,
 				args, null, null,

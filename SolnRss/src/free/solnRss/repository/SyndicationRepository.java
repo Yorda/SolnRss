@@ -24,6 +24,8 @@ public class SyndicationRepository {
 		this.context = context;
 	}
 
+	public static final String syndicationTable = SyndicationTable.SYNDICATION_TABLE;
+	
 	/**
 	 * Set a syndication inactive
 	 * The articles list will be not updated

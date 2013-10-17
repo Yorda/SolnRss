@@ -5,8 +5,11 @@ import java.util.List;
 
 import android.content.Context;
 import android.content.CursorLoader;
+import android.net.Uri;
+import android.preference.PreferenceManager;
 import android.text.TextUtils;
 import free.solnRss.provider.PublicationsProvider;
+import free.solnRss.provider.SolnRssProvider;
 
 public class PublicationRepository {
 
@@ -16,8 +19,22 @@ public class PublicationRepository {
 		this.context = context;
 	}
 
+	Uri uri = Uri.parse(SolnRssProvider.URI + "/publication");
+	
 	private StringBuilder selection = new StringBuilder();
 	private List<String> args = new ArrayList<String>();
+	
+	public static final String publicationTable = PublicationTable.PUBLICATION_TABLE;
+
+	public static final String projection[] = new String[] {
+			publicationTable + "." + PublicationTable.COLUMN_ID,
+			publicationTable + "." + PublicationTable.COLUMN_TITLE,
+			publicationTable + "." + PublicationTable.COLUMN_LINK,
+			publicationTable + "." + PublicationTable.COLUMN_ALREADY_READ,
+			SyndicationRepository.syndicationTable + "." + SyndicationTable.COLUMN_NAME,
+			publicationTable + "." + PublicationTable.COLUMN_PUBLICATION,
+			publicationTable + "." + PublicationTable.COLUMN_SYNDICATION_ID 
+		};
 
 	
 	/**
@@ -76,9 +93,20 @@ public class PublicationRepository {
 			selection.append(" = 0 ");
 		}
 		
-		return new CursorLoader(context, PublicationsProvider.URI,
+		/*return new CursorLoader(context, PublicationsProvider.URI,
+				PublicationsProvider.projection, selection.toString(),
+				args.toArray(new String[args.size()]), null);*/
+		
+		
+		return new CursorLoader(context, uri,
 				PublicationsProvider.projection, selection.toString(),
 				args.toArray(new String[args.size()]), null);
 		
+	}
+	
+	public static String publicationsQueryLimit(Context context) {
+		int max = PreferenceManager.getDefaultSharedPreferences(context)
+				.getInt("pref_max_publication_item", 100);
+		return Integer.valueOf(max).toString();
 	}
 }

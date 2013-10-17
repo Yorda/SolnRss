@@ -79,9 +79,7 @@ public class SyndicationFinderService extends IntentService {
 				&& cm.getActiveNetworkInfo().isConnected()) {
 			return true;
 		}
-
-		processNotification(numberOfSteps, 
-				getString(R.string.no_connection));
+		processNotification(numberOfSteps, getString(R.string.no_connection));
 		return false;
 	}
 

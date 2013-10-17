@@ -3,7 +3,6 @@ package free.solnRss.activity;
 import android.app.ActionBar;
 import android.app.ActionBar.Tab;
 import android.app.Activity;
-import android.app.AlarmManager;
 import android.app.AlertDialog;
 import android.app.FragmentTransaction;
 import android.app.NotificationManager;
@@ -19,7 +18,6 @@ import android.net.ConnectivityManager;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.ResultReceiver;
-import android.os.SystemClock;
 import android.preference.PreferenceManager;
 import android.support.v4.view.ViewPager;
 import android.text.Html;
@@ -31,22 +29,24 @@ import android.widget.EditText;
 import android.widget.Toast;
 import free.solnRss.R;
 import free.solnRss.adapter.SectionsPagerAdapter;
+import free.solnRss.alarmManager.FindNewPublicationsAlarmManager;
 import free.solnRss.dialog.OneEditTextDialogBox;
 import free.solnRss.fragment.listener.CategoriesFragmentListener;
 import free.solnRss.fragment.listener.PublicationsFragmentListener;
 import free.solnRss.fragment.listener.SyndicationsFragmentListener;
-import free.solnRss.service.PublicationsFinderService;
 import free.solnRss.service.SyndicationFinderService;
 
 public class SolnRss extends Activity implements ActionBar.TabListener,
 		SharedPreferences.OnSharedPreferenceChangeListener {
 	
-	//NewAddItemDialogListener
-	
+	public static enum SERVICE_RESULT {
+		NEW_SYNDICATION, NEW_PUBLICATIONS
+	}
+
 	private SyndicationsFragmentListener syndicationsListener;
 	private CategoriesFragmentListener categoriesListener;
 	private PublicationsFragmentListener publicationsListener;
-
+	
 	private SectionsPagerAdapter sectionPageAdapter;
 	private ViewPager viewPager;
 	
@@ -72,19 +72,16 @@ public class SolnRss extends Activity implements ActionBar.TabListener,
 	@Override
 	protected void onResume() {
 		super.onResume();
-		//Log.e(SolnRss.this.getClass().getName(), "RESUME");
 	}
 	
 	@Override
 	protected void onStop() {
 		super.onStop();
-		//Log.e(SolnRss.this.getClass().getName(), "STOP");
 	}
 	
 	@Override
 	protected void onDestroy() {
 		super.onDestroy();
-		//Log.e(SolnRss.this.getClass().getName(), "DESTROY");
 	}
 	
 	@Override
@@ -105,38 +102,16 @@ public class SolnRss extends Activity implements ActionBar.TabListener,
 		else if (key.compareTo("pref_sort_categories") == 0) {
 			categoriesListener.reloadCategories();
 		} 
-		else if (key.compareTo("pref_search_publication_time") == 0) {
-			mamageRefreshPublicationTimer();
-		}
 	}
 
-	public void mamageRefreshPublicationTimer() {
-
-		SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(this);
-
-		int timeInMinute = pref.getInt("pref_search_publication_time", 15);
-
-		Intent intent = new Intent(this, PublicationsFinderService.class);
+	public void registerPreferenceManager() {
+		PreferenceManager.getDefaultSharedPreferences(this)
+				.registerOnSharedPreferenceChangeListener(this);
 		
-		PendingIntent pendingIntent = PendingIntent.getService(this, 0, intent, 0);
-
-		AlarmManager alarmManager = (AlarmManager) this	.getSystemService(Context.ALARM_SERVICE);
-
-		if (timeInMinute == 0) {
-			// Stop the search
-			alarmManager.cancel(pendingIntent);			
-		} else {
-
-			long lastRefreshTime = pref.getLong("publicationsLastRefresh", 0);
-			long nextRefreshTime = SystemClock.elapsedRealtime() + 10000;
-			long timeInMili = 60000 * timeInMinute;
-
-			if (lastRefreshTime > 0) {
-				nextRefreshTime = Math.max(nextRefreshTime, lastRefreshTime
-						+ timeInMili);
-			}
-			alarmManager.setRepeating(AlarmManager.RTC_WAKEUP, nextRefreshTime, timeInMili, pendingIntent);
-		}
+		SharedPreferences pref = PreferenceManager
+				.getDefaultSharedPreferences(this);
+		
+		FindNewPublicationsAlarmManager.createInstance(pref, this);
 	}
 
 	private boolean displayAlreadyReadPublications() {
@@ -154,7 +129,6 @@ public class SolnRss extends Activity implements ActionBar.TabListener,
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		
-		//Log.e("SolnRss", "CREATE ACTIVITY ID " + this.toString());
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_soln_rss);
 
@@ -198,12 +172,10 @@ public class SolnRss extends Activity implements ActionBar.TabListener,
 		actionBar.addTab(actionBar.newTab().setIcon(R.drawable.ic_tab_earth)
 				.setTabListener(this));
 
-		PreferenceManager.getDefaultSharedPreferences(this)
-				.registerOnSharedPreferenceChangeListener(this);
-		
 		removeNotification();
 		viewPager.setCurrentItem(1);
-		mamageRefreshPublicationTimer();
+		
+		registerPreferenceManager();		
 	}
 
 	
@@ -388,7 +360,70 @@ public class SolnRss extends Activity implements ActionBar.TabListener,
 		    viewPager.setCurrentItem(tab.getPosition());
 		}
 	}
+	
+	/**
+	 * Call by a click on notification for refresh publication list
+	 */
+	protected void onNewIntent(Intent intent) {
+		super.onNewIntent(intent);
+	    setIntent(intent);
+	    
+		Bundle b = getIntent().getExtras();
+		SERVICE_RESULT serviceResult = (SERVICE_RESULT) b.getSerializable("SERVICE_RESULT");
+		
+		if (serviceResult.compareTo(SERVICE_RESULT.NEW_SYNDICATION) == 0) {
+			String newSyndicationId = intent.getStringExtra("newSyndicationId");
+			if (newSyndicationId != null) {
+				reLoadPublicationsBySyndication(Integer.valueOf(newSyndicationId));
+			}
+		} else if (serviceResult.compareTo(SERVICE_RESULT.NEW_PUBLICATIONS) == 0) {
+			reLoadAllPublications();
+		}
+	};
+	
+	private void warmUser(String msg) {
+		String ok = getResources().getString(android.R.string.ok);
 
+		AlertDialog.Builder builder = new AlertDialog.Builder(this);
+		builder.setMessage(msg);
+
+		OnClickListener listener = new DialogInterface.OnClickListener() {
+			public void onClick(DialogInterface dialog, int which) {
+				dialog.cancel();
+			}
+		};
+		builder.setPositiveButton(ok, listener);
+
+		builder.create();
+		AlertDialog dialog = builder.create();
+		dialog.show();
+	}
+	
+	public boolean isOnline() {
+		ConnectivityManager cm = (ConnectivityManager) this
+				.getSystemService(Context.CONNECTIVITY_SERVICE);
+		return cm.getActiveNetworkInfo() != null
+				&& cm.getActiveNetworkInfo().isConnectedOrConnecting();
+	}
+
+	public void setCategoriesFragmentListener(CategoriesFragmentListener categoriesFragmentListener) {
+		this.categoriesListener = categoriesFragmentListener;
+	}
+
+	public SyndicationsFragmentListener getSyndicationsFragmentListener() {
+		return syndicationsListener;
+	}
+
+	public void setSyndicationsFragmentListener(
+			SyndicationsFragmentListener syndicationsFragmentListener) {
+		this.syndicationsListener = syndicationsFragmentListener;
+	}
+
+	public void setPublicationsFragmentListener(
+			PublicationsFragmentListener publicationsFragmentListener) {
+		this.publicationsListener = publicationsFragmentListener;
+	}
+	
 	@Override
 	public void onTabUnselected(Tab tab,
 			FragmentTransaction fragmentTransaction) {
@@ -436,7 +471,7 @@ public class SolnRss extends Activity implements ActionBar.TabListener,
 		publicationsListener.reloadPublicationsWithAlreadyRead();
 		publicationsListener.moveListViewToTop();
 	}
-
+	
 	public void reLoadAllPublications(View v) {
 		reLoadAllPublications();
 	}
@@ -449,74 +484,5 @@ public class SolnRss extends Activity implements ActionBar.TabListener,
 
 	public void refreshSyndications() {
 		syndicationsListener.reloadSyndications();
-	}
-	
-	public static enum SERVICE_RESULT {
-		NEW_SYNDICATION,
-		NEW_PUBLICATIONS
-	}
-	
-	/**
-	 * Call by a click on notification for refresh publication list
-	 */
-	protected void onNewIntent(Intent intent) {
-		super.onNewIntent(intent);
-	    setIntent(intent);
-	    
-		Bundle b = getIntent().getExtras();
-		SERVICE_RESULT serviceResult = (SERVICE_RESULT) b.getSerializable("SERVICE_RESULT");
-		
-		if (serviceResult.compareTo(SERVICE_RESULT.NEW_SYNDICATION) == 0) {
-			String newSyndicationId = intent.getStringExtra("newSyndicationId");
-			if (newSyndicationId != null) {
-				reLoadPublicationsBySyndication(Integer.valueOf(newSyndicationId));
-			}
-		} else if (serviceResult.compareTo(SERVICE_RESULT.NEW_PUBLICATIONS) == 0) {
-			reLoadAllPublications();
-		}
-	};
-	
-	private void warmUser(String msg) {
-		String ok = getResources().getString(android.R.string.ok);
-
-		AlertDialog.Builder builder = new AlertDialog.Builder(this);
-		builder.setMessage(msg);
-
-		OnClickListener listener = new DialogInterface.OnClickListener() {
-			public void onClick(DialogInterface dialog, int which) {
-				dialog.cancel();
-			}
-		};
-		builder.setPositiveButton(ok, listener);
-
-		builder.create();
-		AlertDialog dialog = builder.create();
-		dialog.show();
-	}
-	
-	public boolean isOnline() {
-	    ConnectivityManager cm = (ConnectivityManager) 
-	        this.getSystemService(Context.CONNECTIVITY_SERVICE);
-
-	    return cm.getActiveNetworkInfo() != null && 
-	       cm.getActiveNetworkInfo().isConnectedOrConnecting();
-	}
-	
-	public void setCategoriesFragmentListener(CategoriesFragmentListener categoriesFragmentListener) {
-		this.categoriesListener = categoriesFragmentListener;
-	}
-
-	public SyndicationsFragmentListener getSyndicationsFragmentListener() {
-		return syndicationsListener;
-	}
-
-	public void setSyndicationsFragmentListener(
-			SyndicationsFragmentListener syndicationsFragmentListener) {
-		this.syndicationsListener = syndicationsFragmentListener;
-	}
-
-	public void setPublicationsFragmentListener(
-			PublicationsFragmentListener publicationsFragmentListener) {
-		this.publicationsListener = publicationsFragmentListener;
 	}
 }

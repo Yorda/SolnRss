@@ -16,6 +16,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 import free.solnRss.R;
 
+@Deprecated
 public class SeekBarPreference extends Preference implements
 		OnSeekBarChangeListener {
 

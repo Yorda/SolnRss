@@ -15,7 +15,6 @@
     <string name="read">Read</string>
     <string name="rename">Rename</string>
     <string name="all">all</string>
-    
     <string name="action_bar_search">Recherche</string>
     <string name="stop_search">Set the interval to zero stops the search for new publications</string>
     <string name="please_wait">Please wait</string>
@@ -60,7 +59,8 @@
     <string name="site_record_error">Error with the database. The insertion of new publications failed</string>
     <string name="site_already_recorded">A website with the address already exists</string>
     <string name="load_syndication">Search RSS. Please wait</string>
-    <string name="no_connection">No internet connection in operation.</string>
+    <string name="no_connection">No internet connection is in operation.</string>
+    <string name="no_connection_wifi">Connection is limited to WIFI. You can change this in the parameters</string>
     <string name="http_get_error">Error, unable to contact the website.</string>
     <string name="bad_url">Error, Unable to contact the web site, please check your input.</string>
     <string name="empty_url">Enter a correct website address, please check your input</string>
@@ -122,6 +122,12 @@
     <string name="pref_publication_item_number">Numbers of items in publication list</string>
     <string name="pref_delete_all_publications">Delete all publications</string>
     <string name="pref_delete_all_publications_confirm">It will delete all publications stored in database. Are you sure ?</string>
+    <string name="pref_not_run_on_boot">The updating process is launched after the application start</string>
+    <string name="pref_run_on_boot">The updating process is launched after the device boot</string>
+    <string name="pref_how_to_start_refresh">Updating process</string>
+    <string name="pref_use_wifi_only">Use wifi only</string>
+    <string name="pref_use_all_connection">Use all types of connection</string>
+    <string name="pref_what_type_of_connection">Connection type</string>
 
     <!-- Category -->
     <string name="empty_categories">No categories to display</string>

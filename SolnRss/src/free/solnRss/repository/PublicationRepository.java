@@ -31,11 +31,10 @@ public class PublicationRepository {
 			publicationTable + "." + PublicationTable.COLUMN_TITLE,
 			publicationTable + "." + PublicationTable.COLUMN_LINK,
 			publicationTable + "." + PublicationTable.COLUMN_ALREADY_READ,
-			SyndicationRepository.syndicationTable + "." + SyndicationTable.COLUMN_NAME,
+			SyndicationTable.SYNDICATION_TABLE + "."
+					+ SyndicationTable.COLUMN_NAME,
 			publicationTable + "." + PublicationTable.COLUMN_PUBLICATION,
-			publicationTable + "." + PublicationTable.COLUMN_SYNDICATION_ID 
-		};
-
+			publicationTable + "." + PublicationTable.COLUMN_SYNDICATION_ID };
 	
 	/**
 	 * Clean the publications list in table for a syndication

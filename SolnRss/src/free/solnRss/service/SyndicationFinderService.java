@@ -6,7 +6,6 @@ import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
-import android.net.ConnectivityManager;
 import android.os.Bundle;
 import android.os.ResultReceiver;
 import android.support.v4.app.NotificationCompat;
@@ -15,6 +14,7 @@ import free.solnRss.R;
 import free.solnRss.activity.SolnRss;
 import free.solnRss.business.SyndicationBusiness;
 import free.solnRss.business.impl.SyndicationBusinessImpl;
+import free.solnRss.manager.UpdatingProcessConnectionManager;
 import free.solnRss.model.Syndication;
 import free.solnRss.repository.SyndicationRepository;
 import free.solnRss.utility.HttpUtil;
@@ -72,7 +72,7 @@ public class SyndicationFinderService extends IntentService {
 	}
 
 	// 1 - Is the device connected ?
-	public boolean isOnline() {
+	/*public boolean isOnline() {
 		ConnectivityManager cm = (ConnectivityManager) getApplication()
 				.getSystemService(Context.CONNECTIVITY_SERVICE);
 		if (cm.getActiveNetworkInfo() != null
@@ -81,7 +81,7 @@ public class SyndicationFinderService extends IntentService {
 		}
 		processNotification(numberOfSteps, getString(R.string.no_connection));
 		return false;
-	}
+	}*/
 
 	// 2 - Is the URL is ok ?
 	protected boolean isUrlIsright(String url) {
@@ -220,7 +220,8 @@ public class SyndicationFinderService extends IntentService {
 			// step = 0;
 			String url = intent.getStringExtra("url");
 
-			if (!isOnline()) {
+			if (!UpdatingProcessConnectionManager
+					.canUseConnection(getApplicationContext())) {
 				return;
 			}
 

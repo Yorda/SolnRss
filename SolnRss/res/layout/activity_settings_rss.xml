@@ -41,11 +41,11 @@
         android:defaultValue="15"
         android:key="pref_search_publication_time"
         android:title="@string/pref_search_publication_time" />
-    
-     <free.solnRss.preference.ItemSeekBarPreference
+
+    <free.solnRss.preference.ItemSeekBarPreference
         android:defaultValue="100"
         android:key="pref_max_publication_item"
-        android:title="@string/pref_publication_item_number" />     
+        android:title="@string/pref_publication_item_number" />
 
     <free.solnRss.preference.DeleteAllPublicationsPreferences
         android:dialogMessage="@string/pref_delete_all_publications_confirm"
@@ -54,5 +54,19 @@
         android:negativeButtonText="@android:string/cancel"
         android:positiveButtonText="@android:string/ok"
         android:title="@string/pref_delete_all_publications" />
+
+    <CheckBoxPreference
+        android:defaultValue="true"
+        android:key="pref_how_to_start_refresh"
+        android:summaryOff="@string/pref_not_run_on_boot"
+        android:summaryOn="@string/pref_run_on_boot"
+        android:title="@string/pref_how_to_start_refresh" />
+
+    <CheckBoxPreference
+        android:defaultValue="true"
+        android:key="pref_what_type_of_connection"
+        android:summaryOff="@string/pref_use_all_connection"
+        android:summaryOn="@string/pref_use_wifi_only"
+        android:title="@string/pref_what_type_of_connection" />
 
 </PreferenceScreen>

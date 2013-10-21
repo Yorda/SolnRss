@@ -8,13 +8,11 @@ import android.app.FragmentTransaction;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.app.PendingIntent.CanceledException;
-import android.content.Context;
 import android.content.DialogInterface;
 import android.content.DialogInterface.OnClickListener;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.drawable.ColorDrawable;
-import android.net.ConnectivityManager;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.ResultReceiver;
@@ -34,6 +32,7 @@ import free.solnRss.dialog.OneEditTextDialogBox;
 import free.solnRss.fragment.listener.CategoriesFragmentListener;
 import free.solnRss.fragment.listener.PublicationsFragmentListener;
 import free.solnRss.fragment.listener.SyndicationsFragmentListener;
+import free.solnRss.manager.UpdatingProcessConnectionManager;
 import free.solnRss.service.SyndicationFinderService;
 
 public class SolnRss extends Activity implements ActionBar.TabListener,
@@ -175,7 +174,7 @@ public class SolnRss extends Activity implements ActionBar.TabListener,
 		removeNotification();
 		viewPager.setCurrentItem(1);
 		
-		registerPreferenceManager();		
+		registerPreferenceManager();
 	}
 
 	
@@ -292,8 +291,8 @@ public class SolnRss extends Activity implements ActionBar.TabListener,
 	
 	public void addSyndication(String url) {
 
-		if (!isOnline()) {
-			warmUser(getResources().getString(R.string.no_connection));
+		if (!UpdatingProcessConnectionManager.canUseConnection(getApplicationContext())) {
+			warmUser(UpdatingProcessConnectionManager.noConnectionReason());
 			return;
 		}
 
@@ -399,12 +398,13 @@ public class SolnRss extends Activity implements ActionBar.TabListener,
 		dialog.show();
 	}
 	
-	public boolean isOnline() {
+	/*public boolean isOnline() {
 		ConnectivityManager cm = (ConnectivityManager) this
 				.getSystemService(Context.CONNECTIVITY_SERVICE);
 		return cm.getActiveNetworkInfo() != null
 				&& cm.getActiveNetworkInfo().isConnectedOrConnecting();
-	}
+	}*/
+	
 
 	public void setCategoriesFragmentListener(CategoriesFragmentListener categoriesFragmentListener) {
 		this.categoriesListener = categoriesFragmentListener;

@@ -17,7 +17,6 @@ import free.solnRss.model.Publication;
 import free.solnRss.model.Syndication;
 
 public class SyndicationRepository {
-
 	final DateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.FRENCH);
 	private Context context;
 	public SyndicationRepository(Context context) {
@@ -32,15 +31,11 @@ public class SyndicationRepository {
 	 * @param id
 	 */
 	public void changeActiveStatus(Integer id, Integer status) {
-
 		String[] whereArgs = new String[] { id.toString() };
-
 		ContentValues values = new ContentValues();
 		values.put("syn_is_active", status);
-
 		RepositoryHelper.getInstance(context).getWritableDatabase()
 				.update("d_syndication", values, "_id = ? ", whereArgs);
-
 	}
 	
 	/**
@@ -56,15 +51,12 @@ public class SyndicationRepository {
 			db.beginTransaction();
 			db.delete("d_categorie_syndication",
 					" syn_syndication_id = ? ", whereArgs);
-			db.delete("d_publication", "syn_syndication_id = ? ",
-					whereArgs);
+			db.delete("d_publication", "syn_syndication_id = ? ", whereArgs);
 			db.delete("d_syndication", "_id = ? ", whereArgs);
 			db.setTransactionSuccessful();
 		} finally {
 			db.endTransaction();
-
 		}
-
 	}
 	
 	/**
@@ -107,7 +99,7 @@ public class SyndicationRepository {
 	}
 	
 	public Cursor syndicationCategorie(Integer categorieId) {
-		;
+
 		List<String> arr = new ArrayList<String>();
 
 		StringBuilder sb = new StringBuilder();
@@ -123,22 +115,16 @@ public class SyndicationRepository {
 		return RepositoryHelper.getInstance(context).getReadableDatabase().rawQuery(sb.toString(),
 				arr.toArray(new String[arr.size()]));
 	}
-	
-	public Cursor fetchAllSite() {
-		String[] columns = { "_id", "syn_name", "syn_url", "syn_is_active", "syn_number_click" };
-		return RepositoryHelper.getInstance(context).getReadableDatabase()
-			.query("d_syndication", columns, null, null, null, null,	" syn_number_click desc ", null);
-	}
-	
+
 	public boolean isStillRecorded(String url) {
 		String[] selectionArgs = new String[1];
 		selectionArgs[0] = url;
-		Cursor c = RepositoryHelper.getInstance(context).getReadableDatabase().rawQuery(
-				"select * from d_syndication where syn_website_url = ? ",
-				selectionArgs);
-		
+		Cursor c = RepositoryHelper
+				.getInstance(context)
+				.getReadableDatabase()
+				.rawQuery("select * from d_syndication where syn_website_url = ? ",	selectionArgs);
+
 		int count = c.getCount();
-		
 
 		if (count > 0)
 			return true;
@@ -192,6 +178,14 @@ public class SyndicationRepository {
 		return newIdInserted;
 	}
 
+	@Deprecated
+	public Cursor fetchAllSite() {
+		String[] columns = { "_id", "syn_name", "syn_url", "syn_is_active", "syn_number_click" };
+		return RepositoryHelper.getInstance(context).getReadableDatabase()
+			.query("d_syndication", columns, null, null, null, null,	" syn_number_click desc ", null);
+	}
+	
+	@Deprecated
 	public void updateLastExtractTime(Integer id) {
 
 		String now = sdf.format(new Date());

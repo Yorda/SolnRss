@@ -19,7 +19,6 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.Resources;
 import android.database.Cursor;
-import android.net.ConnectivityManager;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.ResultReceiver;
@@ -31,6 +30,7 @@ import free.solnRss.R;
 import free.solnRss.activity.SolnRss;
 import free.solnRss.business.SyndicationBusiness;
 import free.solnRss.business.impl.SyndicationBusinessImpl;
+import free.solnRss.manager.UpdatingProcessConnectionManager;
 import free.solnRss.model.Publication;
 import free.solnRss.model.Syndication;
 import free.solnRss.provider.PublicationsProvider;
@@ -144,13 +144,15 @@ public class PublicationsFinderService extends IntentService {
 
 	private void refreshPublications(List<Syndication> syndications) {
 
-		if (!isOnline() || syndications.size() <= 0 || isWorking) {
+		if (!UpdatingProcessConnectionManager
+				.canUseConnection(getApplicationContext())
+				|| syndications.size() <= 0 || isWorking) {
 			return;
 		}
 		try {
 			isWorking = true;
 			for (Syndication syndication : syndications) {
-				if (isOnline()) {
+				if (UpdatingProcessConnectionManager.canUseConnection(getApplicationContext())) {
 					// Log.e(this.getClass().getName(),"Get new publications for syndication name "+
 					// syndication.getName());
 					findNewPublication(syndication);
@@ -371,13 +373,13 @@ public class PublicationsFinderService extends IntentService {
 	 * Check if device is connected to Internet
 	 * 
 	 * @return
-	 */
+	 
 	public boolean isOnline() {
 		ConnectivityManager cm = (ConnectivityManager) getApplication()
 				.getSystemService(Context.CONNECTIVITY_SERVICE);
 		return cm.getActiveNetworkInfo() != null
 				&& cm.getActiveNetworkInfo().isConnected();
-	}
+	}*/
 
 	public boolean mustDisplayNotification() {
 		return PreferenceManager.getDefaultSharedPreferences(

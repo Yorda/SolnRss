@@ -14,12 +14,15 @@ public class AfterDeviceBootReceiver extends BroadcastReceiver {
 
 		SharedPreferences preferences = PreferenceManager
 				.getDefaultSharedPreferences(context);
-		FindNewPublicationsAlarmManager finder = FindNewPublicationsAlarmManager
-				.getInstance(preferences, context);
 		
-		if (!finder.isCancel()) {
-			finder.defineNextTimeToWork();
+		if (preferences.getBoolean("pref_how_to_start_refresh", true)) {
+			FindNewPublicationsAlarmManager finder = FindNewPublicationsAlarmManager
+					.getInstance(preferences, context);
+			if (!finder.isCancel()) {
+				finder.defineNextTimeToWork();
+			}
 		}
+
 	}
 
 }

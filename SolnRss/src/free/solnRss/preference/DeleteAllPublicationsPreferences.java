@@ -23,16 +23,15 @@ public class DeleteAllPublicationsPreferences extends DialogPreference {
 
 		switch (which) {
 		case DialogInterface.BUTTON_POSITIVE:
+			setDialogMessage(getContext().getResources().getString(
+					R.string.please_wait));
+
+			getContext().getContentResolver().delete(PublicationsProvider.URI,
+					null, null);
 			
-			// 
-			setDialogMessage(getContext().getResources().getString(R.string.please_wait));
-			
-			
-			getContext().getContentResolver().delete(PublicationsProvider.URI,null, null);
 			SharedPreferences.Editor editor = getEditor();
 			editor.putLong(getKey(), new Date().getTime());
 			editor.commit();
-			
 			break;
 
 		case DialogInterface.BUTTON_NEGATIVE:
@@ -41,7 +40,6 @@ public class DeleteAllPublicationsPreferences extends DialogPreference {
 		default:
 			break;
 		}
-
 	}
 
 	@Override

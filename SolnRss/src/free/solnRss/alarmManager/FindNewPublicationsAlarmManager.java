@@ -87,16 +87,16 @@ public class FindNewPublicationsAlarmManager implements
 	public void defineNextTimeToWork() {
 		
 		long periodRefreshTimeInMilisecond = 60000 * periodRefreshTimeInMinute;
-		Log.e(FindNewPublicationsAlarmManager.class.getName(), "Soln.R ->periodRefreshTimeInMilisecond = " + periodRefreshTimeInMilisecond);
+		//Log.e(FindNewPublicationsAlarmManager.class.getName(), "Soln.R ->periodRefreshTimeInMilisecond = " + periodRefreshTimeInMilisecond);
 		
 		long lastRefreshTime = pref.getLong("publicationsLastRefresh", 0);		
-		Log.e(FindNewPublicationsAlarmManager.class.getName(), "Soln.R ->lastRefreshTime = " + sdf.format(lastRefreshTime));
+		//Log.e(FindNewPublicationsAlarmManager.class.getName(), "Soln.R ->lastRefreshTime = " + sdf.format(lastRefreshTime));
 		
 		// In case of next refresh time is before now next refresh begin in
 		// one minute.
 		long nextRefreshTime = Math.max( new Date().getTime() + 60000, 
 				lastRefreshTime + periodRefreshTimeInMilisecond);
-		Log.e(FindNewPublicationsAlarmManager.class.getName(), "Soln.R ->nextRefreshTime = " + sdf.format(nextRefreshTime));
+		//Log.e(FindNewPublicationsAlarmManager.class.getName(), "Soln.R ->nextRefreshTime = " + sdf.format(nextRefreshTime));
 		
 		alarmManager.setRepeating(AlarmManager.RTC_WAKEUP, nextRefreshTime,
 				periodRefreshTimeInMilisecond, pendingIntent);

@@ -424,6 +424,10 @@ public class SolnRss extends Activity implements ActionBar.TabListener,
 		this.publicationsListener = publicationsFragmentListener;
 	}
 	
+	public PublicationsFragmentListener getPublicationsFragmentListener() {
+		return publicationsListener;
+	}
+	
 	@Override
 	public void onTabUnselected(Tab tab,
 			FragmentTransaction fragmentTransaction) {

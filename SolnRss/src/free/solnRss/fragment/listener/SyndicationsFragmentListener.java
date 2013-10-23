@@ -16,4 +16,10 @@ public interface SyndicationsFragmentListener {
 	 * @param context
 	 */
 	public void reloadSyndications();
+	
+	/**
+	 * @param numberOfClick 
+	 * 
+	 */
+	public void addOneReadToSyndication(Integer syndicationId, Integer numberOfClick);
 }

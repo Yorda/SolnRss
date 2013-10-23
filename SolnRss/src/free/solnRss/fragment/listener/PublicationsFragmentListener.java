@@ -62,5 +62,11 @@ public interface PublicationsFragmentListener {
 	 * @param deletedSyndicationId
 	 */
 	public void reLoadPublicationsAfterSyndicationDeleted(Integer deletedSyndicationId);
+	
+	/**
+	 * 
+	 * @param syndicationID
+	 */
+	public void deletePublications(Integer syndicationID);
 
 }

@@ -2,7 +2,6 @@ package free.solnRss.fragment;
 
 import android.app.AlertDialog;
 import android.content.ContentValues;
-import android.content.CursorLoader;
 import android.content.DialogInterface;
 import android.content.DialogInterface.OnClickListener;
 import android.content.Intent;
@@ -12,7 +11,6 @@ import android.database.Cursor;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.text.TextUtils;
 import android.view.ContextMenu;
 import android.view.ContextMenu.ContextMenuInfo;
 import android.view.LayoutInflater;
@@ -31,10 +29,8 @@ import free.solnRss.dialog.OneEditTextDialogBox;
 import free.solnRss.fragment.listener.SyndicationsFragmentListener;
 import free.solnRss.provider.PublicationsProvider;
 import free.solnRss.provider.SyndicationsProvider;
-import free.solnRss.repository.PublicationRepository;
 import free.solnRss.repository.PublicationTable;
 import free.solnRss.repository.SyndicationRepository;
-import free.solnRss.repository.SyndicationTable;
 
 /**
  * 
@@ -44,6 +40,7 @@ import free.solnRss.repository.SyndicationTable;
 public class SyndicationsFragment extends AbstractFragment implements
 		SyndicationsFragmentListener {
 	
+	private SyndicationRepository syndicationRepository;
 	private Integer selectedSyndicationID;
 	private Integer activeStatus;
 	private Integer isDisplayOnMainTimeLine;
@@ -79,7 +76,7 @@ public class SyndicationsFragment extends AbstractFragment implements
 	@Override
 	public void onActivityCreated(Bundle savedInstanceState) {
 		super.onActivityCreated(savedInstanceState);
-
+		syndicationRepository = new SyndicationRepository(getActivity());
 		registerForContextMenu(getListView());
 		((SolnRss) getActivity()).setSyndicationsFragmentListener(this);
 		setHasOptionsMenu(true);
@@ -126,7 +123,7 @@ public class SyndicationsFragment extends AbstractFragment implements
 	@Override
 	public Loader<Cursor> onCreateLoader(int id, Bundle bundle) {
 		
-		String selection = null;
+		/*String selection = null;
 		String[] args = null;
 		
 		if (!TextUtils.isEmpty(getFilterText())) {
@@ -138,9 +135,9 @@ public class SyndicationsFragment extends AbstractFragment implements
 		CursorLoader cursorLoader = new CursorLoader(getActivity(),
 				SyndicationsProvider.URI,
 				SyndicationsProvider.syndicationProjection, 
-				selection, args, null);
+				selection, args, null);*/
 
-		return cursorLoader;
+		return syndicationRepository.loadSyndications(getFilterText());
 	}
 	
 	@Override
@@ -324,16 +321,14 @@ public class SyndicationsFragment extends AbstractFragment implements
 		AsyncTask<Integer, Void, Integer> t = new AsyncTask<Integer, Void, Integer>() {
 			@Override
 			protected Integer doInBackground(Integer... arg0) {
-				PublicationRepository repository = new PublicationRepository(getActivity());
-				repository.clean(selectedSyndicationID);
+				((SolnRss) getActivity()).getPublicationsFragmentListener().deletePublications(selectedSyndicationID);
 				return selectedSyndicationID;
 			};
 			@Override
 			protected void onPostExecute(Integer result) {
-				((SolnRss)getActivity()).refreshPublications();
-				Toast.makeText(getActivity(),
-						getResources().getString(R.string.clean_syndication_ok),
-						Toast.LENGTH_LONG).show();
+				// ((SolnRss)getActivity()).refreshPublications();
+				String ok = getResources().getString(R.string.clean_syndication_ok);
+				Toast.makeText(getActivity(), ok, Toast.LENGTH_LONG).show();
 			};
 		};
 		
@@ -342,14 +337,14 @@ public class SyndicationsFragment extends AbstractFragment implements
 	
 	public void dialogBox(String message,
 			final AsyncTask<Integer, Void, Integer> task) {
-		
+
 		OnClickListener listener = new DialogInterface.OnClickListener() {
 			@Override
 			public void onClick(DialogInterface dialog, int which) {
 				task.execute(selectedSyndicationID);
 			}
 		};
-		
+
 		Resources r = getResources();
 		AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
 		builder.setMessage(message)
@@ -358,6 +353,10 @@ public class SyndicationsFragment extends AbstractFragment implements
 				.create().show();
 	}
 
+	@Override
+	public void addOneReadToSyndication(Integer syndicationId, Integer numberOfClick) {
+		syndicationRepository.addOneReadToSyndication(syndicationId,numberOfClick);
+	}
 
 	@Override
 	public void loadSyndications() {
@@ -377,4 +376,6 @@ public class SyndicationsFragment extends AbstractFragment implements
 	protected void setListPositionOnScreen() {
 
 	}
+	
+	
 }

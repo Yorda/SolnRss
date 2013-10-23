@@ -6,6 +6,7 @@ import android.content.UriMatcher;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.net.Uri;
+import android.preference.PreferenceManager;
 import free.solnRss.repository.CategoryTable;
 import free.solnRss.repository.PublicationRepository;
 import free.solnRss.repository.PublicationTable;
@@ -36,17 +37,29 @@ public class SolnRssProvider extends ContentProvider {
 		SQLiteDatabase db = RepositoryHelper.getInstance(getContext())
 				.getReadableDatabase();
 		Cursor cursor = null;
+		//db.execSQL("PRAGMA synchronous=OFF");
 		
 		switch (uriMatcher.match(uri)) {
 		case PUBLICATION:
 			cursor = db.query(PublicationsProvider.tables, projection,
 					selection, selectionArgs, null, null,
-					PublicationTable.COLUMN_PUBLICATION_DATE + " desc",
+					PublicationTable.COLUMN_PUBLICATION_DATE + " desc", 
 					PublicationRepository.publicationsQueryLimit(getContext()));
 			break;
+			
 		case CATEGORY:
 			break;
+			
 		case SYNDICATION:
+			String orderBy = null;
+			if (PreferenceManager.getDefaultSharedPreferences(getContext())
+					.getBoolean("pref_sort_syndications", true)) {
+				orderBy = SyndicationTable.COLUMN_NUMBER_CLICK + " desc";
+			} else {
+				orderBy = SyndicationTable.COLUMN_NAME + " asc";
+			}
+			cursor = db.query(SyndicationTable.SYNDICATION_TABLE, projection,
+					selection, selectionArgs, null, null, orderBy);
 			break;
 
 		default:
@@ -77,7 +90,8 @@ public class SolnRssProvider extends ContentProvider {
 		case SYNDICATION:
 			rowsUpdated = db.update(SyndicationTable.SYNDICATION_TABLE, values,
 					selection, selectionArgs);
-
+			break;
+			
 		default:
 			throw new IllegalArgumentException("Unknown URI: " + uri);
 		}

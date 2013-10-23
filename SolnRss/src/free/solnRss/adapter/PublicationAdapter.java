@@ -27,6 +27,7 @@ public class PublicationAdapter extends SimpleCursorAdapter {
 
 	@Override
 	public View getView(int position, View convertView, ViewGroup parent) {
+		getCursor().moveToPosition(position);
 		PublicationItem item = null;
 
 		if (convertView == null) {
@@ -49,7 +50,7 @@ public class PublicationAdapter extends SimpleCursorAdapter {
 			item = (PublicationItem) convertView.getTag();
 		}
 
-		getCursor().moveToPosition(position);
+		
 
 		String title = getCursor().getString(1); // pub_title
 		String name = getCursor().getString(4);  // syn_name

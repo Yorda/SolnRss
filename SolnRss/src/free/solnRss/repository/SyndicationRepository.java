@@ -11,19 +11,64 @@ import java.util.Locale;
 
 import android.content.ContentValues;
 import android.content.Context;
+import android.content.CursorLoader;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.net.Uri;
+import android.text.TextUtils;
 import free.solnRss.model.Publication;
 import free.solnRss.model.Syndication;
+import free.solnRss.provider.SolnRssProvider;
 
 public class SyndicationRepository {
-	final DateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.FRENCH);
+	
+	final DateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss",	Locale.FRENCH);
 	private Context context;
+
+	private StringBuilder selection = new StringBuilder();
+	private List<String> args = new ArrayList<String>();
+	
 	public SyndicationRepository(Context context) {
 		this.context = context;
 	}
 
 	public static final String syndicationTable = SyndicationTable.SYNDICATION_TABLE;
+	
+	Uri uri = Uri.parse(SolnRssProvider.URI + "/syndication");
+	
+	public final String syndicationProjection[] = 
+			new String[] {
+		syndicationTable + "." + SyndicationTable.COLUMN_ID,
+		syndicationTable + "." + SyndicationTable.COLUMN_NAME,
+		syndicationTable + "." + SyndicationTable.COLUMN_URL,
+		syndicationTable + "." + SyndicationTable.COLUMN_IS_ACTIVE,
+		syndicationTable + "." + SyndicationTable.COLUMN_NUMBER_CLICK,
+		syndicationTable + "." + SyndicationTable.COLUMN_DISPLAY_ON_TIMELINE
+	};
+	
+	public CursorLoader loadSyndications(String filterText) {
+
+		selection.setLength(0);
+		args.clear();
+
+		if (!TextUtils.isEmpty(filterText)) {
+			selection.append(SyndicationTable.COLUMN_NAME + " like ? ");
+			args.add("%" + filterText.toString() + "%");
+		}
+		return new CursorLoader(context, uri, syndicationProjection,
+				selection.toString(), args.toArray(new String[args.size()]),
+				null);
+	}
+	
+	public void addOneReadToSyndication(Integer syndicationId, Integer numberOfClick) {
+		ContentValues values = new ContentValues();
+		values.put("syn_number_click", numberOfClick+1);
+		context.getContentResolver().update(uri, values, "_id = ? ",
+				new String[] { syndicationId.toString() });
+	}
+	
+	
+
 	
 	/**
 	 * Set a syndication inactive

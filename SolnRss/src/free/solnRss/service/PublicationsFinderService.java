@@ -43,9 +43,10 @@ public class PublicationsFinderService extends IntentService {
 	private SparseArray<ResultReceiver> receiverMap = new SparseArray<ResultReceiver>();
 	private int resultReceiverId = -1;
 	private SyndicationBusiness syndicationBusiness = new SyndicationBusinessImpl();
-	final DateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss",
-			Locale.FRENCH);
+	final DateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss",	Locale.FRENCH);
 	private boolean isWorking = false;
+	
+	//private ImageToDataTool imageToDataTool = new ImageToDataTool();
 	//private ReadabilityUtil readabilityUtil = new ReadabilityUtil();
 
 	public PublicationsFinderService() {
@@ -241,6 +242,7 @@ public class PublicationsFinderService extends IntentService {
 			 * Log.e("LoadArticlesService", "Error when trying to refresh " +
 			 * syndication.getName() + " - " + e.getCause());
 			 */
+			// TODO set this syndication in error
 		}
 	}
 
@@ -281,20 +283,7 @@ public class PublicationsFinderService extends IntentService {
 		
 		String toRead = null;
 		toRead = makeFixInPublication(publication.getDescription());
-		/*try {
-		   String html = null;
-			if (syndicationId == 41 || syndicationId == 27 || syndicationId == 6) {
-				html = HttpUtil.htmlFromSite(publication.getUrl());
-				toRead = readabilityUtil.getArticleText(html);
-			}
-			else {
-				toRead = makeFixInPublication(publication.getDescription());
-			}
-		} catch (Exception e) {
-			e.printStackTrace();
-			Log.e(PublicationsFinderService.class.getName(),
-					"Error unable to retrieve a redeable article");
-		}*/
+		//toRead = imageToDataTool.replaceImageByBase64Data(toRead);
 		return toRead;
 	}
 	

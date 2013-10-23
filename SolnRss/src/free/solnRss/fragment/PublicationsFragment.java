@@ -171,7 +171,6 @@ public class PublicationsFragment extends AbstractFragment implements
 		String description = hasPublicationContentToDisplay(cursor);
 		
 		if (description != null && description.trim().length() > 0) {
-
 			if (isPreferenceToDisplayOnAppReader()) {
 				displayOnApplicationReader(description, link, title);
 			} else {
@@ -180,7 +179,6 @@ public class PublicationsFragment extends AbstractFragment implements
 		} else {
 			displayOnSystemBrowser(link);
 		}
-
 	}
 	
 	@Override
@@ -356,35 +354,23 @@ public class PublicationsFragment extends AbstractFragment implements
 	private void clickOnPublicationItem(Cursor cursor, ListView l, View v,	int position, long id) {
 		
 		// Set this publication as already read
-		int publicationId = cursor.getInt(
-				cursor.getColumnIndex(PublicationTable.COLUMN_ID));
+		// cursor.getColumnIndex(PublicationTable.COLUMN_ID)
+		int publicationId = cursor.getInt(0);
 
-		markPublicationAsRead(publicationId);
+		publicationRepository.markPublicationAsRead(publicationId);
+		// refreshPublications();
+		//markPublicationAsRead(publicationId);
 		
 		// Add a click to the syndication
-		int syndicationId = cursor.getInt(
-				cursor.getColumnIndex(PublicationTable.COLUMN_SYNDICATION_ID));
+		// cursor.getColumnIndex(PublicationTable.COLUMN_SYNDICATION_ID)
+		int syndicationId = cursor.getInt(6	);
 		
-		addOneClickToSyndication(syndicationId);
+		// cursor.getColumnIndex(SyndicationTable.COLUMN_NUMBER_CLICK)
+		int numberOfClick = cursor.getInt(7);
+
+		((SolnRss) getActivity()).getSyndicationsFragmentListener()
+				.addOneReadToSyndication(syndicationId, numberOfClick);
 	}
-	
-	private void markPublicationAsRead(int publicationId) {
-		
-		ContentValues values = new ContentValues();
-		values.put(PublicationTable.COLUMN_ALREADY_READ, "1");
-		
-		String where = PublicationTable.COLUMN_ID + " = ? ";
-		String args[] = { String.valueOf(publicationId) };
-		
-		getActivity().getContentResolver().update(PublicationsProvider.URI, values, where, args);
-		refreshPublications();
-	}
-	
-	private void addOneClickToSyndication(int syndicationId){
-		Uri uri = Uri.parse(SyndicationsProvider.URI + "/click/" + syndicationId);
-		ContentValues values = new ContentValues();
-		getActivity().getContentResolver().update(uri, values, null, null);
-	}	
 	
 	public void moveListViewToTop() {
 		getListView().setSelection(0);
@@ -636,5 +622,34 @@ public class PublicationsFragment extends AbstractFragment implements
 				values, selection, args);
 		getLoaderManager().restartLoader(0, null, this);
 	}
+	
+	@Override
+	public void deletePublications(Integer syndicationID) {
+		publicationRepository.deletePublications(syndicationID);
+	}	
+	
+	@Deprecated
+	public void markPublicationAsRead(int publicationId) {
+		
+		ContentValues values = new ContentValues();
+		values.put(PublicationTable.COLUMN_ALREADY_READ, "1");
+		
+		String where = PublicationTable.COLUMN_ID + " = ? ";
+		String args[] = { String.valueOf(publicationId) };
+		
+		getActivity().getContentResolver().update(PublicationsProvider.URI, values, where, args);
+		
+		refreshPublications();
+		
+	}
+	
+	@Deprecated
+	public void addOneClickToSyndication(int syndicationId, int numberOfClick) {
+		Uri uri = Uri.parse(SyndicationsProvider.URI + "/click/" + syndicationId);
+		ContentValues values = new ContentValues();
+		getActivity().getContentResolver().update(uri, values, null, null);
+	}
+
+	
 
 }

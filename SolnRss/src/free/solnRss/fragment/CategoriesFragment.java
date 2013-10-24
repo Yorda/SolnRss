@@ -3,7 +3,6 @@ package free.solnRss.fragment;
 import android.app.AlertDialog;
 import android.content.ContentValues;
 import android.content.Context;
-import android.content.CursorLoader;
 import android.content.DialogInterface;
 import android.content.DialogInterface.OnClickListener;
 import android.content.Intent;
@@ -11,7 +10,6 @@ import android.content.Loader;
 import android.content.res.Resources;
 import android.database.Cursor;
 import android.os.Bundle;
-import android.text.TextUtils;
 import android.view.ContextMenu;
 import android.view.ContextMenu.ContextMenuInfo;
 import android.view.LayoutInflater;
@@ -27,15 +25,15 @@ import free.solnRss.activity.SyndicationsCategoriesActivity;
 import free.solnRss.adapter.CategorieAdapter;
 import free.solnRss.fragment.listener.CategoriesFragmentListener;
 import free.solnRss.provider.CategoryProvider;
-import free.solnRss.provider.PublicationsProvider;
+import free.solnRss.repository.CategoryRepository;
 import free.solnRss.repository.CategoryTable;
-import free.solnRss.repository.PublicationTable;
 
 public class CategoriesFragment extends AbstractFragment implements
 		CategoriesFragmentListener {
 	
 	private Integer selectedCategoryID;
 	private String selectedCategoryName;
+	private CategoryRepository categoryRepository;
 	
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup vg,
@@ -56,6 +54,7 @@ public class CategoriesFragment extends AbstractFragment implements
 	@Override
 	public void onActivityCreated(Bundle savedInstanceState) {
 		super.onActivityCreated(savedInstanceState);
+		categoryRepository = new CategoryRepository(getActivity());
 		registerForContextMenu(getListView());
 		((SolnRss)getActivity()).setCategoriesFragmentListener(this);
 
@@ -96,25 +95,8 @@ public class CategoriesFragment extends AbstractFragment implements
 
 	
 	@Override
-	public Loader<Cursor> onCreateLoader(int id, Bundle bundle) {
-		final String categoryTable = CategoryTable.CATEGORY_TABLE;
-		final String columns[] = new String[] {
-				categoryTable + "." + CategoryTable.COLUMN_ID,
-				categoryTable + "." + CategoryTable.COLUMN_NAME };
-
-		String selection = null;
-		String[] args = null;
-		
-		if (!TextUtils.isEmpty(getFilterText())) {
-			selection = CategoryTable.COLUMN_NAME + " like ? ";
-			args = new String[1];
-			args[0] = "%" + getFilterText().toString() + "%";
-		}
-
-		CursorLoader cursorLoader = new CursorLoader(getActivity(),
-				CategoryProvider.URI, columns, selection, args, null);
-
-		return cursorLoader;
+	public Loader<Cursor> onCreateLoader(int id, Bundle bundle) {		
+		return categoryRepository.loadCategories(getFilterText());
 	}
 	
 	@Override
@@ -149,13 +131,7 @@ public class CategoriesFragment extends AbstractFragment implements
 		OnClickListener listener = new DialogInterface.OnClickListener() {
 			@Override
 			public void onClick(DialogInterface dialog, int which) {
-				
-				ContentValues values = new ContentValues();
-				values.put(PublicationTable.COLUMN_ALREADY_READ, "1");
-				String selection = " syn_syndication_id in (select syn_syndication_id from d_categorie_syndication where cas_categorie_id = ?) ";
-				String[] args = {selectedCategoryID.toString()};
-				getActivity().getContentResolver().update(PublicationsProvider.URI, values, selection, args);
-				((SolnRss) getActivity()).refreshPublications();
+				((SolnRss)getActivity()).getPublicationsFragmentListener().markCategoryPublicationsAsRead(selectedCategoryID);
 			}
 		};
 		

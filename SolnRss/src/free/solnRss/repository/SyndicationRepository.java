@@ -15,6 +15,7 @@ import android.content.CursorLoader;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.net.Uri;
+import android.preference.PreferenceManager;
 import android.text.TextUtils;
 import free.solnRss.model.Publication;
 import free.solnRss.model.Syndication;
@@ -68,6 +69,14 @@ public class SyndicationRepository {
 	}
 	
 	
+	public static String orderBy(Context context) {
+		String orderSyndicationBy = SyndicationTable.COLUMN_NAME + " asc";
+		if (PreferenceManager.getDefaultSharedPreferences(context)
+				.getBoolean("pref_sort_syndications", true)) {
+			orderSyndicationBy = SyndicationTable.COLUMN_NUMBER_CLICK + " desc";
+		}
+		return orderSyndicationBy;
+	}
 
 	
 	/**
@@ -138,8 +147,6 @@ public class SyndicationRepository {
 
 			} while (c.moveToNext());
 		}
-		
-		
 		return syndications;
 	}
 	

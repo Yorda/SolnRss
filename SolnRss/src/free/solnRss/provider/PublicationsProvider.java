@@ -12,6 +12,7 @@ import free.solnRss.repository.PublicationTable;
 import free.solnRss.repository.RepositoryHelper;
 import free.solnRss.repository.SyndicationTable;
 
+@Deprecated
 public class PublicationsProvider extends ContentProvider {
 	public static final String CONTENT_PROVIDER_MIME = 
 			"vnd.android.cursor.item/vnd.com.soln.rss.provider.publications",

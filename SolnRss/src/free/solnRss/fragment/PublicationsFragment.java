@@ -2,7 +2,6 @@ package free.solnRss.fragment;
 
 import android.app.ActionBar;
 import android.app.AlertDialog;
-import android.content.ContentValues;
 import android.content.DialogInterface;
 import android.content.DialogInterface.OnClickListener;
 import android.content.Intent;
@@ -33,8 +32,6 @@ import free.solnRss.activity.ReaderActivity;
 import free.solnRss.activity.SolnRss;
 import free.solnRss.adapter.PublicationAdapter;
 import free.solnRss.fragment.listener.PublicationsFragmentListener;
-import free.solnRss.provider.PublicationsProvider;
-import free.solnRss.provider.SyndicationsProvider;
 import free.solnRss.repository.PublicationRepository;
 import free.solnRss.repository.PublicationTable;
 import free.solnRss.repository.SyndicationTable;
@@ -197,8 +194,6 @@ public class PublicationsFragment extends AbstractFragment implements
 		nextSelectedSyndicationID = c.getInt(c
 				.getColumnIndex(PublicationTable.COLUMN_SYNDICATION_ID));
 
-		// menu.setHeaderTitle(syndicationName(nextSelectedSyndicationID));
-
 		MenuInflater inflater = getActivity().getMenuInflater();
 		inflater.inflate(R.menu.publications_context, menu);
 		
@@ -222,7 +217,7 @@ public class PublicationsFragment extends AbstractFragment implements
 			break;
 
 		case R.id.menu_mark_read:
-			markSyndicationPublicationsAsRead(nextSelectedSyndicationID);
+			confirmMarkSyndicationPublicationsAsRead(nextSelectedSyndicationID);
 			break;
 			
 		default:
@@ -523,13 +518,17 @@ public class PublicationsFragment extends AbstractFragment implements
 		}
 	}
 	
-	private void markSyndicationPublicationsAsRead(final Integer syndicationId) {
+	/**
+	 * After click "mark as read" on context menu, All publication of the selected syndication are marked as read
+	 * @param syndicationId
+	 */
+	private void confirmMarkSyndicationPublicationsAsRead(final Integer syndicationId) {
 		
 		final Resources r = getResources();
 		OnClickListener listener = new DialogInterface.OnClickListener() {
 			@Override
 			public void onClick(DialogInterface dialog, int which) {
-				markAsRead(syndicationId);
+				markSyndicationPublicationsAsRead(syndicationId);
 			}
 		};
 
@@ -541,20 +540,6 @@ public class PublicationsFragment extends AbstractFragment implements
 				.create().show();
 	}
 	
-	private void markAsRead(final Integer syndicationId){
-		ContentValues values = new ContentValues();
-		values.put(PublicationTable.COLUMN_ALREADY_READ, "1");
-		String selection = null;
-		String[] args = null;
-		if (syndicationId != null) {
-			selection = " syn_syndication_id = ? ";
-			args = new String[1];
-			args[0] = syndicationId.toString();
-		}
-		getActivity().getContentResolver().update(PublicationsProvider.URI, values, selection, args);
-		getLoaderManager().restartLoader(0, null, this);
-	}
-	
 	@Override
 	public void markAsRead() {
 				
@@ -564,10 +549,10 @@ public class PublicationsFragment extends AbstractFragment implements
 			public void onClick(DialogInterface dialog, int which) {
 				
 				if (selectedSyndicationID != null) {
-					markSyndicationPublicationsAsRead();
+					markSyndicationPublicationsAsRead(selectedSyndicationID);
 					
 				} else if (selectedCategoryID != null) {
-					markCategoryPublicationsAsRead();
+					markCategoryPublicationsAsRead(selectedCategoryID);
 					
 				} else {
 					markAllPublicationsAsRead();
@@ -594,39 +579,39 @@ public class PublicationsFragment extends AbstractFragment implements
 	}
 
 	private void markAllPublicationsAsRead() {
-		ContentValues values = new ContentValues();
-		values.put(PublicationTable.COLUMN_ALREADY_READ, "1");
-		getActivity().getContentResolver().update(PublicationsProvider.URI,
-				values, null, null);
-		getLoaderManager().restartLoader(0, null, this);
+		publicationRepository.markAllPublicationsAsRead();
 	}
 
-	private void markSyndicationPublicationsAsRead() {
-		ContentValues values = new ContentValues();
-		values.put(PublicationTable.COLUMN_ALREADY_READ, "1");
-		String selection = " syn_syndication_id  = ?  ";
-		String[] args = { selectedSyndicationID.toString() };
-
-		getActivity().getContentResolver().update(PublicationsProvider.URI,
-				values, selection, args);
-		getLoaderManager().restartLoader(0, null, this);
+	@Override
+	public void markSyndicationPublicationsAsRead(Integer syndicationId) {
+		publicationRepository.markSyndicationPublicationsAsRead(syndicationId);
 	}
 
-	private void markCategoryPublicationsAsRead() {
-		ContentValues values = new ContentValues();
-		values.put(PublicationTable.COLUMN_ALREADY_READ, "1");
-		String selection = " syn_syndication_id in (select syn_syndication_id from d_categorie_syndication where cas_categorie_id = ?) ";
-		String[] args = { selectedCategoryID.toString() };
-
-		getActivity().getContentResolver().update(PublicationsProvider.URI,
-				values, selection, args);
-		getLoaderManager().restartLoader(0, null, this);
-	}
-	
 	@Override
 	public void deletePublications(Integer syndicationID) {
 		publicationRepository.deletePublications(syndicationID);
 	}	
+	
+	@Override
+	public void markCategoryPublicationsAsRead(Integer categoryId) {
+		publicationRepository.markCategoryPublicationsAsRead(categoryId);
+	}
+	
+	
+	/*@Deprecated
+	private void markAsRead(final Integer syndicationId){
+		ContentValues values = new ContentValues();
+		values.put(PublicationTable.COLUMN_ALREADY_READ, "1");
+		String selection = null;
+		String[] args = null;
+		if (syndicationId != null) {
+			selection = " syn_syndication_id = ? ";
+			args = new String[1];
+			args[0] = syndicationId.toString();
+		}
+		getActivity().getContentResolver().update(PublicationsProvider.URI, values, selection, args);
+		getLoaderManager().restartLoader(0, null, this);
+	}
 	
 	@Deprecated
 	public void markPublicationAsRead(int publicationId) {
@@ -649,6 +634,17 @@ public class PublicationsFragment extends AbstractFragment implements
 		ContentValues values = new ContentValues();
 		getActivity().getContentResolver().update(uri, values, null, null);
 	}
+
+	private void markCategoryPublicationsAsRead() {
+	ContentValues values = new ContentValues();
+	values.put(PublicationTable.COLUMN_ALREADY_READ, "1");
+	String selection = " syn_syndication_id in (select syn_syndication_id from d_categorie_syndication where cas_categorie_id = ?) ";
+	String[] args = { selectedCategoryID.toString() };
+
+	getActivity().getContentResolver().update(PublicationsProvider.URI,
+			values, selection, args);
+	getLoaderManager().restartLoader(0, null, this);
+	}*/
 
 	
 

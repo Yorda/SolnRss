@@ -6,11 +6,12 @@ import android.content.UriMatcher;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.net.Uri;
-import android.preference.PreferenceManager;
+import free.solnRss.repository.CategoryRepository;
 import free.solnRss.repository.CategoryTable;
 import free.solnRss.repository.PublicationRepository;
 import free.solnRss.repository.PublicationTable;
 import free.solnRss.repository.RepositoryHelper;
+import free.solnRss.repository.SyndicationRepository;
 import free.solnRss.repository.SyndicationTable;
 
 public class SolnRssProvider extends ContentProvider {
@@ -37,29 +38,22 @@ public class SolnRssProvider extends ContentProvider {
 		SQLiteDatabase db = RepositoryHelper.getInstance(getContext())
 				.getReadableDatabase();
 		Cursor cursor = null;
-		//db.execSQL("PRAGMA synchronous=OFF");
 		
 		switch (uriMatcher.match(uri)) {
 		case PUBLICATION:
-			cursor = db.query(PublicationsProvider.tables, projection,
-					selection, selectionArgs, null, null,
-					PublicationTable.COLUMN_PUBLICATION_DATE + " desc", 
+			cursor = db.query(PublicationRepository.publicationTableJoinToSyndication, projection,
+					selection, selectionArgs, null, null, PublicationRepository.orderBy(getContext()), 
 					PublicationRepository.publicationsQueryLimit(getContext()));
 			break;
 			
 		case CATEGORY:
+			cursor = db.query(CategoryRepository.categoryTableJoinToSyndication, projection, selection, selectionArgs, 
+					CategoryRepository.groupBy(), null, CategoryRepository.orderBy(getContext()));
 			break;
 			
 		case SYNDICATION:
-			String orderBy = null;
-			if (PreferenceManager.getDefaultSharedPreferences(getContext())
-					.getBoolean("pref_sort_syndications", true)) {
-				orderBy = SyndicationTable.COLUMN_NUMBER_CLICK + " desc";
-			} else {
-				orderBy = SyndicationTable.COLUMN_NAME + " asc";
-			}
 			cursor = db.query(SyndicationTable.SYNDICATION_TABLE, projection,
-					selection, selectionArgs, null, null, orderBy);
+					selection, selectionArgs, null, null, SyndicationRepository.orderBy(getContext()));
 			break;
 
 		default:

@@ -34,12 +34,15 @@ import free.solnRss.manager.UpdatingProcessConnectionManager;
 import free.solnRss.model.Publication;
 import free.solnRss.model.Syndication;
 import free.solnRss.provider.PublicationsProvider;
+import free.solnRss.provider.SolnRssProvider;
 import free.solnRss.provider.SyndicationsProvider;
 import free.solnRss.repository.PublicationTable;
 import free.solnRss.repository.SyndicationTable;
 
 public class PublicationsFinderService extends IntentService {
 
+	private final Uri uri = Uri.parse(SolnRssProvider.URI + "/publication");
+	
 	private SparseArray<ResultReceiver> receiverMap = new SparseArray<ResultReceiver>();
 	private int resultReceiverId = -1;
 	private SyndicationBusiness syndicationBusiness = new SyndicationBusinessImpl();
@@ -247,8 +250,7 @@ public class PublicationsFinderService extends IntentService {
 	}
 
 	private int insertNewPublications(List<ContentValues> publications) {
-		return getContentResolver().bulkInsert(PublicationsProvider.URI,
-				publications.toArray(new ContentValues[publications.size()]));
+		return getContentResolver().bulkInsert(uri, publications.toArray(new ContentValues[publications.size()]));
 	}
 	
 	/*
@@ -287,17 +289,19 @@ public class PublicationsFinderService extends IntentService {
 		return toRead;
 	}
 	
-	private boolean isPublicationAlreadyRecorded(Integer syndicationId,
-			String title, String url) {
+	private boolean isPublicationAlreadyRecorded(Integer syndicationId, String title, String url) {
 		Uri uri = Uri.parse(PublicationsProvider.URI
 				+ "/publicationInSyndication/" + syndicationId);
 		Cursor cursor = getContentResolver().query(
 				uri,
-				new String[] { PublicationTable.PUBLICATION_TABLE + "."
+				new String[] { 
+						PublicationTable.PUBLICATION_TABLE + "."
 						+ PublicationTable.COLUMN_ID },
+						
 				PublicationTable.COLUMN_TITLE + " = ? and "
 						+ PublicationTable.COLUMN_LINK + " = ? ",
 				new String[] { title, url }, null);
+		
 		boolean isAlreadyRecorded = true;
 		if (cursor.getCount() < 1) {
 			isAlreadyRecorded = false;

@@ -27,9 +27,7 @@ import free.solnRss.activity.SolnRss;
 import free.solnRss.adapter.SyndicationAdapter;
 import free.solnRss.dialog.OneEditTextDialogBox;
 import free.solnRss.fragment.listener.SyndicationsFragmentListener;
-import free.solnRss.provider.PublicationsProvider;
 import free.solnRss.provider.SyndicationsProvider;
-import free.solnRss.repository.PublicationTable;
 import free.solnRss.repository.SyndicationRepository;
 
 /**
@@ -230,17 +228,13 @@ public class SyndicationsFragment extends AbstractFragment implements
 		OnClickListener listener = new DialogInterface.OnClickListener() {
 			@Override
 			public void onClick(DialogInterface dialog, int which) {
-				ContentValues values = new ContentValues();
-				values.put(PublicationTable.COLUMN_ALREADY_READ, "1");
-				String selection = " syn_syndication_id = ? ";
-				String[] args = {selectedSyndicationID.toString()};
-				getActivity().getContentResolver().update(PublicationsProvider.URI, values, selection, args);
-				((SolnRss) getActivity()).refreshPublications();
+				((SolnRss) getActivity()).getPublicationsFragmentListener()
+						.markSyndicationPublicationsAsRead(selectedSyndicationID);
 			}
 		};
-		
+
 		Resources r = getResources();
-		
+
 		AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
 		
 		builder.setMessage(r.getString(R.string.confirm_mark_as_read, syndicationName(selectedSyndicationID)))

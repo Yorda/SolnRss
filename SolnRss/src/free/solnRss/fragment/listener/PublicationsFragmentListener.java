@@ -68,5 +68,17 @@ public interface PublicationsFragmentListener {
 	 * @param syndicationID
 	 */
 	public void deletePublications(Integer syndicationID);
+	
+	/**
+	 * 
+	 * @param categoryId
+	 */
+	public void markCategoryPublicationsAsRead(Integer categoryId);
+
+	/**
+	 * 
+	 * @param syndicationId
+	 */
+	public void markSyndicationPublicationsAsRead(Integer syndicationId);
 
 }

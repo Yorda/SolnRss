@@ -139,6 +139,7 @@
     <string name="empty_categories">No categories to display</string>
     <string name="empty_categories_with_filter">No categories found with %1$s search</string>
     <string name="delete_categorie">Delete this category</string>
+    <string name="rename_category">Rename this category</string>
     <string name="add_to_categorie">Add or Remove RSS</string>
     <string name="categorie_not_use">Not used</string>
     <string name="categorie_use_by_one">Used by a single RSS feed</string>

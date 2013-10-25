@@ -67,7 +67,12 @@ public class CategoryRepository {
 		return "c." + CategoryTable.COLUMN_NAME;
 	}
 	
-	
+	public void renameCategory(Integer selectedCategoryID, String newName) {
+		ContentValues values = new ContentValues();
+		values.put("cat_name",  newName);
+		context.getContentResolver().update(uri, values,"_id = ? ",
+				new String[] { selectedCategoryID.toString() });
+	}
 	
 	
 	public void removeSyndicationToCategorie(Integer syndicationId,

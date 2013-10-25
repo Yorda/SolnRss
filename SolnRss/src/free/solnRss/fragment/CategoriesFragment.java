@@ -18,11 +18,13 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
+import android.widget.EditText;
 import android.widget.ListView;
 import free.solnRss.R;
 import free.solnRss.activity.SolnRss;
 import free.solnRss.activity.SyndicationsCategoriesActivity;
 import free.solnRss.adapter.CategorieAdapter;
+import free.solnRss.dialog.OneEditTextDialogBox;
 import free.solnRss.fragment.listener.CategoriesFragmentListener;
 import free.solnRss.provider.CategoryProvider;
 import free.solnRss.repository.CategoryRepository;
@@ -120,6 +122,10 @@ public class CategoriesFragment extends AbstractFragment implements
 			deleteCategorie(getActivity(), selectedCategoryID);
 			break;
 
+		case R.id.menu_rename_category:
+			rename();
+			break;
+			
 		default:
 			break;
 		}
@@ -185,6 +191,26 @@ public class CategoriesFragment extends AbstractFragment implements
 		getLoaderManager().restartLoader(0, null, this);
 	}
 
+	private void rename() {
+		OneEditTextDialogBox oneEditTextDialogBox;
+		oneEditTextDialogBox = new OneEditTextDialogBox(getActivity(), 
+				categoryName(selectedCategoryID) ,
+				getResources().getString(R.string.input_new_name),  
+				new DialogInterface.OnClickListener() {
+			@Override
+			public void onClick(DialogInterface dialog, int which) {
+				EditText e = (EditText)((AlertDialog)dialog).findViewById(R.id.one_edit_text_dialog);
+				renameCategory(e.getText().toString());
+			}
+		});
+		oneEditTextDialogBox.displayDialogBox();
+	}
+	
+	private void renameCategory(String newName){
+		categoryRepository.renameCategory(selectedCategoryID, newName);
+		((SolnRss) getActivity()).refreshPublications();
+	}
+	
 	public void deleteCategorie(Context context, final Integer deletedCategoryId) {
 		
 		OnClickListener listener = new DialogInterface.OnClickListener() {

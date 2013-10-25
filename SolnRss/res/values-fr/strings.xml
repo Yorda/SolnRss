@@ -137,6 +137,7 @@
     <string name="empty_categories">Aucune catégorie à afficher</string>
     <string name="empty_categories_with_filter">No categories found with the search: %1$s</string>
     <string name="delete_categorie">Supprimer cette catégorie</string>
+    <string name="rename_category">Renommer</string>
     <string name="add_to_categorie">Ajouter ou supprimer des sites</string>
     <string name="categorie_not_use">Inutilisé</string>
     <string name="categorie_use_by_one">Utilisé par un seul site</string>

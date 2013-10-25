@@ -2,19 +2,14 @@ package free.solnRss.adapter;
 
 import android.content.Context;
 import android.database.Cursor;
-import android.graphics.Typeface;
-import android.net.Uri;
-import android.widget.SimpleCursorAdapter;
-import android.text.TextUtils;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.CheckBox;
 import android.widget.FilterQueryProvider;
+import android.widget.SimpleCursorAdapter;
 import android.widget.TextView;
 import free.solnRss.R;
-import free.solnRss.provider.SyndicationsProvider;
-import free.solnRss.repository.SyndicationTable;
-
+import free.solnRss.repository.SyndicationsByCategoryRepository;
 
 public class SyndicationsCategorieAdapter extends SimpleCursorAdapter implements
 		FilterQueryProvider {
@@ -22,8 +17,8 @@ public class SyndicationsCategorieAdapter extends SimpleCursorAdapter implements
 	protected Cursor cursor;
 	private Context context;
 	private int layout;
-	private Typeface tf = null;
 	private Integer selectedCategoryId;
+	private SyndicationsByCategoryRepository syndicationsByCategoryRepository;
 
 	public SyndicationsCategorieAdapter(Context context, int layout, Cursor c,
 			String[] from, int[] to, int flags) {
@@ -32,7 +27,8 @@ public class SyndicationsCategorieAdapter extends SimpleCursorAdapter implements
 		this.context = context;
 		this.layout = layout;
 		setFilterQueryProvider(this);
-		tf = Typeface.createFromAsset(context.getAssets(), "fonts/MONOF55.TTF");
+		//tf = Typeface.createFromAsset(context.getAssets(), "fonts/MONOF55.TTF");
+		syndicationsByCategoryRepository = new SyndicationsByCategoryRepository(context);
 	}
 
 	@Override
@@ -65,7 +61,6 @@ public class SyndicationsCategorieAdapter extends SimpleCursorAdapter implements
 				getCursor().getColumnIndex("cas_categorie_id"));
 
 		item.getName().setText(name);
-		item.getName().setTypeface(tf);
 		item.getCheck().setTag(syndicationId);
 
 		if (categorieId == null || categorieId == 0) {
@@ -79,23 +74,8 @@ public class SyndicationsCategorieAdapter extends SimpleCursorAdapter implements
 
 	@Override
 	public Cursor runQuery(CharSequence constraint) {
-		
-		Uri uri = Uri.parse(SyndicationsProvider.URI + "/selectedCategoryId/"
-				+ selectedCategoryId);
-		
-		String selection = null;
-		String[] args = null;
-		
-		if (!TextUtils.isEmpty(constraint.toString())) {
-			selection = SyndicationTable.COLUMN_NAME + " like ? ";
-			args = new String[1];
-			args[0] = "%" + constraint.toString() + "%";
-		}
-
-		Cursor cursor = context.getContentResolver().query(uri, 
-				SyndicationsProvider.syndicationByCategoryProjection , selection, args, null);
-
-		return cursor;
+		return syndicationsByCategoryRepository.reloadSyndicationsByCategory(
+				selectedCategoryId, constraint.toString());
 	}
 
 	public void setSelectedCategoryId(Integer selectedCategoryId) {

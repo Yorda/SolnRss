@@ -149,8 +149,13 @@ public class PublicationsFragment extends AbstractFragment implements
 		
 		setListShown(false);
 		
-		setHasOptionsMenu(true);		
+		setHasOptionsMenu(true);
 	}
+	
+	/*private void testSearch(){
+		PublicationsFinderService finder = new PublicationsFinderService();
+		finder.test(getActivity());
+	}*/
 	
 	@Override
 	public void onSaveInstanceState(Bundle outState) {

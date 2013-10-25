@@ -18,7 +18,7 @@ import android.widget.SearchView.OnQueryTextListener;
 import android.widget.SimpleCursorAdapter;
 import free.solnRss.R;
 import free.solnRss.provider.CategoryProvider;
-import free.solnRss.provider.SyndicationsProvider;
+import free.solnRss.provider.SolnRssProvider;
 import free.solnRss.repository.CategoryTable;
 import free.solnRss.repository.SyndicationTable;
 
@@ -42,12 +42,13 @@ public abstract class AbstractFragment extends ListFragment implements	OnQueryTe
 	protected abstract void setListPositionOnScreen();
 
 	protected String syndicationName(Integer id) {
-		Uri uri = Uri.parse(SyndicationsProvider.URI + "/" + id);
 		String[] projection = { SyndicationTable.COLUMN_NAME };
+		Uri uri = Uri.parse(SolnRssProvider.URI + "/syndication");
 		Cursor c = getActivity().getContentResolver().query(uri, projection,
-				null, null, null);
+				" _id = ? ", new String[] { id.toString() }, null);
 		c.moveToFirst();
-		String name = c.getCount() > 0 && c.getString(0) != null ? c.getString(0) : null;
+		String name = c.getCount() > 0 && c.getString(0) != null ? c
+				.getString(0) : null;
 		c.close();
 		return name;
 	}

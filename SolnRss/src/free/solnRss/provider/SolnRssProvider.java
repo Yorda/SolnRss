@@ -13,6 +13,7 @@ import free.solnRss.repository.PublicationTable;
 import free.solnRss.repository.RepositoryHelper;
 import free.solnRss.repository.SyndicationRepository;
 import free.solnRss.repository.SyndicationTable;
+import free.solnRss.repository.SyndicationsByCategoryRepository;
 
 public class SolnRssProvider extends ContentProvider {
 
@@ -21,7 +22,7 @@ public class SolnRssProvider extends ContentProvider {
 	public final static Uri URI = Uri.parse("content://" + AUTHORITY + "/" + PATH);
 
 	private UriMatcher uriMatcher;
-	private final int PUBLICATION = 10, CATEGORY = 20, SYNDICATION = 30;
+	private final int PUBLICATION = 10, CATEGORY = 20, SYNDICATION = 30, SYNDICATIONS_BY_CATEGORY = 40;
 
 	@Override
 	public boolean onCreate() {
@@ -29,6 +30,7 @@ public class SolnRssProvider extends ContentProvider {
 		uriMatcher.addURI(AUTHORITY, PATH + "/publication", PUBLICATION);
 		uriMatcher.addURI(AUTHORITY, PATH + "/category", CATEGORY);
 		uriMatcher.addURI(AUTHORITY, PATH + "/syndication", SYNDICATION);
+		uriMatcher.addURI(AUTHORITY, PATH + "/syndicationsByCategory/#", SYNDICATIONS_BY_CATEGORY);
 		return true;
 	}
 
@@ -53,6 +55,11 @@ public class SolnRssProvider extends ContentProvider {
 			
 		case SYNDICATION:
 			cursor = db.query(SyndicationTable.SYNDICATION_TABLE, projection,
+					selection, selectionArgs, null, null, SyndicationRepository.orderBy(getContext()));
+			break;
+			
+		case SYNDICATIONS_BY_CATEGORY:
+			cursor = db.query(SyndicationsByCategoryRepository.syndicationsByCategoryTable + uri.getLastPathSegment(), projection,
 					selection, selectionArgs, null, null, SyndicationRepository.orderBy(getContext()));
 			break;
 

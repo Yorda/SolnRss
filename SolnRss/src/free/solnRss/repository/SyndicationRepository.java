@@ -68,6 +68,69 @@ public class SyndicationRepository {
 				new String[] { syndicationId.toString() });
 	}
 	
+	public Cursor findSyndicationsToRefresh() {
+		
+		// Period in minute
+		int refresh = PreferenceManager.getDefaultSharedPreferences(context)
+				.getInt("pref_search_publication_time", 15);
+
+		GregorianCalendar calendar = new GregorianCalendar();
+		calendar.setTime(new Date());
+		calendar.add(Calendar.MINUTE, -refresh);
+
+		String projection[] = new String[] {
+				SyndicationTable.SYNDICATION_TABLE + "."
+						+ SyndicationTable.COLUMN_ID,
+				SyndicationTable.SYNDICATION_TABLE + "."
+						+ SyndicationTable.COLUMN_NAME,
+				SyndicationTable.SYNDICATION_TABLE + "."
+						+ SyndicationTable.COLUMN_LAST_RSS_PUBLISHED,
+				SyndicationTable.SYNDICATION_TABLE + "."
+						+ SyndicationTable.COLUMN_URL, };
+
+		String selection = "syn_last_extract_time < Datetime(?) and syn_is_active = ? ";
+		String[] selectionArgs = new String[2];
+		selectionArgs[0] = sdf.format(calendar.getTime());
+		selectionArgs[1] = "0";
+
+		return context.getContentResolver().query(uri, projection, selection,
+				selectionArgs, SyndicationTable.COLUMN_ID + " asc ");
+	}
+
+	public void updateLastUpdateSyndicationTime(List<Syndication> syndications) {
+		ContentValues values = null;
+		for (Syndication syndication : syndications) {
+
+			values = new ContentValues();
+
+			if (!TextUtils.isEmpty(syndication.getRss())) {
+				values.put(SyndicationTable.COLUMN_LAST_RSS_PUBLISHED,
+					syndication.getRss());
+			}
+			
+			values.put(SyndicationTable.COLUMN_LAST_EXTRACT_TIME,
+					sdf.format(new Date()));
+
+			context.getContentResolver().update(uri, values, " _id = ? ",
+					new String[] { syndication.getId().toString() });
+		}
+	}
+
+	
+	public void changeSyndicationDisplayMode(Integer id,
+			Integer isDisplayOnMainTimeLine) {
+		ContentValues values = new ContentValues();
+		values.put("syn_display_on_timeline", isDisplayOnMainTimeLine);
+		context.getContentResolver().update(uri, values, " _id = ? ",
+				new String[] { id.toString() });
+	}
+	
+	public void changeSyndicationActivityStatus(Integer id, Integer status) {
+		ContentValues values = new ContentValues();
+		values.put("syn_is_active", status);
+		context.getContentResolver().update(uri, values, "_id = ? ",
+				new String[] { id.toString() });
+	}
 	
 	public static String orderBy(Context context) {
 		String orderSyndicationBy = SyndicationTable.COLUMN_NAME + " asc";
@@ -77,19 +140,13 @@ public class SyndicationRepository {
 		}
 		return orderSyndicationBy;
 	}
-
 	
-	/**
-	 * Set a syndication inactive
-	 * The articles list will be not updated
-	 * @param id
-	 */
-	public void changeActiveStatus(Integer id, Integer status) {
-		String[] whereArgs = new String[] { id.toString() };
+
+	public void renameSyndication(Integer id, String newName) {
 		ContentValues values = new ContentValues();
-		values.put("syn_is_active", status);
-		RepositoryHelper.getInstance(context).getWritableDatabase()
-				.update("d_syndication", values, "_id = ? ", whereArgs);
+		values.put("syn_name",  newName);
+		context.getContentResolver().update(uri, values,"_id = ? ",
+				new String[] { id.toString() });
 	}
 	
 	/**
@@ -112,61 +169,6 @@ public class SyndicationRepository {
 			db.endTransaction();
 		}
 	}
-	
-	/**
-	 * Search all site for update their last articles published
-	 */
-	public List<Syndication> findSyndicationToUpdate() {
-		
-		Date now = new Date();
-		// Period in minute
-		int refresh = 10;
-
-		GregorianCalendar calendar = new GregorianCalendar();
-		calendar.setTime(now);
-		calendar.add(Calendar.MINUTE, -refresh);
-		
-		String[] selectionArgs = new String[1];
-		selectionArgs[0]       = sdf.format(calendar.getTime());
-
-		Cursor c = RepositoryHelper.getInstance(context).getReadableDatabase().rawQuery(
-					"select * from d_syndication where syn_last_extract_time < Datetime(?) and syn_is_active = 0",
-					selectionArgs);
-
-		List<Syndication> syndications = new ArrayList<Syndication>();
-		Syndication s = null;
-		
-		if (c.getCount() > 0) {
-			c.moveToFirst();
-			do {
-
-				s = new Syndication();
-				s.setId(c.getInt(c.getColumnIndex("_id")));
-				s.setUrl(c.getString(c.getColumnIndex("syn_url")));
-				syndications.add(s);
-
-			} while (c.moveToNext());
-		}
-		return syndications;
-	}
-	
-	public Cursor syndicationCategorie(Integer categorieId) {
-
-		List<String> arr = new ArrayList<String>();
-
-		StringBuilder sb = new StringBuilder();
-		
-		sb.append("select ");
-		sb.append("s._id, s.syn_name, ");
-		sb.append("cs.cas_categorie_id ");
-		sb.append("from d_syndication s left join d_categorie_syndication cs on s._id = cs.syn_syndication_id ");
-		sb.append("and cs.cas_categorie_id = ? order by s.syn_number_click desc ");
-
-		arr.add(categorieId.toString());
-		
-		return RepositoryHelper.getInstance(context).getReadableDatabase().rawQuery(sb.toString(),
-				arr.toArray(new String[arr.size()]));
-	}
 
 	public boolean isStillRecorded(String url) {
 		String[] selectionArgs = new String[1];
@@ -174,13 +176,13 @@ public class SyndicationRepository {
 		Cursor c = RepositoryHelper
 				.getInstance(context)
 				.getReadableDatabase()
-				.rawQuery("select * from d_syndication where syn_website_url = ? ",	selectionArgs);
+				.rawQuery("select _id from d_syndication where syn_website_url = ? ",	selectionArgs);
 
 		int count = c.getCount();
 
 		if (count > 0)
 			return true;
-
+		c.close();
 		return false;
 	}
 	
@@ -228,23 +230,5 @@ public class SyndicationRepository {
 			
 		}
 		return newIdInserted;
-	}
-
-	@Deprecated
-	public Cursor fetchAllSite() {
-		String[] columns = { "_id", "syn_name", "syn_url", "syn_is_active", "syn_number_click" };
-		return RepositoryHelper.getInstance(context).getReadableDatabase()
-			.query("d_syndication", columns, null, null, null, null,	" syn_number_click desc ", null);
-	}
-	
-	@Deprecated
-	public void updateLastExtractTime(Integer id) {
-
-		String now = sdf.format(new Date());
-		ContentValues values = new ContentValues();
-		values.put("syn_last_extract_time", now);
-		 RepositoryHelper.getInstance(context).getWritableDatabase().update("d_syndication", values, " _id = ? ",
-				new String[] { id.toString() });
-		
 	}
 }

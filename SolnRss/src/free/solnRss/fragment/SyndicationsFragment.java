@@ -1,14 +1,12 @@
 package free.solnRss.fragment;
 
 import android.app.AlertDialog;
-import android.content.ContentValues;
 import android.content.DialogInterface;
 import android.content.DialogInterface.OnClickListener;
 import android.content.Intent;
 import android.content.Loader;
 import android.content.res.Resources;
 import android.database.Cursor;
-import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.view.ContextMenu;
@@ -27,7 +25,6 @@ import free.solnRss.activity.SolnRss;
 import free.solnRss.adapter.SyndicationAdapter;
 import free.solnRss.dialog.OneEditTextDialogBox;
 import free.solnRss.fragment.listener.SyndicationsFragmentListener;
-import free.solnRss.provider.SyndicationsProvider;
 import free.solnRss.repository.SyndicationRepository;
 
 /**
@@ -120,21 +117,6 @@ public class SyndicationsFragment extends AbstractFragment implements
 	
 	@Override
 	public Loader<Cursor> onCreateLoader(int id, Bundle bundle) {
-		
-		/*String selection = null;
-		String[] args = null;
-		
-		if (!TextUtils.isEmpty(getFilterText())) {
-			selection = SyndicationTable.COLUMN_NAME + " like ? ";
-			args = new String[1];
-			args[0] = "%" + getFilterText().toString() + "%";
-		}
-
-		CursorLoader cursorLoader = new CursorLoader(getActivity(),
-				SyndicationsProvider.URI,
-				SyndicationsProvider.syndicationProjection, 
-				selection, args, null);*/
-
 		return syndicationRepository.loadSyndications(getFilterText());
 	}
 	
@@ -215,11 +197,7 @@ public class SyndicationsFragment extends AbstractFragment implements
 	}
 	
 	private void renameSyndication(String newName){
-		Uri uri = Uri.parse(SyndicationsProvider.URI +  "/displayMode/" + selectedSyndicationID);
-		ContentValues values = new ContentValues();
-		values.put("syn_name",  newName);
-		getActivity().getContentResolver().update(uri, values, null, null);
-		getLoaderManager().restartLoader(0, null, this);
+		syndicationRepository.renameSyndication(selectedSyndicationID, newName);
 		((SolnRss) getActivity()).refreshPublications();
 	}
 	
@@ -245,46 +223,32 @@ public class SyndicationsFragment extends AbstractFragment implements
 	
 	private void changeDisplayMode(final MenuItem item) {
 		
-		Uri uri = Uri.parse(SyndicationsProvider.URI + "/displayMode/" + selectedSyndicationID);
-		ContentValues values = new ContentValues();
-		values.put("syn_display_on_timeline",  isDisplayOnMainTimeLine == 0 ? 1: 0);
-		getActivity().getContentResolver().update(uri, values, null, null);
-		getLoaderManager().restartLoader(0, null, this);
+		syndicationRepository.changeSyndicationDisplayMode(selectedSyndicationID, isDisplayOnMainTimeLine == 0 ? 1 : 0);
 		// Reload publications list
 		((SolnRss) getActivity()).refreshPublications();
 		
-		String msg = isDisplayOnMainTimeLine == 0 ? 
-				  "La visibilité des publications est complète"
-				: "Les publications sont visibles via l'onglet catégorie ou syndication";
-		
+		String msg = getResources().getString(R.string.display_syndication);
+		if(isDisplayOnMainTimeLine != 0){
+			 msg =  getResources().getString(R.string.undisplay_syndication);
+		}		
 		Toast.makeText(getActivity(), msg, Toast.LENGTH_LONG).show();
 	}
 
 	public void changeStatus(final MenuItem item) {
+		
+		syndicationRepository.changeSyndicationActivityStatus(selectedSyndicationID, activeStatus == 0 ? 1: 0);
+		
+		String title = getResources().getString(R.string.active_articles_btn);
+		String msg = getResources().getString(R.string.unactive_syndication);
+		
+		if (activeStatus != 0) {
+			title = getResources().getString(R.string.unactive_articles_btn);
+			msg = getResources().getString(R.string.active_syndication);
+		}
 
-		new AsyncTask<Integer, Void, Void>() {
-			@Override
-			protected Void doInBackground(Integer... arg0) {
-				SyndicationRepository repository = new SyndicationRepository(getActivity());
-				repository.changeActiveStatus(arg0[0], activeStatus == 0 ? 1: 0);
-				return null;
-			};
-
-			@Override
-			protected void onPostExecute(Void result) {
-
-				item.setTitle(activeStatus == 0
-						? getResources().getString(R.string.active_articles_btn)  
-							: getResources().getString(R.string.unactive_articles_btn));
-				reloadSyndications();
-				
-				String msg = activeStatus == 0 ? 
-						"La recherche de nouvelles publications est désactivé"
-						: "La recherche de nouvelles publications est activé";
-				
-				Toast.makeText(getActivity(), msg, Toast.LENGTH_LONG).show();
-			};
-		}.execute(selectedSyndicationID);
+		item.setTitle(title);
+		Toast.makeText(getActivity(), msg, Toast.LENGTH_LONG).show();
+		
 	}
 
 	public void delete() {
@@ -292,8 +256,7 @@ public class SyndicationsFragment extends AbstractFragment implements
 		AsyncTask<Integer, Void, Integer> t = new AsyncTask<Integer, Void, Integer>() {
 			@Override
 			protected Integer doInBackground(Integer... arg0) {
-				SyndicationRepository repository = new SyndicationRepository(getActivity());
-				repository.delete(selectedSyndicationID);
+				syndicationRepository.delete(selectedSyndicationID);
 				return selectedSyndicationID;
 			};
 			@Override

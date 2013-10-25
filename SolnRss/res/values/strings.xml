@@ -88,6 +88,12 @@
     <string name="creation_date">Create: %1$s</string>
     <string name="input_new_name">Please enter a new name</string>
 
+    <string name="unactive_syndication">The search for new publications is disabled</string>
+    <string name="active_syndication">The search for new publications is activated</string>
+    
+    <string name="display_syndication">The visibility of publications is complete</string>
+    <string name="undisplay_syndication">Publications are visible through the category or syndication tab</string>
+    
     <plurals name="syndication_number_of_click">
         <item quantity="one">%1$s publication already read</item>
         <item quantity="other">%1$s publications already read</item>

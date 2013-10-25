@@ -128,7 +128,7 @@ public class PublicationRepository {
 		context.getContentResolver().delete(uri, " syn_syndication_id = ? ",
 				new String[] { id.toString() });
 	}
-
+	
 	public boolean isPublicationAlreadyRecorded(Integer syndicationId,
 			String title, String url) {
 

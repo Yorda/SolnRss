@@ -12,6 +12,7 @@ import free.solnRss.repository.CategorySyndicationsTable;
 import free.solnRss.repository.RepositoryHelper;
 import free.solnRss.repository.SyndicationTable;
 
+@Deprecated
 public class SyndicationsProvider extends ContentProvider {
 	private final static String AUTHORITY = "com.solnRss.provider.syndicationprovider",
 			SYNDICATION_PATH = "syndications",

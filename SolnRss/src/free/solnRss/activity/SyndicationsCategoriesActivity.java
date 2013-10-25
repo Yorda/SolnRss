@@ -2,11 +2,9 @@ package free.solnRss.activity;
 
 import android.app.ListActivity;
 import android.app.LoaderManager;
-import android.content.CursorLoader;
 import android.content.Loader;
 import android.database.Cursor;
 import android.graphics.drawable.ColorDrawable;
-import android.net.Uri;
 import android.os.Bundle;
 import android.text.Html;
 import android.text.TextUtils;
@@ -17,10 +15,8 @@ import android.widget.CheckBox;
 import android.widget.SearchView;
 import free.solnRss.R;
 import free.solnRss.adapter.SyndicationsCategorieAdapter;
-import free.solnRss.provider.SyndicationsProvider;
-import free.solnRss.repository.SyndicationTable;
+import free.solnRss.repository.SyndicationsByCategoryRepository;
 import free.solnRss.task.SyndicationCategoryAddTask;
-import free.solnRss.task.SyndicationCategoryLoaderTask;
 import free.solnRss.task.SyndicationCategoryRemoveTask;
 
 public class SyndicationsCategoriesActivity extends ListActivity implements
@@ -30,6 +26,8 @@ public class SyndicationsCategoriesActivity extends ListActivity implements
 	private Integer selectedCategorieID;
 	private String selectedCategoryName;
 	
+	private SyndicationsByCategoryRepository syndicationsByCategoryRepository;
+
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -63,14 +61,9 @@ public class SyndicationsCategoriesActivity extends ListActivity implements
 	@Override
 	protected void onStart() {
 		super.onStart();
-		//loadSyndicationCategorie();
+		syndicationsByCategoryRepository = new SyndicationsByCategoryRepository(this);
 		getLoaderManager().initLoader(0, null, this);
 		getListView().setTextFilterEnabled(true);
-	}
-
-	void loadSyndicationCategorie() {
-		SyndicationCategoryLoaderTask task = new SyndicationCategoryLoaderTask(this);
-		task.execute(selectedCategorieID);
 	}
 
 	public void addSyndicationToCategorie(Integer syndicationId) {
@@ -143,29 +136,13 @@ public class SyndicationsCategoriesActivity extends ListActivity implements
 		setListAdapter(adapter);
 		adapter.setSelectedCategoryId(selectedCategorieID);
 	}
-	
-	
+
 	@Override
 	public Loader<Cursor> onCreateLoader(int arg0, Bundle arg1) {
-		
-		Uri uri = Uri.parse(SyndicationsProvider.URI 
-				+ "/selectedCategoryId/"
-				+ selectedCategorieID);
-
-		String selection = null;
-		String[] args    = null;
-
-		if (!TextUtils.isEmpty(filterText)) {
-			selection = SyndicationTable.COLUMN_NAME + " like ? ";
-			args = new String[1];
-			args[0] = "%" + filterText + "%";
-		}
-		
-		CursorLoader cursorLoader = new CursorLoader(this, uri,
-				SyndicationsProvider.syndicationByCategoryProjection, selection, args, null);
-		return cursorLoader;
+		return syndicationsByCategoryRepository.loadSyndicationsByCategory(
+				selectedCategorieID, filterText);
 	}
-
+	
 	@Override
 	public void onLoadFinished(Loader<Cursor> loader, Cursor cursor) {
 		if(adapter == null){

@@ -5,7 +5,6 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
-import java.util.GregorianCalendar;
 import java.util.List;
 import java.util.Locale;
 
@@ -17,7 +16,6 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.content.res.Resources;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
@@ -33,10 +31,10 @@ import free.solnRss.business.impl.SyndicationBusinessImpl;
 import free.solnRss.manager.UpdatingProcessConnectionManager;
 import free.solnRss.model.Publication;
 import free.solnRss.model.Syndication;
-import free.solnRss.provider.PublicationsProvider;
 import free.solnRss.provider.SolnRssProvider;
-import free.solnRss.provider.SyndicationsProvider;
+import free.solnRss.repository.PublicationRepository;
 import free.solnRss.repository.PublicationTable;
+import free.solnRss.repository.SyndicationRepository;
 import free.solnRss.repository.SyndicationTable;
 
 public class PublicationsFinderService extends IntentService {
@@ -48,6 +46,9 @@ public class PublicationsFinderService extends IntentService {
 	private SyndicationBusiness syndicationBusiness = new SyndicationBusinessImpl();
 	final DateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss",	Locale.FRENCH);
 	private boolean isWorking = false;
+	
+	private PublicationRepository publicationRepository;
+	private SyndicationRepository syndicationRepository;
 	
 	//private ImageToDataTool imageToDataTool = new ImageToDataTool();
 	//private ReadabilityUtil readabilityUtil = new ReadabilityUtil();
@@ -64,6 +65,9 @@ public class PublicationsFinderService extends IntentService {
 
 	@Override
 	protected void onHandleIntent(Intent intent) {
+		publicationRepository = new PublicationRepository(getApplicationContext());
+		syndicationRepository = new SyndicationRepository(getApplicationContext());
+		
 		List<Syndication> syndications = findSyndicationsToRefresh();
 		refreshPublications(syndications);
 
@@ -73,6 +77,14 @@ public class PublicationsFinderService extends IntentService {
 		editor.putLong("publicationsLastRefresh", Calendar.getInstance()
 				.getTimeInMillis());
 		editor.commit();
+	}
+	
+	public void test(Context context){
+		publicationRepository = new PublicationRepository(context);
+		syndicationRepository = new SyndicationRepository(context);
+		
+		List<Syndication> syndications = findSyndicationsToRefresh();
+		refreshPublications(syndications);
 	}
 
 	private void registerOrUnregisterReceiver(Intent intent) {
@@ -94,53 +106,23 @@ public class PublicationsFinderService extends IntentService {
 	}
 
 	private List<Syndication> findSyndicationsToRefresh() {
-
-		// Period in minute
-		int refresh = PreferenceManager.getDefaultSharedPreferences(this)
-				.getInt("pref_search_publication_time", 15);
-
-		GregorianCalendar calendar = new GregorianCalendar();
-		calendar.setTime(new Date());
-		calendar.add(Calendar.MINUTE, -refresh);
-
-		String projection[] = new String[] {
-				SyndicationTable.SYNDICATION_TABLE + "."
-						+ SyndicationTable.COLUMN_ID,
-				SyndicationTable.SYNDICATION_TABLE + "."
-						+ SyndicationTable.COLUMN_NAME,
-				SyndicationTable.SYNDICATION_TABLE + "."
-						+ SyndicationTable.COLUMN_LAST_RSS_PUBLISHED,
-				SyndicationTable.SYNDICATION_TABLE + "."
-						+ SyndicationTable.COLUMN_URL, };
-
-		String selection = "syn_last_extract_time < Datetime(?) and syn_is_active = ? ";
-		String[] selectionArgs = new String[2];
-		selectionArgs[0] = sdf.format(calendar.getTime());
-		selectionArgs[1] = "0";
-
-		Cursor cursor = getContentResolver().query(SyndicationsProvider.URI,
-				projection, selection, selectionArgs,
-				SyndicationTable.COLUMN_ID + " asc ");
-
+		
+		Cursor cursor = syndicationRepository.findSyndicationsToRefresh();
+		
 		List<Syndication> syndications = new ArrayList<Syndication>();
 		Syndication syndication = null;
+		
 		if (cursor.getCount() > 0) {
 			cursor.moveToFirst();
 			do {
 				syndication = new Syndication();
-				syndication.setId(cursor.getInt(cursor
-						.getColumnIndex(SyndicationTable.COLUMN_ID)));
-				syndication.setName(cursor.getString(cursor
-						.getColumnIndex(SyndicationTable.COLUMN_NAME)));
-				syndication
-						.setOldRss(cursor.getString(cursor
-								.getColumnIndex(SyndicationTable.COLUMN_LAST_RSS_PUBLISHED)));
-				syndication.setId(cursor.getInt(cursor
-						.getColumnIndex(SyndicationTable.COLUMN_ID)));
-				syndication.setUrl(cursor.getString(cursor
-						.getColumnIndex(SyndicationTable.COLUMN_URL)));
+				syndication.setId(cursor.getInt(cursor.getColumnIndex(SyndicationTable.COLUMN_ID))); 
+				syndication.setName(cursor.getString(cursor.getColumnIndex(SyndicationTable.COLUMN_NAME)));
+				syndication.setOldRss(cursor.getString(cursor.getColumnIndex(SyndicationTable.COLUMN_LAST_RSS_PUBLISHED)));
+				syndication.setUrl(cursor.getString(cursor.getColumnIndex(SyndicationTable.COLUMN_URL)));
 				syndications.add(syndication);
 			} while (cursor.moveToNext());
+			
 			cursor.close();
 		}
 		return syndications;
@@ -153,6 +135,7 @@ public class PublicationsFinderService extends IntentService {
 				|| syndications.size() <= 0 || isWorking) {
 			return;
 		}
+		
 		try {
 			isWorking = true;
 			for (Syndication syndication : syndications) {
@@ -205,17 +188,18 @@ public class PublicationsFinderService extends IntentService {
 			}
 
 			// Must refresh syndication (update last extract date and rss)
-			updateSyndicationsAfterExtractRSS(syndications);
+			updateLastUpdateSyndicationTime(syndications);
 
 		} finally {
 			isWorking = false;
 		}
 	}
 
-	private void updateSyndicationsAfterExtractRSS(
-			List<Syndication> syndications) {
+	private void updateLastUpdateSyndicationTime(List<Syndication> syndications) {
 
-		Uri uri = SyndicationsProvider.URI;
+		syndicationRepository.updateLastUpdateSyndicationTime(syndications);
+		
+		/*Uri uri = SyndicationsProvider.URI;
 		for (Syndication syndication : syndications) {
 
 			ContentValues values = new ContentValues();
@@ -233,7 +217,7 @@ public class PublicationsFinderService extends IntentService {
 			String[] selectionArgs = { syndication.getId().toString() };
 
 			getContentResolver().update(uri, values, where, selectionArgs);
-		}
+		}*/
 	}
 
 	private void findNewPublication(Syndication syndication) {
@@ -250,9 +234,10 @@ public class PublicationsFinderService extends IntentService {
 	}
 
 	private int insertNewPublications(List<ContentValues> publications) {
-		return getContentResolver().bulkInsert(uri, publications.toArray(new ContentValues[publications.size()]));
+		return getContentResolver().bulkInsert(uri,
+				publications.toArray(new ContentValues[publications.size()]));
 	}
-	
+
 	/*
 	 * Make all fix needed by the publication's description
 	 */
@@ -289,30 +274,15 @@ public class PublicationsFinderService extends IntentService {
 		return toRead;
 	}
 	
-	private boolean isPublicationAlreadyRecorded(Integer syndicationId, String title, String url) {
-		Uri uri = Uri.parse(PublicationsProvider.URI
-				+ "/publicationInSyndication/" + syndicationId);
-		Cursor cursor = getContentResolver().query(
-				uri,
-				new String[] { 
-						PublicationTable.PUBLICATION_TABLE + "."
-						+ PublicationTable.COLUMN_ID },
-						
-				PublicationTable.COLUMN_TITLE + " = ? and "
-						+ PublicationTable.COLUMN_LINK + " = ? ",
-				new String[] { title, url }, null);
-		
-		boolean isAlreadyRecorded = true;
-		if (cursor.getCount() < 1) {
-			isAlreadyRecorded = false;
-		}
-		cursor.close();
-		return isAlreadyRecorded;
+	private boolean isPublicationAlreadyRecorded(Integer syndicationId,
+			String title, String url) {
+		return publicationRepository.isPublicationAlreadyRecorded(
+				syndicationId, title, url);
 	}
 
 	private void notifyNewPublications(Integer newPublicationsNumber) {
 		if (newPublicationsNumber > 0 && mustDisplayNotification()) {
-			createNotification(newPublicationsNumber);
+			notificationForNewPublications(newPublicationsNumber);
 		}
 
 		if (receiverMap.get(resultReceiverId) != null) {
@@ -329,20 +299,10 @@ public class PublicationsFinderService extends IntentService {
 	 * 
 	 * @param newPublicationsNumber
 	 */
-	private void createNotification(int newPublicationsNumber) {
-		Resources r = getResources();
-		String title = r.getString(R.string.notify_new_pub_title);
+	private void notificationForNewPublications(int newPublicationsNumber) {
 
-		String text = r.getQuantityString(R.plurals.notify_new_pub_msg,
+		String text = getResources().getQuantityString(R.plurals.notify_new_pub_msg,
 				newPublicationsNumber, newPublicationsNumber);
-
-		NotificationManager notificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
-		NotificationCompat.Builder builder = new NotificationCompat.Builder(
-				this);
-		builder.setSmallIcon(R.drawable.ic_launcher);
-
-		builder.setContentTitle(title);
-		builder.setContentText(text);
 
 		// Create pending intent for going back on screen
 		Intent intent = new Intent(this, SolnRss.class);
@@ -351,28 +311,20 @@ public class PublicationsFinderService extends IntentService {
 
 		intent.putExtra("SERVICE_RESULT",
 				SolnRss.SERVICE_RESULT.NEW_PUBLICATIONS);
-
 		PendingIntent pendingIntent = PendingIntent.getActivity(this, 3,
 				intent, PendingIntent.FLAG_UPDATE_CURRENT);
-		builder.setContentIntent(pendingIntent);
-
+		
+		NotificationManager notificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
+		NotificationCompat.Builder builder = new NotificationCompat.Builder(this)
+				.setSmallIcon(R.drawable.ic_launcher)
+				.setContentTitle(getResources().getString(R.string.notify_new_pub_title))
+				.setContentText(text)
+				.setContentIntent(pendingIntent);
+		
 		Notification notification = builder.build();
-
 		notification.flags |= Notification.FLAG_AUTO_CANCEL;
 		notificationManager.notify(0x000001, notification);
 	}
-
-	/**
-	 * Check if device is connected to Internet
-	 * 
-	 * @return
-	 
-	public boolean isOnline() {
-		ConnectivityManager cm = (ConnectivityManager) getApplication()
-				.getSystemService(Context.CONNECTIVITY_SERVICE);
-		return cm.getActiveNetworkInfo() != null
-				&& cm.getActiveNetworkInfo().isConnected();
-	}*/
 
 	public boolean mustDisplayNotification() {
 		return PreferenceManager.getDefaultSharedPreferences(

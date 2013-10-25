@@ -106,14 +106,15 @@ public final class R {
     public static final class string {
         public static final int action_bar_search=0x7f04000d;
         public static final int active_articles_btn=0x7f040039;
-        public static final int add_categorie=0x7f040069;
+        public static final int active_syndication=0x7f040045;
+        public static final int add_categorie=0x7f04006d;
         /**  Dialog add item 
  Dialog add item 
          */
-        public static final int add_categorie_explain=0x7f040067;
-        public static final int add_site=0x7f04006a;
-        public static final int add_site_explain=0x7f040068;
-        public static final int add_to_categorie=0x7f040063;
+        public static final int add_categorie_explain=0x7f04006b;
+        public static final int add_site=0x7f04006e;
+        public static final int add_site_explain=0x7f04006c;
+        public static final int add_to_categorie=0x7f040067;
         public static final int all=0x7f04000c;
         public static final int all_publications_already_read=0x7f040014;
         public static final int all_publications_by_category_already_read=0x7f040013;
@@ -126,9 +127,9 @@ public final class R {
          */
         public static final int app_name=0x7f040000;
         public static final int bad_url=0x7f04002d;
-        public static final int categorie_not_use=0x7f040064;
-        public static final int categorie_use_by_many=0x7f040066;
-        public static final int categorie_use_by_one=0x7f040065;
+        public static final int categorie_not_use=0x7f040068;
+        public static final int categorie_use_by_many=0x7f04006a;
+        public static final int categorie_use_by_one=0x7f040069;
         public static final int clean_articles_btn=0x7f040037;
         public static final int clean_confirm=0x7f04003f;
         public static final int clean_syndication_ok=0x7f040035;
@@ -136,7 +137,7 @@ public final class R {
         public static final int confirm_mark_as_read=0x7f040020;
         public static final int creation_date=0x7f040042;
         public static final int delete_articles_btn=0x7f040038;
-        public static final int delete_categorie=0x7f040062;
+        public static final int delete_categorie=0x7f040066;
         public static final int delete_confirm=0x7f040041;
         public static final int delete_ok=0x7f04003d;
         public static final int delete_syndication_ok=0x7f040034;
@@ -146,19 +147,20 @@ public final class R {
  Context publication's context menu 
          */
         public static final int display_one_publication=0x7f04001c;
+        public static final int display_syndication=0x7f040046;
         /**  Category 
  Category 
          */
-        public static final int empty_categories=0x7f040060;
-        public static final int empty_categories_with_filter=0x7f040061;
+        public static final int empty_categories=0x7f040064;
+        public static final int empty_categories_with_filter=0x7f040065;
         public static final int empty_publications=0x7f040015;
         public static final int empty_publications_with_category=0x7f040017;
         public static final int empty_publications_with_category_with_filter=0x7f04001a;
         public static final int empty_publications_with_filter=0x7f040018;
         public static final int empty_publications_with_syndication=0x7f040016;
         public static final int empty_publications_with_syndication_with_filter=0x7f040019;
-        public static final int empty_syndications=0x7f040044;
-        public static final int empty_syndications_with_filter=0x7f040045;
+        public static final int empty_syndications=0x7f040048;
+        public static final int empty_syndications_with_filter=0x7f040049;
         public static final int empty_url=0x7f04002e;
         public static final int feed_not_found=0x7f040026;
         /**  Search syndication task result 
@@ -167,7 +169,7 @@ public final class R {
         public static final int feed_search_error=0x7f040024;
         public static final int feed_search_ok=0x7f040025;
         public static final int found_feed=0x7f040031;
-        public static final int hide_syndication=0x7f040048;
+        public static final int hide_syndication=0x7f04004c;
         public static final int http_get_error=0x7f04002c;
         public static final int input_new_name=0x7f040043;
         public static final int item_brev=0x7f040010;
@@ -184,8 +186,8 @@ public final class R {
         public static final int menu_settings=0x7f040004;
         public static final int menu_show_already_read=0x7f040007;
         public static final int minute_brev=0x7f040011;
-        public static final int new_category_hint=0x7f04006c;
-        public static final int new_syndication_hint=0x7f04006b;
+        public static final int new_category_hint=0x7f040070;
+        public static final int new_syndication_hint=0x7f04006f;
         public static final int no_connection=0x7f04002a;
         public static final int no_connection_wifi=0x7f04002b;
         /**  New publication notification 
@@ -193,47 +195,47 @@ public final class R {
          */
         public static final int notify_new_pub_title=0x7f040023;
         public static final int open_browser_bad_url=0x7f04001b;
-        public static final int pause_syndication=0x7f040049;
+        public static final int pause_syndication=0x7f04004d;
         public static final int please_wait=0x7f04000f;
-        public static final int pref_delete_all_publications=0x7f040058;
-        public static final int pref_delete_all_publications_confirm=0x7f040059;
+        public static final int pref_delete_all_publications=0x7f04005c;
+        public static final int pref_delete_all_publications_confirm=0x7f04005d;
         /**  Display a notification after found new publications 
  Display a notification after found new publications 
          */
-        public static final int pref_display_notify=0x7f040050;
-        public static final int pref_display_publication=0x7f040053;
-        public static final int pref_display_publication_app=0x7f040055;
-        public static final int pref_display_publication_browser=0x7f040054;
-        public static final int pref_how_to_start_refresh=0x7f04005c;
-        public static final int pref_not_run_on_boot=0x7f04005a;
-        public static final int pref_publication_item_number=0x7f040057;
-        public static final int pref_run_on_boot=0x7f04005b;
-        public static final int pref_search_publication_time=0x7f040056;
-        public static final int pref_sort_categories=0x7f040072;
-        public static final int pref_sort_categories_alphabetic=0x7f040071;
-        public static final int pref_sort_categories_most_use=0x7f040070;
-        public static final int pref_sort_syndications=0x7f04006f;
-        public static final int pref_sort_syndications_alphabetic=0x7f04006e;
-        public static final int pref_sort_syndications_most_use=0x7f04006d;
-        public static final int pref_summ_display_notify_off=0x7f040052;
-        public static final int pref_summ_display_notify_on=0x7f040051;
-        public static final int pref_summ_view_unread_off=0x7f04004b;
-        public static final int pref_summ_view_unread_on=0x7f04004c;
-        public static final int pref_use_all_connection=0x7f04005e;
-        public static final int pref_use_wifi_only=0x7f04005d;
+        public static final int pref_display_notify=0x7f040054;
+        public static final int pref_display_publication=0x7f040057;
+        public static final int pref_display_publication_app=0x7f040059;
+        public static final int pref_display_publication_browser=0x7f040058;
+        public static final int pref_how_to_start_refresh=0x7f040060;
+        public static final int pref_not_run_on_boot=0x7f04005e;
+        public static final int pref_publication_item_number=0x7f04005b;
+        public static final int pref_run_on_boot=0x7f04005f;
+        public static final int pref_search_publication_time=0x7f04005a;
+        public static final int pref_sort_categories=0x7f040076;
+        public static final int pref_sort_categories_alphabetic=0x7f040075;
+        public static final int pref_sort_categories_most_use=0x7f040074;
+        public static final int pref_sort_syndications=0x7f040073;
+        public static final int pref_sort_syndications_alphabetic=0x7f040072;
+        public static final int pref_sort_syndications_most_use=0x7f040071;
+        public static final int pref_summ_display_notify_off=0x7f040056;
+        public static final int pref_summ_display_notify_on=0x7f040055;
+        public static final int pref_summ_view_unread_off=0x7f04004f;
+        public static final int pref_summ_view_unread_on=0x7f040050;
+        public static final int pref_use_all_connection=0x7f040062;
+        public static final int pref_use_wifi_only=0x7f040061;
         /**  Unread font weight 
  Unread font weight 
          */
-        public static final int pref_view_font_weight=0x7f04004d;
-        public static final int pref_view_font_weight_off=0x7f04004e;
-        public static final int pref_view_font_weight_on=0x7f04004f;
+        public static final int pref_view_font_weight=0x7f040051;
+        public static final int pref_view_font_weight_off=0x7f040052;
+        public static final int pref_view_font_weight_on=0x7f040053;
         /**  Settings 
  View Read / Unread 
  Settings 
  View Read / Unread 
          */
-        public static final int pref_view_unread=0x7f04004a;
-        public static final int pref_what_type_of_connection=0x7f04005f;
+        public static final int pref_view_unread=0x7f04004e;
+        public static final int pref_what_type_of_connection=0x7f040063;
         public static final int process_ok=0x7f040033;
         public static final int read=0x7f04000a;
         public static final int record_feed=0x7f040032;
@@ -246,14 +248,16 @@ public final class R {
          */
         public static final int site_parameter=0x7f040036;
         public static final int site_record_error=0x7f040027;
-        public static final int sleep_img=0x7f040046;
-        public static final int stealth_img=0x7f040047;
+        public static final int sleep_img=0x7f04004a;
+        public static final int stealth_img=0x7f04004b;
         public static final int stop_search=0x7f04000e;
         public static final int title_categories=0x7f040003;
         public static final int title_publications=0x7f040001;
         public static final int title_syndications=0x7f040002;
         public static final int unactive_articles_btn=0x7f04003a;
+        public static final int unactive_syndication=0x7f040044;
         public static final int undisplay_articles_on_time_line=0x7f04003c;
+        public static final int undisplay_syndication=0x7f040047;
     }
     public static final class style {
         /** 

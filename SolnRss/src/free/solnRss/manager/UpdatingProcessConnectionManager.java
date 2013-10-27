@@ -17,9 +17,15 @@ public class UpdatingProcessConnectionManager {
 		boolean isWifi = connectivityManager.getNetworkInfo(
 				ConnectivityManager.TYPE_WIFI).isConnectedOrConnecting();
 
+		boolean isMobile = false;
+		
 		// For Device connection
-		boolean isMobile = connectivityManager.getNetworkInfo(
-				ConnectivityManager.TYPE_MOBILE).isConnectedOrConnecting();
+		// Could be null on tablet
+		if( connectivityManager.getNetworkInfo(
+				ConnectivityManager.TYPE_MOBILE) != null){
+			isMobile = connectivityManager.getNetworkInfo(
+					ConnectivityManager.TYPE_MOBILE).isConnectedOrConnecting();
+		} 
 
 		if (!isMobile && !isWifi) {
 			noConnectionReason = context.getResources().getString(R.string.no_connection);

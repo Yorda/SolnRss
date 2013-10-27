@@ -1,5 +1,6 @@
 package free.solnRss.activity;
 
+import android.annotation.SuppressLint;
 import android.app.ActionBar;
 import android.app.ActionBar.Tab;
 import android.app.Activity;
@@ -125,6 +126,7 @@ public class SolnRss extends Activity implements ActionBar.TabListener,
 	}
 	
 	
+	@SuppressLint("NewApi")
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		
@@ -242,7 +244,11 @@ public class SolnRss extends Activity implements ActionBar.TabListener,
 		editor.commit();
 	}
 	
-	private void openDialogForAddCategorie() {
+	public void openDialogForAddCategory(View v){
+		openDialogForAddCategorie();
+	}
+	
+	public void openDialogForAddCategorie() {
 		
 		OneEditTextDialogBox oneEditTextDialogBox;
 		oneEditTextDialogBox = new OneEditTextDialogBox(this, 
@@ -259,7 +265,11 @@ public class SolnRss extends Activity implements ActionBar.TabListener,
 		oneEditTextDialogBox.displayDialogBox();
 	}
 
-	private void openDialogForAddSyndication() {
+	public void openDialogForAddSyndication(View v){
+		openDialogForAddSyndication();
+	}
+	
+	public void openDialogForAddSyndication() {
 		
 		OneEditTextDialogBox oneEditTextDialogBox;
 		oneEditTextDialogBox = new OneEditTextDialogBox(this, 

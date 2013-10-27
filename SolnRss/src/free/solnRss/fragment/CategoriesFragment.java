@@ -131,7 +131,7 @@ public class CategoriesFragment extends AbstractFragment implements
 		}
 		return super.onContextItemSelected(item);
 	}
-
+	
 	private void markCategoryPublicationsAsRead() {
 		
 		OnClickListener listener = new DialogInterface.OnClickListener() {

@@ -309,7 +309,7 @@ public class SyndicationsFragment extends AbstractFragment implements
 				.setPositiveButton(r.getString(android.R.string.ok), listener)
 				.create().show();
 	}
-
+	
 	@Override
 	public void addOneReadToSyndication(Integer syndicationId, Integer numberOfClick) {
 		syndicationRepository.addOneReadToSyndication(syndicationId,numberOfClick);

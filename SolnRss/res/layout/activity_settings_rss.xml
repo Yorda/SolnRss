@@ -69,4 +69,12 @@
         android:summaryOn="@string/pref_use_wifi_only"
         android:title="@string/pref_what_type_of_connection" />
 
+    <ListPreference
+        android:defaultValue="0"
+        android:entries="@array/listTypeFace"
+        android:entryValues="@array/listTypeFaceValues"
+        android:key="pref_user_font_face"
+        android:title="@string/pref_user_type_face" >
+    </ListPreference>
+
 </PreferenceScreen>

@@ -35,6 +35,7 @@ import free.solnRss.fragment.listener.PublicationsFragmentListener;
 import free.solnRss.fragment.listener.SyndicationsFragmentListener;
 import free.solnRss.manager.UpdatingProcessConnectionManager;
 import free.solnRss.service.SyndicationFinderService;
+import free.solnRss.singleton.TypeFaceSingleton;
 
 public class SolnRss extends Activity implements ActionBar.TabListener,
 		SharedPreferences.OnSharedPreferenceChangeListener {
@@ -102,6 +103,14 @@ public class SolnRss extends Activity implements ActionBar.TabListener,
 		else if (key.compareTo("pref_sort_categories") == 0) {
 			categoriesListener.reloadCategories();
 		} 
+		else if (key.compareTo("pref_sort_categories") == 0) {
+			categoriesListener.reloadCategories();
+		} 
+		else if (key.compareTo("pref_user_font_face") == 0) {
+			syndicationsListener.reloadSyndications();
+			syndicationsListener.reloadSyndications();
+			categoriesListener.reloadCategories();
+		} 
 	}
 
 	public void registerPreferenceManager() {
@@ -112,6 +121,8 @@ public class SolnRss extends Activity implements ActionBar.TabListener,
 				.getDefaultSharedPreferences(this);
 		
 		FindNewPublicationsAlarmManager.createInstance(pref, this);
+		
+		TypeFaceSingleton.getInstance(this);
 	}
 
 	private boolean displayAlreadyReadPublications() {

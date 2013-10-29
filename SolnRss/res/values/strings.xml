@@ -20,6 +20,7 @@
     <string name="please_wait">Please wait</string>
     <string name="item_brev">item(s)</string>
     <string name="minute_brev">minute(s)</string>
+    <string name="defaultTypeface">Default</string>
 
     <!-- Publication's tab label -->
     <string name="all_publications_by_syndication_already_read">All the publications of the syndication %1$s are marked as read</string>
@@ -158,5 +159,6 @@
     <string name="pref_sort_categories_most_use">The most commonly used</string>
     <string name="pref_sort_categories_alphabetic">Alphabetical</string>
     <string name="pref_sort_categories">Sort categories by:</string>
+     <string name="pref_user_type_face">Police de caractère</string>
 
 </resources>

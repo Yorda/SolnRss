@@ -2,12 +2,14 @@ package free.solnRss.adapter;
 
 import android.content.Context;
 import android.database.Cursor;
+import android.graphics.Typeface;
 import android.text.Html;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.SimpleCursorAdapter;
 import android.widget.TextView;
 import free.solnRss.R;
+import free.solnRss.singleton.TypeFaceSingleton;
 
 /**
  * 
@@ -63,12 +65,20 @@ public class SyndicationAdapter extends SimpleCursorAdapter {
 		item.getNumberOfClick().setText(
 				context.getResources().getQuantityString(R.plurals.syndication_number_of_click, quantity, quantity));
 
+		
 		if (getCursor().getInt(5) != 0) {
 			convertView.findViewWithTag("stealthImage")
 					.setVisibility(View.GONE);
 		} else {
 			convertView.findViewWithTag("stealthImage")
 					.setVisibility(View.VISIBLE);
+		}
+		
+		Typeface userTypeFace = TypeFaceSingleton.getInstance(context).getUserTypeFace();
+		
+		if (userTypeFace != null) {
+			item.getTitle().setTypeface(userTypeFace,Typeface.BOLD);
+			item.getNumberOfClick().setTypeface(userTypeFace);
 		}
 		
 		return convertView;

@@ -10,18 +10,14 @@
         android:layout_height="wrap_content"
         android:layout_gravity="center"
         android:textColor="#ff0099cc"
-        android:textSize="13sp"
-        android:textStyle="bold"
-        android:typeface="monospace" />
+        android:textSize="16sp" />
 
     <TextView
         android:id="@+id/syndication_number_of_click"
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
         android:layout_marginTop="12dp"
-        android:textSize="13.6sp"
-        android:textStyle="bold"
-        android:typeface="monospace" />
+        android:textSize="16sp" />
 
     <TextView
         android:layout_width="fill_parent"
@@ -29,9 +25,7 @@
         android:layout_marginTop="5dp"
         android:tag="sleepImage"
         android:text="@string/pause_syndication"
-        android:textSize="13.6sp"
-        android:textStyle="bold"
-        android:typeface="monospace"
+        android:textSize="16sp"
         android:visibility="gone" />
 
     <TextView
@@ -41,9 +35,7 @@
         android:src="@drawable/ic_stealth"
         android:tag="stealthImage"
         android:text="@string/hide_syndication"
-        android:textSize="13.6sp"
-        android:textStyle="bold"
-        android:typeface="monospace"
+        android:textSize="16sp"
         android:visibility="gone" />
 
 </LinearLayout>

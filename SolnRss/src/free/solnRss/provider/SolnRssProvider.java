@@ -110,6 +110,7 @@ public class SolnRssProvider extends ContentProvider {
 		case PUBLICATION:
 			id = db.insert(PublicationTable.PUBLICATION_TABLE, null, values);
 			// Not refresh after recorded new publication
+			getContext().getContentResolver().notifyChange(uri, null);
 			break;
 
 		case CATEGORY:

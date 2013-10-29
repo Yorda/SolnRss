@@ -3,12 +3,14 @@ package free.solnRss.adapter;
 import android.content.Context;
 import android.content.res.Resources;
 import android.database.Cursor;
+import android.graphics.Typeface;
 import android.text.Html;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.SimpleCursorAdapter;
 import android.widget.TextView;
 import free.solnRss.R;
+import free.solnRss.singleton.TypeFaceSingleton;
 
 public class CategorieAdapter extends SimpleCursorAdapter {
 
@@ -27,26 +29,26 @@ public class CategorieAdapter extends SimpleCursorAdapter {
 
 	@Override
 	public View getView(int position, View convertView, ViewGroup parent) {
-		CategorieItem categorieItem = null;
+		CategorieItem item = null;
 
 		if (convertView == null) {
 			convertView = View.inflate(context, layout, null);
-			categorieItem = new CategorieItem();
+			item = new CategorieItem();
 
-			categorieItem.setName((TextView) convertView
+			item.setName((TextView) convertView
 					.findViewById(R.id.categorie_name));
-			categorieItem.setNumberOfUse((TextView) convertView
+			item.setNumberOfUse((TextView) convertView
 					.findViewById(R.id.categorie_number_of_use));
-			convertView.setTag(categorieItem);
+			convertView.setTag(item);
 
 		} else {
-			categorieItem = (CategorieItem) convertView.getTag();
+			item = (CategorieItem) convertView.getTag();
 		}
 
 		getCursor().moveToPosition(position);
 
 
-		categorieItem.getName().setText(Html.fromHtml("<u>" + getCursor().getString(
+		item.getName().setText(Html.fromHtml("<u>" + getCursor().getString(
 				getCursor().getColumnIndex("cat_name")) + "</u>"));
 		Integer numberOfUse = getCursor().getInt(
 				getCursor().getColumnIndex("number_of_use"));
@@ -63,8 +65,14 @@ public class CategorieAdapter extends SimpleCursorAdapter {
 			use = r.getString(R.string.categorie_use_by_many, numberOfUse);
 		}
 
-		categorieItem.getNumberOfUse().setText(use);
+		item.getNumberOfUse().setText(use);
 	
+		Typeface userTypeFace = TypeFaceSingleton.getInstance(context).getUserTypeFace();
+		if (userTypeFace != null) {
+			item.getName().setTypeface(userTypeFace,Typeface.BOLD);
+			item.getNumberOfUse().setTypeface(userTypeFace);
+		}
+		
 		return convertView;
 	}
 }

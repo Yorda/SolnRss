@@ -10,16 +10,12 @@
         android:layout_height="wrap_content"
         android:paddingBottom="12dp"
         android:textColor="#ff0099cc"
-        android:textSize="13sp"
-        android:textStyle="bold"
-        android:typeface="monospace" />
+        android:textSize="16sp" />
 
     <TextView
         android:id="@+id/categorie_number_of_use"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:textSize="13.6sp"
-         android:textStyle="bold"
-        android:typeface="monospace" />
+        android:textSize="16sp" />
 
 </LinearLayout>

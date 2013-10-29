@@ -2,6 +2,7 @@ package free.solnRss.adapter;
 
 import android.content.Context;
 import android.database.Cursor;
+import android.graphics.Typeface;
 import android.text.Html;
 import android.view.View;
 import android.view.ViewGroup;
@@ -9,6 +10,7 @@ import android.widget.ImageView;
 import android.widget.SimpleCursorAdapter;
 import android.widget.TextView;
 import free.solnRss.R;
+import free.solnRss.singleton.TypeFaceSingleton;
 
 public class PublicationAdapter extends SimpleCursorAdapter {
 
@@ -50,17 +52,22 @@ public class PublicationAdapter extends SimpleCursorAdapter {
 			item = (PublicationItem) convertView.getTag();
 		}
 
-		
-
 		String title = getCursor().getString(1); // pub_title
-		String name = getCursor().getString(4);  // syn_name
-		Integer isRead = getCursor().getInt(3);  // pub_already_read
+		String name = getCursor().getString(4); // syn_name
+		Integer isRead = getCursor().getInt(3); // pub_already_read
 
 		item.getTitle().setText(title);
-		item.getName().setText(Html.fromHtml("<b><u>" + name + "</b></u>"));
+		item.getName().setText(Html.fromHtml("<u>" + name + "</u>"));
+
+		Typeface userTypeFace = TypeFaceSingleton.getInstance(context).getUserTypeFace();
+		
+		if (userTypeFace != null) {
+			item.getName().setTypeface(userTypeFace,Typeface.BOLD);
+			item.getTitle().setTypeface(userTypeFace);
+		}
 
 		item.setIsRead(isRead == null ? 0 : isRead);
-		
+
 		if (isRead != 0) {
 			item.getAlreadyRead().setVisibility(View.VISIBLE);
 		} else {

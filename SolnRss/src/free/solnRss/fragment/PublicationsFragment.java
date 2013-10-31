@@ -165,12 +165,14 @@ public class PublicationsFragment extends AbstractFragment implements
 	@Override
 	public void onListItemClick(final ListView l, final View v, final int position, final long id) {
 		
-    	Cursor cursor = ((PublicationAdapter) l.getAdapter()).getCursor();
-		clickOnPublicationItem(cursor, l, v, position, id);
+    	
+		Cursor cursor = ((PublicationAdapter) l.getAdapter()).getCursor();
 		
 		String link = getPublicationUrl(cursor);
 		String title = getPublicationTitle(cursor);
 		String description = hasPublicationContentToDisplay(cursor);
+		
+		clickOnPublicationItem(cursor, l, v, position, id);
 		
 		if (description != null && description.trim().length() > 0) {
 			if (isPreferenceToDisplayOnAppReader()) {
@@ -355,11 +357,9 @@ public class PublicationsFragment extends AbstractFragment implements
 		
 		// Set this publication as already read
 		// cursor.getColumnIndex(PublicationTable.COLUMN_ID)
-		int publicationId = cursor.getInt(0);
-
-		publicationRepository.markPublicationAsRead(publicationId);
-		// refreshPublications();
-		//markPublicationAsRead(publicationId);
+		publicationRepository.markPublicationAsRead(cursor.getInt(0));
+		//refreshPublications();
+		((PublicationAdapter)getListAdapter()).notifyDataSetChanged();
 		
 		// Add a click to the syndication
 		// cursor.getColumnIndex(PublicationTable.COLUMN_SYNDICATION_ID)
@@ -601,56 +601,4 @@ public class PublicationsFragment extends AbstractFragment implements
 	public void markCategoryPublicationsAsRead(Integer categoryId) {
 		publicationRepository.markCategoryPublicationsAsRead(categoryId);
 	}
-	
-	
-	/*@Deprecated
-	private void markAsRead(final Integer syndicationId){
-		ContentValues values = new ContentValues();
-		values.put(PublicationTable.COLUMN_ALREADY_READ, "1");
-		String selection = null;
-		String[] args = null;
-		if (syndicationId != null) {
-			selection = " syn_syndication_id = ? ";
-			args = new String[1];
-			args[0] = syndicationId.toString();
-		}
-		getActivity().getContentResolver().update(PublicationsProvider.URI, values, selection, args);
-		getLoaderManager().restartLoader(0, null, this);
-	}
-	
-	@Deprecated
-	public void markPublicationAsRead(int publicationId) {
-		
-		ContentValues values = new ContentValues();
-		values.put(PublicationTable.COLUMN_ALREADY_READ, "1");
-		
-		String where = PublicationTable.COLUMN_ID + " = ? ";
-		String args[] = { String.valueOf(publicationId) };
-		
-		getActivity().getContentResolver().update(PublicationsProvider.URI, values, where, args);
-		
-		refreshPublications();
-		
-	}
-	
-	@Deprecated
-	public void addOneClickToSyndication(int syndicationId, int numberOfClick) {
-		Uri uri = Uri.parse(SyndicationsProvider.URI + "/click/" + syndicationId);
-		ContentValues values = new ContentValues();
-		getActivity().getContentResolver().update(uri, values, null, null);
-	}
-
-	private void markCategoryPublicationsAsRead() {
-	ContentValues values = new ContentValues();
-	values.put(PublicationTable.COLUMN_ALREADY_READ, "1");
-	String selection = " syn_syndication_id in (select syn_syndication_id from d_categorie_syndication where cas_categorie_id = ?) ";
-	String[] args = { selectedCategoryID.toString() };
-
-	getActivity().getContentResolver().update(PublicationsProvider.URI,
-			values, selection, args);
-	getLoaderManager().restartLoader(0, null, this);
-	}*/
-
-	
-
 }

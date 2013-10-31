@@ -5,7 +5,11 @@
     <string name="app_name">Soln.R</string>
     <string name="title_publications">Publications</string>
     <string name="title_syndications">Flus RSS</string>
-    <string name="title_categories">Catégorie</string>
+    <string name="title_site">Web site</string>
+    <string name="title_categories">Catégories</string>
+    <string name="title_category">Categorie</string>
+    <string name="title_network">Réseau</string>
+    <string name="title_look_and_fell">Apparence</string>
     <string name="menu_settings">Paramètres</string>
     <string name="menu_add_categorie">Nouvelle catégorie</string>
     <string name="menu_add_site">Nouveau site</string>
@@ -20,8 +24,8 @@
     <string name="please_wait">Attendez SVP</string>
     <string name="item_brev">élément(s)</string>
     <string name="minute_brev">minute(s)</string>
-    
     <string name="defaultTypeface">Celle du système</string>
+    <string name="font_size">Taille de la police</string>
 
     <!-- Publication's tab label -->
     <string name="all_publications_by_syndication_already_read">Les publications de la syndication: %1$s, sont marquées comme lus</string>
@@ -43,7 +47,7 @@
     <string name="confirm_mark_as_read">Marquer %1$s comme lu ?</string>
     <string name="confirm_delete">Supprimer %1$s ?</string>
     <string name="mark_selected_category_read">Marquer la catégorie comme lu</string>
-    
+
     <!-- New publication notification -->
     <string name="notify_new_pub_title">Nouvelles publications</string>
 
@@ -85,13 +89,11 @@
     <string name="delete_confirm">Supprimer ce site et toutes ses publications ?</string>
     <string name="creation_date">Créer: %1$s</string>
     <string name="input_new_name">Entrez le nouveau nom</string>
-
-     <string name="unactive_syndication">La recherche de nouvelles publications est désactivé</string>
+    <string name="unactive_syndication">La recherche de nouvelles publications est désactivé</string>
     <string name="active_syndication">La recherche de nouvelles publications est activé</string>
-    
     <string name="display_syndication">La visibilité des publications est complète</string>
     <string name="undisplay_syndication">Les publications sont visibles via l\'onglet catégorie ou syndication</string>
-    
+
     <plurals name="syndication_number_of_click">
         <item quantity="one">%1$s publication lue</item>
         <item quantity="other">%1$s publications lues</item>
@@ -154,11 +156,10 @@
     <string name="new_category_hint">Entrer la nouvelle catégorie</string>
     <string name="pref_sort_syndications_most_use">Les plus utilisés</string>
     <string name="pref_sort_syndications_alphabetic">Ordre alphabétique</string>
-    <string name="pref_sort_syndications">Trier les site par:</string>
-    <string name="pref_sort_categories">Trier les categories par:</string>
+    <string name="pref_sort_syndications">Tri des sites</string>
+    <string name="pref_sort_categories">Tri des categories</string>
     <string name="pref_sort_categories_most_use">Les plus utilisées</string>
     <string name="pref_sort_categories_alphabetic">Ordre alphabétique</string>
     <string name="pref_user_type_face">Police de caractère</string>
-    
 
 </resources>

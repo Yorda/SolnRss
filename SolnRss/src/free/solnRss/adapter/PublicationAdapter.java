@@ -76,6 +76,7 @@ public class PublicationAdapter extends SimpleCursorAdapter {
 
 		return convertView;
 	}
+	
 	/*
 	 * 
 	 * 

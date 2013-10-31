@@ -26,8 +26,10 @@ public class DeleteAllPublicationsPreferences extends DialogPreference {
 
 		switch (which) {
 		case DialogInterface.BUTTON_POSITIVE:
-			
-			setDialogMessage(getContext().getResources().getString(R.string.please_wait));
+
+			setDialogMessage(getContext().getResources().getString(
+					R.string.please_wait));
+
 			getContext().getContentResolver().delete(uri, null, null);
 
 			SharedPreferences.Editor editor = getEditor();

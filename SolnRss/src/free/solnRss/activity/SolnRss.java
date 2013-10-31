@@ -108,7 +108,7 @@ public class SolnRss extends Activity implements ActionBar.TabListener,
 		} 
 		else if (key.compareTo("pref_user_font_face") == 0) {
 			syndicationsListener.reloadSyndications();
-			syndicationsListener.reloadSyndications();
+			publicationsListener.refreshPublications();
 			categoriesListener.reloadCategories();
 		} 
 	}

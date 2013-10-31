@@ -77,8 +77,16 @@ public class SyndicationAdapter extends SimpleCursorAdapter {
 		Typeface userTypeFace = TypeFaceSingleton.getInstance(context).getUserTypeFace();
 		
 		if (userTypeFace != null) {
-			item.getTitle().setTypeface(userTypeFace,Typeface.BOLD);
+			item.getTitle().setTypeface(userTypeFace, Typeface.BOLD);
 			item.getNumberOfClick().setTypeface(userTypeFace);
+			
+			if (getCursor().getInt(3) != 0)
+				((TextView) convertView.findViewWithTag("sleepImage"))
+						.setTypeface(userTypeFace);
+			
+			if (getCursor().getInt(5) == 0)
+				((TextView) convertView.findViewWithTag("stealthImage"))
+						.setTypeface(userTypeFace);
 		}
 		
 		return convertView;

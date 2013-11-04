@@ -11,14 +11,15 @@ import android.widget.SimpleCursorAdapter;
 import android.widget.TextView;
 import free.solnRss.R;
 import free.solnRss.singleton.TypeFaceSingleton;
+import free.solnRss.utility.Constants;
 
-public class CategorieAdapter extends SimpleCursorAdapter {
+public class CategoryAdapter extends SimpleCursorAdapter {
 
 	protected Cursor cursor;
 	private Context context;
 	private int layout;
 
-	public CategorieAdapter(final Context context, int layout, Cursor c,
+	public CategoryAdapter(final Context context, int layout, Cursor c,
 			String[] from, int[] to, int flags) {
 
 		super(context, layout, c, from, to, flags);
@@ -29,11 +30,12 @@ public class CategorieAdapter extends SimpleCursorAdapter {
 
 	@Override
 	public View getView(int position, View convertView, ViewGroup parent) {
-		CategorieItem item = null;
+		CategoryItem item = null;
+		Resources r = context.getResources();
 
 		if (convertView == null) {
 			convertView = View.inflate(context, layout, null);
-			item = new CategorieItem();
+			item = new CategoryItem();
 
 			item.setName((TextView) convertView
 					.findViewById(R.id.categorie_name));
@@ -42,21 +44,18 @@ public class CategorieAdapter extends SimpleCursorAdapter {
 			convertView.setTag(item);
 
 		} else {
-			item = (CategorieItem) convertView.getTag();
+			item = (CategoryItem) convertView.getTag();
 		}
 
 		getCursor().moveToPosition(position);
+		
+		// getCursor().getColumnIndex("cat_name")
+		item.getName().setText(Html.fromHtml("<u>" + getCursor().getString(1) + "</u>"));
 
-
-		item.getName().setText(Html.fromHtml("<u>" + getCursor().getString(
-				getCursor().getColumnIndex("cat_name")) + "</u>"));
-		Integer numberOfUse = getCursor().getInt(
-				getCursor().getColumnIndex("number_of_use"));
-
+		// getCursor().getColumnIndex("number_of_use")
+		Integer numberOfUse = getCursor().getInt(2);
 		String use = new String();
-
-		Resources r = context.getResources();
-
+		
 		if (numberOfUse == null || numberOfUse == 0) {
 			use = r.getString(R.string.categorie_not_use);
 		} else if (numberOfUse == 1) {
@@ -66,13 +65,19 @@ public class CategorieAdapter extends SimpleCursorAdapter {
 		}
 
 		item.getNumberOfUse().setText(use);
-	
-		Typeface userTypeFace = TypeFaceSingleton.getInstance(context).getUserTypeFace();
+
+		Typeface userTypeFace = TypeFaceSingleton.getInstance(context)
+				.getUserTypeFace();
+		int userFontSize = TypeFaceSingleton.getInstance(context)
+				.getUserFontSize();
 		if (userTypeFace != null) {
-			item.getName().setTypeface(userTypeFace,Typeface.BOLD);
+			item.getName().setTypeface(userTypeFace, Typeface.BOLD);
 			item.getNumberOfUse().setTypeface(userTypeFace);
 		}
-		
+		if (userFontSize != Constants.FONT_SIZE) {
+			item.getName().setTextSize(userFontSize);
+			item.getNumberOfUse().setTextSize(userFontSize);
+		}
 		return convertView;
 	}
 }

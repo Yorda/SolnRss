@@ -39,6 +39,7 @@ public class ReaderActivity extends Activity {
 		
 		String text = getIntent().getStringExtra("read");
 		String title = getIntent().getStringExtra("title");
+		
 		if (!TextUtils.isEmpty(title)) {
 			getActionBar().setTitle(Html.fromHtml("<b><u>" + title + "</u><b>"));
 		}
@@ -58,6 +59,25 @@ public class ReaderActivity extends Activity {
 		webView.loadDataWithBaseURL(null, text, "text/html", "utf-8", null);
 	}
 
+	/*String t = "<html>\r\n" + 
+			"<head>\r\n" + 
+			"<style type=\"text/css\">\r\n" + 
+			"@font-face {\r\n" + 
+			"    font-family: MyFont;\r\n" + 
+			"    src: url(\"file:///assets/fonts/monofur/MONOF55.TTF\")\r\n" + 
+			"}\r\n" + 
+			"body {\r\n" + 
+			"    font-family: MyFont;\r\n" + 
+			"    font-size: 18;\r\n" + 
+			"    text-align: justify;\r\n" + 
+			"}\r\n" + 
+			"</style>\r\n" + 
+			"</head>\r\n" + 
+			"<body>\r\n" + 
+			"Your text can go here! Your text can go here! Your text can go here!\r\n" + 
+			"</body>\r\n" + 
+			"</html>";*/
+	
 	private void goToSite() {
 
 		Intent openUrlIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(link));

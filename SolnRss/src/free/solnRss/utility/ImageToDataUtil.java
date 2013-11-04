@@ -1,4 +1,4 @@
-package free.solnRss.tools;
+package free.solnRss.utility;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -18,7 +18,7 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.util.Base64;
 
-public class ImageToDataTool {
+public class ImageToDataUtil {
 
 	private final Pattern pImg = Pattern.compile("<img(.*?)>");
 	private final Pattern pSrc = Pattern.compile("src=(['\"])(.*?)\\1");

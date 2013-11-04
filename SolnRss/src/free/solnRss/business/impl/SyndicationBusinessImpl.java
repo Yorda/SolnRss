@@ -4,7 +4,6 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
-
 import com.google.code.rome.android.repackaged.com.sun.syndication.feed.synd.SyndContent;
 import com.google.code.rome.android.repackaged.com.sun.syndication.feed.synd.SyndEntry;
 
@@ -12,8 +11,8 @@ import free.solnRss.business.SyndicationBusiness;
 import free.solnRss.exception.ExtractFeedException;
 import free.solnRss.model.Publication;
 import free.solnRss.model.Syndication;
-import free.solnRss.tools.StringTools;
 import free.solnRss.utility.HttpUtil;
+import free.solnRss.utility.StringUtil;
 import free.solnRss.utility.SyndicateUtil;
 import free.solnRss.utility.WebSiteUtil;
 
@@ -55,7 +54,7 @@ public class SyndicationBusinessImpl implements SyndicationBusiness {
 				}
 					
 				publication = new Publication(entry.getLink(),
-						entry.getPublishedDate(), StringTools.unescapeHTML(entry.getTitle()), description);
+						entry.getPublishedDate(), StringUtil.unescapeHTML(entry.getTitle()), description);
 				publications.add(publication);
 			}
 			syndication.setPublications(publications);

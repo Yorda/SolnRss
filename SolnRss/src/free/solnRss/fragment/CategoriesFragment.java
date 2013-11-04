@@ -23,7 +23,7 @@ import android.widget.ListView;
 import free.solnRss.R;
 import free.solnRss.activity.SolnRss;
 import free.solnRss.activity.SyndicationsCategoriesActivity;
-import free.solnRss.adapter.CategorieAdapter;
+import free.solnRss.adapter.CategoryAdapter;
 import free.solnRss.dialog.OneEditTextDialogBox;
 import free.solnRss.fragment.listener.CategoriesFragmentListener;
 import free.solnRss.provider.CategoryProvider;
@@ -74,7 +74,7 @@ public class CategoriesFragment extends AbstractFragment implements
 		super.onCreateContextMenu(menu, v, menuInfo);
 		
 		AdapterView.AdapterContextMenuInfo info = (AdapterView.AdapterContextMenuInfo) menuInfo;
-		Cursor c = ((CategorieAdapter) getListAdapter()).getCursor();
+		Cursor c = ((CategoryAdapter) getListAdapter()).getCursor();
 		c.moveToPosition(info.position);
 		
 		selectedCategoryID = c.getInt(c.getColumnIndex("_id"));
@@ -89,7 +89,7 @@ public class CategoriesFragment extends AbstractFragment implements
 	protected void initAdapter() {
 		final String[] from = { "cat_name" };
 		final int[] to = { android.R.id.text1 };
-		simpleCursorAdapter = new CategorieAdapter(getActivity(),
+		simpleCursorAdapter = new CategoryAdapter(getActivity(),
 				R.layout.categories, null, from, to, 0);
 		
 		setListAdapter(simpleCursorAdapter);
@@ -151,7 +151,7 @@ public class CategoriesFragment extends AbstractFragment implements
 	
 	@Override
 	public void onListItemClick(ListView l, View v, int position, long id) {
-		Cursor cursor = ((CategorieAdapter) l.getAdapter()).getCursor();
+		Cursor cursor = ((CategoryAdapter) l.getAdapter()).getCursor();
 		selectedCategoryID = cursor.getInt(cursor.getColumnIndex("_id"));
 		((SolnRss) getActivity()).reLoadPublicationsByCategorie(selectedCategoryID);
 	}

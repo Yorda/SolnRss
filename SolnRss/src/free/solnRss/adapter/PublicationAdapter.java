@@ -11,6 +11,7 @@ import android.widget.SimpleCursorAdapter;
 import android.widget.TextView;
 import free.solnRss.R;
 import free.solnRss.singleton.TypeFaceSingleton;
+import free.solnRss.utility.Constants;
 
 public class PublicationAdapter extends SimpleCursorAdapter {
 
@@ -59,11 +60,19 @@ public class PublicationAdapter extends SimpleCursorAdapter {
 		item.getTitle().setText(title);
 		item.getName().setText(Html.fromHtml("<u>" + name + "</u>"));
 
-		Typeface userTypeFace = TypeFaceSingleton.getInstance(context).getUserTypeFace();
+		Typeface userTypeFace = TypeFaceSingleton.getInstance(context)
+				.getUserTypeFace();
+		
+		int userFontSize = TypeFaceSingleton.getInstance(context)
+				.getUserFontSize();
 		
 		if (userTypeFace != null) {
-			item.getName().setTypeface(userTypeFace,Typeface.BOLD);
+			item.getName().setTypeface(userTypeFace, Typeface.BOLD);
 			item.getTitle().setTypeface(userTypeFace);
+		}
+		if (userFontSize != Constants.FONT_SIZE) {
+			item.getName().setTextSize(userFontSize);
+			item.getTitle().setTextSize(userFontSize);
 		}
 
 		item.setIsRead(isRead == null ? 0 : isRead);
@@ -76,6 +85,7 @@ public class PublicationAdapter extends SimpleCursorAdapter {
 
 		return convertView;
 	}
+	
 	
 	/*
 	 * 

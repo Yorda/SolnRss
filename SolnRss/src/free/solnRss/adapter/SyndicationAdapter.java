@@ -10,6 +10,7 @@ import android.widget.SimpleCursorAdapter;
 import android.widget.TextView;
 import free.solnRss.R;
 import free.solnRss.singleton.TypeFaceSingleton;
+import free.solnRss.utility.Constants;
 
 /**
  * 
@@ -74,7 +75,10 @@ public class SyndicationAdapter extends SimpleCursorAdapter {
 					.setVisibility(View.VISIBLE);
 		}
 		
-		Typeface userTypeFace = TypeFaceSingleton.getInstance(context).getUserTypeFace();
+		Typeface userTypeFace = TypeFaceSingleton.getInstance(context)
+				.getUserTypeFace();
+		int userFontSize = TypeFaceSingleton.getInstance(context)
+				.getUserFontSize();
 		
 		if (userTypeFace != null) {
 			item.getTitle().setTypeface(userTypeFace, Typeface.BOLD);
@@ -87,6 +91,14 @@ public class SyndicationAdapter extends SimpleCursorAdapter {
 			if (getCursor().getInt(5) == 0)
 				((TextView) convertView.findViewWithTag("stealthImage"))
 						.setTypeface(userTypeFace);
+		}
+		if (userFontSize != Constants.FONT_SIZE) {
+			item.getTitle().setTextSize(userFontSize);
+			item.getNumberOfClick().setTextSize(userFontSize);
+			if (getCursor().getInt(3) != 0)
+				((TextView) convertView.findViewWithTag("sleepImage")).setTextSize(userFontSize);
+			if (getCursor().getInt(5) == 0)
+				((TextView) convertView.findViewWithTag("stealthImage")).setTextSize(userFontSize);
 		}
 		
 		return convertView;

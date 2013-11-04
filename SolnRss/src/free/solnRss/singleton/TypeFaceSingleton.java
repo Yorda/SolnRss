@@ -31,8 +31,7 @@ public class TypeFaceSingleton {
 	Typeface monospace;
 
 	public Typeface getUserTypeFace() {
-		int index = Integer.valueOf(preferences.getString(
-				"pref_user_font_face", "0"));
+		int index = Integer.valueOf(preferences.getString("pref_user_font_face", "0"));
 		switch (index) {
 		case 0:
 			return null;
@@ -46,6 +45,10 @@ public class TypeFaceSingleton {
 			return monospace;
 		}
 		return null;
+	}
+	
+	public int getUserFontSize(){
+		return preferences.getInt("pref_user_font_size", 16);
 	}
 
 	private void initTypeFace(Context context) {

@@ -44,7 +44,7 @@ public class PublicationsFinderService extends IntentService {
 	private SparseArray<ResultReceiver> receiverMap = new SparseArray<ResultReceiver>();
 	private int resultReceiverId = -1;
 	private SyndicationBusiness syndicationBusiness = new SyndicationBusinessImpl();
-	final DateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss",	Locale.FRENCH);
+	private final DateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss",	Locale.FRENCH);
 	private boolean isWorking = false;
 	
 	private PublicationRepository publicationRepository;

@@ -2,6 +2,7 @@ package free.solnRss.adapter;
 
 import android.content.Context;
 import android.database.Cursor;
+import android.graphics.Typeface;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.CheckBox;
@@ -10,6 +11,8 @@ import android.widget.SimpleCursorAdapter;
 import android.widget.TextView;
 import free.solnRss.R;
 import free.solnRss.repository.SyndicationsByCategoryRepository;
+import free.solnRss.singleton.TypeFaceSingleton;
+import free.solnRss.utility.Constants;
 
 public class SyndicationsCategorieAdapter extends SimpleCursorAdapter implements
 		FilterQueryProvider {
@@ -27,8 +30,8 @@ public class SyndicationsCategorieAdapter extends SimpleCursorAdapter implements
 		this.context = context;
 		this.layout = layout;
 		setFilterQueryProvider(this);
-		//tf = Typeface.createFromAsset(context.getAssets(), "fonts/MONOF55.TTF");
-		syndicationsByCategoryRepository = new SyndicationsByCategoryRepository(context);
+		syndicationsByCategoryRepository = new SyndicationsByCategoryRepository(
+				context);
 	}
 
 	@Override
@@ -50,15 +53,15 @@ public class SyndicationsCategorieAdapter extends SimpleCursorAdapter implements
 		}
 
 		getCursor().moveToPosition(position);
-
-		final Integer syndicationId = getCursor().getInt(
-				getCursor().getColumnIndex("_id"));
-
-		final String name = getCursor().getString(
-				getCursor().getColumnIndex("syn_name"));
-
-		final Integer categorieId = getCursor().getInt(
-				getCursor().getColumnIndex("cas_categorie_id"));
+		
+		// getCursor().getColumnIndex("_id")
+		final Integer syndicationId = getCursor().getInt(0);
+		
+		// getCursor().getColumnIndex("syn_name")
+		final String name = getCursor().getString(1);
+		
+		// getCursor().getColumnIndex("cas_categorie_id")
+		final Integer categorieId = getCursor().getInt(2);
 
 		item.getName().setText(name);
 		item.getCheck().setTag(syndicationId);
@@ -69,6 +72,18 @@ public class SyndicationsCategorieAdapter extends SimpleCursorAdapter implements
 			item.getCheck().setChecked(true);
 		}
 
+		Typeface userTypeFace = TypeFaceSingleton.getInstance(context)
+				.getUserTypeFace();
+
+		int userFontSize = TypeFaceSingleton.getInstance(context)
+				.getUserFontSize();
+
+		if (userTypeFace != null) {
+			item.getName().setTypeface(userTypeFace, Typeface.BOLD);
+		}
+		if (userFontSize != Constants.FONT_SIZE) {
+			item.getName().setTextSize(userFontSize);
+		}
 		return convertView;
 	}
 

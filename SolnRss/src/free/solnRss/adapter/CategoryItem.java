@@ -2,7 +2,7 @@ package free.solnRss.adapter;
 
 import android.widget.TextView;
 
-public class CategorieItem {
+public class CategoryItem {
 	private TextView name;
 	private TextView numberOfUse;
 	

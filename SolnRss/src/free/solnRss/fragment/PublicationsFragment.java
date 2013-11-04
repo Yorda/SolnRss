@@ -165,7 +165,6 @@ public class PublicationsFragment extends AbstractFragment implements
 	@Override
 	public void onListItemClick(final ListView l, final View v, final int position, final long id) {
 		
-    	
 		Cursor cursor = ((PublicationAdapter) l.getAdapter()).getCursor();
 		
 		String link = getPublicationUrl(cursor);
@@ -358,8 +357,8 @@ public class PublicationsFragment extends AbstractFragment implements
 		// Set this publication as already read
 		// cursor.getColumnIndex(PublicationTable.COLUMN_ID)
 		publicationRepository.markPublicationAsRead(cursor.getInt(0));
-		//refreshPublications();
-		((PublicationAdapter)getListAdapter()).notifyDataSetChanged();
+		refreshPublications();
+		//((PublicationAdapter)getListAdapter()).notifyDataSetChanged();
 		
 		// Add a click to the syndication
 		// cursor.getColumnIndex(PublicationTable.COLUMN_SYNDICATION_ID)

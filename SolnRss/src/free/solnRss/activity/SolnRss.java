@@ -103,10 +103,8 @@ public class SolnRss extends Activity implements ActionBar.TabListener,
 		else if (key.compareTo("pref_sort_categories") == 0) {
 			categoriesListener.reloadCategories();
 		} 
-		else if (key.compareTo("pref_sort_categories") == 0) {
-			categoriesListener.reloadCategories();
-		} 
-		else if (key.compareTo("pref_user_font_face") == 0) {
+		else if (key.compareTo("pref_user_font_face") == 0 
+				|| key.compareTo("pref_user_font_size") == 0) {
 			syndicationsListener.reloadSyndications();
 			publicationsListener.refreshPublications();
 			categoriesListener.reloadCategories();

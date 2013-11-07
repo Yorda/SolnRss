@@ -179,4 +179,9 @@ public class PublicationRepository {
 		return Integer.valueOf(max).toString();
 	}
 
+	public int insertNewPublications(List<ContentValues> publications) {
+		return context.getContentResolver().bulkInsert(uri,
+				publications.toArray(new ContentValues[publications.size()]));
+	}
+
 }

@@ -23,6 +23,33 @@ public class SyndicationBusinessImpl implements SyndicationBusiness {
 		syndicateUtil = new SyndicateUtil();
 	}	
 	
+	@Override
+	public List<SyndEntry> newRssPublished(String url) throws ExtractFeedException {
+		List<SyndEntry> entries = null;
+		
+		if (!HttpUtil.isValidUrl(url)) {
+			throw new ExtractFeedException(
+					ExtractFeedException.Error.BAD_URL);
+		}
+		String rss = null;
+		try {
+			rss = HttpUtil.htmlFromSite(url);			
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw new ExtractFeedException(
+					ExtractFeedException.Error.GET_HTTP_DATA);
+		}
+		
+		try {
+			syndicateUtil.init(rss);
+			entries = syndicateUtil.lastEntries();
+		} catch (Exception e) {
+			throw new ExtractFeedException(
+					ExtractFeedException.Error.GET_FEED_INFO);
+		}
+		return entries;
+	}
+	
 	public Syndication getLastPublications(Syndication syndication) throws ExtractFeedException {
 
 		List<Publication> publications = new ArrayList<Publication>();
@@ -125,7 +152,8 @@ public class SyndicationBusinessImpl implements SyndicationBusiness {
 
 			syndication.setUrl(syndicationUrl);
 			syndicateUtil.init(new URL(syndicationUrl));
-			syndication.setRss(HttpUtil.htmlFromSite(url));
+			
+			syndication.setRss(HttpUtil.htmlFromSite(syndicationUrl));
 		}
 		
 		syndication.setName(syndicateUtil.syndicationName());
@@ -146,11 +174,5 @@ public class SyndicationBusinessImpl implements SyndicationBusiness {
 		}
 		
 		return syndication;
-	}
-	
-	public static void main(String[] a) throws Exception {
-		SyndicationBusinessImpl bsn = new SyndicationBusinessImpl();
-		Syndication s = bsn.searchSyndication("http://linuxfr.org");
-		System.err.println(s.getName() + " " + s.getUrl());
 	}
 }

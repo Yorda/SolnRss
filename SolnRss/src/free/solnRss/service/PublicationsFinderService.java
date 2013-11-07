@@ -196,28 +196,7 @@ public class PublicationsFinderService extends IntentService {
 	}
 
 	private void updateLastUpdateSyndicationTime(List<Syndication> syndications) {
-
 		syndicationRepository.updateLastUpdateSyndicationTime(syndications);
-		
-		/*Uri uri = SyndicationsProvider.URI;
-		for (Syndication syndication : syndications) {
-
-			ContentValues values = new ContentValues();
-
-			// If we have found a new RSS
-			if (!TextUtils.isEmpty(syndication.getRss())) {
-				values.put(SyndicationTable.COLUMN_LAST_RSS_PUBLISHED,
-						syndication.getRss());
-			}
-
-			values.put(SyndicationTable.COLUMN_LAST_EXTRACT_TIME,
-					sdf.format(new Date()));
-
-			String where = " _id = ? ";
-			String[] selectionArgs = { syndication.getId().toString() };
-
-			getContentResolver().update(uri, values, where, selectionArgs);
-		}*/
 	}
 
 	private void findNewPublication(Syndication syndication) {

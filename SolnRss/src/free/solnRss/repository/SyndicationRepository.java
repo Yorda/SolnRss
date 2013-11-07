@@ -9,6 +9,10 @@ import java.util.GregorianCalendar;
 import java.util.List;
 import java.util.Locale;
 
+import com.google.code.rome.android.repackaged.com.sun.syndication.feed.synd.SyndEntry;
+
+import android.content.ContentProviderOperation;
+import android.content.ContentProviderResult;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.CursorLoader;
@@ -20,6 +24,7 @@ import android.text.TextUtils;
 import free.solnRss.model.Publication;
 import free.solnRss.model.Syndication;
 import free.solnRss.provider.SolnRssProvider;
+import free.solnRss.utility.SyndicateUtil;
 
 public class SyndicationRepository {
 	
@@ -115,7 +120,6 @@ public class SyndicationRepository {
 					new String[] { syndication.getId().toString() });
 		}
 	}
-
 	
 	public void changeSyndicationDisplayMode(Integer id,
 			Integer isDisplayOnMainTimeLine) {
@@ -140,13 +144,89 @@ public class SyndicationRepository {
 		}
 		return orderSyndicationBy;
 	}
-	
 
 	public void renameSyndication(Integer id, String newName) {
 		ContentValues values = new ContentValues();
 		values.put("syn_name",  newName);
 		context.getContentResolver().update(uri, values,"_id = ? ",
 				new String[] { id.toString() });
+	}
+	
+	public Cursor findSyndicationsToRefresh2(Date timeToRefresh) {
+		String projection[] = new String[] {
+				SyndicationTable.SYNDICATION_TABLE + "."
+						+ SyndicationTable.COLUMN_ID,
+				SyndicationTable.SYNDICATION_TABLE + "."
+						+ SyndicationTable.COLUMN_URL, };
+
+		String selection = "syn_last_extract_time < Datetime(?) and syn_is_active = ? ";
+		String[] selectionArgs = new String[2];
+		selectionArgs[0] = sdf.format(timeToRefresh);
+		selectionArgs[1] = "0";
+
+		return context.getContentResolver().query(uri, projection, selection,
+				selectionArgs, SyndicationTable.COLUMN_ID + " asc ");
+	}
+
+	public long addWebSite(Syndication syndication) throws Exception {
+		String now = sdf.format(new Date());
+		Long newSyndicationId = null;
+		
+		ContentValues cv = new ContentValues();
+		cv.put("syn_name", syndication.getName());
+		cv.put("syn_url", syndication.getUrl());
+		cv.put("syn_website_url", syndication.getWebsiteUrl());
+		cv.put("syn_creation_date", now);
+		cv.put("syn_last_extract_time", now);
+		cv.put("syn_is_active", 0);
+		cv.put("syn_display_on_timeline", 1);
+		cv.put("syn_number_click", 0);
+
+		ArrayList<ContentProviderOperation> operations = new ArrayList<ContentProviderOperation>();
+		operations.add(ContentProviderOperation.newInsert(uri).withValues(cv)
+				.withYieldAllowed(true).build());
+		
+		for (Publication publication : syndication.getPublications()) {
+			
+			cv = new ContentValues();
+			cv.put("pub_link", publication.getUrl());
+			cv.put("pub_title", publication.getTitle());
+			cv.put("pub_already_read", 0);
+			cv.put("pub_publication", publication.getDescription());
+			
+			cv.put("pub_publication_date", sdf.format(
+					(publication.getPublicationDate() == null 
+						? new Date() : publication.getPublicationDate())));
+			
+			operations.add(ContentProviderOperation
+					.newInsert(Uri.parse(SolnRssProvider.URI + "/publication"))
+					.withValues(cv)
+					.withValueBackReference("syn_syndication_id", 0)
+					.withYieldAllowed(true).build());
+		}		
+
+		String rss = syndication.getRss();
+		if (!TextUtils.isEmpty(rss)) {
+			SyndicateUtil syndicateUtil = new SyndicateUtil();
+			syndicateUtil.init(rss);
+			List<SyndEntry> entries = syndicateUtil.lastEntries();
+			for (SyndEntry e : entries) {
+				cv = new ContentValues();
+				cv.put("rss_url", e.getLink());
+				cv.put("rss_title", e.getTitle());
+				operations.add(ContentProviderOperation
+						.newInsert(Uri.parse(SolnRssProvider.URI + "/rss"))
+						.withValues(cv)
+						.withValueBackReference("syn_syndication_id", 0)
+						.withYieldAllowed(true).build());
+			}
+		}
+		
+		ContentProviderResult[] res = context.getContentResolver().applyBatch(
+				SolnRssProvider.AUTHORITY, operations);
+		
+		newSyndicationId = Long.valueOf(res[0].uri.getLastPathSegment());
+		return newSyndicationId;
 	}
 	
 	/**
@@ -157,11 +237,9 @@ public class SyndicationRepository {
 	public void delete(Integer id) {
 		SQLiteDatabase db  = RepositoryHelper.getInstance(context).getWritableDatabase();
 		try {
-			
 			String[] whereArgs = new String[] { id.toString() };
 			db.beginTransaction();
-			db.delete("d_categorie_syndication",
-					" syn_syndication_id = ? ", whereArgs);
+			db.delete("d_categorie_syndication", " syn_syndication_id = ? ", whereArgs);
 			db.delete("d_publication", "syn_syndication_id = ? ", whereArgs);
 			db.delete("d_syndication", "_id = ? ", whereArgs);
 			db.setTransactionSuccessful();
@@ -171,64 +249,63 @@ public class SyndicationRepository {
 	}
 
 	public boolean isStillRecorded(String url) {
-		String[] selectionArgs = new String[1];
-		selectionArgs[0] = url;
-		Cursor c = RepositoryHelper
-				.getInstance(context)
-				.getReadableDatabase()
-				.rawQuery("select _id from d_syndication where syn_website_url = ? ",	selectionArgs);
+		SQLiteDatabase db  = RepositoryHelper.getInstance(context).getReadableDatabase();
+		Cursor c = db.rawQuery(
+				"select _id from d_syndication where syn_website_url = ? ",
+				new String[] {url});
 
 		int count = c.getCount();
-
+		c.close();
+		
 		if (count > 0)
 			return true;
-		c.close();
+		
 		return false;
 	}
 	
-	public long addWebSite(Syndication syndication) throws Exception {
-		
+	/*
+	 public long addWebSite(Syndication syndication) throws Exception {
 		String now = sdf.format(new Date());
+		Long newSyndicationId = null;
 		SQLiteDatabase db  = RepositoryHelper.getInstance(context).getWritableDatabase();
-		Long newIdInserted = null;
-		try {
-			ContentValues siteValues = new ContentValues();
-			siteValues.put("syn_name", syndication.getName());
-			siteValues.put("syn_url", syndication.getUrl());
-			siteValues.put("syn_website_url", syndication.getWebsiteUrl());
-			siteValues.put("syn_creation_date", now);
-			siteValues.put("syn_last_extract_time", now);  
-			siteValues.put("syn_is_active", 0); 
-			siteValues.put("syn_display_on_timeline", 1);
-			siteValues.put("syn_number_click", 0); 
+	Long newIdInserted = null;
+	try {
+		ContentValues siteValues = new ContentValues();
+		siteValues.put("syn_name", syndication.getName());
+		siteValues.put("syn_url", syndication.getUrl());
+		siteValues.put("syn_website_url", syndication.getWebsiteUrl());
+		siteValues.put("syn_creation_date", now);
+		siteValues.put("syn_last_extract_time", now);  
+		siteValues.put("syn_is_active", 0); 
+		siteValues.put("syn_display_on_timeline", 1);
+		siteValues.put("syn_number_click", 0); 
+		
+		db.beginTransaction();
+		
+		newIdInserted = db.insert("d_syndication", null, siteValues);
+		syndication.setId(Integer.valueOf(newIdInserted.toString()));
+		
+		ContentValues contentValues = null;
+		for (Publication publication : syndication.getPublications()) {
 			
-			db.beginTransaction();
+			contentValues = new ContentValues();
+			contentValues.put("syn_syndication_id", newIdInserted);
+			contentValues.put("pub_link", publication.getUrl());
+			contentValues.put("pub_title", publication.getTitle());
+			contentValues.put("pub_already_read", 0);
+			contentValues.put("pub_publication", publication.getDescription());
 			
-			newIdInserted = db.insert("d_syndication", null, siteValues);
-			syndication.setId(Integer.valueOf(newIdInserted.toString()));
+			contentValues.put("pub_publication_date", sdf.format(
+					(publication.getPublicationDate() == null 
+						? new Date() : publication.getPublicationDate())));
 			
-			ContentValues contentValues = null;
-			for (Publication publication : syndication.getPublications()) {
-				
-				contentValues = new ContentValues();
-				contentValues.put("syn_syndication_id", newIdInserted);
-				contentValues.put("pub_link", publication.getUrl());
-				contentValues.put("pub_title", publication.getTitle());
-				contentValues.put("pub_already_read", 0);
-				contentValues.put("pub_publication", publication.getDescription());
-				
-				contentValues.put("pub_publication_date", sdf.format(
-						(publication.getPublicationDate() == null 
-							? new Date() : publication.getPublicationDate())));
-				
-				db.insert("d_publication", null, contentValues);
-			}
-			db.setTransactionSuccessful();
-
-		} finally {
-			db.endTransaction();
-			
+			db.insert("d_publication", null, contentValues);
 		}
-		return newIdInserted;
-	}
+		db.setTransactionSuccessful();
+
+	} finally {
+		db.endTransaction();
+		
+	}return newSyndicationId;
+	}*/
 }

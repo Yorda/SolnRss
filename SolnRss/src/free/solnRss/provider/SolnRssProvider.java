@@ -11,18 +11,19 @@ import free.solnRss.repository.CategoryTable;
 import free.solnRss.repository.PublicationRepository;
 import free.solnRss.repository.PublicationTable;
 import free.solnRss.repository.RepositoryHelper;
+import free.solnRss.repository.RssTable;
 import free.solnRss.repository.SyndicationRepository;
 import free.solnRss.repository.SyndicationTable;
 import free.solnRss.repository.SyndicationsByCategoryRepository;
 
 public class SolnRssProvider extends ContentProvider {
 
-	private final static String AUTHORITY = "com.solnRss.provider.solnRssProvider";
+	public final static String AUTHORITY = "com.solnRss.provider.solnRssProvider";
 	private final static String PATH = "soln.r";
 	public final static Uri URI = Uri.parse("content://" + AUTHORITY + "/" + PATH);
 
 	private UriMatcher uriMatcher;
-	private final int PUBLICATION = 10, CATEGORY = 20, SYNDICATION = 30, SYNDICATIONS_BY_CATEGORY = 40;
+	private final int PUBLICATION = 10, CATEGORY = 20, SYNDICATION = 30, SYNDICATIONS_BY_CATEGORY = 40, RSS = 50;
 
 	@Override
 	public boolean onCreate() {
@@ -31,6 +32,7 @@ public class SolnRssProvider extends ContentProvider {
 		uriMatcher.addURI(AUTHORITY, PATH + "/category", CATEGORY);
 		uriMatcher.addURI(AUTHORITY, PATH + "/syndication", SYNDICATION);
 		uriMatcher.addURI(AUTHORITY, PATH + "/syndicationsByCategory/#", SYNDICATIONS_BY_CATEGORY);
+		uriMatcher.addURI(AUTHORITY, PATH + "/rss", RSS);
 		return true;
 	}
 
@@ -63,6 +65,11 @@ public class SolnRssProvider extends ContentProvider {
 					selection, selectionArgs, null, null, SyndicationRepository.orderBy(getContext()));
 			break;
 
+		case RSS:
+			cursor = db.query(RssTable.RSS_TABLE, projection,
+					selection, selectionArgs, null, null, " _id desc ");
+			break;
+			
 		default:
 			throw new IllegalArgumentException("Unknown URI: " + uri);
 		}
@@ -120,6 +127,11 @@ public class SolnRssProvider extends ContentProvider {
 
 		case SYNDICATION:
 			id = db.insert(SyndicationTable.SYNDICATION_TABLE, null, values);
+			getContext().getContentResolver().notifyChange(uri, null);
+			break;
+			
+		case RSS:
+			id = db.insert(RssTable.RSS_TABLE, null, values);
 			getContext().getContentResolver().notifyChange(uri, null);
 			break;
 

@@ -16,6 +16,7 @@ import free.solnRss.exception.ExtractFeedException;
 import free.solnRss.model.Syndication;
 import free.solnRss.repository.SyndicationRepository;
 
+@Deprecated
 public class SyndicationFinderTask extends AsyncTask<String, Void, String> {
 	
 	private SyndicationBusiness syndicationBusiness;

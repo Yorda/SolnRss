@@ -416,14 +416,6 @@ public class SolnRss extends Activity implements ActionBar.TabListener,
 		AlertDialog dialog = builder.create();
 		dialog.show();
 	}
-	
-	/*public boolean isOnline() {
-		ConnectivityManager cm = (ConnectivityManager) this
-				.getSystemService(Context.CONNECTIVITY_SERVICE);
-		return cm.getActiveNetworkInfo() != null
-				&& cm.getActiveNetworkInfo().isConnectedOrConnecting();
-	}*/
-	
 
 	public void setCategoriesFragmentListener(CategoriesFragmentListener categoriesFragmentListener) {
 		this.categoriesListener = categoriesFragmentListener;

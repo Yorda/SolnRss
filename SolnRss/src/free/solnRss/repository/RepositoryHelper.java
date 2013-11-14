@@ -71,7 +71,8 @@ public class RepositoryHelper extends SQLiteOpenHelper {
 			"	syn_last_extract_time datetime NOT NULL,\r\n" + 
 			"	syn_creation_date datetime NOT NULL,\r\n" + 
 			"   syn_display_on_timeline INTEGER NOT NULL, \r\n" +
-			"  	syn_last_rss_published text \r\n" +
+			//"  	syn_last_rss_published text \r\n" +
+			"  	syn_last_rss_search_result INTEGER \r\n" +
 			"); \r\n"
 			,
 			
@@ -141,7 +142,82 @@ public class RepositoryHelper extends SQLiteOpenHelper {
 				}
 			}
 			
-			db.execSQL(" update d_syndication set syn_last_rss_published = null ");
+			db.execSQL(" update d_syndication set syn_last_rss_published = null ");		
+			
+			String tmp = "create table d_syndication_tmp (\r\n" + 
+			"	_id INTEGER PRIMARY KEY autoincrement,\r\n" + 
+			"	syn_name text NOT NULL,	\r\n" + 
+			"	syn_url text NOT NULL,\r\n" + 
+			"	syn_website_url text NOT NULL,\r\n" + 
+			"	syn_is_active INTEGER NOT NULL,\r\n" + 
+			"	syn_number_click INTEGER NOT NULL,\r\n" + 
+			"	syn_last_extract_time datetime NOT NULL,\r\n" + 
+			"	syn_creation_date datetime NOT NULL,\r\n" + 
+			"   syn_display_on_timeline INTEGER NOT NULL \r\n" +
+			"); \r\n";
+			
+			db.execSQL(tmp);
+			
+			c = db.rawQuery(" select _id,syn_name,syn_url,syn_website_url,syn_is_active,syn_number_click,syn_last_extract_time,syn_creation_date,syn_display_on_timeline  from d_syndication ",null);
+			c.moveToFirst();
+			
+			do {
+				
+				db.execSQL("insert into d_syndication_tmp " +
+						"(_id,syn_name,syn_url,syn_website_url,syn_is_active,syn_number_click,syn_last_extract_time,syn_creation_date,syn_display_on_timeline) " +
+						"values (?,?,?,?,?,?,?,?,?) ",new String[]{
+						Integer.valueOf(c.getInt(0)).toString(), 
+						c.getString(1),
+						c.getString(2),
+						c.getString(3),
+						Integer.valueOf(c.getInt(4)).toString(),
+						Integer.valueOf(c.getInt(5)).toString(), 
+						c.getString(6),
+						c.getString(7),
+						Integer.valueOf(c.getInt(8)).toString()
+				} );
+			}while (c.moveToNext());
+			
+			db.execSQL("drop table d_syndication ");	
+			
+			String newTable = "create table d_syndication (\r\n" + 
+					"	_id INTEGER PRIMARY KEY autoincrement,\r\n" + 
+					"	syn_name text NOT NULL,	\r\n" + 
+					"	syn_url text NOT NULL,\r\n" + 
+					"	syn_website_url text NOT NULL,\r\n" + 
+					"	syn_is_active INTEGER NOT NULL,\r\n" + 
+					"	syn_number_click INTEGER NOT NULL,\r\n" + 
+					"	syn_last_extract_time datetime NOT NULL,\r\n" + 
+					"	syn_creation_date datetime NOT NULL,\r\n" + 
+					"   syn_display_on_timeline INTEGER NOT NULL, \r\n" +
+					"  	syn_last_rss_search_result INTEGER \r\n" +
+					"); \r\n";
+			
+			db.execSQL(newTable);	
+			
+			c = db.rawQuery(" select _id,syn_name,syn_url,syn_website_url,syn_is_active,syn_number_click,syn_last_extract_time,syn_creation_date,syn_display_on_timeline  from d_syndication_tmp ",null);
+			c.moveToFirst();
+			
+			
+			do {
+				
+				db.execSQL("insert into d_syndication " +
+						"(_id,syn_name,syn_url,syn_website_url,syn_is_active,syn_number_click,syn_last_extract_time,syn_creation_date,syn_display_on_timeline) " +
+						"values (?,?,?,?,?,?,?,?,?) ",new String[]{
+						Integer.valueOf(c.getInt(0)).toString(), 
+						c.getString(1),
+						c.getString(2),
+						c.getString(3),
+						Integer.valueOf(c.getInt(4)).toString(),
+						Integer.valueOf(c.getInt(5)).toString(), 
+						c.getString(6),
+						c.getString(7),
+						Integer.valueOf(c.getInt(8)).toString()
+				} );
+			}while (c.moveToNext());
+			
+			
+			db.execSQL("drop table d_syndication_tmp ");	
 			
 			db.setTransactionSuccessful();
 			

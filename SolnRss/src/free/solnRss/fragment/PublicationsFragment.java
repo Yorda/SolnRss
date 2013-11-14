@@ -150,12 +150,18 @@ public class PublicationsFragment extends AbstractFragment implements
 		setListShown(false);
 		
 		setHasOptionsMenu(true);
+		
+		testSearch();
 	}
 	
-	/*private void testSearch(){
-		PublicationsFinderService finder = new PublicationsFinderService();
-		finder.test(getActivity());
-	}*/
+	private void testSearch() {
+		//PublicationFinderBusinessImpl finder = new PublicationFinderBusinessImpl(getActivity());
+		//finder.searchNewPublications();
+		//NewPublicationsNotification notify = new NewPublicationsNotification(getActivity());
+		//DateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.FRENCH);
+		//notify.notificationForNewPublications(25, sdf.format(new Date()));
+	}
+	
 	
 	@Override
 	public void onSaveInstanceState(Bundle outState) {

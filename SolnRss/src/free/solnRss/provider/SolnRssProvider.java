@@ -100,6 +100,11 @@ public class SolnRssProvider extends ContentProvider {
 					selection, selectionArgs);
 			break;
 			
+		case RSS:
+			rowsUpdated = db.update(RssTable.RSS_TABLE, values,
+					selection, selectionArgs);
+			break;
+			
 		default:
 			throw new IllegalArgumentException("Unknown URI: " + uri);
 		}
@@ -168,6 +173,11 @@ public class SolnRssProvider extends ContentProvider {
 					selection, selectionArgs);
 			break;
 
+		case RSS:
+			rowsDeleted = db.delete(RssTable.RSS_TABLE,
+					selection, selectionArgs);
+			break;
+			
 		default:
 			throw new IllegalArgumentException("Unknown URI: " + uri);
 		}

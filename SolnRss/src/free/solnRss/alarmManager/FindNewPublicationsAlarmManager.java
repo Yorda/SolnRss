@@ -13,7 +13,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
-import android.util.Log;
 import free.solnRss.service.PublicationsFinderService;
 
 /**
@@ -103,7 +102,7 @@ public class FindNewPublicationsAlarmManager implements
 	}
 
 	public void cancelAlarm() {
-		Log.e(FindNewPublicationsAlarmManager.class.getName(), "Soln.R ->cancelAlarm = cancel the timer ");
+		// Log.e(FindNewPublicationsAlarmManager.class.getName(), "Soln.R ->cancelAlarm = cancel the timer ");
 		alarmManager.cancel(pendingIntent);
 	}
 	

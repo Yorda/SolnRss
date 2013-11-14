@@ -88,8 +88,8 @@ public class SyndicationRepository {
 						+ SyndicationTable.COLUMN_ID,
 				SyndicationTable.SYNDICATION_TABLE + "."
 						+ SyndicationTable.COLUMN_NAME,
-				SyndicationTable.SYNDICATION_TABLE + "."
-						+ SyndicationTable.COLUMN_LAST_RSS_PUBLISHED,
+				//SyndicationTable.SYNDICATION_TABLE + "."
+				//		+ SyndicationTable.COLUMN_LAST_RSS_PUBLISHED,
 				SyndicationTable.SYNDICATION_TABLE + "."
 						+ SyndicationTable.COLUMN_URL, };
 
@@ -108,10 +108,10 @@ public class SyndicationRepository {
 
 			values = new ContentValues();
 
-			if (!TextUtils.isEmpty(syndication.getRss())) {
+			/*if (!TextUtils.isEmpty(syndication.getRss())) {
 				values.put(SyndicationTable.COLUMN_LAST_RSS_PUBLISHED,
 					syndication.getRss());
-			}
+			}*/
 			
 			values.put(SyndicationTable.COLUMN_LAST_EXTRACT_TIME,
 					sdf.format(new Date()));

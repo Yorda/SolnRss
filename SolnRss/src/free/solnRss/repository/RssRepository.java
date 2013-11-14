@@ -45,6 +45,7 @@ public class RssRepository {
 
 		selection.setLength(0);
 		selection.append(RssTable.COLUMN_TITLE + " = ? ");
+		selection.append(" AND ");
 		selection.append(RssTable.COLUMN_URL + " = ? ");
 
 		args.clear();

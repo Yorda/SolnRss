@@ -78,14 +78,17 @@
             android:authorities="com.solnRss.provider.solnRssProvider"
             android:exported="false" >
         </provider>
-       
-
+        
         <!-- RECEIVER -->
         <receiver android:name="free.solnRss.receiver.AfterDeviceBootReceiver" >
             <intent-filter>
                 <action android:name="android.intent.action.BOOT_COMPLETED" />
             </intent-filter>
         </receiver>
+        
+        <receiver android:name="free.solnRss.receiver.NotificationReceiver" >
+        </receiver>
+        
     </application>
 
 </manifest>

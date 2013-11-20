@@ -21,6 +21,7 @@ import android.preference.PreferenceManager;
 import android.support.v4.view.ViewPager;
 import android.text.Html;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -34,13 +35,14 @@ import free.solnRss.fragment.listener.CategoriesFragmentListener;
 import free.solnRss.fragment.listener.PublicationsFragmentListener;
 import free.solnRss.fragment.listener.SyndicationsFragmentListener;
 import free.solnRss.manager.UpdatingProcessConnectionManager;
+import free.solnRss.notification.NewPublicationsNotification;
 import free.solnRss.service.SyndicationFinderService;
 import free.solnRss.singleton.TypeFaceSingleton;
 
 public class SolnRss extends Activity implements ActionBar.TabListener,
 		SharedPreferences.OnSharedPreferenceChangeListener {
 	
-	public static enum SERVICE_RESULT {
+	@Deprecated public static enum SERVICE_RESULT {
 		NEW_SYNDICATION, NEW_PUBLICATIONS
 	}
 
@@ -71,8 +73,8 @@ public class SolnRss extends Activity implements ActionBar.TabListener,
 	}
 	
 	@Override
-	protected void onResume() {
-		super.onResume();
+	protected void onRestart() {
+		super.onRestart();
 	}
 	
 	@Override
@@ -182,12 +184,17 @@ public class SolnRss extends Activity implements ActionBar.TabListener,
 		actionBar.addTab(actionBar.newTab().setIcon(R.drawable.ic_tab_earth)
 				.setTabListener(this));
 
-		removeNotification();
 		viewPager.setCurrentItem(1);
 		
+		removeNotification();
 		registerPreferenceManager();
 	}
 
+	@Override
+	protected void onResume() {
+		Log.e(SolnRss.class.getName(), "ON RESUME");
+		super.onResume();
+	}
 	
 	@Override
 	public void onActivityResult(int requestCode, int resultCode, Intent data) {
@@ -386,17 +393,27 @@ public class SolnRss extends Activity implements ActionBar.TabListener,
 		super.onNewIntent(intent);
 	    setIntent(intent);
 	    
-		Bundle b = getIntent().getExtras();
-		SERVICE_RESULT serviceResult = (SERVICE_RESULT) b.getSerializable("SERVICE_RESULT");
+	    NewPublicationsNotification.NotifyEvent event = 
+	    		NewPublicationsNotification.NotifyEvent.detachFrom(intent);
+	    
+		if (event != null
+				&& event.compareTo(NewPublicationsNotification.NotifyEvent.RESTART_ACTIVITY) == 0) {
+			
+			publicationsListener.reLoadPublicationsByLastFound(
+					intent.getExtras().getString("dateNewPublicationsFound"));
+		}
 		
-		if (serviceResult.compareTo(SERVICE_RESULT.NEW_SYNDICATION) == 0) {
+		//Bundle b = getIntent().getExtras();
+		//SERVICE_RESULT serviceResult = (SERVICE_RESULT) b.getSerializable("SERVICE_RESULT");
+		
+		/*if (serviceResult != null && serviceResult.compareTo(SERVICE_RESULT.NEW_SYNDICATION) == 0) {
 			String newSyndicationId = intent.getStringExtra("newSyndicationId");
 			if (newSyndicationId != null) {
 				reLoadPublicationsBySyndication(Integer.valueOf(newSyndicationId));
 			}
-		} else if (serviceResult.compareTo(SERVICE_RESULT.NEW_PUBLICATIONS) == 0) {
+		} else if (serviceResult != null && serviceResult.compareTo(SERVICE_RESULT.NEW_PUBLICATIONS) == 0) {
 			reLoadAllPublications();
-		}
+		}*/
 	};
 	
 	private void warmUser(String msg) {

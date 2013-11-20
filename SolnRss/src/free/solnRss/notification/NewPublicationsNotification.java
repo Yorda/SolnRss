@@ -9,6 +9,7 @@ import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
 import android.support.v4.app.NotificationCompat;
 import free.solnRss.R;
+import free.solnRss.activity.SolnRss;
 import free.solnRss.receiver.NotificationReceiver;
 
 public class NewPublicationsNotification {
@@ -23,8 +24,10 @@ public class NewPublicationsNotification {
 		}
 
 		public static NotifyEvent detachFrom(Intent intent) {
-			if (!intent.hasExtra(name))
-				throw new IllegalStateException();
+			if (!intent.hasExtra(name)) {
+				// throw new IllegalStateException();
+				return null;
+			}
 			return values()[intent.getIntExtra(name, -1)];
 		}
 	}
@@ -35,9 +38,9 @@ public class NewPublicationsNotification {
 		this.context = context;
 	}
 	
-	public  void notificationForNewPublications(int newPublicationsNumber, String updateDate) {
+	public void notificationForNewPublications(int newPublicationsNumber, String dateNewPublicationsFound) {
 
-		newPublicationsNumber = updateNewPublicationsNumberAndTime(newPublicationsNumber, updateDate);
+		newPublicationsNumber = updateNewPublicationsNumberAndTime(newPublicationsNumber, dateNewPublicationsFound);
 		
 		String text = context.getResources().getQuantityString(
 				R.plurals.notify_new_pub_msg,
@@ -51,7 +54,7 @@ public class NewPublicationsNotification {
 				.setContentTitle(context.getResources().getString(R.string.notify_new_pub_title))
 				.setContentText(text)
 				.setNumber(newPublicationsNumber)
-				.setContentIntent(createNotificationEvent(NotifyEvent.RESTART_ACTIVITY))
+				.setContentIntent(createPendingIntent(NotifyEvent.RESTART_ACTIVITY,dateNewPublicationsFound))
 				.setDeleteIntent(createNotificationEvent(NotifyEvent.DELETE_NOTIFICATION));
 		
 		Notification notification = builder.build();
@@ -59,7 +62,7 @@ public class NewPublicationsNotification {
 		notificationManager.notify(0x000001, notification);
 	}
 	
-	private int updateNewPublicationsNumberAndTime(int newPublicationsNumber, String updateDate) {
+	private int updateNewPublicationsNumberAndTime(int newPublicationsNumber, String dateNewPublicationsFound) {
 		SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
 		
 		SharedPreferences.Editor editor = sharedPreferences.edit();
@@ -69,12 +72,27 @@ public class NewPublicationsNotification {
 		
 		editor.putInt("newPublicationsRecorded", number);
 		if(sharedPreferences.getString("newPublicationsRecordDate", null) == null){
-			editor.putString("newPublicationsRecordDate", updateDate);
+			editor.putString("newPublicationsRecordDate", dateNewPublicationsFound);
 		}
 		
 		editor.commit();
 		
 		return number;
+	}
+	
+	private PendingIntent createPendingIntent(NotifyEvent event,String dateNewPublicationsFound) {
+		
+		Intent intent = new Intent(context, SolnRss.class);
+		intent.addFlags(
+				Intent.FLAG_ACTIVITY_CLEAR_TOP | 
+				 Intent.FLAG_ACTIVITY_SINGLE_TOP | 
+			    Intent.FLAG_ACTIVITY_NEW_TASK);
+		
+		intent.putExtra("dateNewPublicationsFound", dateNewPublicationsFound);
+		event.attachTo(intent);
+		
+		return PendingIntent.getActivity(context, event.ordinal(), intent,
+				PendingIntent.FLAG_UPDATE_CURRENT);
 	}
 	
 	private PendingIntent createNotificationEvent(NotifyEvent event) {

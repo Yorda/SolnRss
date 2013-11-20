@@ -3,6 +3,7 @@ package free.solnRss.repository;
 import java.util.ArrayList;
 import java.util.List;
 
+import android.content.ContentProviderOperation;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.CursorLoader;
@@ -41,12 +42,38 @@ public class PublicationRepository {
 		this.context = context;
 	}
 	
+	public void markOnePublicationAsReadByUser(Integer publicationId,
+			Integer syndicationId, Integer numberOfClick) throws Exception {
+
+		ContentValues values = new ContentValues();
+		values.put(PublicationTable.COLUMN_ALREADY_READ, "1");
+		
+		ArrayList<ContentProviderOperation> operations = new ArrayList<ContentProviderOperation>();
+		operations.add(ContentProviderOperation.newUpdate(uri).withValues(values)
+				.withSelection(PublicationTable.COLUMN_ID + " = ? " , new String[] { publicationId.toString() })
+				.withYieldAllowed(true).build());
+		
+		values = new ContentValues();
+		values.put("syn_number_click", numberOfClick + 1);
+		
+		operations.add(ContentProviderOperation.newUpdate(Uri.parse(SolnRssProvider.URI + "/syndication"))
+				.withValues(values)
+				.withSelection(SyndicationTable.COLUMN_ID + " = ? " , new String[] { syndicationId.toString() })
+				.withYieldAllowed(true).build());
+		
+		 context.getContentResolver().applyBatch(
+				SolnRssProvider.AUTHORITY, operations);
+		 
+		 // context.getContentResolver().notifyChange(uri, null);
+		 // context.getContentResolver().notifyChange(Uri.parse(SolnRssProvider.URI + "/syndication"), null);
+	}
+	
 	/**
 	 * Clean the publications list in table for a syndication
 	 * @param id
 	 */
 	public CursorLoader loadPublications(String filterText,
-			Integer selectedSyndicationID, Integer selectedCategoryID,
+			Integer selectedSyndicationID, Integer selectedCategoryID, String lastUpdateDate,
 			Boolean displayAlreadyRead) {
 		
 		selection.setLength(0);
@@ -62,7 +89,7 @@ public class PublicationRepository {
 		}
 		
 		// Display on time line
-		if (selectedSyndicationID == null && selectedCategoryID == null) {
+		if (selectedSyndicationID == null && selectedCategoryID == null && lastUpdateDate == null) {
 			selection.append(" and ");
 			selection.append(SyndicationTable.COLUMN_DISPLAY_ON_TIMELINE);
 			selection.append(" = 1 ");
@@ -76,6 +103,14 @@ public class PublicationRepository {
 			args.add(selectedSyndicationID.toString());
 		}
 
+		else if (lastUpdateDate != null) {
+			selection.append(" and ");
+			selection.append( PublicationTable.COLUMN_PUBLICATION_DATE);
+			selection.append(" >= ? ");
+			
+			args.add(lastUpdateDate);
+		}
+		
 		else if (selectedCategoryID != null) {
 			selection.append(" and ");
 			selection.append( PublicationTable.COLUMN_SYNDICATION_ID);
@@ -88,7 +123,7 @@ public class PublicationRepository {
 			selection.append( PublicationTable.COLUMN_ALREADY_READ);
 			selection.append(" = 0 ");
 		}
-		
+
 		return new CursorLoader(context, uri, projection, selection.toString(),
 				args.toArray(new String[args.size()]), null);
 		
@@ -98,24 +133,28 @@ public class PublicationRepository {
 		ContentValues values = new ContentValues();
 		values.put(PublicationTable.COLUMN_ALREADY_READ, "1");
 		String where = PublicationTable.COLUMN_ID + " = ? ";
-		String args[] = { String.valueOf(publicationId) };
-		context.getContentResolver().update(uri, values, where, args);
+		context.getContentResolver().update(uri, values, where, new String[] { String.valueOf(publicationId) });
 	}
 	
 	public void markCategoryPublicationsAsRead(Integer categoryId){
 		ContentValues values = new ContentValues();
 		values.put(PublicationTable.COLUMN_ALREADY_READ, "1");
 		String selection = " syn_syndication_id in (select syn_syndication_id from d_categorie_syndication where cas_categorie_id = ?) ";
-		String[] args = {categoryId.toString()};
-		context.getContentResolver().update(uri, values, selection, args);
+		context.getContentResolver().update(uri, values, selection, new String[] {categoryId.toString()});
+	}
+	
+	public void marklastPublicationFoundAsRead(String dateNewPublicationsFound) {
+		ContentValues values = new ContentValues();
+		values.put(PublicationTable.COLUMN_ALREADY_READ, "1");
+		String where = PublicationTable.COLUMN_PUBLICATION_DATE + " >= ? ";
+		context.getContentResolver().update(uri, values, where, new String[] { String.valueOf(dateNewPublicationsFound) });
 	}
 	
 	public void markSyndicationPublicationsAsRead(Integer syndicationId) {
 		ContentValues values = new ContentValues();
 		values.put(PublicationTable.COLUMN_ALREADY_READ, "1");
 		String selection = " syn_syndication_id  = ?  ";
-		String[] args = { syndicationId.toString() };
-		context.getContentResolver().update(uri, values, selection, args);
+		context.getContentResolver().update(uri, values, selection, new String[] { syndicationId.toString() });
 	}
 	
 	public void markAllPublicationsAsRead() {

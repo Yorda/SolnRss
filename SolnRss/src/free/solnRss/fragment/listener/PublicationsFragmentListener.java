@@ -80,5 +80,11 @@ public interface PublicationsFragmentListener {
 	 * @param syndicationId
 	 */
 	public void markSyndicationPublicationsAsRead(Integer syndicationId);
+	
+	/**
+	 * 
+	 * @param deletedCategoryId
+	 */
+	public void reLoadPublicationsByLastFound(String updateLastDate);
 
 }

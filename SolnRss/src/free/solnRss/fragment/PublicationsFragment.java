@@ -32,6 +32,7 @@ import free.solnRss.activity.ReaderActivity;
 import free.solnRss.activity.SolnRss;
 import free.solnRss.adapter.PublicationAdapter;
 import free.solnRss.fragment.listener.PublicationsFragmentListener;
+import free.solnRss.notification.NewPublicationsNotification;
 import free.solnRss.repository.PublicationRepository;
 import free.solnRss.repository.PublicationTable;
 import free.solnRss.repository.SyndicationTable;
@@ -41,6 +42,7 @@ public class PublicationsFragment extends AbstractFragment implements
 
 	private PublicationRepository publicationRepository;
 	private Integer selectedSyndicationID;
+	private String dateNewPublicationsFound; // Z date in format 
 	private Integer nextSelectedSyndicationID; // selected by context menu
 	private Integer selectedCategoryID;
 
@@ -48,49 +50,53 @@ public class PublicationsFragment extends AbstractFragment implements
 		LinearLayout l = (LinearLayout) getActivity().findViewById(emptyLayoutId);
 		l.setVisibility(View.VISIBLE);
 		
-		String filter = getFilterText();
 		getActivity().findViewById(R.id.displayAllButton).setVisibility(View.VISIBLE);
 		
-		// If a syndication is selected and it's empty
 		if (selectedSyndicationID != null) {
-			if (TextUtils.isEmpty(filter)) {
-				setEmptyMessage(getResources().getString(
-						R.string.empty_publications_with_syndication,
-						syndicationName()));
-			} else {
-				setEmptyMessage(getResources().getString(
-						R.string.empty_publications_with_syndication_with_filter,
-						syndicationName(), filter));
-			}
+			// Selected by syndication are empty
+			writeEmptyMessage(syndicationName(), R.string.empty_publications_with_syndication,
+					R.string.empty_publications_with_syndication_with_filter, getFilterText());
 
-		} // If a category is selected and it's empty
+		}
 		else if (selectedCategoryID != null) {
-			if (TextUtils.isEmpty(filter)) {
-				setEmptyMessage(getResources().getString(
-						R.string.empty_publications_with_category,
-						categoryName()));
-			} else {
-				setEmptyMessage(getResources().getString(
-						R.string.empty_publications_with_category_with_filter,
-						categoryName(), filter));
-			}
+			// Selected by category is empty
+			writeEmptyMessage(categoryName(), R.string.empty_publications_with_category,
+					R.string.empty_publications_with_category_with_filter, getFilterText());
 		}
-		// If all publications are empty
+		
+		else if (dateNewPublicationsFound != null) {
+			// Selected by last date found
+		}
+		
 		else {
-			
-			if (TextUtils.isEmpty(filter)) {
-				setEmptyMessage(getResources().getString(
-						R.string.empty_publications));
-			} else {
-				setEmptyMessage(getResources().getString(
-						R.string.empty_publications_with_filter, filter));
-			}
-			
-			getActivity().findViewById(R.id.displayAllButton)
-					.setVisibility(View.GONE);
+			// All publication
+			writeEmptyMessage(null, R.string.empty_publications,
+					R.string.empty_publications_with_filter, getFilterText());
+			getActivity().findViewById(R.id.displayAllButton).setVisibility(View.GONE);
 		}
+		
 		// If already read publications are hidden display button for display them
 		displayAlreadyReadPublicationsButton();
+	}
+	
+	private void writeEmptyMessage(String name, int idMsgWithoutFilter,
+			int idMsgWithFilter, String filter) {
+		if (TextUtils.isEmpty(filter)) {
+			if (name == null)
+				displayEmptyView(getResources().getString(idMsgWithoutFilter));
+			else
+				displayEmptyView(getResources().getString(idMsgWithoutFilter, name));
+		} else {
+			if (name == null)
+				displayEmptyView(getResources().getString(idMsgWithFilter, filter));
+			else
+				displayEmptyView(getResources().getString(idMsgWithFilter, name,	filter));
+		}
+	}
+	
+	private void displayEmptyView(String msg) {
+		TextView tv = (TextView)getActivity().findViewById(R.id.emptyPublicationsMessage);
+		tv.setText(msg);
 	}
 	
 	private void displayAlreadyReadPublicationsButton() {
@@ -104,11 +110,6 @@ public class PublicationsFragment extends AbstractFragment implements
 					.setVisibility(View.VISIBLE);
 		}
 	}
-	
-	private void setEmptyMessage(String msg) {
-		TextView tv = (TextView)getActivity().findViewById(R.id.emptyPublicationsMessage);
-		tv.setText(msg);
-	}
 
 	private String categoryName() {
 		return categoryName(selectedCategoryID);
@@ -117,6 +118,11 @@ public class PublicationsFragment extends AbstractFragment implements
 	private String syndicationName() {
 		return syndicationName(selectedSyndicationID);
 	}
+	
+	private String dataNewPublicationsFoundLabel() {
+		return "What's new !";
+	}
+	
 	
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup vg, Bundle save) {
@@ -151,15 +157,15 @@ public class PublicationsFragment extends AbstractFragment implements
 		
 		setHasOptionsMenu(true);
 		
-		testSearch();
+		 //testSearch();
 	}
 	
-	private void testSearch() {
+	public void testSearch() {
 		//PublicationFinderBusinessImpl finder = new PublicationFinderBusinessImpl(getActivity());
 		//finder.searchNewPublications();
-		//NewPublicationsNotification notify = new NewPublicationsNotification(getActivity());
+		NewPublicationsNotification notify = new NewPublicationsNotification(getActivity());
 		//DateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.FRENCH);
-		//notify.notificationForNewPublications(25, sdf.format(new Date()));
+		notify.notificationForNewPublications(25, "2013-11-15 03:35:34");//sdf.format(new Date()));
 	}
 	
 	
@@ -240,8 +246,7 @@ public class PublicationsFragment extends AbstractFragment implements
 	
 	@Override public void onPause() {
 		super.onPause();
-		SharedPreferences.Editor editor = getActivity().getPreferences(0)
-				.edit();
+		SharedPreferences.Editor editor = getActivity().getPreferences(0).edit();
 		if (selectedSyndicationID != null) {
 			editor.putInt("selectedSyndicationID", selectedSyndicationID);
 		} else {
@@ -254,6 +259,12 @@ public class PublicationsFragment extends AbstractFragment implements
 			editor.putInt("selectedCategoryID", -1);
 		}
 		
+		if (dateNewPublicationsFound != null) {
+			editor.putString("dateNewPublicationsFound", dateNewPublicationsFound);
+		} else {
+			editor.putString("dateNewPublicationsFound", null);
+		}
+
 		if (!TextUtils.isEmpty(getFilterText())) {
 			editor.putString("filterText", getFilterText());
 		} else {
@@ -264,22 +275,59 @@ public class PublicationsFragment extends AbstractFragment implements
 		editor.commit();
 	}
 	
+	public void loadLastPublicationRecorded() {		
+		NewPublicationsNotification.NotifyEvent event = NewPublicationsNotification.NotifyEvent
+				.detachFrom(getActivity().getIntent());
+
+		if (event != null
+				&& event.compareTo(NewPublicationsNotification.NotifyEvent.RESTART_ACTIVITY) == 0) {
+			// Reload list by date
+			String lastUpdateDate = getActivity().getIntent().getStringExtra("newPublicationsRecordDate");
+			
+			if (lastUpdateDate != null) {
+				Bundle bundle = new Bundle();
+				bundle.putString("lastUpdateDate", lastUpdateDate);
+				getLoaderManager().initLoader(0, bundle, this);
+				updateActionBarTitle();
+			}
+		}
+	}
+	
 	private void restoreOrFirstDisplay(Bundle save) {
 		
 		SharedPreferences prefs = getActivity().getPreferences(0);
+		
+		NewPublicationsNotification.NotifyEvent event = NewPublicationsNotification.NotifyEvent
+				.detachFrom(getActivity().getIntent());
+
+		if (event != null
+				&& event.compareTo(NewPublicationsNotification.NotifyEvent.RESTART_ACTIVITY) == 0) {
+			dateNewPublicationsFound = getActivity().getIntent().getStringExtra("dateNewPublicationsFound");
+		}
+		
 		if (prefs.getInt("selectedSyndicationID", -1) != -1) {
 			selectedSyndicationID = prefs.getInt("selectedSyndicationID", -1);
 		}
+		
 		if (prefs.getInt("selectedCategoryID", -1) != -1) {
 			selectedCategoryID = prefs.getInt("selectedCategoryID", -1);
 		}
+		
+		if (prefs.getString("dateNewPublicationsFound", null) != null) {
+			dateNewPublicationsFound = prefs.getString("dateNewPublicationsFound", null);
+		}
+		
 		setFilterText(prefs.getString("filterText", null));
 		
 		if (selectedSyndicationID != null) {
 			loadPublicationsBySyndication();
 		} else if (selectedCategoryID != null) {
 			loadPublicationsByCategory();
-		} else {
+		}
+		else if (dateNewPublicationsFound != null) {
+			loadPublicationsByLastFound(dateNewPublicationsFound);
+		}
+		else {
 			loadPublications();
 		}
 	}
@@ -329,10 +377,12 @@ public class PublicationsFragment extends AbstractFragment implements
 			} else if (bundle.getInt("selectedCategoryID") != 0) {
 				selectedCategoryID = bundle.getInt("selectedCategoryID");
 			}
+			else if (bundle.getString("dateNewPublicationsFound") != null) {
+				dateNewPublicationsFound = bundle.getString("dateNewPublicationsFound");
+			}
 		}
-
 		return publicationRepository.loadPublications(getFilterText(),
-				selectedSyndicationID, selectedCategoryID,
+				selectedSyndicationID, selectedCategoryID, dateNewPublicationsFound,
 				displayAlreadyReadPublications());
 	}
 	
@@ -350,7 +400,10 @@ public class PublicationsFragment extends AbstractFragment implements
 		if (selectedCategoryID != null) {
 			bundle.putInt("selectedCategoryID", selectedCategoryID);
 		}
-
+		if (dateNewPublicationsFound != null) {
+			bundle.putString("dateNewPublicationsFound", dateNewPublicationsFound);
+		}
+		
 		getLoaderManager().restartLoader(0, bundle, this);
 	}
 	
@@ -358,11 +411,11 @@ public class PublicationsFragment extends AbstractFragment implements
 	 * Click on a publication item. It's mark this publication as read and add
 	 * one click to the syndication
 	 */
-	private void clickOnPublicationItem(Cursor cursor, ListView l, View v,	int position, long id) {
+	private void clickOnPublicationItem(final Cursor cursor, ListView l, View v,	int position, long id) {
 		
 		// Set this publication as already read
 		// cursor.getColumnIndex(PublicationTable.COLUMN_ID)
-		publicationRepository.markPublicationAsRead(cursor.getInt(0));
+		/*publicationRepository.markPublicationAsRead(cursor.getInt(0));
 		refreshPublications();
 		//((PublicationAdapter)getListAdapter()).notifyDataSetChanged();
 		
@@ -374,13 +427,32 @@ public class PublicationsFragment extends AbstractFragment implements
 		int numberOfClick = cursor.getInt(7);
 
 		((SolnRss) getActivity()).getSyndicationsFragmentListener()
-				.addOneReadToSyndication(syndicationId, numberOfClick);
+				.addOneReadToSyndication(syndicationId, numberOfClick);*/
+		
+		new Runnable() {
+			public void run() {
+				try {
+					publicationRepository.markOnePublicationAsReadByUser(
+							cursor.getInt(0), 
+							cursor.getInt(6),
+							cursor.getInt(7));
+					((PublicationAdapter)getListAdapter()).notifyDataSetChanged();
+					refreshPublications();
+					((SolnRss) getActivity()).refreshSyndications();
+				} catch (Exception e) {
+					Toast.makeText(getActivity(),
+							"Error unable to set this publication as read",
+							Toast.LENGTH_LONG).show();
+					e.printStackTrace();
+				}
+			}
+		}.run();
 	}
 	
 	public void moveListViewToTop() {
 		getListView().setSelection(0);
 	}
-
+	
 	public void loadPublications() {
 		getLoaderManager().initLoader(0, null, this);
 	}
@@ -388,6 +460,7 @@ public class PublicationsFragment extends AbstractFragment implements
 	public void reloadPublications() {
 		this.selectedSyndicationID = null;
 		this.selectedCategoryID = null;
+		this.dateNewPublicationsFound = null;
 		if (isAdded()) {
 			getLoaderManager().restartLoader(0, null, this);
 			updateActionBarTitle();
@@ -408,9 +481,14 @@ public class PublicationsFragment extends AbstractFragment implements
 			reLoadPublicationsBySyndication(this.selectedSyndicationID);
 		} else if (this.selectedCategoryID != null) {
 			reLoadPublicationsByCategory(this.selectedCategoryID);
-		} else {
+		} else if (this.dateNewPublicationsFound != null) {
+			reLoadPublicationsByLastFound(dateNewPublicationsFound);
+		} 
+		else {
 			reloadPublications();
 		}
+		
+		
 	}
 
 	private void loadPublicationsByCategory() {
@@ -422,6 +500,7 @@ public class PublicationsFragment extends AbstractFragment implements
 	
 	public void reLoadPublicationsByCategory(Integer categoryID) {
 		this.selectedSyndicationID = null;
+		this.dateNewPublicationsFound = null;
 		this.selectedCategoryID = categoryID;
 		Bundle bundle = new Bundle();
 		bundle.putInt("selectedCategoryID",this.selectedCategoryID);
@@ -441,6 +520,7 @@ public class PublicationsFragment extends AbstractFragment implements
 	public void reLoadPublicationsBySyndication(Integer syndicationID) {
 		this.selectedSyndicationID = syndicationID;
 		this.selectedCategoryID = null;
+		this.dateNewPublicationsFound = null;
 		Bundle bundle = new Bundle();
 		bundle.putInt("selectedSyndicationID", this.selectedSyndicationID);
 		if (isAdded()) {
@@ -467,6 +547,48 @@ public class PublicationsFragment extends AbstractFragment implements
 		refreshPublications();
 	}
 	
+	@Override
+	public void reLoadPublicationsByLastFound(String lastUpdateDate) {
+		
+		this.selectedSyndicationID = null;
+		this.selectedCategoryID = null;
+		
+		SharedPreferences sharedPreferences = 
+				PreferenceManager.getDefaultSharedPreferences(getActivity());
+		
+		SharedPreferences.Editor editor = sharedPreferences.edit();
+		editor.putInt("newPublicationsRecorded", 0);
+		editor.putString("newPublicationsRecordDate", null);
+		editor.commit();
+
+		Bundle bundle = new Bundle();
+		bundle.putString("dateNewPublicationsFound", lastUpdateDate);
+
+		if(isAdded()){
+			getLoaderManager().restartLoader(0, bundle, this);
+			updateActionBarTitle();
+		}
+	}
+
+	public void loadPublicationsByLastFound(String dateNewPublicationsFound) {
+		SharedPreferences sharedPreferences = 
+				PreferenceManager.getDefaultSharedPreferences(getActivity());
+		
+		SharedPreferences.Editor editor = sharedPreferences.edit();
+		editor.putInt("newPublicationsRecorded", 0);
+		editor.putString("newPublicationsRecordDate", null);
+		editor.commit();
+
+		Bundle bundle = new Bundle();
+		bundle.putString("dateNewPublicationsFound", dateNewPublicationsFound);
+
+		if(isAdded()){
+			getLoaderManager().restartLoader(0, bundle, this);
+			updateActionBarTitle();
+		}
+	}
+	
+	
 	private void updateActionBarTitle() {
 		String title = null;
 		ActionBar bar = getActivity().getActionBar();
@@ -477,6 +599,10 @@ public class PublicationsFragment extends AbstractFragment implements
 		} else if (this.selectedCategoryID != null) {
 			title = categoryName();
 		} 
+		else if (this.dateNewPublicationsFound!= null) {
+			title = dataNewPublicationsFoundLabel();
+		} 
+		
 		
 		if (TextUtils.isEmpty(title)) {
 			bar.setTitle(titleToHtml(getActivity().getTitle().toString()));
@@ -563,8 +689,11 @@ public class PublicationsFragment extends AbstractFragment implements
 					
 				} else if (selectedCategoryID != null) {
 					markCategoryPublicationsAsRead(selectedCategoryID);
-					
-				} else {
+				}
+				else if (dateNewPublicationsFound != null) {
+					marklastPublicationFoundAsRead(dateNewPublicationsFound);
+				}
+				else {
 					markAllPublicationsAsRead();
 				}
 			}
@@ -579,6 +708,10 @@ public class PublicationsFragment extends AbstractFragment implements
 			title = who;
 		} else if (selectedCategoryID != null) {
 			who = categoryName();
+			title = who;
+		}
+		else if (dateNewPublicationsFound != null) {
+			who = dataNewPublicationsFoundLabel();
 			title = who;
 		}
 				
@@ -606,4 +739,9 @@ public class PublicationsFragment extends AbstractFragment implements
 	public void markCategoryPublicationsAsRead(Integer categoryId) {
 		publicationRepository.markCategoryPublicationsAsRead(categoryId);
 	}
+	
+	public void marklastPublicationFoundAsRead(String dateNewPublicationsFound) {
+		publicationRepository.marklastPublicationFoundAsRead(dateNewPublicationsFound);
+	}
+
 }

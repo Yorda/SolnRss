@@ -311,7 +311,7 @@ public class SolnRss extends Activity implements ActionBar.TabListener,
 	
 	void addCategorie(String newCatgorie) {
 		if (!TextUtils.isEmpty(newCatgorie)) {
-			categoriesListener.addCategorie(this, newCatgorie);
+			categoriesListener.addCategory(this, newCatgorie);
 		}
 	}
 	

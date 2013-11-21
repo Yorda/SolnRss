@@ -83,7 +83,8 @@ public class CategoryRepository {
 						" syn_syndication_id = ? and cas_categorie_id = ? ",
 						new String[] { syndicationId.toString(),
 								categorieId.toString() });
-
+		
+		context.getContentResolver().notifyChange(uri, null);
 	}
 
 	public void addSyndicationToCategorie(Integer syndicationId,
@@ -93,7 +94,24 @@ public class CategoryRepository {
 		values.put("cas_categorie_id", categorieId);
 		RepositoryHelper.getInstance(context).getWritableDatabase()
 				.insert("d_categorie_syndication", null, values);
+		context.getContentResolver().notifyChange(uri, null);
 	}
+
+	public void addCategory(String newCatgorieName) {
+		ContentValues values = new ContentValues();
+		values.put(CategoryTable.COLUMN_NAME, newCatgorieName);
+		context.getContentResolver().insert(uri, values);
+	}
+
+	public void deleteCategory(Integer categoryId) {
+		ContentValues values = new ContentValues();
+		values.put(CategoryTable.COLUMN_ID, categoryId);
+		context.getContentResolver().delete(uri,
+				CategoryTable.COLUMN_ID + " = ? ",
+				new String[] { categoryId.toString() });
+	}
+	
+	
 	
 	/*
 	@Deprecated

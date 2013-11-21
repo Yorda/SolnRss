@@ -39,7 +39,7 @@ public class SyndicationsCategoriesActivity extends ListActivity implements
 		selectedCategoryName = getIntent().getStringExtra("selectedCategoryName");
 		
 		if (!TextUtils.isEmpty(selectedCategoryName)) {
-			getActionBar().setTitle(Html.fromHtml("<b><u>" + selectedCategoryName + "</u><b>"));
+			getActionBar().setTitle(Html.fromHtml("<b><u>" + selectedCategoryName + "</u></b>"));
 		}
 		
 		if (selectedCategorieID == -1) {
@@ -97,7 +97,7 @@ public class SyndicationsCategoriesActivity extends ListActivity implements
 		} else {
 			searchItem.setShowAsAction(
 					MenuItem.SHOW_AS_ACTION_IF_ROOM
-					| MenuItem.SHOW_AS_ACTION_COLLAPSE_ACTION_VIEW
+					//| MenuItem.SHOW_AS_ACTION_COLLAPSE_ACTION_VIEW
 				);
 		}
 		searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {

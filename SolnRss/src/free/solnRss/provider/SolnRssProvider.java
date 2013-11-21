@@ -23,7 +23,7 @@ public class SolnRssProvider extends ContentProvider {
 	public final static Uri URI = Uri.parse("content://" + AUTHORITY + "/" + PATH);
 
 	private UriMatcher uriMatcher;
-	private final int PUBLICATION = 10, CATEGORY = 20, SYNDICATION = 30, SYNDICATIONS_BY_CATEGORY = 40, RSS = 50;
+	private final int PUBLICATION = 10, CATEGORY = 20, SYNDICATION = 30, SYNDICATIONS_BY_CATEGORY = 40, RSS = 50, CATEGORY_NAME = 60;
 
 	@Override
 	public boolean onCreate() {
@@ -33,6 +33,7 @@ public class SolnRssProvider extends ContentProvider {
 		uriMatcher.addURI(AUTHORITY, PATH + "/syndication", SYNDICATION);
 		uriMatcher.addURI(AUTHORITY, PATH + "/syndicationsByCategory/#", SYNDICATIONS_BY_CATEGORY);
 		uriMatcher.addURI(AUTHORITY, PATH + "/rss", RSS);
+		uriMatcher.addURI(AUTHORITY, PATH + "/category_name", CATEGORY_NAME);
 		return true;
 	}
 
@@ -68,6 +69,11 @@ public class SolnRssProvider extends ContentProvider {
 		case RSS:
 			cursor = db.query(RssTable.RSS_TABLE, projection,
 					selection, selectionArgs, null, null, " _id desc ");
+			break;
+			
+		case CATEGORY_NAME:
+			cursor = db.query(CategoryTable.CATEGORY_TABLE, projection, selection, selectionArgs, 
+					null, null, null);
 			break;
 			
 		default:

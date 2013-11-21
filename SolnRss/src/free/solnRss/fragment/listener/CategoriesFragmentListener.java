@@ -20,7 +20,7 @@ public interface CategoriesFragmentListener {
 	 * @param contex
 	 * @param newCatgorie
 	 */
-	public void addCategorie(Context contex, String newCatgorie);
+	public void addCategory(Context contex, String newCatgorie);
 
 	/**
 	 * 

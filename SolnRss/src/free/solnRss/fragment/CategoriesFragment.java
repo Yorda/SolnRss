@@ -1,7 +1,6 @@
 package free.solnRss.fragment;
 
 import android.app.AlertDialog;
-import android.content.ContentValues;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.DialogInterface.OnClickListener;
@@ -26,9 +25,7 @@ import free.solnRss.activity.SyndicationsCategoriesActivity;
 import free.solnRss.adapter.CategoryAdapter;
 import free.solnRss.dialog.OneEditTextDialogBox;
 import free.solnRss.fragment.listener.CategoriesFragmentListener;
-import free.solnRss.provider.CategoryProvider;
 import free.solnRss.repository.CategoryRepository;
-import free.solnRss.repository.CategoryTable;
 
 public class CategoriesFragment extends AbstractFragment implements
 		CategoriesFragmentListener {
@@ -184,11 +181,14 @@ public class CategoriesFragment extends AbstractFragment implements
 		}
 	}
 	
-	public void addCategorie(Context context, String newCatgorie) {
-		ContentValues values = new ContentValues();
+	public void addCategory(Context context, String newCatgorieName) {
+		
+		categoryRepository.addCategory(newCatgorieName);
+
+		/*ContentValues values = new ContentValues();
 		values.put(CategoryTable.COLUMN_NAME, newCatgorie);
 		getActivity().getContentResolver().insert(CategoryProvider.URI , values);
-		getLoaderManager().restartLoader(0, null, this);
+		getLoaderManager().restartLoader(0, null, this);*/
 	}
 
 	private void rename() {
@@ -217,12 +217,15 @@ public class CategoriesFragment extends AbstractFragment implements
 			@Override
 			public void onClick(DialogInterface dialog, int which) {
 				
-				ContentValues values = new ContentValues();
+				categoryRepository.deleteCategory(deletedCategoryId);
+				
+				/*ContentValues values = new ContentValues();
 				values.put(CategoryTable.COLUMN_ID, deletedCategoryId);
 				getActivity().getContentResolver().delete(CategoryProvider.URI,
 						CategoryTable.COLUMN_ID + " = ? ",
 						new String[] { deletedCategoryId.toString() 
-				});
+				});*/
+				
 				//getLoaderManager().restartLoader(0, null, this);
 				reLoadCategoriesAfterSyndicationDeleted();
 				// Must warn publications time line to reload all publications if this deleted category

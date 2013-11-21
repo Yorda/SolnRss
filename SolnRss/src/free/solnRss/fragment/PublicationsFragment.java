@@ -303,18 +303,21 @@ public class PublicationsFragment extends AbstractFragment implements
 		if (event != null
 				&& event.compareTo(NewPublicationsNotification.NotifyEvent.RESTART_ACTIVITY) == 0) {
 			dateNewPublicationsFound = getActivity().getIntent().getStringExtra("dateNewPublicationsFound");
-		}
-		
-		if (prefs.getInt("selectedSyndicationID", -1) != -1) {
-			selectedSyndicationID = prefs.getInt("selectedSyndicationID", -1);
-		}
-		
-		if (prefs.getInt("selectedCategoryID", -1) != -1) {
-			selectedCategoryID = prefs.getInt("selectedCategoryID", -1);
-		}
-		
-		if (prefs.getString("dateNewPublicationsFound", null) != null) {
-			dateNewPublicationsFound = prefs.getString("dateNewPublicationsFound", null);
+			
+		} else {
+
+			if (prefs.getInt("selectedSyndicationID", -1) != -1) {
+				selectedSyndicationID = prefs.getInt("selectedSyndicationID", -1);
+			}
+			
+			if (prefs.getInt("selectedCategoryID", -1) != -1) {
+				selectedCategoryID = prefs.getInt("selectedCategoryID", -1);
+			}
+			
+			if (prefs.getString("dateNewPublicationsFound", null) != null) {
+				dateNewPublicationsFound = prefs.getString("dateNewPublicationsFound", null);
+			}
+			
 		}
 		
 		setFilterText(prefs.getString("filterText", null));
@@ -323,11 +326,9 @@ public class PublicationsFragment extends AbstractFragment implements
 			loadPublicationsBySyndication();
 		} else if (selectedCategoryID != null) {
 			loadPublicationsByCategory();
-		}
-		else if (dateNewPublicationsFound != null) {
+		} else if (dateNewPublicationsFound != null) {
 			loadPublicationsByLastFound(dateNewPublicationsFound);
-		}
-		else {
+		} else {
 			loadPublications();
 		}
 	}
@@ -548,7 +549,7 @@ public class PublicationsFragment extends AbstractFragment implements
 	}
 	
 	@Override
-	public void reLoadPublicationsByLastFound(String lastUpdateDate) {
+	public void reLoadPublicationsByLastFound(String dateNewPublicationsFound) {
 		
 		this.selectedSyndicationID = null;
 		this.selectedCategoryID = null;
@@ -562,7 +563,7 @@ public class PublicationsFragment extends AbstractFragment implements
 		editor.commit();
 
 		Bundle bundle = new Bundle();
-		bundle.putString("dateNewPublicationsFound", lastUpdateDate);
+		bundle.putString("dateNewPublicationsFound", dateNewPublicationsFound);
 
 		if(isAdded()){
 			getLoaderManager().restartLoader(0, bundle, this);
@@ -571,6 +572,10 @@ public class PublicationsFragment extends AbstractFragment implements
 	}
 
 	public void loadPublicationsByLastFound(String dateNewPublicationsFound) {
+		
+		this.selectedSyndicationID = null;
+		this.selectedCategoryID = null;
+		
 		SharedPreferences sharedPreferences = 
 				PreferenceManager.getDefaultSharedPreferences(getActivity());
 		
@@ -583,7 +588,7 @@ public class PublicationsFragment extends AbstractFragment implements
 		bundle.putString("dateNewPublicationsFound", dateNewPublicationsFound);
 
 		if(isAdded()){
-			getLoaderManager().restartLoader(0, bundle, this);
+			getLoaderManager().initLoader(0, bundle, this);
 			updateActionBarTitle();
 		}
 	}

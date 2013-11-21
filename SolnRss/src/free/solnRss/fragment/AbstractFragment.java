@@ -17,7 +17,6 @@ import android.widget.SearchView;
 import android.widget.SearchView.OnQueryTextListener;
 import android.widget.SimpleCursorAdapter;
 import free.solnRss.R;
-import free.solnRss.provider.CategoryProvider;
 import free.solnRss.provider.SolnRssProvider;
 import free.solnRss.repository.CategoryTable;
 import free.solnRss.repository.SyndicationTable;
@@ -54,10 +53,11 @@ public abstract class AbstractFragment extends ListFragment implements	OnQueryTe
 	}
 	
 	protected String categoryName(Integer id) {
-		Uri uri = Uri.parse(CategoryProvider.URI + "/" + id);
+		//Uri uri = Uri.parse(CategoryProvider.URI + "/" + id);
+		Uri uri = Uri.parse(SolnRssProvider.URI + "/category_name");
 		String[] projection = { CategoryTable.COLUMN_NAME };
 		Cursor c = getActivity().getContentResolver().query(uri, projection,
-				null, null, null);
+				" _id = ? ",  new String[] { id.toString() }, null);
 		c.moveToFirst();
 		String name =  c.getCount() > 0 && c.getString(0) != null ? c.getString(0) : null;
 		c.close();
@@ -120,8 +120,8 @@ public abstract class AbstractFragment extends ListFragment implements	OnQueryTe
 	    MenuItem item = menu.add("Search");
 	    
 	    item.setIcon(R.drawable.ic_abar_search);
-        item.setShowAsAction(MenuItem.SHOW_AS_ACTION_IF_ROOM
-                | MenuItem.SHOW_AS_ACTION_COLLAPSE_ACTION_VIEW);
+        item.setShowAsAction(MenuItem.SHOW_AS_ACTION_IF_ROOM);
+               // | MenuItem.SHOW_AS_ACTION_COLLAPSE_ACTION_VIEW);
         
         SearchView sv = new SearchView(getActivity());
         sv.setOnQueryTextListener(this);

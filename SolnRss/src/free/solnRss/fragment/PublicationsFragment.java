@@ -120,9 +120,8 @@ public class PublicationsFragment extends AbstractFragment implements
 	}
 	
 	private String dataNewPublicationsFoundLabel() {
-		return "What's new !";
+		return getResources().getString(R.string.last_publications);
 	}
-	
 	
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup vg, Bundle save) {
@@ -304,6 +303,7 @@ public class PublicationsFragment extends AbstractFragment implements
 				&& event.compareTo(NewPublicationsNotification.NotifyEvent.RESTART_ACTIVITY) == 0) {
 			dateNewPublicationsFound = getActivity().getIntent().getStringExtra("dateNewPublicationsFound");
 			
+			
 		} else {
 
 			if (prefs.getInt("selectedSyndicationID", -1) != -1) {
@@ -371,7 +371,7 @@ public class PublicationsFragment extends AbstractFragment implements
 	
 	@Override
 	public Loader<Cursor> onCreateLoader(int id, Bundle bundle) {
-		
+		getActivity().setProgressBarIndeterminateVisibility(true);
 		if (bundle != null) {
 			if (bundle.getInt("selectedSyndicationID") != 0) {
 				selectedSyndicationID = bundle.getInt("selectedSyndicationID");				
@@ -642,6 +642,12 @@ public class PublicationsFragment extends AbstractFragment implements
 
 	private void displayOnApplicationReader(String text, String link,String title) {
 		Intent i = new Intent(getActivity(), ReaderActivity.class);
+		
+		i.addFlags(
+				Intent.FLAG_ACTIVITY_CLEAR_TOP | 
+				 Intent.FLAG_ACTIVITY_SINGLE_TOP | 
+			    Intent.FLAG_ACTIVITY_NEW_TASK);
+		
 		i.putExtra("read", text);
 		i.putExtra("link", link);
 		i.putExtra("title", title);

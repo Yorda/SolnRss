@@ -47,7 +47,7 @@ public class SolnRssProvider extends ContentProvider {
 		switch (uriMatcher.match(uri)) {
 		case PUBLICATION:
 			cursor = db.query(PublicationRepository.publicationTableJoinToSyndication, projection,
-					selection, selectionArgs, null, null, PublicationRepository.orderBy(getContext()), 
+					selection, selectionArgs, null, null, PublicationRepository.orderBy(getContext()),
 					PublicationRepository.publicationsQueryLimit(getContext()));
 			break;
 			

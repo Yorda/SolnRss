@@ -25,12 +25,13 @@ public class PublicationRepository {
 	public final String projection[] = new String[] {
 			publicationTable + "." + PublicationTable.COLUMN_ID,
 			publicationTable + "." + PublicationTable.COLUMN_TITLE,
-			publicationTable + "." + PublicationTable.COLUMN_LINK,
-			publicationTable + "." + PublicationTable.COLUMN_ALREADY_READ,
+			publicationTable + "." + PublicationTable.COLUMN_LINK, // V
+			publicationTable + "." + PublicationTable.COLUMN_ALREADY_READ, // V
 			SyndicationTable.SYNDICATION_TABLE + "." + SyndicationTable.COLUMN_NAME,
-			publicationTable + "." + PublicationTable.COLUMN_PUBLICATION,
+			publicationTable + "." + PublicationTable.COLUMN_PUBLICATION, // V
 			publicationTable + "." + PublicationTable.COLUMN_SYNDICATION_ID,
-			SyndicationTable.SYNDICATION_TABLE + "." + SyndicationTable.COLUMN_NUMBER_CLICK };
+			SyndicationTable.SYNDICATION_TABLE + "." + SyndicationTable.COLUMN_NUMBER_CLICK
+		};
 	
 	
 	public static final String publicationTableJoinToSyndication = 

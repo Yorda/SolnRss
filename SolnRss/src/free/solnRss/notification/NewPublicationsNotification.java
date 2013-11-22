@@ -28,7 +28,13 @@ public class NewPublicationsNotification {
 				// throw new IllegalStateException();
 				return null;
 			}
-			return values()[intent.getIntExtra(name, -1)];
+			int i = intent.getIntExtra(name, -1);
+			if (i == -1) {
+				return null;
+			}
+			intent.removeExtra(name);
+			
+			return values()[i];
 		}
 	}
 	

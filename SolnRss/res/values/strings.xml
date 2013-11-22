@@ -26,6 +26,7 @@
     <string name="minute_brev">minute(s)</string>
     <string name="defaultTypeface">Default</string>
     <string name="font_size">Font size</string>
+    <string name="last_publications">What\'s new !</string>
 
     <!-- Publication's tab label -->
     <string name="all_publications_by_syndication_already_read">All the publications of the syndication %1$s are marked as read</string>

@@ -1,6 +1,5 @@
 package free.solnRss.activity;
 
-import android.annotation.SuppressLint;
 import android.app.ActionBar;
 import android.app.ActionBar.Tab;
 import android.app.Activity;
@@ -25,6 +24,7 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.Window;
 import android.widget.EditText;
 import android.widget.Toast;
 import free.solnRss.R;
@@ -137,18 +137,19 @@ public class SolnRss extends Activity implements ActionBar.TabListener,
 	}
 	
 	
-	@SuppressLint("NewApi")
+	//@SuppressLint("NewApi")
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		
 		super.onCreate(savedInstanceState);
+		requestWindowFeature(Window.FEATURE_INDETERMINATE_PROGRESS); 
+		
 		setContentView(R.layout.activity_soln_rss);
 
 		// Set up the action bar.
 		final ActionBar actionBar = getActionBar();
 		
 		actionBar.setDisplayHomeAsUpEnabled(true);
-		
 		actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_TABS);
 		actionBar.setTitle(Html.fromHtml("<b><u>" + getTitle() + "</u><b>"));
 		

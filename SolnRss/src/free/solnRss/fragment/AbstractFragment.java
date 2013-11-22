@@ -87,6 +87,7 @@ public abstract class AbstractFragment extends ListFragment implements	OnQueryTe
 			setListPositionOnScreen();
 			simpleCursorAdapter.notifyDataSetChanged();
 		}
+		getActivity().setProgressBarIndeterminateVisibility(false);
 	}
 	
 	protected void displayEmptyMessage() {
@@ -120,8 +121,8 @@ public abstract class AbstractFragment extends ListFragment implements	OnQueryTe
 	    MenuItem item = menu.add("Search");
 	    
 	    item.setIcon(R.drawable.ic_abar_search);
-        item.setShowAsAction(MenuItem.SHOW_AS_ACTION_IF_ROOM);
-               // | MenuItem.SHOW_AS_ACTION_COLLAPSE_ACTION_VIEW);
+        item.setShowAsAction(MenuItem.SHOW_AS_ACTION_IF_ROOM
+                | MenuItem.SHOW_AS_ACTION_COLLAPSE_ACTION_VIEW);
         
         SearchView sv = new SearchView(getActivity());
         sv.setOnQueryTextListener(this);

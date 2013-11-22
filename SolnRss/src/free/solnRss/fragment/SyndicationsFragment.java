@@ -52,7 +52,7 @@ public class SyndicationsFragment extends AbstractFragment implements
 		listContainer = fragment.findViewById(R.id.syndicationsListContainer);
 		progressContainer = fragment.findViewById(R.id.syndicationsProgressContainer);
 		listShown = true;
-		
+
 		return fragment;
 	}
 

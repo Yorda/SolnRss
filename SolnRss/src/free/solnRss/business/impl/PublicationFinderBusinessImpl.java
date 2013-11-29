@@ -29,7 +29,7 @@ import free.solnRss.business.SyndicationBusiness;
 import free.solnRss.exception.ExtractFeedException;
 import free.solnRss.notification.NewPublicationsNotification;
 import free.solnRss.provider.SolnRssProvider;
-import free.solnRss.repository.PublicationRepository;
+import free.solnRss.repository.PublicationContentTable;
 import free.solnRss.repository.PublicationTable;
 import free.solnRss.repository.RssRepository;
 import free.solnRss.repository.RssTable;
@@ -42,7 +42,7 @@ public class PublicationFinderBusinessImpl implements PublicationFinderBusiness 
 	private final DateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.FRENCH);
 	private SyndicationBusiness syndicationBusiness = new SyndicationBusinessImpl();
 	
-	private PublicationRepository publicationRepository;
+	//private PublicationRepository publicationRepository;
 	private SyndicationRepository syndicationRepository;
 	private RssRepository rssRepository;
 
@@ -63,7 +63,7 @@ public class PublicationFinderBusinessImpl implements PublicationFinderBusiness 
 	}
 	
 	private void init(Context context) {
-		publicationRepository = new PublicationRepository(context);
+		//publicationRepository = new PublicationRepository(context);
 		syndicationRepository = new SyndicationRepository(context);
 		rssRepository = new RssRepository(context);
 		newPublicationsNotification = new NewPublicationsNotification(context);
@@ -125,16 +125,26 @@ public class PublicationFinderBusinessImpl implements PublicationFinderBusiness 
 				.withValue(SyndicationTable.COLUMN_LAST_RSS_SEARCH_RESULT, errorCode)
 				.withSelection(SyndicationTable.COLUMN_ID + " = ? " , new String[] { Integer.valueOf(syndicationId).toString() })
 				.withYieldAllowed(true).build());
+		
 	}
 	
 	private void addNewPublicationIfNotAlreadyRegistered(Integer syndicationId, String updateDateFormat) {
 		
 		for (SyndEntry syndEntry : syndEntries) {
+			
 			if (!rssRepository.isAlreadyRetrieved(syndEntry.getTitle(),	syndEntry.getLink())) {
 				operations.add(ContentProviderOperation.newInsert(Uri.parse(SolnRssProvider.URI + "/publication"))
 						.withValues(addNewPublication(syndicationId, syndEntry, updateDateFormat))
 						.withYieldAllowed(true)	.build());
-
+				
+				
+				operations.add(ContentProviderOperation.newInsert(Uri.parse(SolnRssProvider.URI + "/publicationContent"))
+						//.withValues(addNewPublicationContent(syndEntry))
+						.withValue(PublicationContentTable.COLUMN_LINK, syndEntry.getLink())
+						.withValue(PublicationContentTable.COLUMN_PUBLICATION,makeSomeFixInDescription(getDescription(syndEntry)))
+						.withValueBackReference(PublicationContentTable.COLUMN_PUBLICATION_ID, operations.size()-1)
+						.withYieldAllowed(true).build());
+				
 				newPublicationsRecorded++;
 			}
 		}
@@ -144,7 +154,7 @@ public class PublicationFinderBusinessImpl implements PublicationFinderBusiness 
 		operations.add(ContentProviderOperation.newDelete(Uri.parse(SolnRssProvider.URI + "/rss"))
 				.withSelection("syn_syndication_id = ?", new String[] { syndicationId.toString() })
 				.withYieldAllowed(true).build());
-		
+
 		for(SyndEntry syndEntry : syndEntries) {
 			
 			operations.add(ContentProviderOperation.newInsert(Uri.parse(SolnRssProvider.URI + "/rss"))
@@ -184,14 +194,21 @@ public class PublicationFinderBusinessImpl implements PublicationFinderBusiness 
 		
 		ContentValues values = new ContentValues();
 		values.put(PublicationTable.COLUMN_SYNDICATION_ID, syndicationId);
-		values.put(PublicationTable.COLUMN_LINK, syndEntry.getLink());
-		values.put(PublicationTable.COLUMN_PUBLICATION,makeSomeFixInDescription(getDescription(syndEntry)));
+		//values.put(PublicationTable.COLUMN_LINK, syndEntry.getLink());
+		//values.put(PublicationTable.COLUMN_PUBLICATION,makeSomeFixInDescription(getDescription(syndEntry)));
 		values.put(PublicationTable.COLUMN_TITLE, StringUtil.unescapeHTML(syndEntry.getTitle()));
 		values.put(PublicationTable.COLUMN_ALREADY_READ, 0);
 		values.put(PublicationTable.COLUMN_PUBLICATION_DATE, date);
 
 		return values;
 	}
+	
+	/*private ContentValues addNewPublicationContent(SyndEntry syndEntry) {
+		ContentValues values = new ContentValues();
+		values.put(PublicationContentTable.COLUMN_LINK, syndEntry.getLink());
+		values.put(PublicationContentTable.COLUMN_PUBLICATION,makeSomeFixInDescription(getDescription(syndEntry)));
+		return values;
+	}*/
 	
 	private String getDescription(SyndEntry syndEntry) {
 		String description = null;
@@ -213,7 +230,7 @@ public class PublicationFinderBusinessImpl implements PublicationFinderBusiness 
 	
 	protected void retrieveSyndicationsToRefresh() {
 		syndications.clear();
-		Cursor cursor = syndicationRepository.findSyndicationsToRefresh2(timeToRefresh());
+		Cursor cursor = syndicationRepository.findSyndicationsToRefresh(timeToRefresh());
 		
 		if (cursor.getCount() > 0) {
 			cursor.moveToFirst();
@@ -239,9 +256,9 @@ public class PublicationFinderBusinessImpl implements PublicationFinderBusiness 
 		editor.commit();
 	}
 	
-	protected int insertNewPublications(List<ContentValues> publications) {
+	/*protected int insertNewPublications(List<ContentValues> publications) {
 		return publicationRepository.insertNewPublications(publications);
-	}
+	}*/
 	
 	private String makeSomeFixInDescription(String description) {
 		String fixedDescription = description;

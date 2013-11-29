@@ -15,6 +15,7 @@ import android.preference.PreferenceManager;
 import android.text.Html;
 import android.text.Spanned;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.ContextMenu;
 import android.view.ContextMenu.ContextMenuInfo;
 import android.view.LayoutInflater;
@@ -22,6 +23,8 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AbsListView;
+import android.widget.AbsListView.OnScrollListener;
 import android.widget.AdapterView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
@@ -31,21 +34,25 @@ import free.solnRss.R;
 import free.solnRss.activity.ReaderActivity;
 import free.solnRss.activity.SolnRss;
 import free.solnRss.adapter.PublicationAdapter;
+import free.solnRss.business.impl.PublicationFinderBusinessImpl;
 import free.solnRss.fragment.listener.PublicationsFragmentListener;
 import free.solnRss.notification.NewPublicationsNotification;
+import free.solnRss.repository.PublicationContentRepository;
 import free.solnRss.repository.PublicationRepository;
 import free.solnRss.repository.PublicationTable;
 import free.solnRss.repository.SyndicationTable;
 
 public class PublicationsFragment extends AbstractFragment implements
-		PublicationsFragmentListener {
+		PublicationsFragmentListener, OnScrollListener {
 
 	private PublicationRepository publicationRepository;
+	private PublicationContentRepository publicationContentRepository;
 	private Integer selectedSyndicationID;
 	private String dateNewPublicationsFound; // Z date in format 
 	private Integer nextSelectedSyndicationID; // selected by context menu
 	private Integer selectedCategoryID;
 
+	
 	@Override protected void displayEmptyMessage() {
 		LinearLayout l = (LinearLayout) getActivity().findViewById(emptyLayoutId);
 		l.setVisibility(View.VISIBLE);
@@ -144,11 +151,13 @@ public class PublicationsFragment extends AbstractFragment implements
 		super.onActivityCreated(savedInstanceState);
 		
 		publicationRepository = new PublicationRepository(getActivity());
+		publicationContentRepository = new PublicationContentRepository(getActivity());
 		restoreOrFirstDisplay(savedInstanceState);
 		
 		registerForContextMenu(getListView());
 		
 		getListView().setTextFilterEnabled(true);
+		getListView().setOnScrollListener(this);
 		
 		((SolnRss)getActivity()).setPublicationsFragmentListener(this);
 		
@@ -160,8 +169,8 @@ public class PublicationsFragment extends AbstractFragment implements
 	}
 	
 	public void testSearch() {
-		//PublicationFinderBusinessImpl finder = new PublicationFinderBusinessImpl(getActivity());
-		//finder.searchNewPublications();
+		PublicationFinderBusinessImpl finder = new PublicationFinderBusinessImpl(getActivity());
+		finder.searchNewPublications();
 		NewPublicationsNotification notify = new NewPublicationsNotification(getActivity());
 		//DateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.FRENCH);
 		notify.notificationForNewPublications(25, "2013-11-15 03:35:34");//sdf.format(new Date()));
@@ -178,9 +187,11 @@ public class PublicationsFragment extends AbstractFragment implements
 		
 		Cursor cursor = ((PublicationAdapter) l.getAdapter()).getCursor();
 		
-		String link = getPublicationUrl(cursor);
-		String title = getPublicationTitle(cursor);
-		String description = hasPublicationContentToDisplay(cursor);
+		String[] publicationContent = publicationContentRepository.retrievePublicationContent(cursor.getInt(0));
+		
+		String title = cursor.getString(1); //getPublicationTitle(cursor);
+		String link = publicationContent[0]; //getPublicationUrl(cursor);
+		String description = publicationContent[1]; //hasPublicationContentToDisplay(cursor);
 		
 		clickOnPublicationItem(cursor, l, v, position, id);
 		
@@ -353,6 +364,7 @@ public class PublicationsFragment extends AbstractFragment implements
 		if (index != -1) {
 			// Set list view at position
 			getListView().setSelectionFromTop(index, position);
+			
 			// Reset position save
 			SharedPreferences.Editor editor = prefs.edit();
 			editor.putInt("publicationsListViewIndex", -1);
@@ -363,7 +375,7 @@ public class PublicationsFragment extends AbstractFragment implements
 	
 	@Override
 	protected void initAdapter() {
-		final String[] from = { PublicationTable.COLUMN_TITLE,  PublicationTable.COLUMN_LINK };
+		final String[] from = { PublicationTable.COLUMN_TITLE,  PublicationTable.COLUMN_TITLE };
 		final int[] to = { android.R.id.text1, android.R.id.text2 };
 		simpleCursorAdapter = new PublicationAdapter(getActivity(),R.layout.publications, null, from, to, 0);
 		setListAdapter((PublicationAdapter)simpleCursorAdapter);		
@@ -371,7 +383,9 @@ public class PublicationsFragment extends AbstractFragment implements
 	
 	@Override
 	public Loader<Cursor> onCreateLoader(int id, Bundle bundle) {
+		
 		getActivity().setProgressBarIndeterminateVisibility(true);
+		
 		if (bundle != null) {
 			if (bundle.getInt("selectedSyndicationID") != 0) {
 				selectedSyndicationID = bundle.getInt("selectedSyndicationID");				
@@ -382,6 +396,9 @@ public class PublicationsFragment extends AbstractFragment implements
 				dateNewPublicationsFound = bundle.getString("dateNewPublicationsFound");
 			}
 		}
+		
+		Log.e(PublicationsFragment.class.getName(), "CALL ON CREATE LOADER ");
+		
 		return publicationRepository.loadPublications(getFilterText(),
 				selectedSyndicationID, selectedCategoryID, dateNewPublicationsFound,
 				displayAlreadyReadPublications());
@@ -435,8 +452,8 @@ public class PublicationsFragment extends AbstractFragment implements
 				try {
 					publicationRepository.markOnePublicationAsReadByUser(
 							cursor.getInt(0), 
-							cursor.getInt(6),
-							cursor.getInt(7));
+							cursor.getInt(cursor.getColumnIndex(PublicationTable.COLUMN_SYNDICATION_ID)),
+							cursor.getInt(cursor.getColumnIndex(SyndicationTable.COLUMN_NUMBER_CLICK)));
 					((PublicationAdapter)getListAdapter()).notifyDataSetChanged();
 					refreshPublications();
 					((SolnRss) getActivity()).refreshSyndications();
@@ -620,21 +637,32 @@ public class PublicationsFragment extends AbstractFragment implements
 		return Html.fromHtml("<b><u>" + s + "</u><b>");
 	}
 	
+	/*@Deprecated
 	public String getPublicationUrl(Cursor cursor) {
-		return cursor.getString(cursor
-				.getColumnIndex(PublicationTable.COLUMN_LINK));
+		//return cursor.getString(cursor
+		//		.getColumnIndex(PublicationTable.COLUMN_LINK));
+		
+		Integer id = cursor.getInt(0);
+		PublicationContentRepository rep = new PublicationContentRepository(getActivity());
+		
+		return rep.retrievePublicationContent(id)[0];
 	}
-
+	@Deprecated
+	public String hasPublicationContentToDisplay(Cursor cursor) {
+		//return cursor.getString(cursor
+		//		.getColumnIndex(PublicationTable.COLUMN_PUBLICATION));
+		
+		Integer id = cursor.getInt(0);
+		PublicationContentRepository rep = new PublicationContentRepository(getActivity());
+		
+		return rep.retrievePublicationContent(id)[1];
+	}
+	
 	public String getPublicationTitle(Cursor cursor) {
 		return cursor.getString(cursor
 				.getColumnIndex(PublicationTable.COLUMN_TITLE));
-	}
+	}*/
 	
-	public String hasPublicationContentToDisplay(Cursor cursor) {
-		return cursor.getString(cursor
-				.getColumnIndex(PublicationTable.COLUMN_PUBLICATION));
-	}
-
 	private boolean isPreferenceToDisplayOnAppReader() {
 		return PreferenceManager.getDefaultSharedPreferences(getActivity())
 				.getBoolean("pref_display_publication", true);
@@ -753,6 +781,32 @@ public class PublicationsFragment extends AbstractFragment implements
 	
 	public void marklastPublicationFoundAsRead(String dateNewPublicationsFound) {
 		publicationRepository.marklastPublicationFoundAsRead(dateNewPublicationsFound);
+	}
+
+	@Override
+	public void onScroll(AbsListView view, int firstVisibleItem,
+			int visibleItemCount, int totalItemCount) {
+
+		// Algorithm to check if the last item is visible or not
+		final int lastItem = firstVisibleItem + visibleItemCount;
+		if (lastItem == totalItemCount) {
+			
+			// you have reached end of list, load more data
+			//Log.e(PublicationsFragment.class.getName(),
+			//		"Reach the end of the list");
+		}
+	}
+
+	@Override
+	public void onScrollStateChanged(AbsListView view, int scrollState) {
+		if (scrollState == SCROLL_STATE_IDLE) {
+			if (getListView().getLastVisiblePosition() >= getListView().getCount() - 33) {
+	
+				//Log.e(PublicationsFragment.class.getName(),
+				//		"Reach the end of the list");
+				
+			}
+		}
 	}
 
 }

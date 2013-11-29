@@ -54,9 +54,9 @@ public class PublicationAdapter extends SimpleCursorAdapter {
 		}
 
 		String title = getCursor().getString(1); // pub_title
-		String name = getCursor().getString(4); // syn_name
-		Integer isRead = getCursor().getInt(3); // pub_already_read
-
+		String name = getCursor().getString(3); // syn_name
+		Integer isRead = getCursor().getInt(2); // pub_already_read
+		
 		item.getTitle().setText(title);
 		item.getName().setText(Html.fromHtml("<u>" + name + "</u>"));
 

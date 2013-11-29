@@ -8,6 +8,7 @@ import android.database.sqlite.SQLiteDatabase;
 import android.net.Uri;
 import free.solnRss.repository.CategoryRepository;
 import free.solnRss.repository.CategoryTable;
+import free.solnRss.repository.PublicationContentTable;
 import free.solnRss.repository.PublicationRepository;
 import free.solnRss.repository.PublicationTable;
 import free.solnRss.repository.RepositoryHelper;
@@ -23,7 +24,9 @@ public class SolnRssProvider extends ContentProvider {
 	public final static Uri URI = Uri.parse("content://" + AUTHORITY + "/" + PATH);
 
 	private UriMatcher uriMatcher;
-	private final int PUBLICATION = 10, CATEGORY = 20, SYNDICATION = 30, SYNDICATIONS_BY_CATEGORY = 40, RSS = 50, CATEGORY_NAME = 60;
+	private final int PUBLICATION = 10, CATEGORY = 20, SYNDICATION = 30,
+			SYNDICATIONS_BY_CATEGORY = 40, RSS = 50, CATEGORY_NAME = 60,
+			PUBLICATION_CONTENT = 70;
 
 	@Override
 	public boolean onCreate() {
@@ -34,6 +37,7 @@ public class SolnRssProvider extends ContentProvider {
 		uriMatcher.addURI(AUTHORITY, PATH + "/syndicationsByCategory/#", SYNDICATIONS_BY_CATEGORY);
 		uriMatcher.addURI(AUTHORITY, PATH + "/rss", RSS);
 		uriMatcher.addURI(AUTHORITY, PATH + "/category_name", CATEGORY_NAME);
+		uriMatcher.addURI(AUTHORITY, PATH + "/publicationContent", PUBLICATION_CONTENT);
 		return true;
 	}
 
@@ -46,6 +50,8 @@ public class SolnRssProvider extends ContentProvider {
 		
 		switch (uriMatcher.match(uri)) {
 		case PUBLICATION:
+			// uri.getQueryParameter("limit");
+			
 			cursor = db.query(PublicationRepository.publicationTableJoinToSyndication, projection,
 					selection, selectionArgs, null, null, PublicationRepository.orderBy(getContext()),
 					PublicationRepository.publicationsQueryLimit(getContext()));
@@ -74,6 +80,11 @@ public class SolnRssProvider extends ContentProvider {
 		case CATEGORY_NAME:
 			cursor = db.query(CategoryTable.CATEGORY_TABLE, projection, selection, selectionArgs, 
 					null, null, null);
+			break;
+			
+		case PUBLICATION_CONTENT:
+			cursor = db.query(PublicationContentTable.PUBLICATION_CONTENT_TABLE, projection,
+					selection, selectionArgs, null, null, null);
 			break;
 			
 		default:
@@ -146,6 +157,11 @@ public class SolnRssProvider extends ContentProvider {
 			getContext().getContentResolver().notifyChange(uri, null);
 			break;
 
+		case PUBLICATION_CONTENT:
+			id = db.insert(PublicationContentTable.PUBLICATION_CONTENT_TABLE, null, values);
+			getContext().getContentResolver().notifyChange(uri, null);
+			break;
+			
 		default:
 			throw new IllegalArgumentException("Unknown URI: " + uri);
 		}

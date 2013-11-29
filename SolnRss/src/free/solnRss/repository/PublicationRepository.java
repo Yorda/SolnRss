@@ -7,7 +7,6 @@ import android.content.ContentProviderOperation;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.CursorLoader;
-import android.database.Cursor;
 import android.net.Uri;
 import android.preference.PreferenceManager;
 import android.text.TextUtils;
@@ -16,7 +15,7 @@ import free.solnRss.provider.SolnRssProvider;
 public class PublicationRepository {
 
 	public  static final String publicationTable = PublicationTable.PUBLICATION_TABLE;
-	private final Uri uri = Uri.parse(SolnRssProvider.URI + "/publication");
+	private Uri uri = Uri.parse(SolnRssProvider.URI + "/publication");
 	
 	private Context context;
 	private StringBuilder selection = new StringBuilder();
@@ -25,10 +24,8 @@ public class PublicationRepository {
 	public final String projection[] = new String[] {
 			publicationTable + "." + PublicationTable.COLUMN_ID,
 			publicationTable + "." + PublicationTable.COLUMN_TITLE,
-			publicationTable + "." + PublicationTable.COLUMN_LINK, // V
-			publicationTable + "." + PublicationTable.COLUMN_ALREADY_READ, // V
+			publicationTable + "." + PublicationTable.COLUMN_ALREADY_READ, 
 			SyndicationTable.SYNDICATION_TABLE + "." + SyndicationTable.COLUMN_NAME,
-			publicationTable + "." + PublicationTable.COLUMN_PUBLICATION, // V
 			publicationTable + "." + PublicationTable.COLUMN_SYNDICATION_ID,
 			SyndicationTable.SYNDICATION_TABLE + "." + SyndicationTable.COLUMN_NUMBER_CLICK
 		};
@@ -125,6 +122,8 @@ public class PublicationRepository {
 			selection.append(" = 0 ");
 		}
 
+		//uri = uri.buildUpon().appendQueryParameter("limit", "5").build();
+		
 		return new CursorLoader(context, uri, projection, selection.toString(),
 				args.toArray(new String[args.size()]), null);
 		
@@ -169,7 +168,8 @@ public class PublicationRepository {
 				new String[] { id.toString() });
 	}
 	
-	public boolean isPublicationAlreadyRecorded(Integer syndicationId,
+	
+	/*@Deprecated public boolean isPublicationAlreadyRecorded(Integer syndicationId,
 			String title, String url) {
 
 		selection.setLength(0);
@@ -188,8 +188,7 @@ public class PublicationRepository {
 
 		selection.append(" AND ");
 
-		selection.append(publicationTable + "."
-				+ PublicationTable.COLUMN_LINK);
+		selection.append(publicationTable + "." + PublicationTable.COLUMN_LINK);
 		selection.append(" = ? ");
 		args.add(url);
 
@@ -207,7 +206,7 @@ public class PublicationRepository {
 		}
 		cursor.close();
 		return isAlreadyRecorded;
-	}
+	}*/
 	
 	public static String orderBy(Context context) {
 		return PublicationTable.COLUMN_PUBLICATION_DATE + " desc";

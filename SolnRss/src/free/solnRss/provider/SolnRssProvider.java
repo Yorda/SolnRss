@@ -50,11 +50,10 @@ public class SolnRssProvider extends ContentProvider {
 		
 		switch (uriMatcher.match(uri)) {
 		case PUBLICATION:
-			// uri.getQueryParameter("limit");
 			
 			cursor = db.query(PublicationRepository.publicationTableJoinToSyndication, projection,
-					selection, selectionArgs, null, null, PublicationRepository.orderBy(getContext()),
-					PublicationRepository.publicationsQueryLimit(getContext()));
+					selection, selectionArgs, null, null, PublicationRepository.orderBy(getContext()), null);
+					//PublicationRepository.publicationsQueryLimit(uri.getQueryParameter("page"),getContext()));
 			break;
 			
 		case CATEGORY:
@@ -200,6 +199,10 @@ public class SolnRssProvider extends ContentProvider {
 					selection, selectionArgs);
 			break;
 			
+		case PUBLICATION_CONTENT:
+			rowsDeleted = db.delete(PublicationContentTable.PUBLICATION_CONTENT_TABLE,
+					selection, selectionArgs);
+			break;
 		default:
 			throw new IllegalArgumentException("Unknown URI: " + uri);
 		}

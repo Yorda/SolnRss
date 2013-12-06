@@ -5,18 +5,20 @@ import java.util.Date;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.SharedPreferences;
-import android.net.Uri;
 import android.preference.DialogPreference;
 import android.util.AttributeSet;
-import free.solnRss.R;
-import free.solnRss.provider.SolnRssProvider;
+import free.solnRss.repository.PublicationRepository;
 
 public class DeleteAllPublicationsPreferences extends DialogPreference {
 
-	private final Uri uri = Uri.parse(SolnRssProvider.URI + "/publication");
+	// private final Uri publicationUri = Uri.parse(SolnRssProvider.URI +
+	// "/publication");
+
+	PublicationRepository publicationRepository;
 
 	public DeleteAllPublicationsPreferences(Context context, AttributeSet attrs) {
 		super(context, attrs);
+		publicationRepository = new PublicationRepository(context);
 	}
 
 	@Override
@@ -27,10 +29,16 @@ public class DeleteAllPublicationsPreferences extends DialogPreference {
 		switch (which) {
 		case DialogInterface.BUTTON_POSITIVE:
 
-			setDialogMessage(getContext().getResources().getString(
-					R.string.please_wait));
-
-			getContext().getContentResolver().delete(uri, null, null);
+			
+			// setDialogMessage(getContext().getResources().getString(R.string.please_wait));
+			// getContext().getContentResolver().delete(publicationUri, null,
+			// null);
+			
+			try {
+				publicationRepository.deleteAllPublication();
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
 
 			SharedPreferences.Editor editor = getEditor();
 			editor.putLong(getKey(), new Date().getTime());

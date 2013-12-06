@@ -7,7 +7,6 @@ import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
 import android.text.TextUtils;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -68,7 +67,7 @@ public abstract class AbstractFragment extends ListFragment implements	OnQueryTe
 	@Override
 	public void onLoadFinished(Loader<Cursor> arg0, Cursor arg1) {
 		
-		Log.e(PublicationsFragment.class.getName(), "CALL ON FINISHED LOADER with " + arg1.getCount() + " items in cursor");
+		// Log.e(PublicationsFragment.class.getName(), "CALL ON FINISHED LOADER with " + arg1.getCount() + " items in cursor");
 		
 		if(simpleCursorAdapter == null){
 			initAdapter();

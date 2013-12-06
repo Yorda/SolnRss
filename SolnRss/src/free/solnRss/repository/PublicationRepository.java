@@ -7,6 +7,7 @@ import android.content.ContentProviderOperation;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.CursorLoader;
+import android.database.Cursor;
 import android.net.Uri;
 import android.preference.PreferenceManager;
 import android.text.TextUtils;
@@ -64,6 +65,63 @@ public class PublicationRepository {
 		 
 		 // context.getContentResolver().notifyChange(uri, null);
 		 // context.getContentResolver().notifyChange(Uri.parse(SolnRssProvider.URI + "/syndication"), null);
+	}
+	
+	public Cursor loadMorePublications(String filterText,
+			Integer selectedSyndicationID, Integer selectedCategoryID, String lastUpdateDate,
+			Boolean displayAlreadyRead) {
+		selection.setLength(0);
+		selection.append(" 1 = 1 ") ;
+		args.clear();
+		
+		if (!TextUtils.isEmpty(filterText)) {
+			
+			selection.append(" and ");
+			selection.append( PublicationTable.COLUMN_TITLE);
+			selection.append(" like ? ");
+			args.add("%" + filterText + "%");
+		}
+		
+		// Display on time line
+		if (selectedSyndicationID == null && selectedCategoryID == null && lastUpdateDate == null) {
+			selection.append(" and ");
+			selection.append(SyndicationTable.COLUMN_DISPLAY_ON_TIMELINE);
+			selection.append(" = 1 ");
+		}
+
+		else if (selectedSyndicationID != null) {
+			selection.append(" and ");
+			selection.append( PublicationTable.COLUMN_SYNDICATION_ID);
+			selection.append(" = ? ");
+			
+			args.add(selectedSyndicationID.toString());
+		}
+
+		else if (lastUpdateDate != null) {
+			selection.append(" and ");
+			selection.append( PublicationTable.COLUMN_PUBLICATION_DATE);
+			selection.append(" >= ? ");
+			
+			args.add(lastUpdateDate);
+		}
+		
+		else if (selectedCategoryID != null) {
+			selection.append(" and ");
+			selection.append( PublicationTable.COLUMN_SYNDICATION_ID);
+			selection.append(" in (select syn_syndication_id from d_categorie_syndication where cas_categorie_id = ?) ");
+			args.add(selectedCategoryID.toString());
+		}
+
+		if (!displayAlreadyRead) {	
+			selection.append(" and ");
+			selection.append( PublicationTable.COLUMN_ALREADY_READ);
+			selection.append(" = 0 ");
+		}
+
+		uri = uri.buildUpon().appendQueryParameter("page", "2").build();
+		
+		return context.getContentResolver().query(uri, projection,
+				selection.toString(), args.toArray(new String[args.size()]),null);
 	}
 	
 	/**
@@ -163,53 +221,56 @@ public class PublicationRepository {
 		context.getContentResolver().update(uri, values, null, null);
 	}
 	
-	public void deletePublications(Integer id) {
-		context.getContentResolver().delete(uri, " syn_syndication_id = ? ",
-				new String[] { id.toString() });
+	public void deletePublications(Integer syndicationId) throws Exception {
+		
+		ArrayList<ContentProviderOperation> operations = new ArrayList<ContentProviderOperation>();
+
+		operations.add(ContentProviderOperation.newDelete(uri)
+				.withSelection("syn_syndication_id = ? ", new String[] { syndicationId.toString() }).build());
+		
+		operations.add(ContentProviderOperation.newDelete(PublicationContentRepository.uri)
+				.withSelection("pub_publication_id in (select _id from d_publication where syn_syndication_id = ? )", 
+						new String[] { syndicationId.toString() }).build());
+		
+		context.getContentResolver().applyBatch(SolnRssProvider.AUTHORITY, operations);
+		 
+		//context.getContentResolver().delete(uri, " syn_syndication_id = ? ",
+		//		new String[] { syndicationId.toString() });
 	}
-	
-	
-	/*@Deprecated public boolean isPublicationAlreadyRecorded(Integer syndicationId,
-			String title, String url) {
 
-		selection.setLength(0);
-		args.clear();
+	public void deleteAllPublication() throws Exception {
+		ArrayList<ContentProviderOperation> operations = new ArrayList<ContentProviderOperation>();
 
-		selection.append(PublicationTable.COLUMN_SYNDICATION_ID);
-		selection.append(" = ? ");
-		args.add(syndicationId.toString());
+		operations.add(ContentProviderOperation.newDelete(uri).build());
 
-		selection.append(" AND ");
+		operations.add(ContentProviderOperation.newDelete(PublicationContentRepository.uri).build());
 
-		selection.append(publicationTable + "."
-				+ PublicationTable.COLUMN_TITLE);
-		selection.append(" = ? ");
-		args.add(title);
+		context.getContentResolver().applyBatch(SolnRssProvider.AUTHORITY, operations);
+	}
 
-		selection.append(" AND ");
-
-		selection.append(publicationTable + "." + PublicationTable.COLUMN_LINK);
-		selection.append(" = ? ");
-		args.add(url);
-
-		Cursor cursor = context.getContentResolver().query(
-				uri,
-				new String[] { 
-						PublicationTable.PUBLICATION_TABLE + "." + PublicationTable.COLUMN_ID 
-					}, 
-				selection.toString(),
-				args.toArray(new String[args.size()]), null);
-
-		boolean isAlreadyRecorded = true;
-		if (cursor.getCount() < 1) {
-			isAlreadyRecorded = false;
-		}
-		cursor.close();
-		return isAlreadyRecorded;
-	}*/
-	
 	public static String orderBy(Context context) {
 		return PublicationTable.COLUMN_PUBLICATION_DATE + " desc";
+	}
+	
+	public static String publicationsQueryLimit(String parameterPage, Context context) {
+		
+		int max = PreferenceManager.getDefaultSharedPreferences(context)
+				.getInt("pref_max_publication_item", 100);
+				
+		String maxItemInPage = Integer.valueOf(max).toString() ;
+		
+		Integer page = 1;
+		if (parameterPage != null) {
+			page = Integer.valueOf(parameterPage);
+		}
+		
+		if (page != 1) {
+			int offset = max * page;
+			maxItemInPage = maxItemInPage.concat(" offset ").concat(Integer.valueOf(offset).toString());
+		}
+		
+		
+		return Integer.valueOf(max).toString();
 	}
 	
 	public static String publicationsQueryLimit(Context context) {

@@ -9,6 +9,7 @@ import android.content.Loader;
 import android.content.SharedPreferences;
 import android.content.res.Resources;
 import android.database.Cursor;
+import android.database.MergeCursor;
 import android.net.Uri;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
@@ -51,7 +52,8 @@ public class PublicationsFragment extends AbstractFragment implements
 	private String dateNewPublicationsFound; // Z date in format 
 	private Integer nextSelectedSyndicationID; // selected by context menu
 	private Integer selectedCategoryID;
-
+	
+	//private View progressItemView;
 	
 	@Override protected void displayEmptyMessage() {
 		LinearLayout l = (LinearLayout) getActivity().findViewById(emptyLayoutId);
@@ -138,12 +140,13 @@ public class PublicationsFragment extends AbstractFragment implements
 		progressContainer = fragment.findViewById(R.id.progressContainer);
 		emptyLayoutId = R.id.emptyPublicationsLayout;
 		listShown = true;
+		
 		return fragment;
 	}
 	
 	@Override
 	public void onViewCreated(View view, Bundle save) {
-
+		
 	}
 	
 	@Override
@@ -157,13 +160,15 @@ public class PublicationsFragment extends AbstractFragment implements
 		registerForContextMenu(getListView());
 		
 		getListView().setTextFilterEnabled(true);
-		getListView().setOnScrollListener(this);
+		//getListView().setOnScrollListener(this);
 		
 		((SolnRss)getActivity()).setPublicationsFragmentListener(this);
 		
 		setListShown(false);
 		
 		setHasOptionsMenu(true);
+		
+		//progressItemView = getActivity().getLayoutInflater().inflate(R.layout.progress_item, null);
 		
 		 //testSearch();
 	}
@@ -186,6 +191,16 @@ public class PublicationsFragment extends AbstractFragment implements
 	public void onListItemClick(final ListView l, final View v, final int position, final long id) {
 		
 		Cursor cursor = ((PublicationAdapter) l.getAdapter()).getCursor();
+		
+		/* In case of list footer View added
+		 * PublicationAdapter publicationAdapter = (
+				PublicationAdapter) ((HeaderViewListAdapter) l.getAdapter()).getWrappedAdapter();
+		
+		Cursor cursor = publicationAdapter.getCursor();*/
+		
+		if (position == cursor.getCount()) {
+			return;
+		}
 		
 		String[] publicationContent = publicationContentRepository.retrievePublicationContent(cursor.getInt(0));
 		
@@ -347,6 +362,7 @@ public class PublicationsFragment extends AbstractFragment implements
 	private void savePositionOnScreen(SharedPreferences.Editor editor) {
 
 		getListView().setScrollbarFadingEnabled(false);
+		
 		int index = getListView().getFirstVisiblePosition();
 		editor.putInt("publicationsListViewIndex", index);
 
@@ -371,10 +387,20 @@ public class PublicationsFragment extends AbstractFragment implements
 			editor.putInt("publicationsListViewPosition", -1);
 			editor.commit();
 		}
+		
+		/*int items = ((PublicationAdapter)getListAdapter()).getCursor().getCount();
+		
+		getListView().removeFooterView(progressItemView);
+		if (items == maxPublicationsinList()) {
+			getListView().addFooterView(progressItemView);
+		}*/
 	}
 	
 	@Override
-	protected void initAdapter() {
+	protected void initAdapter() {		
+		
+		//getListView().addFooterView(progressItemView);
+		
 		final String[] from = { PublicationTable.COLUMN_TITLE,  PublicationTable.COLUMN_TITLE };
 		final int[] to = { android.R.id.text1, android.R.id.text2 };
 		simpleCursorAdapter = new PublicationAdapter(getActivity(),R.layout.publications, null, from, to, 0);
@@ -402,6 +428,11 @@ public class PublicationsFragment extends AbstractFragment implements
 		return publicationRepository.loadPublications(getFilterText(),
 				selectedSyndicationID, selectedCategoryID, dateNewPublicationsFound,
 				displayAlreadyReadPublications());
+	}
+	
+	private int maxPublicationsinList() {
+		return Integer.valueOf(PublicationRepository
+				.publicationsQueryLimit(getActivity()));
 	}
 	
 	private boolean displayAlreadyReadPublications() {
@@ -625,7 +656,6 @@ public class PublicationsFragment extends AbstractFragment implements
 			title = dataNewPublicationsFoundLabel();
 		} 
 		
-		
 		if (TextUtils.isEmpty(title)) {
 			bar.setTitle(titleToHtml(getActivity().getTitle().toString()));
 		} else {
@@ -771,8 +801,13 @@ public class PublicationsFragment extends AbstractFragment implements
 
 	@Override
 	public void deletePublications(Integer syndicationID) {
-		publicationRepository.deletePublications(syndicationID);
-	}	
+		try {
+			publicationRepository.deletePublications(syndicationID);
+		} catch (Exception e) {
+			//Toast.makeText(getActivity(), "Publication delete has fail !", Toast.LENGTH_LONG).show();
+			e.printStackTrace();
+		}
+	}
 	
 	@Override
 	public void markCategoryPublicationsAsRead(Integer categoryId) {
@@ -783,30 +818,50 @@ public class PublicationsFragment extends AbstractFragment implements
 		publicationRepository.marklastPublicationFoundAsRead(dateNewPublicationsFound);
 	}
 
+	boolean isLoading = false;
+	
 	@Override
 	public void onScroll(AbsListView view, int firstVisibleItem,
 			int visibleItemCount, int totalItemCount) {
-
-		// Algorithm to check if the last item is visible or not
-		final int lastItem = firstVisibleItem + visibleItemCount;
-		if (lastItem == totalItemCount) {
+		
+		if (getListAdapter() == null) {
 			
-			// you have reached end of list, load more data
-			//Log.e(PublicationsFragment.class.getName(),
-			//		"Reach the end of the list");
+			return;
+		}
+		
+		boolean loadMore = firstVisibleItem + visibleItemCount >= totalItemCount;
+		
+		if (loadMore) {
+
+			int items = ((PublicationAdapter) getListAdapter()).getCursor().getCount();
+			
+			if (items == maxPublicationsinList()) {
+				
+				if (!isLoading) {
+
+					Log.e(PublicationsFragment.class.getName(),
+							"Begin to load more");
+
+					isLoading = true;
+					Cursor c = publicationRepository.loadMorePublications(
+							getFilterText(), selectedSyndicationID,
+							selectedCategoryID, dateNewPublicationsFound,
+							displayAlreadyReadPublications());
+
+					Cursor extendedCursor = new MergeCursor(
+							new Cursor[] { c, ((PublicationAdapter) getListAdapter()).getCursor() });
+					((PublicationAdapter) getListAdapter())
+							.swapCursor(extendedCursor);
+
+				}
+			}
 		}
 	}
 
 	@Override
 	public void onScrollStateChanged(AbsListView view, int scrollState) {
 		if (scrollState == SCROLL_STATE_IDLE) {
-			if (getListView().getLastVisiblePosition() >= getListView().getCount() - 33) {
-	
-				//Log.e(PublicationsFragment.class.getName(),
-				//		"Reach the end of the list");
-				
-			}
+			
 		}
 	}
-
 }

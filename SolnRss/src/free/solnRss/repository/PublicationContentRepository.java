@@ -15,7 +15,7 @@ public class PublicationContentRepository {
 	}
 	
 	public static final String publicationContentTable = PublicationContentTable.PUBLICATION_CONTENT_TABLE;
-	private Uri uri = Uri.parse(SolnRssProvider.URI + "/publicationContent");
+	public final static  Uri uri = Uri.parse(SolnRssProvider.URI + "/publicationContent");
 	
 	private Context context;
 	private StringBuilder selection = new StringBuilder();

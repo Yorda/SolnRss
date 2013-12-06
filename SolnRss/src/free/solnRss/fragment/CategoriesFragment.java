@@ -184,11 +184,6 @@ public class CategoriesFragment extends AbstractFragment implements
 	public void addCategory(Context context, String newCatgorieName) {
 		
 		categoryRepository.addCategory(newCatgorieName);
-
-		/*ContentValues values = new ContentValues();
-		values.put(CategoryTable.COLUMN_NAME, newCatgorie);
-		getActivity().getContentResolver().insert(CategoryProvider.URI , values);
-		getLoaderManager().restartLoader(0, null, this);*/
 	}
 
 	private void rename() {
@@ -218,13 +213,6 @@ public class CategoriesFragment extends AbstractFragment implements
 			public void onClick(DialogInterface dialog, int which) {
 				
 				categoryRepository.deleteCategory(deletedCategoryId);
-				
-				/*ContentValues values = new ContentValues();
-				values.put(CategoryTable.COLUMN_ID, deletedCategoryId);
-				getActivity().getContentResolver().delete(CategoryProvider.URI,
-						CategoryTable.COLUMN_ID + " = ? ",
-						new String[] { deletedCategoryId.toString() 
-				});*/
 				
 				//getLoaderManager().restartLoader(0, null, this);
 				reLoadCategoriesAfterSyndicationDeleted();

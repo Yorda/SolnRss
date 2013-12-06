@@ -54,13 +54,13 @@ containing a value of this type.
         public static final int shattered=0x7f02000c;
     }
     public static final class id {
-        public static final int action_search=0x7f09002b;
-        public static final int cancel=0x7f090027;
+        public static final int action_search=0x7f09002d;
+        public static final int cancel=0x7f090029;
         public static final int categorie_name=0x7f090004;
         public static final int categorie_number_of_use=0x7f090005;
         public static final int categoriesListContainer=0x7f090009;
         public static final int categoriesProgressContainer=0x7f090008;
-        public static final int check_already_read_pict=0x7f090018;
+        public static final int check_already_read_pict=0x7f09001a;
         public static final int displayAllButton=0x7f09000e;
         public static final int displayAlreadyReadButton=0x7f09000f;
         public static final int emptyPublicationsLayout=0x7f09000d;
@@ -70,40 +70,42 @@ containing a value of this type.
         public static final int emptycategoriesLayout=0x7f09000a;
         public static final int label_add_new_item=0x7f090006;
         public static final int listContainer=0x7f09000c;
-        public static final int menu_active=0x7f09002d;
-        public static final int menu_add_categorie=0x7f090020;
-        public static final int menu_add_site=0x7f090021;
-        public static final int menu_add_to_categorie=0x7f090024;
-        public static final int menu_all_read=0x7f09001e;
-        public static final int menu_already_read=0x7f09001f;
-        public static final int menu_clean=0x7f090030;
-        public static final int menu_delete=0x7f090031;
-        public static final int menu_delete_categorie=0x7f090026;
-        public static final int menu_display_on_time_line=0x7f09002e;
-        public static final int menu_mark_category_read=0x7f090023;
-        public static final int menu_mark_read=0x7f090029;
-        public static final int menu_mark_syndication_as_read=0x7f09002c;
-        public static final int menu_rename=0x7f09002f;
-        public static final int menu_rename_category=0x7f090025;
-        public static final int menu_see_only=0x7f090028;
-        public static final int menu_settings=0x7f090022;
-        public static final int name=0x7f090017;
+        public static final int menu_active=0x7f09002f;
+        public static final int menu_add_categorie=0x7f090022;
+        public static final int menu_add_site=0x7f090023;
+        public static final int menu_add_to_categorie=0x7f090026;
+        public static final int menu_all_read=0x7f090020;
+        public static final int menu_already_read=0x7f090021;
+        public static final int menu_clean=0x7f090032;
+        public static final int menu_delete=0x7f090033;
+        public static final int menu_delete_categorie=0x7f090028;
+        public static final int menu_display_on_time_line=0x7f090030;
+        public static final int menu_mark_category_read=0x7f090025;
+        public static final int menu_mark_read=0x7f09002b;
+        public static final int menu_mark_syndication_as_read=0x7f09002e;
+        public static final int menu_rename=0x7f090031;
+        public static final int menu_rename_category=0x7f090027;
+        public static final int menu_see_only=0x7f09002a;
+        public static final int menu_settings=0x7f090024;
+        public static final int name=0x7f090019;
         public static final int one_edit_text_dialog=0x7f090013;
         public static final int pager=0x7f090001;
+        public static final int progress=0x7f090018;
         public static final int progressContainer=0x7f09000b;
-        public static final int read_on_site=0x7f09002a;
+        public static final int read_on_site=0x7f09002c;
         public static final int reader=0x7f090000;
         public static final int seek_bar=0x7f090016;
-        public static final int syndication_number_of_click=0x7f09001b;
-        public static final int syndication_title=0x7f09001a;
-        public static final int syndication_to_categorie_check=0x7f09001d;
-        public static final int syndication_to_categorie_name=0x7f09001c;
+        public static final int syndication_number_of_click=0x7f09001d;
+        public static final int syndication_title=0x7f09001c;
+        public static final int syndication_to_categorie_check=0x7f09001f;
+        public static final int syndication_to_categorie_name=0x7f09001e;
         public static final int syndicationsListContainer=0x7f090011;
         public static final int syndicationsProgressContainer=0x7f090010;
         public static final int text_add_new_item=0x7f090007;
         public static final int text_dialog_message=0x7f090014;
         public static final int text_progress=0x7f090015;
-        public static final int title=0x7f090019;
+        public static final int title=0x7f09001b;
+        public static final int waiting_item=0x7f090017;
     }
     public static final class layout {
         public static final int activity_reader=0x7f030000;
@@ -117,9 +119,10 @@ containing a value of this type.
         public static final int fragment_syndications=0x7f030008;
         public static final int one_edit_text_dialog_box=0x7f030009;
         public static final int preference_seek_bar_dialog=0x7f03000a;
-        public static final int publications=0x7f03000b;
-        public static final int syndications=0x7f03000c;
-        public static final int syndications_categorie=0x7f03000d;
+        public static final int progress_item=0x7f03000b;
+        public static final int publications=0x7f03000c;
+        public static final int syndications=0x7f03000d;
+        public static final int syndications_categorie=0x7f03000e;
     }
     public static final class menu {
         public static final int activity_soln_rss=0x7f080000;

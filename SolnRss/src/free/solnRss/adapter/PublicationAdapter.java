@@ -32,7 +32,7 @@ public class PublicationAdapter extends SimpleCursorAdapter {
 	public View getView(int position, View convertView, ViewGroup parent) {
 		getCursor().moveToPosition(position);
 		PublicationItem item = null;
-
+		
 		if (convertView == null) {
 			convertView = View.inflate(context, layout, null);
 			item = new PublicationItem();
@@ -52,7 +52,7 @@ public class PublicationAdapter extends SimpleCursorAdapter {
 		} else {
 			item = (PublicationItem) convertView.getTag();
 		}
-
+		
 		String title = getCursor().getString(1); // pub_title
 		String name = getCursor().getString(3); // syn_name
 		Integer isRead = getCursor().getInt(2); // pub_already_read

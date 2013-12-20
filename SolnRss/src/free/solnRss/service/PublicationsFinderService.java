@@ -1,11 +1,12 @@
 package free.solnRss.service;
 
-import free.solnRss.business.PublicationFinderBusiness;
-import free.solnRss.business.impl.PublicationFinderBusinessImpl;
 import android.app.IntentService;
 import android.content.Intent;
 import android.os.ResultReceiver;
+import android.support.v4.content.LocalBroadcastManager;
 import android.util.SparseArray;
+import free.solnRss.business.PublicationFinderBusiness;
+import free.solnRss.business.impl.PublicationFinderBusinessImpl;
 
 public class PublicationsFinderService extends IntentService {
 
@@ -27,6 +28,17 @@ public class PublicationsFinderService extends IntentService {
 	protected void onHandleIntent(Intent intent) {
 		publicationFinderBusiness = new PublicationFinderBusinessImpl(getApplicationContext());
 		publicationFinderBusiness.searchNewPublications();
+		
+		if (publicationFinderBusiness.getNewPublicationsRecorded() > 0) {
+			
+			Intent broadcast = new Intent("newPublicationFound");
+			broadcast.putExtra("newPublicationsRecorded", publicationFinderBusiness.getNewPublicationsRecorded());
+			LocalBroadcastManager.getInstance(this).sendBroadcast(broadcast);
+			
+			// Delete too old publication
+			// select *  from d_publication where _id in 
+			// (select _id from d_publication as p where p.syn_syndication_id = 77 order by p._id desc LIMIT -1 OFFSET 10)
+		}
 	}
 
 	private void registerOrUnregisterReceiver(Intent intent) {

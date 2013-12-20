@@ -87,4 +87,9 @@ public interface PublicationsFragmentListener {
 	 */
 	public void reLoadPublicationsByLastFound(String updateLastDate);
 
+	/**
+	 * 
+	 */
+	public void reLoadPublicationsWithLastFound();
+
 }

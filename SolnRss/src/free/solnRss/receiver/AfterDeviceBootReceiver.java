@@ -12,12 +12,13 @@ public class AfterDeviceBootReceiver extends BroadcastReceiver {
 	@Override
 	public void onReceive(Context context, Intent intent) {
 
-		SharedPreferences preferences = PreferenceManager
-				.getDefaultSharedPreferences(context);
+		SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(context);
 		
 		if (preferences.getBoolean("pref_how_to_start_refresh", true)) {
-			FindNewPublicationsAlarmManager finder = FindNewPublicationsAlarmManager
-					.getInstance(preferences, context);
+			
+			FindNewPublicationsAlarmManager finder = 
+				FindNewPublicationsAlarmManager.getInstance(preferences, context);
+			
 			if (!finder.isCancel()) {
 				finder.defineNextTimeToWork();
 			}

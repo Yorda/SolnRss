@@ -1,11 +1,6 @@
 package free.solnRss.alarmManager;
 
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
-import java.util.Calendar;
 import java.util.Date;
-import java.util.GregorianCalendar;
-import java.util.Locale;
 
 import android.app.AlarmManager;
 import android.app.PendingIntent;
@@ -34,8 +29,8 @@ public class FindNewPublicationsAlarmManager implements
 	public static synchronized FindNewPublicationsAlarmManager getInstance(SharedPreferences sharedPreferences,
 			Context context) {
 		if(findNewPublicationsAlarmManager == null){
-			findNewPublicationsAlarmManager = new FindNewPublicationsAlarmManager(sharedPreferences, context);
-			
+			findNewPublicationsAlarmManager = 
+				new FindNewPublicationsAlarmManager(sharedPreferences, context);
 		}
 		return findNewPublicationsAlarmManager;
 	}
@@ -43,14 +38,15 @@ public class FindNewPublicationsAlarmManager implements
 	public static synchronized void createInstance(SharedPreferences sharedPreferences,
 			Context context) {
 		if(findNewPublicationsAlarmManager == null){
-			findNewPublicationsAlarmManager = new FindNewPublicationsAlarmManager(sharedPreferences, context);
-			
+			findNewPublicationsAlarmManager = 
+				new FindNewPublicationsAlarmManager(sharedPreferences, context);
 		}
 	}
 	
 	private FindNewPublicationsAlarmManager(SharedPreferences sharedPreferences,
 			Context context) {
-		this.pref = sharedPreferences;
+		
+		this.pref    = sharedPreferences;
 		this.context = context;
 		
 		this.alarmManager = (AlarmManager) context
@@ -80,9 +76,6 @@ public class FindNewPublicationsAlarmManager implements
 		}
 	}
 	
-	DateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss",Locale.FRENCH);
-	Calendar calendar = new GregorianCalendar();
-	
 	public void defineNextTimeToWork() {
 		
 		long periodRefreshTimeInMilisecond = 60000 * periodRefreshTimeInMinute;
@@ -93,7 +86,7 @@ public class FindNewPublicationsAlarmManager implements
 		
 		// In case of next refresh time is before now next refresh begin in
 		// one minute.
-		long nextRefreshTime = Math.max( new Date().getTime() + 60000, 
+		long nextRefreshTime = Math.max(new Date().getTime() + 60000,
 				lastRefreshTime + periodRefreshTimeInMilisecond);
 		//Log.e(FindNewPublicationsAlarmManager.class.getName(), "Soln.R ->nextRefreshTime = " + sdf.format(nextRefreshTime));
 		
@@ -115,6 +108,9 @@ public class FindNewPublicationsAlarmManager implements
 				"free.solnRss.service.PublicationsFinderService"),
 				PendingIntent.FLAG_NO_CREATE) != null);
 	}
+	
+	//DateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss",Locale.FRENCH);
+	//Calendar calendar = new GregorianCalendar();
 }
 
 

@@ -8,15 +8,20 @@ import android.app.FragmentTransaction;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.app.PendingIntent.CanceledException;
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.DialogInterface.OnClickListener;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.SharedPreferences;
+import android.content.SharedPreferences.Editor;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.ResultReceiver;
 import android.preference.PreferenceManager;
+import android.support.v4.content.LocalBroadcastManager;
 import android.support.v4.view.ViewPager;
 import android.text.Html;
 import android.text.TextUtils;
@@ -41,10 +46,6 @@ import free.solnRss.singleton.TypeFaceSingleton;
 
 public class SolnRss extends Activity implements ActionBar.TabListener,
 		SharedPreferences.OnSharedPreferenceChangeListener {
-	
-	@Deprecated public static enum SERVICE_RESULT {
-		NEW_SYNDICATION, NEW_PUBLICATIONS
-	}
 
 	private SyndicationsFragmentListener syndicationsListener;
 	private CategoriesFragmentListener categoriesListener;
@@ -84,6 +85,8 @@ public class SolnRss extends Activity implements ActionBar.TabListener,
 	
 	@Override
 	protected void onDestroy() {
+		Log.e(SolnRss.class.getName(), "ON DESTROY");
+		LocalBroadcastManager.getInstance(this).unregisterReceiver(mMessageReceiver);
 		super.onDestroy();
 	}
 	
@@ -123,8 +126,11 @@ public class SolnRss extends Activity implements ActionBar.TabListener,
 		FindNewPublicationsAlarmManager.createInstance(pref, this);
 		
 		TypeFaceSingleton.getInstance(this);
+		
+		LocalBroadcastManager.getInstance(this).registerReceiver(
+				mMessageReceiver, new IntentFilter("newPublicationFound"));
 	}
-
+	
 	private boolean displayAlreadyReadPublications() {
 		return PreferenceManager.getDefaultSharedPreferences(this)
 					.getBoolean("pref_display_unread", true);
@@ -134,13 +140,16 @@ public class SolnRss extends Activity implements ActionBar.TabListener,
 		NotificationManager notificationManager = 
 				(NotificationManager) getSystemService(NOTIFICATION_SERVICE);
 		notificationManager.cancel(0x000001);
+
+		SharedPreferences.Editor editor =  PreferenceManager.getDefaultSharedPreferences(this).edit();
+		editor.putInt("newPublicationsRecorded", 0);
+		editor.putString("newPublicationsRecordDate", null);
+		editor.commit();
 	}
 	
-	
-	//@SuppressLint("NewApi")
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
-		
+		Log.e(SolnRss.class.getName(), "ON CREATE");
 		super.onCreate(savedInstanceState);
 		requestWindowFeature(Window.FEATURE_INDETERMINATE_PROGRESS); 
 		
@@ -192,10 +201,25 @@ public class SolnRss extends Activity implements ActionBar.TabListener,
 	}
 
 	@Override
+	protected void onPause() {
+		Log.e(SolnRss.class.getName(), "ON PAUSE");
+		super.onPause();
+	}
+	
+	@Override
 	protected void onResume() {
 		Log.e(SolnRss.class.getName(), "ON RESUME");
 		super.onResume();
 	}
+	
+	// handler for received Intents for the "my-event" event 
+	private BroadcastReceiver mMessageReceiver = new BroadcastReceiver() {
+		@Override
+		public void onReceive(Context context, Intent intent) {
+			Log.e(SolnRss.class.getName(), "NEW PUBLICATIONS FOUND " + intent.getIntExtra("newPublicationsRecorded", 0));
+			publicationsListener.reLoadPublicationsWithLastFound();
+		}
+	};
 	
 	@Override
 	public void onActivityResult(int requestCode, int resultCode, Intent data) {
@@ -231,12 +255,13 @@ public class SolnRss extends Activity implements ActionBar.TabListener,
 			
 		case R.id.menu_add_site:	
 			
-			if (SyndicationFinderService.isAlreadyRunning == 1) {
+			/*if (SyndicationFinderService.isAlreadyRunning == 1) {
 				Toast.makeText(SolnRss.this, 
 						"Service is already running", Toast.LENGTH_LONG).show();
 			} else {
 				openDialogForAddSyndication();
-			}
+			}*/
+			 relaodList();
 			return true;
 			
 		case R.id.menu_all_read:
@@ -252,6 +277,15 @@ public class SolnRss extends Activity implements ActionBar.TabListener,
 			return super.onOptionsItemSelected(item);
 		}
 	}
+	
+	private void relaodList() {
+		SharedPreferences p = PreferenceManager.getDefaultSharedPreferences(this);
+		Editor edit = p.edit();
+		edit.putInt("newPublicationsRecorded", 20);
+		edit.commit();
+		publicationsListener.reLoadPublicationsWithLastFound();	
+	}
+	
 	
 	private void updateOptionDisplayPublicationsAlreadyRead() {
 
@@ -403,18 +437,6 @@ public class SolnRss extends Activity implements ActionBar.TabListener,
 			publicationsListener.reLoadPublicationsByLastFound(
 					intent.getExtras().getString("dateNewPublicationsFound"));
 		}
-		
-		//Bundle b = getIntent().getExtras();
-		//SERVICE_RESULT serviceResult = (SERVICE_RESULT) b.getSerializable("SERVICE_RESULT");
-		
-		/*if (serviceResult != null && serviceResult.compareTo(SERVICE_RESULT.NEW_SYNDICATION) == 0) {
-			String newSyndicationId = intent.getStringExtra("newSyndicationId");
-			if (newSyndicationId != null) {
-				reLoadPublicationsBySyndication(Integer.valueOf(newSyndicationId));
-			}
-		} else if (serviceResult != null && serviceResult.compareTo(SERVICE_RESULT.NEW_PUBLICATIONS) == 0) {
-			reLoadAllPublications();
-		}*/
 	};
 	
 	private void warmUser(String msg) {

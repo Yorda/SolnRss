@@ -19,6 +19,7 @@ import android.net.Uri;
 import android.os.RemoteException;
 import android.preference.PreferenceManager;
 import android.text.TextUtils;
+import android.util.Log;
 import android.util.SparseArray;
 
 import com.google.code.rome.android.repackaged.com.sun.syndication.feed.synd.SyndContent;
@@ -42,7 +43,6 @@ public class PublicationFinderBusinessImpl implements PublicationFinderBusiness 
 	private final DateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.FRENCH);
 	private SyndicationBusiness syndicationBusiness = new SyndicationBusinessImpl();
 	
-	//private PublicationRepository publicationRepository;
 	private SyndicationRepository syndicationRepository;
 	private RssRepository rssRepository;
 
@@ -63,11 +63,11 @@ public class PublicationFinderBusinessImpl implements PublicationFinderBusiness 
 	}
 	
 	private void init(Context context) {
-		//publicationRepository = new PublicationRepository(context);
 		syndicationRepository = new SyndicationRepository(context);
 		rssRepository = new RssRepository(context);
 		newPublicationsNotification = new NewPublicationsNotification(context);
-		sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
+		sharedPreferences = 
+				PreferenceManager.getDefaultSharedPreferences(context);
 	}
 	
 	public void searchNewPublications() {
@@ -125,7 +125,6 @@ public class PublicationFinderBusinessImpl implements PublicationFinderBusiness 
 				.withValue(SyndicationTable.COLUMN_LAST_RSS_SEARCH_RESULT, errorCode)
 				.withSelection(SyndicationTable.COLUMN_ID + " = ? " , new String[] { Integer.valueOf(syndicationId).toString() })
 				.withYieldAllowed(true).build());
-		
 	}
 	
 	private void addNewPublicationIfNotAlreadyRegistered(Integer syndicationId, String updateDateFormat) {
@@ -136,10 +135,12 @@ public class PublicationFinderBusinessImpl implements PublicationFinderBusiness 
 				operations.add(ContentProviderOperation.newInsert(Uri.parse(SolnRssProvider.URI + "/publication"))
 						.withValues(addNewPublication(syndicationId, syndEntry, updateDateFormat))
 						.withYieldAllowed(true)	.build());
+					
+				Uri uri = Uri.parse(SolnRssProvider.URI + "/publicationContent");
+				uri = uri.buildUpon().appendQueryParameter("tableKey", syndicationId.toString()).build();
+				Log.e(PublicationFinderBusinessImpl.class.getName(), uri.toString());
 				
-				
-				operations.add(ContentProviderOperation.newInsert(Uri.parse(SolnRssProvider.URI + "/publicationContent"))
-						//.withValues(addNewPublicationContent(syndEntry))
+				operations.add(ContentProviderOperation.newInsert(uri)
 						.withValue(PublicationContentTable.COLUMN_LINK, syndEntry.getLink())
 						.withValue(PublicationContentTable.COLUMN_PUBLICATION,makeSomeFixInDescription(getDescription(syndEntry)))
 						.withValueBackReference(PublicationContentTable.COLUMN_PUBLICATION_ID, operations.size()-1)
@@ -176,7 +177,9 @@ public class PublicationFinderBusinessImpl implements PublicationFinderBusiness 
 					//notificationForNewPublications(newPublicationsRecorded);
 				}
 			} catch (OperationApplicationException e) {
+				
 			} catch (RemoteException r) {
+				
 			}
 		}
 	}
@@ -194,21 +197,12 @@ public class PublicationFinderBusinessImpl implements PublicationFinderBusiness 
 		
 		ContentValues values = new ContentValues();
 		values.put(PublicationTable.COLUMN_SYNDICATION_ID, syndicationId);
-		//values.put(PublicationTable.COLUMN_LINK, syndEntry.getLink());
-		//values.put(PublicationTable.COLUMN_PUBLICATION,makeSomeFixInDescription(getDescription(syndEntry)));
 		values.put(PublicationTable.COLUMN_TITLE, StringUtil.unescapeHTML(syndEntry.getTitle()));
 		values.put(PublicationTable.COLUMN_ALREADY_READ, 0);
 		values.put(PublicationTable.COLUMN_PUBLICATION_DATE, date);
 
 		return values;
 	}
-	
-	/*private ContentValues addNewPublicationContent(SyndEntry syndEntry) {
-		ContentValues values = new ContentValues();
-		values.put(PublicationContentTable.COLUMN_LINK, syndEntry.getLink());
-		values.put(PublicationContentTable.COLUMN_PUBLICATION,makeSomeFixInDescription(getDescription(syndEntry)));
-		return values;
-	}*/
 	
 	private String getDescription(SyndEntry syndEntry) {
 		String description = null;
@@ -256,9 +250,6 @@ public class PublicationFinderBusinessImpl implements PublicationFinderBusiness 
 		editor.commit();
 	}
 	
-	/*protected int insertNewPublications(List<ContentValues> publications) {
-		return publicationRepository.insertNewPublications(publications);
-	}*/
 	
 	private String makeSomeFixInDescription(String description) {
 		String fixedDescription = description;
@@ -277,5 +268,10 @@ public class PublicationFinderBusinessImpl implements PublicationFinderBusiness 
 	
 	public boolean mustDisplayNotification() {
 		return sharedPreferences.getBoolean("pref_display_notify", true);
+	}
+
+	@Override
+	public int getNewPublicationsRecorded() {
+		return newPublicationsRecorded == null ? 0 : newPublicationsRecorded;
 	}
 }

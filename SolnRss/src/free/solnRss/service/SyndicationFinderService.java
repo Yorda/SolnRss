@@ -16,6 +16,7 @@ import free.solnRss.business.SyndicationBusiness;
 import free.solnRss.business.impl.SyndicationBusinessImpl;
 import free.solnRss.manager.UpdatingProcessConnectionManager;
 import free.solnRss.model.Syndication;
+import free.solnRss.notification.NewSyndicationNotification;
 import free.solnRss.repository.SyndicationRepository;
 import free.solnRss.utility.HttpUtil;
 
@@ -194,17 +195,27 @@ public class SyndicationFinderService extends IntentService {
 		intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP
 				| Intent.FLAG_ACTIVITY_SINGLE_TOP);
 		
-		intent.putExtra("SERVICE_RESULT", SolnRss.SERVICE_RESULT.NEW_SYNDICATION);
+		
+		NewSyndicationNotification.NotifySyndicationEvent event = 
+				NewSyndicationNotification.NotifySyndicationEvent.NEW_SYNDICATION;
+		event.attachTo(intent);
+		
 		intent.putExtra("newSyndicationId", syndication.getId().toString());
 		PendingIntent pendingIntent = PendingIntent.getActivity(this, 2,intent, PendingIntent.FLAG_UPDATE_CURRENT);
 		
 		builder.setContentIntent(pendingIntent);
 		builder.build();
 		
-		String ok = getResources().getString(R.string.process_ok, syndication.getName(), syndication.getPublications() != null 
-				? syndication.getPublications().size() : 0);
+		String syndicationName = syndication.getName();
+		int numberPublicationsFound = 0;
+
+		if (syndication.getPublications() != null) {
+			numberPublicationsFound = syndication.getPublications().size();
+		}
+
+		String message = getResources().getString(R.string.process_ok, syndicationName, numberPublicationsFound);
 		
-		processNotification(numberOfSteps, ok);
+		processNotification(numberOfSteps, message);
 	}	
 	
 	@Override

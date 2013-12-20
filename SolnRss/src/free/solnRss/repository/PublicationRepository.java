@@ -118,7 +118,7 @@ public class PublicationRepository {
 			selection.append(" = 0 ");
 		}
 
-		uri = uri.buildUpon().appendQueryParameter("page", "2").build();
+		// uri = uri.buildUpon().appendQueryParameter("page", "2").build();
 		
 		return context.getContentResolver().query(uri, projection,
 				selection.toString(), args.toArray(new String[args.size()]),null);

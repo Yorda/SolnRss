@@ -6,6 +6,7 @@ import android.content.UriMatcher;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.net.Uri;
+import android.util.Log;
 import free.solnRss.repository.CategoryRepository;
 import free.solnRss.repository.CategoryTable;
 import free.solnRss.repository.PublicationContentTable;
@@ -82,8 +83,21 @@ public class SolnRssProvider extends ContentProvider {
 			break;
 			
 		case PUBLICATION_CONTENT:
+			
+			Log.e(SolnRssProvider.class.getName(), uri.toString());
+			
 			cursor = db.query(PublicationContentTable.PUBLICATION_CONTENT_TABLE, projection,
 					selection, selectionArgs, null, null, null);
+			
+			String tableKey = uri.getQueryParameter("tableKey");
+			if (tableKey != null) {
+				Log.e(SolnRssProvider.class.getName(), " Add in new table publication_content_" + tableKey );
+				cursor = db.query(PublicationContentTable.PUBLICATION_CONTENT_TABLE + "_"	
+							+ tableKey, projection, selection, selectionArgs, null, null, null);
+			}
+			else {
+				Log.e(SolnRssProvider.class.getName(), " uri.getQueryParameter(\"tableKey\") is null " );
+			}
 			break;
 			
 		default:
@@ -138,7 +152,7 @@ public class SolnRssProvider extends ContentProvider {
 		case PUBLICATION:
 			id = db.insert(PublicationTable.PUBLICATION_TABLE, null, values);
 			// Not refresh after recorded new publication
-			getContext().getContentResolver().notifyChange(uri, null);
+			// getContext().getContentResolver().notifyChange(uri, null);
 			break;
 
 		case CATEGORY:

@@ -15,7 +15,7 @@ import free.solnRss.utility.SyndicateUtil;
 
 public class RepositoryHelper extends SQLiteOpenHelper {
 
-	public static int VERSION = 11;
+	public static int VERSION = 12;
 	public static String DATABASE_NAME = "SOLNRSS2.db";
 
 	private static RepositoryHelper instance;
@@ -50,6 +50,9 @@ public class RepositoryHelper extends SQLiteOpenHelper {
 		}
 		if (newVersion == 11) {
 			upgradeToV11(db);
+		}
+		if (newVersion == 12) {
+			upgradeToV12(db);
 		}
 	}
 
@@ -297,6 +300,50 @@ public class RepositoryHelper extends SQLiteOpenHelper {
 			
 			db.setTransactionSuccessful();
 			
+		} catch (Exception e) {
+			e.printStackTrace();
+		} finally {
+			db.endTransaction();
+		}
+	}
+	
+	protected void upgradeToV12(SQLiteDatabase db) {
+		db.beginTransaction();
+		try {
+
+			Cursor c = db.rawQuery("select _id from d_syndication ",null);
+			c.moveToFirst();
+			Integer syndicationId = null;
+			do {
+				syndicationId = c.getInt(0);
+				db.execSQL( "create table d_publication_content_" + syndicationId + " (\r\n" + 
+						"	_id INTEGER PRIMARY KEY autoincrement,\r\n" + 
+						"	pct_link text NOT NULL,\r\n" + 
+						"	pct_publication text,\r\n" + 
+						"	pub_publication_id INTEGER NOT NULL,\r\n" + 
+						"	FOREIGN KEY(pub_publication_id) REFERENCES d_publication( _id)\r\n" + 
+						"); \r\n");
+				
+				Cursor c2 = db.rawQuery("select pct_link,pct_publication,pub_publication_id from d_publication_content " +
+						"where pub_publication_id in (select _id from d_publication where syn_syndication_id = "+ syndicationId + ") ", null);
+				
+				c2.moveToFirst();
+				do {
+					db.execSQL("insert into d_publication_content_" + syndicationId + " (pct_link,pct_publication,pub_publication_id) values (?,?,?) ", 
+							new String[]{
+							c2.getString(0),
+							c2.getString(1),
+							String.valueOf(c2.getInt(2))
+					});
+					
+				} while (c2.moveToNext());
+
+			} while (c.moveToNext());
+			
+	
+			
+			db.setTransactionSuccessful();
+
 		} catch (Exception e) {
 			e.printStackTrace();
 		} finally {

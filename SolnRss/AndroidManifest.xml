@@ -57,24 +57,6 @@
         <service android:name="free.solnRss.service.SyndicationFinderService" />
 
         <!-- PROVIDER -->
-        <!-- 
-        <provider
-            android:name=".provider.PublicationsProvider"
-            android:authorities="com.solnRss.provider.publicationprovider"
-            android:exported="false" >
-        </provider>
-        <provider
-            android:name=".provider.SyndicationsProvider"
-            android:authorities="com.solnRss.provider.syndicationprovider"
-            android:exported="false" >
-        </provider>
-       
-        <provider
-            android:name=".provider.CategoryProvider"
-            android:authorities="com.solnRss.provider.categoryprovider"
-            android:exported="false" >
-        </provider>
-    -->
         <provider
             android:name=".provider.SolnRssProvider"
             android:authorities="com.solnRss.provider.solnRssProvider"

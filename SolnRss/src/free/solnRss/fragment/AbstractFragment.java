@@ -53,7 +53,6 @@ public abstract class AbstractFragment extends ListFragment implements	OnQueryTe
 	}
 	
 	protected String categoryName(Integer id) {
-		//Uri uri = Uri.parse(CategoryProvider.URI + "/" + id);
 		Uri uri = Uri.parse(SolnRssProvider.URI + "/category_name");
 		String[] projection = { CategoryTable.COLUMN_NAME };
 		Cursor c = getActivity().getContentResolver().query(uri, projection,
@@ -66,8 +65,6 @@ public abstract class AbstractFragment extends ListFragment implements	OnQueryTe
 	
 	@Override
 	public void onLoadFinished(Loader<Cursor> arg0, Cursor arg1) {
-		
-		// Log.e(PublicationsFragment.class.getName(), "CALL ON FINISHED LOADER with " + arg1.getCount() + " items in cursor");
 		
 		if(simpleCursorAdapter == null){
 			initAdapter();
@@ -86,8 +83,10 @@ public abstract class AbstractFragment extends ListFragment implements	OnQueryTe
 			displayEmptyMessage();
 		} else {
 			hideEmptyMessage();
-			setListPositionOnScreen();
+			
 			simpleCursorAdapter.notifyDataSetChanged();
+			
+			setListPositionOnScreen();
 		}
 		getActivity().setProgressBarIndeterminateVisibility(false);
 	}

@@ -14,4 +14,10 @@ public interface PublicationFinderBusiness {
 	 * @param syndications
 	 */
 	public void searchNewPublications(SparseArray<String> syndications);
+
+	/**
+	 * 
+	 * @return
+	 */
+	public int getNewPublicationsRecorded();
 }

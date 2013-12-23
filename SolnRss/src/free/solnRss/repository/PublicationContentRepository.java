@@ -15,7 +15,7 @@ public class PublicationContentRepository {
 	}
 	
 	public static final String publicationContentTable = PublicationContentTable.PUBLICATION_CONTENT_TABLE;
-	public final static  Uri uri = Uri.parse(SolnRssProvider.URI + "/publicationContent");
+	public static  Uri uri = Uri.parse(SolnRssProvider.URI + "/publicationContent");
 	
 	private Context context;
 	private StringBuilder selection = new StringBuilder();
@@ -28,6 +28,7 @@ public class PublicationContentRepository {
 		publicationContentTable + "." + PublicationContentTable.COLUMN_PUBLICATION_ID 
 	};
 	
+	@Deprecated
 	public String[] retrievePublicationContent(Integer publicationId) {
 
 		selection.setLength(0);
@@ -43,5 +44,34 @@ public class PublicationContentRepository {
 		c.moveToFirst();
 
 		return new String[] { c.getString(1), c.getString(2) };
+	}
+	
+	public String[] retrievePublicationContent(Integer syndicationId, Integer publicationId) {
+
+		selection.setLength(0);
+		args.clear();
+
+		selection.append(PublicationContentTable.COLUMN_PUBLICATION_ID);
+		selection.append(" = ? ");
+
+		args.add(publicationId.toString());
+
+		Uri uri =  Uri.parse(SolnRssProvider.URI + "/publicationContent").buildUpon().appendQueryParameter("tableKey", syndicationId.toString()).build();
+		 
+		Cursor c = context.getContentResolver().query(uri, projection(syndicationId),
+				selection.toString(), args.toArray(new String[args.size()]), null);
+		c.moveToFirst();
+
+		return new String[] { c.getString(1), c.getString(2) };
+	}
+	
+	private String[] projection(Integer syndicationId) {
+		String key = String.valueOf(syndicationId);
+		return new String[] {
+				publicationContentTable + "_" +key + "." + PublicationContentTable.COLUMN_ID,
+				publicationContentTable + "_" +key + "." + PublicationContentTable.COLUMN_LINK,
+				publicationContentTable + "_" +key + "." + PublicationContentTable.COLUMN_PUBLICATION,
+				publicationContentTable + "_" +key + "." + PublicationContentTable.COLUMN_PUBLICATION_ID 
+			};
 	}
 }

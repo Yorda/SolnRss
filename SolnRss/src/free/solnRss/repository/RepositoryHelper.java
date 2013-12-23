@@ -328,15 +328,18 @@ public class RepositoryHelper extends SQLiteOpenHelper {
 						"where pub_publication_id in (select _id from d_publication where syn_syndication_id = "+ syndicationId + ") ", null);
 				
 				c2.moveToFirst();
-				do {
-					db.execSQL("insert into d_publication_content_" + syndicationId + " (pct_link,pct_publication,pub_publication_id) values (?,?,?) ", 
-							new String[]{
-							c2.getString(0),
-							c2.getString(1),
-							String.valueOf(c2.getInt(2))
-					});
-					
-				} while (c2.moveToNext());
+				if(c2.getCount() > 0 ){
+					do {
+						db.execSQL("insert into d_publication_content_" + syndicationId + " (pct_link,pct_publication,pub_publication_id) values (?,?,?) ", 
+								new String[]{
+								c2.getString(0),
+								c2.getString(1),
+								String.valueOf(c2.getInt(2))
+						});
+						
+					} while (c2.moveToNext());
+				}
+				
 
 			} while (c.moveToNext());
 			

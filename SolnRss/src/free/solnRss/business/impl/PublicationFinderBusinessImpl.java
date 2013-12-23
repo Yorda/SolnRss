@@ -19,7 +19,6 @@ import android.net.Uri;
 import android.os.RemoteException;
 import android.preference.PreferenceManager;
 import android.text.TextUtils;
-import android.util.Log;
 import android.util.SparseArray;
 
 import com.google.code.rome.android.repackaged.com.sun.syndication.feed.synd.SyndContent;
@@ -138,7 +137,7 @@ public class PublicationFinderBusinessImpl implements PublicationFinderBusiness 
 					
 				Uri uri = Uri.parse(SolnRssProvider.URI + "/publicationContent");
 				uri = uri.buildUpon().appendQueryParameter("tableKey", syndicationId.toString()).build();
-				Log.e(PublicationFinderBusinessImpl.class.getName(), uri.toString());
+				// Log.e(PublicationFinderBusinessImpl.class.getName(), uri.toString());
 				
 				operations.add(ContentProviderOperation.newInsert(uri)
 						.withValue(PublicationContentTable.COLUMN_LINK, syndEntry.getLink())

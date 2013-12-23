@@ -6,7 +6,6 @@ import android.content.UriMatcher;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.net.Uri;
-import android.util.Log;
 import free.solnRss.repository.CategoryRepository;
 import free.solnRss.repository.CategoryTable;
 import free.solnRss.repository.PublicationContentTable;
@@ -84,20 +83,27 @@ public class SolnRssProvider extends ContentProvider {
 			
 		case PUBLICATION_CONTENT:
 			
-			Log.e(SolnRssProvider.class.getName(), uri.toString());
+
+			//cursor = db.query(PublicationContentTable.PUBLICATION_CONTENT_TABLE, projection,
+			//		selection, selectionArgs, null, null, null);
 			
-			cursor = db.query(PublicationContentTable.PUBLICATION_CONTENT_TABLE, projection,
-					selection, selectionArgs, null, null, null);
+			// Log.e(SolnRssProvider.class.getName(), uri.toString());
 			
+
 			String tableKey = uri.getQueryParameter("tableKey");
-			if (tableKey != null) {
-				Log.e(SolnRssProvider.class.getName(), " Add in new table publication_content_" + tableKey );
+			cursor = db.query(PublicationContentTable.PUBLICATION_CONTENT_TABLE + "_"	
+					+ tableKey, projection, selection, selectionArgs, null, null, null);
+			
+			/*if (tableKey != null) {
+				Log.e(SolnRssProvider.class.getName(), " Get in new table publication_content_" + tableKey );
+				
 				cursor = db.query(PublicationContentTable.PUBLICATION_CONTENT_TABLE + "_"	
 							+ tableKey, projection, selection, selectionArgs, null, null, null);
 			}
 			else {
 				Log.e(SolnRssProvider.class.getName(), " uri.getQueryParameter(\"tableKey\") is null " );
-			}
+			}*/
+
 			break;
 			
 		default:
@@ -171,8 +177,23 @@ public class SolnRssProvider extends ContentProvider {
 			break;
 
 		case PUBLICATION_CONTENT:
-			id = db.insert(PublicationContentTable.PUBLICATION_CONTENT_TABLE, null, values);
+			// id = db.insert(PublicationContentTable.PUBLICATION_CONTENT_TABLE, null, values);
+			
+			String tableKey = uri.getQueryParameter("tableKey");
+			id = db.insert(PublicationContentTable.PUBLICATION_CONTENT_TABLE + "_"	+ tableKey, null, values);
+			
+			/*if (tableKey != null) {
+				Log.e(SolnRssProvider.class.getName(), " Add in new table publication_content_" + tableKey );
+				db.insert(PublicationContentTable.PUBLICATION_CONTENT_TABLE + "_"	+ tableKey, null, values);
+				
+			}
+			else {
+				Log.e(SolnRssProvider.class.getName(), " uri.getQueryParameter(\"tableKey\") is null " );
+			}*/
+			
 			getContext().getContentResolver().notifyChange(uri, null);
+			
+			
 			break;
 			
 		default:

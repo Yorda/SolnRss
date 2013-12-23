@@ -191,7 +191,9 @@ public class PublicationsFragment extends AbstractFragment implements
 			return;
 		}
 		
-		String[] publicationContent = publicationContentRepository.retrievePublicationContent(cursor.getInt(0));
+		String[] publicationContent = publicationContentRepository.retrievePublicationContent(
+				cursor.getInt(cursor.getColumnIndex(PublicationTable.COLUMN_SYNDICATION_ID)), 
+				cursor.getInt(0));
 		
 		String title = cursor.getString(1);         //getPublicationTitle(cursor);
 		String link = publicationContent[0];        //getPublicationUrl(cursor);

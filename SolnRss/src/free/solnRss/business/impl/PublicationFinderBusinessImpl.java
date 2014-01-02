@@ -135,11 +135,11 @@ public class PublicationFinderBusinessImpl implements PublicationFinderBusiness 
 						.withValues(addNewPublication(syndicationId, syndEntry, updateDateFormat))
 						.withYieldAllowed(true)	.build());
 					
-				Uri uri = Uri.parse(SolnRssProvider.URI + "/publicationContent");
-				uri = uri.buildUpon().appendQueryParameter("tableKey", syndicationId.toString()).build();
-				// Log.e(PublicationFinderBusinessImpl.class.getName(), uri.toString());
+				//Uri uri = Uri.parse(SolnRssProvider.URI + "/publicationContent");
+				//uri = uri.buildUpon().appendQueryParameter("tableKey", syndicationId.toString()).build();
 				
-				operations.add(ContentProviderOperation.newInsert(uri)
+				operations.add(ContentProviderOperation.newInsert(Uri.parse(SolnRssProvider.URI + "/publicationContent"))
+						.withValue("syndicationId",  syndicationId.toString())
 						.withValue(PublicationContentTable.COLUMN_LINK, syndEntry.getLink())
 						.withValue(PublicationContentTable.COLUMN_PUBLICATION,makeSomeFixInDescription(getDescription(syndEntry)))
 						.withValueBackReference(PublicationContentTable.COLUMN_PUBLICATION_ID, operations.size()-1)

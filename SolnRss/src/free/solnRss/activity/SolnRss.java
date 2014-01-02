@@ -15,7 +15,6 @@ import android.content.DialogInterface.OnClickListener;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
-import android.content.SharedPreferences.Editor;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.os.Handler;
@@ -254,14 +253,12 @@ public class SolnRss extends Activity implements ActionBar.TabListener,
 			return true;
 			
 		case R.id.menu_add_site:	
-			
-			/*if (SyndicationFinderService.isAlreadyRunning == 1) {
+			if (SyndicationFinderService.isAlreadyRunning == 1) {
 				Toast.makeText(SolnRss.this, 
 						"Service is already running", Toast.LENGTH_LONG).show();
 			} else {
 				openDialogForAddSyndication();
-			}*/
-			 relaodList();
+			}
 			return true;
 			
 		case R.id.menu_all_read:
@@ -278,13 +275,13 @@ public class SolnRss extends Activity implements ActionBar.TabListener,
 		}
 	}
 	
-	private void relaodList() {
+	/*private void reloadList() {
 		SharedPreferences p = PreferenceManager.getDefaultSharedPreferences(this);
 		Editor edit = p.edit();
 		edit.putInt("newPublicationsRecorded", 20);
 		edit.commit();
 		publicationsListener.reLoadPublicationsWithLastFound();	
-	}
+	}*/
 	
 	
 	private void updateOptionDisplayPublicationsAlreadyRead() {

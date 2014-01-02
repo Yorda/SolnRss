@@ -28,22 +28,19 @@ public class PublicationContentRepository {
 		publicationContentTable + "." + PublicationContentTable.COLUMN_PUBLICATION_ID 
 	};
 	
-	@Deprecated
-	public String[] retrievePublicationContent(Integer publicationId) {
-
-		selection.setLength(0);
-		args.clear();
-
-		selection.append(PublicationContentTable.COLUMN_PUBLICATION_ID);
-		selection.append(" = ? ");
-
-		args.add(publicationId.toString());
-
-		Cursor c = context.getContentResolver().query(uri, projection,
-				selection.toString(), args.toArray(new String[args.size()]), null);
-		c.moveToFirst();
-
-		return new String[] { c.getString(1), c.getString(2) };
+	public static String dropPublicationTableSqlReq(String tableKey) {
+		return "drop table d_publication_content_" + tableKey ;
+	}
+	
+	public static String newPublicationTableSqlReq(String tableKey) {
+		return "create table d_publication_content_" + tableKey
+				+ " (\r\n"
+				+ "	_id INTEGER PRIMARY KEY autoincrement,\r\n"
+				+ "	pct_link text NOT NULL,\r\n"
+				+ "	pct_publication text,\r\n"
+				+ "	pub_publication_id INTEGER NOT NULL,\r\n"
+				+ "	FOREIGN KEY(pub_publication_id) REFERENCES d_publication( _id)\r\n"
+				+ "); \r\n";
 	}
 	
 	public String[] retrievePublicationContent(Integer syndicationId, Integer publicationId) {
@@ -56,7 +53,8 @@ public class PublicationContentRepository {
 
 		args.add(publicationId.toString());
 
-		Uri uri =  Uri.parse(SolnRssProvider.URI + "/publicationContent").buildUpon().appendQueryParameter("tableKey", syndicationId.toString()).build();
+		Uri uri = Uri.parse(SolnRssProvider.URI + "/publicationContent").buildUpon()
+				.appendQueryParameter("tableKey", syndicationId.toString()).build();
 		 
 		Cursor c = context.getContentResolver().query(uri, projection(syndicationId),
 				selection.toString(), args.toArray(new String[args.size()]), null);

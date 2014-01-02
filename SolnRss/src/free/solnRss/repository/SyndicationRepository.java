@@ -133,10 +133,16 @@ public class SyndicationRepository {
 				selectionArgs, SyndicationTable.COLUMN_ID + " asc ");
 	}
 
+	private void createNewPublicationContentTable(
+			ArrayList<ContentProviderOperation> operations) {
+		operations.add(ContentProviderOperation.newInsert( Uri.parse(SolnRssProvider.URI + "/publicationContentUpdateDB"))
+				.withValueBackReference("syn_syndication_id", 0).build());
+	}
+	
 	public long addWebSite(Syndication syndication) throws Exception {
-		String now = sdf.format(new Date());
-		Long newSyndicationId = null;
 		
+		String now = sdf.format(new Date());
+	
 		ContentValues cv = new ContentValues();
 		cv.put("syn_name", syndication.getName());
 		cv.put("syn_url", syndication.getUrl());
@@ -148,38 +154,43 @@ public class SyndicationRepository {
 		cv.put("syn_number_click", 0);
 
 		ArrayList<ContentProviderOperation> operations = new ArrayList<ContentProviderOperation>();
+		
+		// Register new syndication
 		operations.add(ContentProviderOperation.newInsert(uri).withValues(cv)
 				.withYieldAllowed(true).build());
 		
+		// Create new table for publication content
+		createNewPublicationContentTable(operations);
+		
+		// Insert new publication
 		for (Publication publication : syndication.getPublications()) {
 			
 			cv = new ContentValues();
-			//cv.put("pub_link", publication.getUrl());
 			cv.put("pub_title", publication.getTitle());
 			cv.put("pub_already_read", 0);
-			//cv.put("pub_publication", publication.getDescription());
-			
 			cv.put("pub_publication_date", sdf.format(
-					(publication.getPublicationDate() == null 
-						? new Date() : publication.getPublicationDate())));
+					(publication.getPublicationDate() == null ? new Date() : publication.getPublicationDate())));
 			
 			operations.add(ContentProviderOperation
 					.newInsert(Uri.parse(SolnRssProvider.URI + "/publication"))
 					.withValues(cv)
 					.withValueBackReference("syn_syndication_id", 0)
-					.withYieldAllowed(true).build());
+					.build());
 			
 			cv = new ContentValues();
 			cv.put("pct_link", publication.getUrl());
 			cv.put("pct_publication", publication.getDescription());
 		
+			// Insert new Content
 			operations.add(ContentProviderOperation
-					.newInsert(PublicationContentRepository.uri)
-					.withValues(cv)
+					.newInsert(PublicationContentRepository.uri).withValues(cv)
+					.withValueBackReference("syndicationId", 0)
 					.withValueBackReference("pub_publication_id", operations.size() - 1)
-					.withYieldAllowed(true).build());
+					.build());
 		}		
 
+		// Keep old RSS information founded in order to 
+		// not recorded old data twice
 		String rss = syndication.getRss();
 		if (!TextUtils.isEmpty(rss)) {
 			SyndicateUtil syndicateUtil = new SyndicateUtil();
@@ -193,14 +204,15 @@ public class SyndicationRepository {
 						.newInsert(Uri.parse(SolnRssProvider.URI + "/rss"))
 						.withValues(cv)
 						.withValueBackReference("syn_syndication_id", 0)
-						.withYieldAllowed(true).build());
+						.build());
 			}
 		}
 		
+		// Excecute
 		ContentProviderResult[] res = context.getContentResolver().applyBatch(
 				SolnRssProvider.AUTHORITY, operations);
 		
-		newSyndicationId = Long.valueOf(res[0].uri.getLastPathSegment());
+		Long newSyndicationId = Long.valueOf(res[0].uri.getLastPathSegment());
 		return newSyndicationId;
 	}
 	
@@ -218,6 +230,7 @@ public class SyndicationRepository {
 			db.delete("d_publication_content", "pub_publication_id in (select _id from d_publication where syn_syndication_id = ? ) ", whereArgs);
 			db.delete("d_publication", "syn_syndication_id = ? ", whereArgs);
 			db.delete("d_syndication", "_id = ? ", whereArgs);
+			db.execSQL("drop table d_publication_content_" + id.toString());
 			db.setTransactionSuccessful();
 		} finally {
 			db.endTransaction();

@@ -8,6 +8,7 @@ import android.database.sqlite.SQLiteDatabase;
 import android.net.Uri;
 import free.solnRss.repository.CategoryRepository;
 import free.solnRss.repository.CategoryTable;
+import free.solnRss.repository.PublicationContentRepository;
 import free.solnRss.repository.PublicationContentTable;
 import free.solnRss.repository.PublicationRepository;
 import free.solnRss.repository.PublicationTable;
@@ -26,7 +27,7 @@ public class SolnRssProvider extends ContentProvider {
 	private UriMatcher uriMatcher;
 	private final int PUBLICATION = 10, CATEGORY = 20, SYNDICATION = 30,
 			SYNDICATIONS_BY_CATEGORY = 40, RSS = 50, CATEGORY_NAME = 60,
-			PUBLICATION_CONTENT = 70;
+			PUBLICATION_CONTENT = 70, PUBLICATION_CONTENT_DB = 80;
 
 	@Override
 	public boolean onCreate() {
@@ -38,6 +39,7 @@ public class SolnRssProvider extends ContentProvider {
 		uriMatcher.addURI(AUTHORITY, PATH + "/rss", RSS);
 		uriMatcher.addURI(AUTHORITY, PATH + "/category_name", CATEGORY_NAME);
 		uriMatcher.addURI(AUTHORITY, PATH + "/publicationContent", PUBLICATION_CONTENT);
+		uriMatcher.addURI(AUTHORITY, PATH + "/publicationContentUpdateDB", PUBLICATION_CONTENT_DB);
 		return true;
 	}
 
@@ -82,30 +84,12 @@ public class SolnRssProvider extends ContentProvider {
 			break;
 			
 		case PUBLICATION_CONTENT:
-			
-
-			//cursor = db.query(PublicationContentTable.PUBLICATION_CONTENT_TABLE, projection,
-			//		selection, selectionArgs, null, null, null);
-			
-			// Log.e(SolnRssProvider.class.getName(), uri.toString());
-			
-
 			String tableKey = uri.getQueryParameter("tableKey");
-			cursor = db.query(PublicationContentTable.PUBLICATION_CONTENT_TABLE + "_"	
-					+ tableKey, projection, selection, selectionArgs, null, null, null);
-			
-			/*if (tableKey != null) {
-				Log.e(SolnRssProvider.class.getName(), " Get in new table publication_content_" + tableKey );
-				
-				cursor = db.query(PublicationContentTable.PUBLICATION_CONTENT_TABLE + "_"	
-							+ tableKey, projection, selection, selectionArgs, null, null, null);
-			}
-			else {
-				Log.e(SolnRssProvider.class.getName(), " uri.getQueryParameter(\"tableKey\") is null " );
-			}*/
-
+			cursor = db.query(PublicationContentTable.PUBLICATION_CONTENT_TABLE
+					+ "_" + tableKey, projection, selection, selectionArgs,
+					null, null, null);
 			break;
-			
+
 		default:
 			throw new IllegalArgumentException("Unknown URI: " + uri);
 		}
@@ -158,7 +142,6 @@ public class SolnRssProvider extends ContentProvider {
 		case PUBLICATION:
 			id = db.insert(PublicationTable.PUBLICATION_TABLE, null, values);
 			// Not refresh after recorded new publication
-			// getContext().getContentResolver().notifyChange(uri, null);
 			break;
 
 		case CATEGORY:
@@ -177,23 +160,16 @@ public class SolnRssProvider extends ContentProvider {
 			break;
 
 		case PUBLICATION_CONTENT:
-			// id = db.insert(PublicationContentTable.PUBLICATION_CONTENT_TABLE, null, values);
+			String tableKey = values.getAsString("syndicationId");
+			values.remove("syndicationId");
 			
-			String tableKey = uri.getQueryParameter("tableKey");
-			id = db.insert(PublicationContentTable.PUBLICATION_CONTENT_TABLE + "_"	+ tableKey, null, values);
-			
-			/*if (tableKey != null) {
-				Log.e(SolnRssProvider.class.getName(), " Add in new table publication_content_" + tableKey );
-				db.insert(PublicationContentTable.PUBLICATION_CONTENT_TABLE + "_"	+ tableKey, null, values);
-				
-			}
-			else {
-				Log.e(SolnRssProvider.class.getName(), " uri.getQueryParameter(\"tableKey\") is null " );
-			}*/
-			
+			id = db.insert(PublicationContentTable.PUBLICATION_CONTENT_TABLE + "_" + tableKey, null, values);
 			getContext().getContentResolver().notifyChange(uri, null);
+
+			break;
 			
-			
+		case PUBLICATION_CONTENT_DB:
+			db.execSQL(PublicationContentRepository.newPublicationTableSqlReq(values.getAsString("syn_syndication_id")));
 			break;
 			
 		default:
@@ -238,6 +214,11 @@ public class SolnRssProvider extends ContentProvider {
 			rowsDeleted = db.delete(PublicationContentTable.PUBLICATION_CONTENT_TABLE,
 					selection, selectionArgs);
 			break;
+			
+		case PUBLICATION_CONTENT_DB:
+			db.execSQL(PublicationContentRepository.dropPublicationTableSqlReq(null));
+			break;
+			
 		default:
 			throw new IllegalArgumentException("Unknown URI: " + uri);
 		}

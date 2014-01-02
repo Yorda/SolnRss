@@ -117,8 +117,6 @@ public class PublicationRepository {
 			selection.append( PublicationTable.COLUMN_ALREADY_READ);
 			selection.append(" = 0 ");
 		}
-
-		// uri = uri.buildUpon().appendQueryParameter("page", "2").build();
 		
 		return context.getContentResolver().query(uri, projection,
 				selection.toString(), args.toArray(new String[args.size()]),null);
@@ -180,8 +178,6 @@ public class PublicationRepository {
 			selection.append(" = 0 ");
 		}
 
-		//uri = uri.buildUpon().appendQueryParameter("limit", "5").build();
-		
 		return new CursorLoader(context, uri, projection, selection.toString(),
 				args.toArray(new String[args.size()]), null);
 		
@@ -268,8 +264,6 @@ public class PublicationRepository {
 			int offset = max * page;
 			maxItemInPage = maxItemInPage.concat(" offset ").concat(Integer.valueOf(offset).toString());
 		}
-		
-		
 		return Integer.valueOf(max).toString();
 	}
 	

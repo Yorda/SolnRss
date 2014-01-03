@@ -39,7 +39,7 @@ public class SyndicationRepository {
 
 	public static final String syndicationTable = SyndicationTable.SYNDICATION_TABLE;
 	
-	Uri uri = Uri.parse(SolnRssProvider.URI + "/syndication");
+	public static Uri uri = Uri.parse(SolnRssProvider.URI + "/syndication");
 	
 	public final String syndicationProjection[] = 
 			new String[] {

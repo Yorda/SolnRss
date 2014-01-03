@@ -60,11 +60,7 @@ public class PublicationRepository {
 				.withSelection(SyndicationTable.COLUMN_ID + " = ? " , new String[] { syndicationId.toString() })
 				.withYieldAllowed(true).build());
 		
-		 context.getContentResolver().applyBatch(
-				SolnRssProvider.AUTHORITY, operations);
-		 
-		 // context.getContentResolver().notifyChange(uri, null);
-		 // context.getContentResolver().notifyChange(Uri.parse(SolnRssProvider.URI + "/syndication"), null);
+		 context.getContentResolver().applyBatch(SolnRssProvider.AUTHORITY, operations);
 	}
 	
 	public Cursor loadMorePublications(String filterText,
@@ -224,23 +220,39 @@ public class PublicationRepository {
 		operations.add(ContentProviderOperation.newDelete(uri)
 				.withSelection("syn_syndication_id = ? ", new String[] { syndicationId.toString() }).build());
 		
-		operations.add(ContentProviderOperation.newDelete(PublicationContentRepository.uri)
-				.withSelection("pub_publication_id in (select _id from d_publication where syn_syndication_id = ? )", 
-						new String[] { syndicationId.toString() }).build());
+		Uri publicationContentUri = PublicationContentRepository.uri.buildUpon()
+				.appendQueryParameter("tableKey", syndicationId.toString()).build();
+		
+		operations.add(ContentProviderOperation.newDelete(publicationContentUri).build());
 		
 		context.getContentResolver().applyBatch(SolnRssProvider.AUTHORITY, operations);
-		 
-		//context.getContentResolver().delete(uri, " syn_syndication_id = ? ",
-		//		new String[] { syndicationId.toString() });
 	}
-
+	
 	public void deleteAllPublication() throws Exception {
 		ArrayList<ContentProviderOperation> operations = new ArrayList<ContentProviderOperation>();
 
 		operations.add(ContentProviderOperation.newDelete(uri).build());
 
-		operations.add(ContentProviderOperation.newDelete(PublicationContentRepository.uri).build());
-
+		//--
+		// Delete all publication content in all table
+		// Get all syndication id
+		Cursor cursor = context.getContentResolver().query(SyndicationRepository.uri,
+				new String[] { SyndicationTable.COLUMN_ID }, null, null, null);
+		
+		cursor.moveToFirst();
+		// Add an operation for delete publication content
+		if (cursor.getCount() > 0) {
+			do {
+				
+				Uri publicationContentUri = PublicationContentRepository.uri.buildUpon()
+						.appendQueryParameter("tableKey", String.valueOf(cursor.getInt(0))).build();
+				
+				operations.add(ContentProviderOperation.newDelete(publicationContentUri).build());
+				
+			} while (cursor.moveToNext());
+		}
+		//--
+		
 		context.getContentResolver().applyBatch(SolnRssProvider.AUTHORITY, operations);
 	}
 
@@ -248,6 +260,7 @@ public class PublicationRepository {
 		return PublicationTable.COLUMN_PUBLICATION_DATE + " desc";
 	}
 	
+	@Deprecated
 	public static String publicationsQueryLimit(String parameterPage, Context context) {
 		
 		int max = PreferenceManager.getDefaultSharedPreferences(context)
@@ -267,12 +280,14 @@ public class PublicationRepository {
 		return Integer.valueOf(max).toString();
 	}
 	
+	@Deprecated
 	public static String publicationsQueryLimit(Context context) {
 		int max = PreferenceManager.getDefaultSharedPreferences(context)
 				.getInt("pref_max_publication_item", 100);
 		return Integer.valueOf(max).toString();
 	}
 
+	@Deprecated
 	public int insertNewPublications(List<ContentValues> publications) {
 		return context.getContentResolver().bulkInsert(uri,
 				publications.toArray(new ContentValues[publications.size()]));

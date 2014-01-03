@@ -211,7 +211,8 @@ public class SolnRssProvider extends ContentProvider {
 			break;
 			
 		case PUBLICATION_CONTENT:
-			rowsDeleted = db.delete(PublicationContentTable.PUBLICATION_CONTENT_TABLE,
+			String tableKey = uri.getQueryParameter("tableKey");
+			rowsDeleted = db.delete(PublicationContentTable.PUBLICATION_CONTENT_TABLE  + "_" + tableKey,
 					selection, selectionArgs);
 			break;
 			

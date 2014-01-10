@@ -15,7 +15,7 @@ import free.solnRss.utility.SyndicateUtil;
 
 public class RepositoryHelper extends SQLiteOpenHelper {
 
-	public static int VERSION = 12;
+	public static int VERSION = 14;
 	public static String DATABASE_NAME = "SOLNRSS2.db";
 
 	private static RepositoryHelper instance;
@@ -54,6 +54,9 @@ public class RepositoryHelper extends SQLiteOpenHelper {
 		if (newVersion == 12) {
 			upgradeToV12(db);
 		}
+		if (newVersion == 14) {
+			upgradeToV14(db);
+		}
 	}
 
 	private void setDatabase(SQLiteDatabase db) {
@@ -77,19 +80,17 @@ public class RepositoryHelper extends SQLiteOpenHelper {
 			"	syn_last_extract_time datetime NOT NULL,\r\n" + 
 			"	syn_creation_date datetime NOT NULL,\r\n" + 
 			"   syn_display_on_timeline INTEGER NOT NULL, \r\n" +
-			//"  	syn_last_rss_published text \r\n" +
 			"  	syn_last_rss_search_result INTEGER \r\n" +
 			"); \r\n"
 			,
 			
 			"create table d_publication (\r\n" + 
 			"	_id INTEGER PRIMARY KEY autoincrement,\r\n" + 
-			//"	pub_link text NOT NULL,\r\n" +  
 			"	pub_title text NOT NULL,\r\n" + 
 			"	pub_already_read integer,\r\n" + 
-			//"	pub_publication text,\r\n" + 
 			"	pub_publication_date datetime NOT NULL,\r\n" + 
 			"	syn_syndication_id INTEGER NOT NULL,\r\n" + 
+			"	pub_favorite INTEGER, \r\n" + 
 			"	FOREIGN KEY(syn_syndication_id) REFERENCES d_syndication( _id)\r\n" + 
 			"); \r\n"
 			,
@@ -116,13 +117,13 @@ public class RepositoryHelper extends SQLiteOpenHelper {
 			"	FOREIGN KEY(syn_syndication_id) REFERENCES d_syndication( _id)\r\n" + 
 			");"
 			
-			,"create table d_publication_content (\r\n" + 
+			/*,"create table d_publication_content (\r\n" + 
 			"	_id INTEGER PRIMARY KEY autoincrement,\r\n" + 
 			"	pct_link text NOT NULL,\r\n" + 
 			"	pct_publication text,\r\n" + 
 			"	pub_publication_id INTEGER NOT NULL,\r\n" + 
 			"	FOREIGN KEY(pub_publication_id) REFERENCES d_publication( _id)\r\n" + 
-			"); \r\n"
+			"); \r\n"*/
 			};
 	
 	private void upgradeToV10(SQLiteDatabase db) {
@@ -343,8 +344,6 @@ public class RepositoryHelper extends SQLiteOpenHelper {
 
 			} while (c.moveToNext());
 			
-	
-			
 			db.setTransactionSuccessful();
 
 		} catch (Exception e) {
@@ -353,5 +352,56 @@ public class RepositoryHelper extends SQLiteOpenHelper {
 			db.endTransaction();
 		}
 
+	}
+	
+	private void upgradeToV14(SQLiteDatabase db) {
+		try {
+			db.beginTransaction();
+			
+			db.execSQL("drop table d_publication_content ");
+			
+			// Add favorite column in publication table
+			String sql = "create table d_publication_tmp (\r\n" + 
+					"	_id INTEGER PRIMARY KEY autoincrement,\r\n" + 
+					"	pub_title text NOT NULL,\r\n" + 
+					"	pub_already_read integer,\r\n" + 
+					"	pub_publication_date datetime NOT NULL,\r\n" + 
+					"	syn_syndication_id INTEGER NOT NULL,\r\n" + 
+					"	FOREIGN KEY(syn_syndication_id) REFERENCES d_syndication( _id)\r\n" + 
+					"); \r\n";
+			
+			db.execSQL(sql);
+			
+			sql= "insert into d_publication_tmp select * from d_publication ";
+			
+			db.execSQL(sql);
+						
+			db.execSQL("drop table d_publication ");
+			
+			sql = "create table d_publication (\r\n" + 
+					"	_id INTEGER PRIMARY KEY autoincrement,\r\n" + 
+					"	pub_title text NOT NULL,\r\n" + 
+					"	pub_already_read integer,\r\n" + 
+					"	pub_publication_date datetime NOT NULL,\r\n" + 
+					"	syn_syndication_id INTEGER NOT NULL,\r\n" + 
+					"	pub_favorite INTEGER, \r\n" + 
+					"	FOREIGN KEY(syn_syndication_id) REFERENCES d_syndication( _id)\r\n" + 
+					"); \r\n";
+			
+			db.execSQL(sql);
+			
+			sql= "insert into d_publication (_id,pub_title,pub_already_read,pub_publication_date,syn_syndication_id) select _id,pub_title,pub_already_read,pub_publication_date,syn_syndication_id from d_publication_tmp ";
+			
+			db.execSQL(sql);
+			
+			db.execSQL("drop table d_publication_tmp ");
+			
+			db.setTransactionSuccessful();
+			
+		} catch (Exception e) {
+			e.printStackTrace();
+		} finally {
+			db.endTransaction();
+		}
 	}
 }

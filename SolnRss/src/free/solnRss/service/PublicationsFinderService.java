@@ -34,10 +34,6 @@ public class PublicationsFinderService extends IntentService {
 			Intent broadcast = new Intent("newPublicationFound");
 			broadcast.putExtra("newPublicationsRecorded", publicationFinderBusiness.getNewPublicationsRecorded());
 			LocalBroadcastManager.getInstance(this).sendBroadcast(broadcast);
-			
-			// Delete too old publication
-			// select *  from d_publication where _id in 
-			// (select _id from d_publication as p where p.syn_syndication_id = 77 order by p._id desc LIMIT -1 OFFSET 10)
 		}
 	}
 

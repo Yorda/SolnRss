@@ -15,7 +15,6 @@ import android.preference.PreferenceManager;
 import android.text.Html;
 import android.text.Spanned;
 import android.text.TextUtils;
-import android.util.Log;
 import android.view.ContextMenu;
 import android.view.ContextMenu.ContextMenuInfo;
 import android.view.LayoutInflater;
@@ -32,7 +31,6 @@ import free.solnRss.R;
 import free.solnRss.activity.ReaderActivity;
 import free.solnRss.activity.SolnRss;
 import free.solnRss.adapter.PublicationAdapter;
-import free.solnRss.business.impl.PublicationFinderBusinessImpl;
 import free.solnRss.fragment.listener.PublicationsFragmentListener;
 import free.solnRss.notification.NewPublicationsNotification;
 import free.solnRss.repository.PublicationContentRepository;
@@ -156,7 +154,6 @@ public class PublicationsFragment extends AbstractFragment implements
 		
 		getListView().setTextFilterEnabled(true);
 		
-		
 		((SolnRss)getActivity()).setPublicationsFragmentListener(this);
 		
 		setListShown(false);
@@ -168,13 +165,13 @@ public class PublicationsFragment extends AbstractFragment implements
 		// testSearch();
 	}
 	
-	public void testSearch() {
+	/*public void testSearch() {
 		PublicationFinderBusinessImpl finder = new PublicationFinderBusinessImpl(getActivity());
 		finder.searchNewPublications();
 		NewPublicationsNotification notify = new NewPublicationsNotification(getActivity());
 		//DateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.FRENCH);
 		notify.notificationForNewPublications(25, "2013-11-15 03:35:34");//sdf.format(new Date()));
-	}
+	}*/
 	
 	
 	@Override
@@ -286,14 +283,13 @@ public class PublicationsFragment extends AbstractFragment implements
 		} else {
 			editor.putString("filterText", null);
 		}
-
 		savePositionOnScreen(editor);
 		editor.commit();
 	}
 	
 	public void loadLastPublicationRecorded() {		
-		NewPublicationsNotification.NotifyEvent event = NewPublicationsNotification.NotifyEvent
-				.detachFrom(getActivity().getIntent());
+		NewPublicationsNotification.NotifyEvent event = 
+				NewPublicationsNotification.NotifyEvent.detachFrom(getActivity().getIntent());
 
 		if (event != null
 				&& event.compareTo(NewPublicationsNotification.NotifyEvent.RESTART_ACTIVITY) == 0) {
@@ -319,7 +315,6 @@ public class PublicationsFragment extends AbstractFragment implements
 		if (event != null
 				&& event.compareTo(NewPublicationsNotification.NotifyEvent.RESTART_ACTIVITY) == 0) {
 			dateNewPublicationsFound = getActivity().getIntent().getStringExtra("dateNewPublicationsFound");
-			
 			
 		} else {
 
@@ -350,7 +345,6 @@ public class PublicationsFragment extends AbstractFragment implements
 	}
 	
 	private void savePositionOnScreen(SharedPreferences.Editor editor) {
-
 		
 		// getListView().setScrollbarFadingEnabled(false);
 		// Parcelable state = getListView().onSaveInstanceState();
@@ -383,10 +377,6 @@ public class PublicationsFragment extends AbstractFragment implements
 				index = index + newCursorCount;
 			}
 			
-			Log.e(PublicationsFragment.class.getName(),
-					"setListPositionOnScreen - NEW INDEX WITH CURSOR COUNT " 
-			+ index + " POSITION " + position + " CURSOR COUNT " + ((PublicationAdapter)getListAdapter()).getCursor().getCount());
-			
 			getListView().setSelectionFromTop(index, position); 
 			editor.putInt("cursorCount", -1);
 			editor.putInt("publicationsListViewIndex", -1);
@@ -395,11 +385,7 @@ public class PublicationsFragment extends AbstractFragment implements
 		}
 		else if (index != -1) {
 			// Set list view at position
-			Log.e(PublicationsFragment.class.getName(),
-					"setListPositionOnScreen - INDEX " 
-			+ index + " POSITION " + position + " CURSOR COUNT " + ((PublicationAdapter)getListAdapter()).getCursor().getCount());
-			
-			 getListView().setSelectionFromTop(index, position);
+			getListView().setSelectionFromTop(index, position);
 			
 			// Reset position save
 			editor.putInt("publicationsListViewIndex", -1);
@@ -409,13 +395,18 @@ public class PublicationsFragment extends AbstractFragment implements
 	}
 	
 	@Override
-	protected void initAdapter() {		
+	protected void initAdapter() {				
+		final String[] from = { 
+				PublicationTable.COLUMN_TITLE,  
+				PublicationTable.COLUMN_TITLE 
+			};
+		final int[] to = { 
+				android.R.id.text1, 
+				android.R.id.text2 
+			};
 		
-		//getListView().addFooterView(progressItemView);
+		simpleCursorAdapter = new PublicationAdapter(getActivity(),	R.layout.publications, null, from, to, 0);
 		
-		final String[] from = { PublicationTable.COLUMN_TITLE,  PublicationTable.COLUMN_TITLE };
-		final int[] to = { android.R.id.text1, android.R.id.text2 };
-		simpleCursorAdapter = new PublicationAdapter(getActivity(),R.layout.publications, null, from, to, 0);
 		setListAdapter((PublicationAdapter)simpleCursorAdapter);		
 	}
 	
@@ -448,12 +439,15 @@ public class PublicationsFragment extends AbstractFragment implements
 	@Override
 	protected void queryTheTextChange() {
 		Bundle bundle = new Bundle();
+		
 		if (selectedSyndicationID != null) {
 			bundle.putInt("selectedSyndicationID", selectedSyndicationID);
 		}
+		
 		if (selectedCategoryID != null) {
 			bundle.putInt("selectedCategoryID", selectedCategoryID);
 		}
+		
 		if (dateNewPublicationsFound != null) {
 			bundle.putString("dateNewPublicationsFound", dateNewPublicationsFound);
 		}
@@ -477,6 +471,7 @@ public class PublicationsFragment extends AbstractFragment implements
 					((PublicationAdapter)getListAdapter()).notifyDataSetChanged();
 					refreshPublications();
 					((SolnRss) getActivity()).refreshSyndications();
+					
 				} catch (Exception e) {
 					Toast.makeText(getActivity(),
 							"Error unable to set this publication as read",
@@ -629,28 +624,14 @@ public class PublicationsFragment extends AbstractFragment implements
 
 	@Override
 	public void reLoadPublicationsWithLastFound() {
-
-		// PreferenceManager.getDefaultSharedPreferences(getActivity());
-		// SharedPreferences.Editor editor = preferences.edit();
 		
 		SharedPreferences preferences =  getActivity().getPreferences(0);
 		SharedPreferences.Editor editor = preferences.edit();
 
 		int index = getListView().getFirstVisiblePosition();
-		 int numberOfFound = 
-				PreferenceManager.getDefaultSharedPreferences(getActivity())
-				.getInt("newPublicationsRecorded", 0);// A VIRER QUAND OK
 		
-		// Add the number of new publication
-		// Get the number of publications
-		// index = index + numberOfFound;
-
 		View v = getListView().getChildAt(0);
-		
 		int position = (v == null) ? 0 : v.getTop();
-		
-		Log.e(PublicationsFragment.class.getName(), "INDEX " + index
-				+ " NUMBER OF FOUND " + numberOfFound + " POSITION " + position + " CURSOR COUNT " + ((PublicationAdapter)getListAdapter()).getCursor().getCount());
 		
 		editor.putInt("cursorCount", ((PublicationAdapter)getListAdapter()).getCursor().getCount());
 		editor.putInt("publicationsListViewIndex", index);
@@ -809,6 +790,15 @@ public class PublicationsFragment extends AbstractFragment implements
 	
 	public void marklastPublicationFoundAsRead(String dateNewPublicationsFound) {
 		publicationRepository.marklastPublicationFoundAsRead(dateNewPublicationsFound);
-	}	
+	}
+
+	@Override
+	public void removeTooOLdPublications() {
+		try {
+			publicationRepository.removeTooOLdPublications();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
 
 }

@@ -1,6 +1,5 @@
 package free.solnRss.fragment.listener;
 
-
 public interface PublicationsFragmentListener {
 	/**
 	 * 
@@ -13,29 +12,28 @@ public interface PublicationsFragmentListener {
 	 * @param context
 	 */
 	public void reloadPublications();
-	
-	
+
 	/**
 	 * Call after change on global settings
 	 * 
 	 * @param context
 	 */
 	public void refreshPublications();
-	
+
 	/**
 	 * 
 	 * @param context
 	 * @param categorieID
 	 */
 	public void reLoadPublicationsByCategory(Integer categorieID);
-	
+
 	/**
 	 * 
 	 * @param context
 	 * @param syndicationID
 	 */
 	public void reLoadPublicationsBySyndication(Integer syndicationID);
-	
+
 	/**
 	 * 
 	 */
@@ -47,7 +45,8 @@ public interface PublicationsFragmentListener {
 	public void markAsRead();
 
 	/**
-	 * When list view is empty user can reload publication's list with publications already read.
+	 * When list view is empty user can reload publication's list with
+	 * publications already read.
 	 */
 	public void reloadPublicationsWithAlreadyRead();
 
@@ -61,14 +60,15 @@ public interface PublicationsFragmentListener {
 	 * 
 	 * @param deletedSyndicationId
 	 */
-	public void reLoadPublicationsAfterSyndicationDeleted(Integer deletedSyndicationId);
-	
+	public void reLoadPublicationsAfterSyndicationDeleted(
+			Integer deletedSyndicationId);
+
 	/**
 	 * 
 	 * @param syndicationID
 	 */
 	public void deletePublications(Integer syndicationID);
-	
+
 	/**
 	 * 
 	 * @param categoryId
@@ -80,7 +80,7 @@ public interface PublicationsFragmentListener {
 	 * @param syndicationId
 	 */
 	public void markSyndicationPublicationsAsRead(Integer syndicationId);
-	
+
 	/**
 	 * 
 	 * @param deletedCategoryId
@@ -91,5 +91,10 @@ public interface PublicationsFragmentListener {
 	 * 
 	 */
 	public void reLoadPublicationsWithLastFound();
+
+	/**
+	 * 
+	 */
+	public void removeTooOLdPublications();
 
 }

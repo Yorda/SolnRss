@@ -202,6 +202,9 @@ public class SolnRss extends Activity implements ActionBar.TabListener,
 	@Override
 	protected void onPause() {
 		Log.e(SolnRss.class.getName(), "ON PAUSE");
+		if (isFinishing()) {
+			publicationsListener.removeTooOLdPublications();
+		}
 		super.onPause();
 	}
 	
@@ -215,7 +218,7 @@ public class SolnRss extends Activity implements ActionBar.TabListener,
 	private BroadcastReceiver mMessageReceiver = new BroadcastReceiver() {
 		@Override
 		public void onReceive(Context context, Intent intent) {
-			Log.e(SolnRss.class.getName(), "NEW PUBLICATIONS FOUND " + intent.getIntExtra("newPublicationsRecorded", 0));
+			// Log.e(SolnRss.class.getName(), "NEW PUBLICATIONS FOUND " + intent.getIntExtra("newPublicationsRecorded", 0));
 			publicationsListener.reLoadPublicationsWithLastFound();
 		}
 	};
@@ -363,17 +366,15 @@ public class SolnRss extends Activity implements ActionBar.TabListener,
 		if (!url.startsWith("http://")) {
 			url = "http://" + url;
 		}
-		
-		/*SyndicationFinderTask task = new SyndicationFinderTask(this,getResources());
-		task.execute(url);*/
 
 		Intent intent = new Intent(this, SyndicationFinderService.class);
 		intent.setAction("REGISTER_RECEIVER");
 		intent.putExtra("ResultReceiver", resultReceiver);
 		intent.putExtra("ResultReceiver_ID", hashCode());
 		intent.putExtra("url", url);
-		PendingIntent pendingIntent = PendingIntent.getService(this, 0, intent,
-				PendingIntent.FLAG_UPDATE_CURRENT);
+		
+		PendingIntent pendingIntent = PendingIntent.getService(this, 0, 
+				intent, PendingIntent.FLAG_UPDATE_CURRENT);
 		
 		try {
 			pendingIntent.send();

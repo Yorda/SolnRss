@@ -26,4 +26,9 @@ public interface CategoriesFragmentListener {
 	 * 
 	 */
 	public void reLoadCategoriesAfterSyndicationDeleted();
+
+	/**
+	 * Move list view to top
+	 */
+	public void moveListViewToTop();
 }

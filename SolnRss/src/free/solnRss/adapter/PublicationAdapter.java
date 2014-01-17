@@ -60,11 +60,9 @@ public class PublicationAdapter extends SimpleCursorAdapter {
 		item.getTitle().setText(title);
 		item.getName().setText(Html.fromHtml("<u>" + name + "</u>"));
 
-		Typeface userTypeFace = TypeFaceSingleton.getInstance(context)
-				.getUserTypeFace();
+		Typeface userTypeFace = TypeFaceSingleton.getInstance(context).getUserTypeFace();
 		
-		int userFontSize = TypeFaceSingleton.getInstance(context)
-				.getUserFontSize();
+		int userFontSize = TypeFaceSingleton.getInstance(context).getUserFontSize();
 		
 		if (userTypeFace != null) {
 			item.getName().setTypeface(userTypeFace, Typeface.BOLD);
@@ -83,33 +81,30 @@ public class PublicationAdapter extends SimpleCursorAdapter {
 			item.getAlreadyRead().setVisibility(View.GONE);
 		}
 
-		return convertView;
-	}
-	
-	
-	/*
-	 * 
-	 * 
-	 String timeAgo = "";
+		/*String timeAgo = new String();
 		try {
 			timeAgo = toTime(sdf.parse(getCursor().getString(7)), new Date());
 		} catch (Exception e) {
-		}
-
-	private final DateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss",Locale.FRENCH);
-	
-	private final long MILLIS_PER_SEC = 1000;
-	private final long MILLIS_PER_MIN = 60 * MILLIS_PER_SEC;
-	private final long MILLIS_PER_HOUR = 60 * MILLIS_PER_MIN;
-	private final long MILLIS_PER_DAY = 24 * MILLIS_PER_HOUR;
-	private final long MILLIS_PER_WEEK = 7 * MILLIS_PER_DAY;
-	private final long MILLIS_PER_MONTH = 4 * MILLIS_PER_WEEK;
-	private final long MILLIS_PER_YEAR = 12 * MILLIS_PER_MONTH;
-	
-	private String toTime(Date publicationDate, Date currentDate){
-
-		long diff = currentDate.getTime() - publicationDate.getTime();
+			e.printStackTrace();
+		}*/
 		
+		return convertView;
+	}
+	
+
+	/*private final DateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.FRENCH);
+	
+	private final long MILLIS_PER_SEC   = 1000;
+	private final long MILLIS_PER_MIN   = 60 * MILLIS_PER_SEC;
+	private final long MILLIS_PER_HOUR  = 60 * MILLIS_PER_MIN;
+	private final long MILLIS_PER_DAY   = 24 * MILLIS_PER_HOUR;
+	private final long MILLIS_PER_WEEK  = 7 * MILLIS_PER_DAY;
+	private final long MILLIS_PER_MONTH = 4 * MILLIS_PER_WEEK;
+	private final long MILLIS_PER_YEAR  = 12 * MILLIS_PER_MONTH;
+	
+	private String toTime(Date publicationDate, Date currentDate) {
+		long diff = currentDate.getTime() - publicationDate.getTime();
+
 		if (diff / MILLIS_PER_SEC < 1) {
 			return "One second";
 		} else if (diff / MILLIS_PER_MIN < 1) {
@@ -125,7 +120,8 @@ public class PublicationAdapter extends SimpleCursorAdapter {
 		} else if (diff / MILLIS_PER_YEAR < 1) {
 			return diff / MILLIS_PER_MONTH + " month";
 		} else {
-			 return diff / MILLIS_PER_YEAR + " year";
+			return diff / MILLIS_PER_YEAR + " year";
 		}
 	}*/
 }
+

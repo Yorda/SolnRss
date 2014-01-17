@@ -240,6 +240,11 @@ public class CategoriesFragment extends AbstractFragment implements
 	protected void setListPositionOnScreen() {
 		
 	}
+
+	@Override
+	public void moveListViewToTop() {
+		getListView().setSelection(0);
+	}
 	
 }
 

@@ -22,4 +22,9 @@ public interface SyndicationsFragmentListener {
 	 * 
 	 */
 	public void addOneReadToSyndication(Integer syndicationId, Integer numberOfClick);
+
+	/**
+	 * Move list view to top
+	 */
+	public void moveListViewToTop();
 }

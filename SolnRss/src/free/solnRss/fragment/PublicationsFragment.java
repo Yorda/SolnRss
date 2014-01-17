@@ -11,10 +11,12 @@ import android.content.res.Resources;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Parcelable;
 import android.preference.PreferenceManager;
 import android.text.Html;
 import android.text.Spanned;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.ContextMenu;
 import android.view.ContextMenu.ContextMenuInfo;
 import android.view.LayoutInflater;
@@ -258,6 +260,7 @@ public class PublicationsFragment extends AbstractFragment implements
 	}
 	
 	@Override public void onPause() {
+		Log.e(PublicationsFragment.class.getName(), "ON PAUSE - SAVE INSTANCE STATE IN PUBLICATION FRAGMENT");
 		super.onPause();
 		SharedPreferences.Editor editor = getActivity().getPreferences(0).edit();
 		if (selectedSyndicationID != null) {
@@ -305,12 +308,16 @@ public class PublicationsFragment extends AbstractFragment implements
 		}
 	}
 	
+	// Bundle saveInstanceState = null;
+	
 	private void restoreOrFirstDisplay(Bundle save) {
+		
+		// this.saveInstanceState = save;
 		
 		SharedPreferences prefs = getActivity().getPreferences(0);
 		
-		NewPublicationsNotification.NotifyEvent event = NewPublicationsNotification.NotifyEvent
-				.detachFrom(getActivity().getIntent());
+		NewPublicationsNotification.NotifyEvent event = 
+				NewPublicationsNotification.NotifyEvent.detachFrom(getActivity().getIntent());
 
 		if (event != null
 				&& event.compareTo(NewPublicationsNotification.NotifyEvent.RESTART_ACTIVITY) == 0) {
@@ -345,11 +352,6 @@ public class PublicationsFragment extends AbstractFragment implements
 	}
 	
 	private void savePositionOnScreen(SharedPreferences.Editor editor) {
-		
-		// getListView().setScrollbarFadingEnabled(false);
-		// Parcelable state = getListView().onSaveInstanceState();
-		// Bundle b = new Bundle();
-		// b.putParcelable("V", state);
 		
 		int index = getListView().getFirstVisiblePosition();
 		editor.putInt("publicationsListViewIndex", index);
@@ -386,11 +388,12 @@ public class PublicationsFragment extends AbstractFragment implements
 		else if (index != -1) {
 			// Set list view at position
 			getListView().setSelectionFromTop(index, position);
-			
 			// Reset position save
 			editor.putInt("publicationsListViewIndex", -1);
 			editor.putInt("publicationsListViewPosition", -1);
 			editor.commit();
+			
+			//getListView().onRestoreInstanceState(saveInstanceState);
 		}
 	}
 	
@@ -799,6 +802,11 @@ public class PublicationsFragment extends AbstractFragment implements
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
+	}
+
+	@Override
+	public Parcelable getListViewInstanceState() {
+		return getListView().onSaveInstanceState();
 	}
 
 }

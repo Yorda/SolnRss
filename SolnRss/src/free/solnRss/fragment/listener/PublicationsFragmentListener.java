@@ -1,5 +1,7 @@
 package free.solnRss.fragment.listener;
 
+import android.os.Parcelable;
+
 public interface PublicationsFragmentListener {
 	/**
 	 * 
@@ -96,5 +98,11 @@ public interface PublicationsFragmentListener {
 	 * 
 	 */
 	public void removeTooOLdPublications();
+
+	/**
+	 * 
+	 * @return
+	 */
+	public Parcelable getListViewInstanceState();
 
 }

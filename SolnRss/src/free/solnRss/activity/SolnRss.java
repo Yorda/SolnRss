@@ -183,6 +183,7 @@ public class SolnRss extends Activity implements ActionBar.TabListener,
 					@Override
 					public void onPageSelected(int position) {
 						actionBar.setSelectedNavigationItem(position);
+						tabReSelected = position;
 					}
 				});
 		
@@ -209,6 +210,14 @@ public class SolnRss extends Activity implements ActionBar.TabListener,
 	}
 	
 	@Override
+	protected void onSaveInstanceState(Bundle outState) {
+		// Save publication list view state
+		// Parcelable state = publicationsListener.getListViewInstanceState();
+		// outState.putParcelable("publicationlistViewState", state);
+		super.onSaveInstanceState(outState);
+	}
+	
+	@Override
 	protected void onResume() {
 		Log.e(SolnRss.class.getName(), "ON RESUME");
 		super.onResume();
@@ -218,7 +227,6 @@ public class SolnRss extends Activity implements ActionBar.TabListener,
 	private BroadcastReceiver mMessageReceiver = new BroadcastReceiver() {
 		@Override
 		public void onReceive(Context context, Intent intent) {
-			// Log.e(SolnRss.class.getName(), "NEW PUBLICATIONS FOUND " + intent.getIntExtra("newPublicationsRecorded", 0));
 			publicationsListener.reLoadPublicationsWithLastFound();
 		}
 	};
@@ -397,6 +405,7 @@ public class SolnRss extends Activity implements ActionBar.TabListener,
 		};
 	};
 	
+	
 	@Override
 	public void onTabSelected(Tab tab, 
 			FragmentTransaction fragmentTransaction) {
@@ -418,6 +427,39 @@ public class SolnRss extends Activity implements ActionBar.TabListener,
 		    viewPager.setCurrentItem(tab.getPosition());
 		}
 	}
+	
+	// Use for move list to top when select a tab twice
+	private int tabReSelected = 1;
+		
+	@Override
+	public void  onTabReselected (Tab tab, 
+			FragmentTransaction fragmentTransaction) {
+		switch(tab.getPosition()){
+		case 0:
+			if (tabReSelected == 0) {
+				categoriesListener.moveListViewToTop();
+			}
+			tabReSelected = 0;
+			break;
+		case 1:
+			if (tabReSelected == 1) {
+				publicationsListener.moveListViewToTop();
+			}
+			tabReSelected = 1;
+			break;
+		case 2:
+			if (tabReSelected == 2) {
+				syndicationsListener.moveListViewToTop();
+			}
+			tabReSelected = 2;
+			break;
+		}
+	}
+	
+	@Override
+	public void onTabUnselected(Tab tab,
+			FragmentTransaction fragmentTransaction) {
+	}	
 	
 	/**
 	 * Call by a click on notification for refresh publication list
@@ -475,16 +517,6 @@ public class SolnRss extends Activity implements ActionBar.TabListener,
 	
 	public PublicationsFragmentListener getPublicationsFragmentListener() {
 		return publicationsListener;
-	}
-	
-	@Override
-	public void onTabUnselected(Tab tab,
-			FragmentTransaction fragmentTransaction) {
-	}
-
-	@Override
-	public void onTabReselected(Tab tab, 
-			FragmentTransaction fragmentTransaction) {
 	}
 	
 	public void reLoadPublicationsBySyndication(Integer syndicationID) {

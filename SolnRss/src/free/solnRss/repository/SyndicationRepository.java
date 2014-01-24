@@ -227,7 +227,6 @@ public class SyndicationRepository {
 			String[] whereArgs = new String[] { id.toString() };
 			db.beginTransaction();
 			db.delete("d_categorie_syndication", " syn_syndication_id = ? ", whereArgs);
-			db.delete("d_publication_content", "pub_publication_id in (select _id from d_publication where syn_syndication_id = ? ) ", whereArgs);
 			db.delete("d_publication", "syn_syndication_id = ? ", whereArgs);
 			db.delete("d_syndication", "_id = ? ", whereArgs);
 			db.execSQL("drop table d_publication_content_" + id.toString());

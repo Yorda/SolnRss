@@ -167,13 +167,13 @@ public class PublicationsFragment extends AbstractFragment implements
 		// testSearch();
 	}
 	
-	/*public void testSearch() {
-		PublicationFinderBusinessImpl finder = new PublicationFinderBusinessImpl(getActivity());
-		finder.searchNewPublications();
+	public void testSearch() {
+		// PublicationFinderBusinessImpl finder = new PublicationFinderBusinessImpl(getActivity());
+		// finder.searchNewPublications();
 		NewPublicationsNotification notify = new NewPublicationsNotification(getActivity());
 		//DateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.FRENCH);
-		notify.notificationForNewPublications(25, "2013-11-15 03:35:34");//sdf.format(new Date()));
-	}*/
+		notify.notificationForNewPublications(25, "2014-01-23 15:00:00");//sdf.format(new Date()));
+	}
 	
 	
 	@Override
@@ -290,7 +290,7 @@ public class PublicationsFragment extends AbstractFragment implements
 		editor.commit();
 	}
 	
-	public void loadLastPublicationRecorded() {		
+	/*public void loadLastPublicationRecorded() {		
 		NewPublicationsNotification.NotifyEvent event = 
 				NewPublicationsNotification.NotifyEvent.detachFrom(getActivity().getIntent());
 
@@ -306,7 +306,7 @@ public class PublicationsFragment extends AbstractFragment implements
 				updateActionBarTitle();
 			}
 		}
-	}
+	}*/
 	
 	// Bundle saveInstanceState = null;
 	
@@ -391,9 +391,7 @@ public class PublicationsFragment extends AbstractFragment implements
 			// Reset position save
 			editor.putInt("publicationsListViewIndex", -1);
 			editor.putInt("publicationsListViewPosition", -1);
-			editor.commit();
-			
-			//getListView().onRestoreInstanceState(saveInstanceState);
+			editor.commit();;
 		}
 	}
 	
@@ -409,7 +407,6 @@ public class PublicationsFragment extends AbstractFragment implements
 			};
 		
 		simpleCursorAdapter = new PublicationAdapter(getActivity(),	R.layout.publications, null, from, to, 0);
-		
 		setListAdapter((PublicationAdapter)simpleCursorAdapter);		
 	}
 	

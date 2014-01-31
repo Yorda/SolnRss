@@ -21,10 +21,7 @@ public class NotificationReceiver extends BroadcastReceiver {
 			SharedPreferences.Editor editor = sharedPreferences.edit();
 			editor.putInt("newPublicationsRecorded", 0);
 			editor.putString("newPublicationsRecordDate", null);
-			
 			editor.commit();
 		}
-		
-		
 	}
 }

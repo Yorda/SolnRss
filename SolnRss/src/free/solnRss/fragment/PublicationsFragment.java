@@ -9,6 +9,7 @@ import android.content.Loader;
 import android.content.SharedPreferences;
 import android.content.res.Resources;
 import android.database.Cursor;
+import android.graphics.Typeface;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Parcelable;
@@ -25,6 +26,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
+import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
@@ -39,6 +41,8 @@ import free.solnRss.repository.PublicationContentRepository;
 import free.solnRss.repository.PublicationRepository;
 import free.solnRss.repository.PublicationTable;
 import free.solnRss.repository.SyndicationTable;
+import free.solnRss.singleton.TypeFaceSingleton;
+import free.solnRss.utility.Constants;
 
 public class PublicationsFragment extends AbstractFragment implements
 		PublicationsFragmentListener {
@@ -51,6 +55,8 @@ public class PublicationsFragment extends AbstractFragment implements
 	private Integer selectedCategoryID;
 	
 	@Override protected void displayEmptyMessage() {
+		
+		
 		LinearLayout l = (LinearLayout) getActivity().findViewById(emptyLayoutId);
 		l.setVisibility(View.VISIBLE);
 		
@@ -71,11 +77,12 @@ public class PublicationsFragment extends AbstractFragment implements
 		else if (dateNewPublicationsFound != null) {
 			// Selected by last date found
 		}
-		
 		else {
+			
 			// All publication
 			writeEmptyMessage(null, R.string.empty_publications,
 					R.string.empty_publications_with_filter, getFilterText());
+			
 			getActivity().findViewById(R.id.displayAllButton).setVisibility(View.GONE);
 		}
 		
@@ -83,24 +90,54 @@ public class PublicationsFragment extends AbstractFragment implements
 		displayAlreadyReadPublicationsButton();
 	}
 	
+		
+	
 	private void writeEmptyMessage(String name, int idMsgWithoutFilter,
 			int idMsgWithFilter, String filter) {
 		if (TextUtils.isEmpty(filter)) {
 			if (name == null)
-				displayEmptyView(getResources().getString(idMsgWithoutFilter));
+				displayEmptyListView(getResources().getString(idMsgWithoutFilter));
 			else
-				displayEmptyView(getResources().getString(idMsgWithoutFilter, name));
+				displayEmptyListView(getResources().getString(idMsgWithoutFilter, name));
 		} else {
 			if (name == null)
-				displayEmptyView(getResources().getString(idMsgWithFilter, filter));
+				displayEmptyListView(getResources().getString(idMsgWithFilter, filter));
 			else
-				displayEmptyView(getResources().getString(idMsgWithFilter, name,	filter));
+				displayEmptyListView(getResources().getString(idMsgWithFilter, name,	filter));
 		}
 	}
 	
-	private void displayEmptyView(String msg) {
+	private void displayEmptyListView(String msg) {
+		
 		TextView tv = (TextView)getActivity().findViewById(R.id.emptyPublicationsMessage);
+		
+		Typeface userTypeFace = TypeFaceSingleton.getInstance(getActivity()).getUserTypeFace();
+		if (userTypeFace != null) {
+			tv.setTypeface(userTypeFace);
+		}
+		
+		int userFontSize = TypeFaceSingleton.getInstance(getActivity()).getUserFontSize();
+		if (userFontSize != Constants.FONT_SIZE) {
+			tv.setTextSize(userFontSize);
+		}
+		
 		tv.setText(msg);
+		
+		Button displayAllButton =  (Button)getActivity().findViewById(R.id.displayAllButton);
+		if (userTypeFace != null) {
+			displayAllButton.setTypeface(userTypeFace);
+		}
+		if (userFontSize != Constants.FONT_SIZE) {
+			displayAllButton.setTextSize(userFontSize);
+		}
+		
+		Button displayAlreadyReadButton =  (Button)getActivity().findViewById(R.id.displayAlreadyReadButton);
+		if (userTypeFace != null) {
+			displayAlreadyReadButton.setTypeface(userTypeFace);
+		}
+		if (userFontSize != Constants.FONT_SIZE) {
+			displayAlreadyReadButton.setTextSize(userFontSize);
+		}
 	}
 	
 	private void displayAlreadyReadPublicationsButton() {
@@ -172,7 +209,8 @@ public class PublicationsFragment extends AbstractFragment implements
 		// finder.searchNewPublications();
 		NewPublicationsNotification notify = new NewPublicationsNotification(getActivity());
 		//DateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.FRENCH);
-		notify.notificationForNewPublications(25, "2014-01-23 15:00:00");//sdf.format(new Date()));
+		notify.notificationForNewPublications(25, "2014-01-31 09:30:00");
+		//sdf.format(new Date()));
 	}
 	
 	
@@ -290,57 +328,51 @@ public class PublicationsFragment extends AbstractFragment implements
 		editor.commit();
 	}
 	
-	/*public void loadLastPublicationRecorded() {		
-		NewPublicationsNotification.NotifyEvent event = 
-				NewPublicationsNotification.NotifyEvent.detachFrom(getActivity().getIntent());
-
-		if (event != null
-				&& event.compareTo(NewPublicationsNotification.NotifyEvent.RESTART_ACTIVITY) == 0) {
-			// Reload list by date
-			String lastUpdateDate = getActivity().getIntent().getStringExtra("newPublicationsRecordDate");
-			
-			if (lastUpdateDate != null) {
-				Bundle bundle = new Bundle();
-				bundle.putString("lastUpdateDate", lastUpdateDate);
-				getLoaderManager().initLoader(0, bundle, this);
-				updateActionBarTitle();
-			}
-		}
-	}*/
-	
 	// Bundle saveInstanceState = null;
 	
 	private void restoreOrFirstDisplay(Bundle save) {
 		
 		// this.saveInstanceState = save;
-		
 		SharedPreferences prefs = getActivity().getPreferences(0);
 		
-		NewPublicationsNotification.NotifyEvent event = 
+		/*NewPublicationsNotification.NotifyEvent event = 
 				NewPublicationsNotification.NotifyEvent.detachFrom(getActivity().getIntent());
 
 		if (event != null
 				&& event.compareTo(NewPublicationsNotification.NotifyEvent.RESTART_ACTIVITY) == 0) {
 			dateNewPublicationsFound = getActivity().getIntent().getStringExtra("dateNewPublicationsFound");
 			
-		} else {
+			getActivity().getIntent().removeExtra(NewPublicationsNotification.NotifyEvent.RESTART_ACTIVITY.name());
+			
+			Log.e(PublicationsFragment.class.getName(), "LOAD BY ACTIVITY INTENT");
+			
+		} else {*/
 
 			if (prefs.getInt("selectedSyndicationID", -1) != -1) {
+				//Log.e(PublicationsFragment.class.getName(), "LOAD BY SYNDICATION ID");
 				selectedSyndicationID = prefs.getInt("selectedSyndicationID", -1);
+				loadPublicationsBySyndication();
 			}
 			
-			if (prefs.getInt("selectedCategoryID", -1) != -1) {
+			else if (prefs.getInt("selectedCategoryID", -1) != -1) {
+				//Log.e(PublicationsFragment.class.getName(), "LOAD BY CATEGORY ID");
 				selectedCategoryID = prefs.getInt("selectedCategoryID", -1);
+				loadPublicationsByCategory();
 			}
 			
-			if (prefs.getString("dateNewPublicationsFound", null) != null) {
+			else if (prefs.getString("dateNewPublicationsFound", null) != null) {
+				//Log.e(PublicationsFragment.class.getName(), "LOAD BY LAST DATE PUBLICATION FOUND ");
 				dateNewPublicationsFound = prefs.getString("dateNewPublicationsFound", null);
+				loadPublicationsByLastFound(dateNewPublicationsFound);
 			}
-		}
+			else {
+				loadPublications();
+			}
+		//}
 		
 		setFilterText(prefs.getString("filterText", null));
 		
-		if (selectedSyndicationID != null) {
+		/*if (selectedSyndicationID != null) {
 			loadPublicationsBySyndication();
 		} else if (selectedCategoryID != null) {
 			loadPublicationsByCategory();
@@ -348,7 +380,7 @@ public class PublicationsFragment extends AbstractFragment implements
 			loadPublicationsByLastFound(dateNewPublicationsFound);
 		} else {
 			loadPublications();
-		}
+		}*/
 	}
 	
 	private void savePositionOnScreen(SharedPreferences.Editor editor) {
@@ -391,7 +423,7 @@ public class PublicationsFragment extends AbstractFragment implements
 			// Reset position save
 			editor.putInt("publicationsListViewIndex", -1);
 			editor.putInt("publicationsListViewPosition", -1);
-			editor.commit();;
+			editor.commit();
 		}
 	}
 	
@@ -610,6 +642,8 @@ public class PublicationsFragment extends AbstractFragment implements
 		SharedPreferences.Editor editor = sharedPreferences.edit();
 		editor.putInt("newPublicationsRecorded", 0);
 		editor.putString("newPublicationsRecordDate", null);
+		editor.putInt("publicationsListViewIndex", -1);
+		editor.putInt("publicationsListViewPosition", -1);
 		editor.commit();
 
 		Bundle bundle = new Bundle();

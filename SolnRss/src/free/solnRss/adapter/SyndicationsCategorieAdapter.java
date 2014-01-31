@@ -77,13 +77,14 @@ public class SyndicationsCategorieAdapter extends SimpleCursorAdapter implements
 
 		int userFontSize = TypeFaceSingleton.getInstance(context)
 				.getUserFontSize();
-
+		
 		if (userTypeFace != null) {
-			item.getName().setTypeface(userTypeFace, Typeface.BOLD);
+			item.getName().setTypeface(userTypeFace);
 		}
 		if (userFontSize != Constants.FONT_SIZE) {
 			item.getName().setTextSize(userFontSize);
 		}
+
 		return convertView;
 	}
 

@@ -32,7 +32,7 @@ public class NewPublicationsNotification {
 				return null;
 			}
 			intent.removeExtra(name);
-
+			
 			return values()[i];
 		}
 	}
@@ -90,8 +90,8 @@ public class NewPublicationsNotification {
 		Intent intent = new Intent(context, SolnRss.class);
 		intent.addFlags(
 				Intent.FLAG_ACTIVITY_CLEAR_TOP  | 
-				Intent.FLAG_ACTIVITY_SINGLE_TOP | 
-			    Intent.FLAG_ACTIVITY_NEW_TASK);
+				Intent.FLAG_ACTIVITY_CLEAR_TOP  | 
+			    Intent.FLAG_ACTIVITY_NEW_TASK );
 		
 		intent.putExtra("dateNewPublicationsFound", dateNewPublicationsFound);
 		event.attachTo(intent);
@@ -103,7 +103,6 @@ public class NewPublicationsNotification {
 	private PendingIntent createNotificationEvent(NotifyEvent event) {
 		Intent intent = new Intent(context, NotificationReceiver.class);
 		event.attachTo(intent);
-		return PendingIntent.getBroadcast(context, event.ordinal(), intent, 
-				PendingIntent.FLAG_UPDATE_CURRENT);
+		return PendingIntent.getBroadcast(context, event.ordinal(), intent, PendingIntent.FLAG_UPDATE_CURRENT);
 	}
 }

@@ -35,6 +35,7 @@ import free.solnRss.R;
 import free.solnRss.adapter.SectionsPagerAdapter;
 import free.solnRss.alarmManager.FindNewPublicationsAlarmManager;
 import free.solnRss.dialog.OneEditTextDialogBox;
+import free.solnRss.fragment.PublicationsFragment;
 import free.solnRss.fragment.listener.CategoriesFragmentListener;
 import free.solnRss.fragment.listener.PublicationsFragmentListener;
 import free.solnRss.fragment.listener.SyndicationsFragmentListener;
@@ -149,8 +150,39 @@ public class SolnRss extends Activity implements ActionBar.TabListener,
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		Log.e(SolnRss.class.getName(), "ON CREATE");
+		
 		super.onCreate(savedInstanceState);
 		requestWindowFeature(Window.FEATURE_INDETERMINATE_PROGRESS); 
+		
+		
+		NewPublicationsNotification.NotifyEvent event = 
+				NewPublicationsNotification.NotifyEvent.detachFrom(getIntent());
+
+		if (event != null
+				&& event.compareTo(NewPublicationsNotification.NotifyEvent.RESTART_ACTIVITY) == 0) {
+			String dateNewPublicationsFound = getIntent().getStringExtra("dateNewPublicationsFound");
+			
+			
+			Log.e(PublicationsFragment.class.getName(), "RECREATE BY ACTIVITY INTENT");
+			SharedPreferences.Editor editor = getPreferences(0).edit();
+			
+			editor.putInt("selectedSyndicationID", -1);
+			editor.putInt("selectedCategoryID", -1);
+			editor.putString("filterText", null);
+			editor.putInt("publicationsListViewIndex", -1);
+			editor.putInt("publicationsListViewPosition", -1);
+			editor.putString("dateNewPublicationsFound", dateNewPublicationsFound);
+			editor.commit();
+			
+			Intent intent = getIntent();
+			intent.removeExtra(NewPublicationsNotification.NotifyEvent.RESTART_ACTIVITY.name());
+			finish();
+			
+			startActivity(intent);
+	
+			
+			return;
+		}
 		
 		setContentView(R.layout.activity_soln_rss);
 
@@ -466,8 +498,9 @@ public class SolnRss extends Activity implements ActionBar.TabListener,
 	 */
 	protected void onNewIntent(Intent intent) {
 		super.onNewIntent(intent);
+		
 	    setIntent(intent);
-	    
+	    Log.e(PublicationsFragment.class.getName(), "CALL NEW INTENT");
 	    NewPublicationsNotification.NotifyEvent event = 
 	    		NewPublicationsNotification.NotifyEvent.detachFrom(intent);
 	    

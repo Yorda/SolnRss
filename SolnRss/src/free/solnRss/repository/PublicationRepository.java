@@ -192,7 +192,7 @@ public class PublicationRepository {
 						.appendQueryParameter("tableKey", String.valueOf(cursor.getInt(0))).build();
 				
 				operations.add(ContentProviderOperation.newDelete(publicationContentUri).build());
-				
+					
 			} while (cursor.moveToNext());
 		}
 		//--

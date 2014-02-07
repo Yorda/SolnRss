@@ -11,9 +11,6 @@ import free.solnRss.repository.PublicationRepository;
 
 public class DeleteAllPublicationsPreferences extends DialogPreference {
 
-	// private final Uri publicationUri = Uri.parse(SolnRssProvider.URI +
-	// "/publication");
-
 	PublicationRepository publicationRepository;
 
 	public DeleteAllPublicationsPreferences(Context context, AttributeSet attrs) {
@@ -29,11 +26,6 @@ public class DeleteAllPublicationsPreferences extends DialogPreference {
 		switch (which) {
 		case DialogInterface.BUTTON_POSITIVE:
 
-			
-			// setDialogMessage(getContext().getResources().getString(R.string.please_wait));
-			// getContext().getContentResolver().delete(publicationUri, null,
-			// null);
-			
 			try {
 				publicationRepository.deleteAllPublication();
 			} catch (Exception e) {
@@ -43,6 +35,7 @@ public class DeleteAllPublicationsPreferences extends DialogPreference {
 			SharedPreferences.Editor editor = getEditor();
 			editor.putLong(getKey(), new Date().getTime());
 			editor.commit();
+			
 			break;
 
 		case DialogInterface.BUTTON_NEGATIVE:
@@ -52,7 +45,7 @@ public class DeleteAllPublicationsPreferences extends DialogPreference {
 			break;
 		}
 	}
-
+	
 	@Override
 	protected void onDialogClosed(boolean positiveResult) {
 		super.onDialogClosed(positiveResult);

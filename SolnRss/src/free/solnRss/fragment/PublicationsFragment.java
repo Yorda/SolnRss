@@ -17,7 +17,6 @@ import android.preference.PreferenceManager;
 import android.text.Html;
 import android.text.Spanned;
 import android.text.TextUtils;
-import android.util.Log;
 import android.view.ContextMenu;
 import android.view.ContextMenu.ContextMenuInfo;
 import android.view.LayoutInflater;
@@ -36,7 +35,6 @@ import free.solnRss.activity.ReaderActivity;
 import free.solnRss.activity.SolnRss;
 import free.solnRss.adapter.PublicationAdapter;
 import free.solnRss.fragment.listener.PublicationsFragmentListener;
-import free.solnRss.notification.NewPublicationsNotification;
 import free.solnRss.repository.PublicationContentRepository;
 import free.solnRss.repository.PublicationRepository;
 import free.solnRss.repository.PublicationTable;
@@ -49,13 +47,75 @@ public class PublicationsFragment extends AbstractFragment implements
 
 	private PublicationRepository publicationRepository;
 	private PublicationContentRepository publicationContentRepository;
+	private String dateNewPublicationsFound;  
 	private Integer selectedSyndicationID;
-	private String dateNewPublicationsFound; // Z date in format 
-	private Integer nextSelectedSyndicationID; // selected by context menu
+	private Integer nextSelectedSyndicationID; // Selected by context menu
 	private Integer selectedCategoryID;
 	
-	@Override protected void displayEmptyMessage() {
+	@Override
+	public View onCreateView(LayoutInflater inflater, ViewGroup vg, Bundle save) {
+		View fragment = inflater.inflate(R.layout.fragment_publications, vg, false);
+		listContainer = fragment.findViewById(R.id.listContainer);
+		progressContainer = fragment.findViewById(R.id.progressContainer);
+		emptyLayoutId = R.id.emptyPublicationsLayout;
+		listShown = true;
 		
+		return fragment;
+	}
+	
+	@Override
+	public void onActivityCreated(Bundle savedInstanceState) {
+		super.onActivityCreated(savedInstanceState);
+		
+		publicationRepository = new PublicationRepository(getActivity());
+		publicationContentRepository = new PublicationContentRepository(getActivity());
+		displayList(savedInstanceState);
+		
+		registerForContextMenu(getListView());
+		
+		getListView().setTextFilterEnabled(true);
+		
+		((SolnRss)getActivity()).setPublicationsFragmentListener(this);
+		
+		setListShown(false);
+		
+		setHasOptionsMenu(true);
+
+		// PublicationFinderBusinessImpl finder = new PublicationFinderBusinessImpl(getActivity());
+		// finder.searchNewPublications();
+		
+		// NewPublicationsNotification notify = new NewPublicationsNotification(getActivity());
+		// DateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.FRENCH);
+		// notify.notificationForNewPublications(25, "2014-01-31 09:30:00");
+	}
+	
+	private void displayList(Bundle save) {
+		
+		SharedPreferences prefs = getActivity().getPreferences(0);
+
+		if (prefs.getInt("selectedSyndicationID", -1) != -1) {
+			selectedSyndicationID = prefs.getInt("selectedSyndicationID", -1);
+			loadPublicationsBySyndication();
+		}
+
+		else if (prefs.getInt("selectedCategoryID", -1) != -1) {
+			selectedCategoryID = prefs.getInt("selectedCategoryID", -1);
+			loadPublicationsByCategory();
+		}
+
+		else if (prefs.getString("dateNewPublicationsFound", null) != null) {
+			dateNewPublicationsFound = prefs.getString("dateNewPublicationsFound", null);
+			loadPublicationsByLastFound(dateNewPublicationsFound);
+		}
+
+		else {
+			loadPublications();
+		}
+		setFilterText(prefs.getString("filterText", null));
+	}
+
+	@Override
+	protected void displayEmptyMessage() {
 		
 		LinearLayout l = (LinearLayout) getActivity().findViewById(emptyLayoutId);
 		l.setVisibility(View.VISIBLE);
@@ -89,8 +149,6 @@ public class PublicationsFragment extends AbstractFragment implements
 		// If already read publications are hidden display button for display them
 		displayAlreadyReadPublicationsButton();
 	}
-	
-		
 	
 	private void writeEmptyMessage(String name, int idMsgWithoutFilter,
 			int idMsgWithFilter, String filter) {
@@ -142,13 +200,13 @@ public class PublicationsFragment extends AbstractFragment implements
 	
 	private void displayAlreadyReadPublicationsButton() {
 		
+		final int viewId = R.id.displayAlreadyReadButton;
+		
 		if (displayAlreadyReadPublications()) {
-			getActivity().findViewById(R.id.displayAlreadyReadButton)
-					.setVisibility(View.INVISIBLE);
+			getActivity().findViewById(viewId).setVisibility(View.INVISIBLE);
 
 		} else {
-			getActivity().findViewById(R.id.displayAlreadyReadButton)
-					.setVisibility(View.VISIBLE);
+			getActivity().findViewById(viewId).setVisibility(View.VISIBLE);
 		}
 	}
 
@@ -163,56 +221,6 @@ public class PublicationsFragment extends AbstractFragment implements
 	private String dataNewPublicationsFoundLabel() {
 		return getResources().getString(R.string.last_publications);
 	}
-	
-	@Override
-	public View onCreateView(LayoutInflater inflater, ViewGroup vg, Bundle save) {
-		View fragment = inflater.inflate(R.layout.fragment_publications, vg,
-				false);
-		listContainer = fragment.findViewById(R.id.listContainer);
-		progressContainer = fragment.findViewById(R.id.progressContainer);
-		emptyLayoutId = R.id.emptyPublicationsLayout;
-		listShown = true;
-		
-		return fragment;
-	}
-	
-	@Override
-	public void onViewCreated(View view, Bundle save) {
-		
-	}
-	
-	@Override
-	public void onActivityCreated(Bundle savedInstanceState) {
-		super.onActivityCreated(savedInstanceState);
-		
-		publicationRepository = new PublicationRepository(getActivity());
-		publicationContentRepository = new PublicationContentRepository(getActivity());
-		restoreOrFirstDisplay(savedInstanceState);
-		
-		registerForContextMenu(getListView());
-		
-		getListView().setTextFilterEnabled(true);
-		
-		((SolnRss)getActivity()).setPublicationsFragmentListener(this);
-		
-		setListShown(false);
-		
-		setHasOptionsMenu(true);
-		
-		// getListView().setOnScrollListener(this);
-		// progressItemView = getActivity().getLayoutInflater().inflate(R.layout.progress_item, null);
-		// testSearch();
-	}
-	
-	public void testSearch() {
-		// PublicationFinderBusinessImpl finder = new PublicationFinderBusinessImpl(getActivity());
-		// finder.searchNewPublications();
-		NewPublicationsNotification notify = new NewPublicationsNotification(getActivity());
-		//DateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.FRENCH);
-		notify.notificationForNewPublications(25, "2014-01-31 09:30:00");
-		//sdf.format(new Date()));
-	}
-	
 	
 	@Override
 	public void onSaveInstanceState(Bundle outState) {
@@ -298,7 +306,7 @@ public class PublicationsFragment extends AbstractFragment implements
 	}
 	
 	@Override public void onPause() {
-		Log.e(PublicationsFragment.class.getName(), "ON PAUSE - SAVE INSTANCE STATE IN PUBLICATION FRAGMENT");
+
 		super.onPause();
 		SharedPreferences.Editor editor = getActivity().getPreferences(0).edit();
 		if (selectedSyndicationID != null) {
@@ -326,61 +334,6 @@ public class PublicationsFragment extends AbstractFragment implements
 		}
 		savePositionOnScreen(editor);
 		editor.commit();
-	}
-	
-	// Bundle saveInstanceState = null;
-	
-	private void restoreOrFirstDisplay(Bundle save) {
-		
-		// this.saveInstanceState = save;
-		SharedPreferences prefs = getActivity().getPreferences(0);
-		
-		/*NewPublicationsNotification.NotifyEvent event = 
-				NewPublicationsNotification.NotifyEvent.detachFrom(getActivity().getIntent());
-
-		if (event != null
-				&& event.compareTo(NewPublicationsNotification.NotifyEvent.RESTART_ACTIVITY) == 0) {
-			dateNewPublicationsFound = getActivity().getIntent().getStringExtra("dateNewPublicationsFound");
-			
-			getActivity().getIntent().removeExtra(NewPublicationsNotification.NotifyEvent.RESTART_ACTIVITY.name());
-			
-			Log.e(PublicationsFragment.class.getName(), "LOAD BY ACTIVITY INTENT");
-			
-		} else {*/
-
-			if (prefs.getInt("selectedSyndicationID", -1) != -1) {
-				//Log.e(PublicationsFragment.class.getName(), "LOAD BY SYNDICATION ID");
-				selectedSyndicationID = prefs.getInt("selectedSyndicationID", -1);
-				loadPublicationsBySyndication();
-			}
-			
-			else if (prefs.getInt("selectedCategoryID", -1) != -1) {
-				//Log.e(PublicationsFragment.class.getName(), "LOAD BY CATEGORY ID");
-				selectedCategoryID = prefs.getInt("selectedCategoryID", -1);
-				loadPublicationsByCategory();
-			}
-			
-			else if (prefs.getString("dateNewPublicationsFound", null) != null) {
-				//Log.e(PublicationsFragment.class.getName(), "LOAD BY LAST DATE PUBLICATION FOUND ");
-				dateNewPublicationsFound = prefs.getString("dateNewPublicationsFound", null);
-				loadPublicationsByLastFound(dateNewPublicationsFound);
-			}
-			else {
-				loadPublications();
-			}
-		//}
-		
-		setFilterText(prefs.getString("filterText", null));
-		
-		/*if (selectedSyndicationID != null) {
-			loadPublicationsBySyndication();
-		} else if (selectedCategoryID != null) {
-			loadPublicationsByCategory();
-		} else if (dateNewPublicationsFound != null) {
-			loadPublicationsByLastFound(dateNewPublicationsFound);
-		} else {
-			loadPublications();
-		}*/
 	}
 	
 	private void savePositionOnScreen(SharedPreferences.Editor editor) {

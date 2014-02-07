@@ -45,12 +45,13 @@ public class RssRepository {
 
 		selection.setLength(0);
 		selection.append(RssTable.COLUMN_TITLE + " = ? ");
-		selection.append(" AND ");
-		selection.append(RssTable.COLUMN_URL + " = ? ");
+		
+		//selection.append(" AND ");
+		//selection.append(RssTable.COLUMN_URL + " = ? ");
 
 		args.clear();
 		args.add(title);
-		args.add(url);
+		//args.add(url);
 
 		Cursor cursor = context.getContentResolver().query(uri, new String[] { RssTable.COLUMN_ID},
 				selection.toString(), args.toArray(new String[args.size()]), null);

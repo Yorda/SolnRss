@@ -154,16 +154,15 @@ public class SolnRss extends Activity implements ActionBar.TabListener,
 		super.onCreate(savedInstanceState);
 		requestWindowFeature(Window.FEATURE_INDETERMINATE_PROGRESS); 
 		
-		
 		NewPublicationsNotification.NotifyEvent event = 
 				NewPublicationsNotification.NotifyEvent.detachFrom(getIntent());
 
+		// Because https://stackoverflow.com/questions/6584997/cant-remove-intent-extra
+		// Restart activity.
 		if (event != null
 				&& event.compareTo(NewPublicationsNotification.NotifyEvent.RESTART_ACTIVITY) == 0) {
+			
 			String dateNewPublicationsFound = getIntent().getStringExtra("dateNewPublicationsFound");
-			
-			
-			Log.e(PublicationsFragment.class.getName(), "RECREATE BY ACTIVITY INTENT");
 			SharedPreferences.Editor editor = getPreferences(0).edit();
 			
 			editor.putInt("selectedSyndicationID", -1);
@@ -179,8 +178,6 @@ public class SolnRss extends Activity implements ActionBar.TabListener,
 			finish();
 			
 			startActivity(intent);
-	
-			
 			return;
 		}
 		
@@ -317,15 +314,6 @@ public class SolnRss extends Activity implements ActionBar.TabListener,
 			return super.onOptionsItemSelected(item);
 		}
 	}
-	
-	/*private void reloadList() {
-		SharedPreferences p = PreferenceManager.getDefaultSharedPreferences(this);
-		Editor edit = p.edit();
-		edit.putInt("newPublicationsRecorded", 20);
-		edit.commit();
-		publicationsListener.reLoadPublicationsWithLastFound();	
-	}*/
-	
 	
 	private void updateOptionDisplayPublicationsAlreadyRead() {
 

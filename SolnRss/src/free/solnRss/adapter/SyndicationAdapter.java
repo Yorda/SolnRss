@@ -26,15 +26,15 @@ public class SyndicationAdapter extends SimpleCursorAdapter {
 
 	public SyndicationAdapter(Context context, int layout, Cursor c,
 			String[] from, int[] to, int flags) {
-		
+
 		super(context, layout, c, from, to, flags);
 		this.context = context;
 		this.layout = layout;
-		
 	}
 
 	@Override
 	public View getView(int position, View convertView, ViewGroup parent) {
+
 		SyndicationItem item = null;
 		getCursor().moveToPosition(position);
 
@@ -52,55 +52,97 @@ public class SyndicationAdapter extends SimpleCursorAdapter {
 			item = (SyndicationItem) convertView.getTag();
 		}
 
-		item.getTitle().setText(Html.fromHtml("<u>"+getCursor().getString(1)+"</u>"));
+		item.getTitle().setText(
+				Html.fromHtml("<u>" + getCursor().getString(1) + "</u>"));
 
 		if (getCursor().getInt(3) != 0) {
-			convertView.findViewWithTag("sleepImage")
-					.setVisibility(View.VISIBLE);
+			convertView.findViewById(R.id.syndication_activity)
+				.setVisibility(View.VISIBLE);
 		} else {
-			convertView.findViewWithTag("sleepImage")
-					.setVisibility(View.GONE);
+			convertView.findViewById(R.id.syndication_activity)
+				.setVisibility(View.GONE);
 		}
 
-		int quantity =  getCursor().getInt(4);
+		int quantity = getCursor().getInt(4);
 		item.getNumberOfClick().setText(
-				context.getResources().getQuantityString(R.plurals.syndication_number_of_click, quantity, quantity));
+				context.getResources().getQuantityString(
+						R.plurals.syndication_number_of_click, quantity, quantity));
 
-		
 		if (getCursor().getInt(5) != 0) {
-			convertView.findViewWithTag("stealthImage")
+			convertView.findViewById(R.id.syndication_display_mode)
 					.setVisibility(View.GONE);
 		} else {
-			convertView.findViewWithTag("stealthImage")
+			convertView.findViewById(R.id.syndication_display_mode)
 					.setVisibility(View.VISIBLE);
 		}
-		
-		Typeface userTypeFace = TypeFaceSingleton.getInstance(context)
-				.getUserTypeFace();
-		int userFontSize = TypeFaceSingleton.getInstance(context)
-				.getUserFontSize();
-		
-		if (userTypeFace != null) {
-			item.getTitle().setTypeface(userTypeFace, Typeface.BOLD);
-			item.getNumberOfClick().setTypeface(userTypeFace);
-			
-			if (getCursor().getInt(3) != 0)
-				((TextView) convertView.findViewWithTag("sleepImage"))
-						.setTypeface(userTypeFace);
-			
-			if (getCursor().getInt(5) == 0)
-				((TextView) convertView.findViewWithTag("stealthImage"))
-						.setTypeface(userTypeFace);
+
+		if (getCursor().getInt(6) != 0) { // Last search result
+			convertView.findViewById(R.id.syndication_last_search_result)
+					.setVisibility(View.VISIBLE);
+		} else {
+			convertView.findViewById(R.id.syndication_last_search_result)
+					.setVisibility(View.GONE);
 		}
-		if (userFontSize != Constants.FONT_SIZE) {
-			item.getTitle().setTextSize(userFontSize);
-			item.getNumberOfClick().setTextSize(userFontSize);
-			if (getCursor().getInt(3) != 0)
-				((TextView) convertView.findViewWithTag("sleepImage")).setTextSize(userFontSize);
-			if (getCursor().getInt(5) == 0)
-				((TextView) convertView.findViewWithTag("stealthImage")).setTextSize(userFontSize);
-		}
+
+		setFontTypeFace(convertView, item);
+		
+		setFontSize(convertView, item);
 		
 		return convertView;
+	}
+	
+	private void setFontTypeFace(View convertView, SyndicationItem item) {
+		
+		final TypeFaceSingleton tfs = TypeFaceSingleton.getInstance(context);
+		final Typeface userTypeFace = tfs.getUserTypeFace();
+		
+		if (userTypeFace != null) {
+
+			item.getTitle().setTypeface(userTypeFace, Typeface.BOLD);
+			
+			item.getNumberOfClick().setTypeface(userTypeFace);
+
+			if (getCursor().getInt(3) != 0)
+				((TextView) convertView
+					.findViewById(R.id.syndication_activity))
+						.setTypeface(userTypeFace);
+
+			if (getCursor().getInt(5) == 0)
+				((TextView) convertView
+					.findViewById(R.id.syndication_display_mode))
+						.setTypeface(userTypeFace);
+
+			if (getCursor().getInt(6) != 0)
+				((TextView) convertView
+					.findViewById(R.id.syndication_last_search_result))
+						.setTypeface(userTypeFace);
+		}
+	}
+	
+	private void setFontSize(View convertView, SyndicationItem item) {
+		
+		final TypeFaceSingleton tfs = TypeFaceSingleton.getInstance(context);;
+		final int userFontSize = tfs.getUserFontSize();
+
+		if (userFontSize != Constants.FONT_SIZE) {
+
+			item.getTitle().setTextSize(userFontSize);
+			item.getNumberOfClick().setTextSize(userFontSize);
+
+			if (getCursor().getInt(3) != 0)
+				((TextView) convertView
+					.findViewById(R.id.syndication_activity))
+						.setTextSize(userFontSize);
+
+			if (getCursor().getInt(5) == 0)
+				((TextView) convertView
+					.findViewById(R.id.syndication_display_mode))
+						.setTextSize(userFontSize);
+
+			if (getCursor().getInt(6) != 0)
+				((TextView) convertView
+					.findViewById(R.id.syndication_last_search_result))
+						.setTextSize(userFontSize);
+		}
 	}
 }

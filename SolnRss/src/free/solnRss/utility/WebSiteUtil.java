@@ -7,8 +7,33 @@ import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.select.Elements;
 
+import de.jetwick.snacktory.HtmlFetcher;
+import de.jetwick.snacktory.JResult;
+
 public class WebSiteUtil {
 
+	
+	public static String htmlToReadableText(String url) {
+
+		String text = null;
+		// String title = null;
+		//  String imageUrl = null;
+
+		HtmlFetcher fetcher = new HtmlFetcher();
+		try {
+			JResult res = fetcher.fetchAndExtract(url, 15000, true);
+			text = res.getText();
+			// title = res.getTitle();
+			// imageUrl = res.getImageUrl();
+
+		} catch (Exception e) {
+			e.printStackTrace();
+			return null;
+		}
+
+		return text;
+	}
+	
 	final static String[] feedsType = { 
 		"link[type$=rss+xml]", 
 		"link[type$=atom+xml]" , 

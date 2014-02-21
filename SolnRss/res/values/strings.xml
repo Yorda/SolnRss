@@ -35,6 +35,10 @@
     <string name="empty_publications">No publications to display.</string>
     <string name="empty_publications_with_syndication">No publications found for syndication %1$s. </string>
     <string name="empty_publications_with_category">No publications found for category %1$s. </string>
+    
+    <string name="empty_publications_date_last_found">No more publication. </string>
+    <string name="empty_publications_date_last_found_with_filter">No more publication with the search: %1$s </string>
+     
     <string name="empty_publications_with_filter">No publications found with the search: %1$s</string>
     <string name="empty_publications_with_syndication_with_filter">No publications found for syndication %1$s and %2$s research.</string>
     <string name="empty_publications_with_category_with_filter">No publications found for category %1$s and %2$s research.</string>
@@ -98,11 +102,13 @@
     <string name="active_syndication">The search for new publications is activated</string>
     <string name="display_syndication">The visibility of publications is complete</string>
     <string name="undisplay_syndication">Publications are visible through the category or syndication tab</string>
-
+    
     <plurals name="syndication_number_of_click">
         <item quantity="one">%1$s publication already read</item>
         <item quantity="other">%1$s publications already read</item>
     </plurals>
+    
+    <string name="syndication_last_search_result">Last search publication error</string>
 
     <string name="empty_syndications">No RSS feed to display.</string>
     <string name="empty_syndications_with_filter">No RSS feed found for the site %1$s with %2$s research.</string>
@@ -130,7 +136,7 @@
     <string name="pref_display_publication_browser">Show directly in a browser</string>
     <string name="pref_display_publication_app">In application Screen</string>
     <string name="pref_search_publication_time">Search new publications every</string>
-    <string name="pref_publication_item_number">Numbers of items in publication list</string>
+    <string name="pref_publication_item_number">Maximum number of publications to keep</string>
     <string name="pref_delete_all_publications">Delete all publications</string>
     <string name="pref_delete_all_publications_confirm">It will delete all publications stored in database. Are you sure ?</string>
     <string name="pref_not_run_on_boot">The updating process is launched after the application start</string>

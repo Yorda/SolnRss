@@ -136,6 +136,8 @@ public class PublicationsFragment extends AbstractFragment implements
 		
 		else if (dateNewPublicationsFound != null) {
 			// Selected by last date found
+			writeEmptyMessage(null, R.string.empty_publications_date_last_found,
+					R.string.empty_publications_date_last_found, getFilterText());
 		}
 		else {
 			

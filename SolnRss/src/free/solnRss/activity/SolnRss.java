@@ -99,9 +99,6 @@ public class SolnRss extends Activity implements ActionBar.TabListener,
 		else if (key.compareTo("pref_delete_all_publications") == 0) {
 			publicationsListener.refreshPublications();
 		} 
-		else if (key.compareTo("pref_max_publication_item") == 0) {
-			publicationsListener.refreshPublications();
-		} 
 		else if (key.compareTo("pref_sort_syndications") == 0) {
 			syndicationsListener.reloadSyndications();
 		} 
@@ -240,10 +237,10 @@ public class SolnRss extends Activity implements ActionBar.TabListener,
 	
 	@Override
 	protected void onSaveInstanceState(Bundle outState) {
+		super.onSaveInstanceState(outState);
 		// Save publication list view state
 		// Parcelable state = publicationsListener.getListViewInstanceState();
 		// outState.putParcelable("publicationlistViewState", state);
-		super.onSaveInstanceState(outState);
 	}
 	
 	@Override
@@ -496,7 +493,7 @@ public class SolnRss extends Activity implements ActionBar.TabListener,
 				&& event.compareTo(NewPublicationsNotification.NotifyEvent.RESTART_ACTIVITY) == 0) {
 			
 			publicationsListener.reLoadPublicationsByLastFound(
-					intent.getExtras().getString("dateNewPublicationsFound"));
+					intent.getExtras().getString("newPublicationsRecordDate"));
 		}
 	};
 	

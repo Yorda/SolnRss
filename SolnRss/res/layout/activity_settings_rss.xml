@@ -67,12 +67,12 @@
             android:summaryOn="@string/pref_display_publication_app"
             android:title="@string/pref_display_publication" />
 
-        <!--
-              free.solnRss.preference.ItemSeekBarPreference
+        <!-- 
+        <free.solnRss.preference.ItemSeekBarPreference
             android:defaultValue="100"
             android:key="pref_max_publication_item"
-            android:title="@string/pref_publication_item_number" /
-        -->
+            android:title="@string/pref_publication_item_number" />
+             -->
 
         <free.solnRss.preference.SeekBarDialogPreference
             xmlns:app="http://schemas.android.com/apk/res-auto"

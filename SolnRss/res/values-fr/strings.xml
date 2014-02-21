@@ -35,6 +35,8 @@
     <string name="empty_publications">Aucune publication à afficher.</string>
     <string name="empty_publications_with_syndication">Aucune publication trouvé pour le flux RSS %1$s. </string>
     <string name="empty_publications_with_category">Aucune publication trouvé pour la catégorie %1$s. </string>
+     <string name="empty_publications_date_last_found">Plus aucune publication.</string>
+    <string name="empty_publications_date_last_found_with_filter">Plus aucune publication avec la recherche: %1$s </string>
     <string name="empty_publications_with_filter">Aucune publication trouvé avec la recherche: %1$s.</string>
     <string name="empty_publications_with_syndication_with_filter">Aucune publication trouvé pour le flux RSS %1$s avec la recherche %2$s.</string>
     <string name="empty_publications_with_category_with_filter">Aucune publication trouvé pour la catégorie %1$s avec la recherche %2$s.</string>
@@ -94,7 +96,9 @@
     <string name="active_syndication">La recherche de nouvelles publications est activé</string>
     <string name="display_syndication">La visibilité des publications est complète</string>
     <string name="undisplay_syndication">Les publications sont visibles via l\'onglet catégorie ou syndication</string>
-
+    
+    <string name="syndication_last_search_result">Dernière recherche en erreur</string>
+    
     <plurals name="syndication_number_of_click">
         <item quantity="one">%1$s publication lue</item>
         <item quantity="other">%1$s publications lues</item>
@@ -128,7 +132,7 @@
     <string name="pref_display_publication_browser">Afficher directement dans un navigateur</string>
     <string name="pref_display_publication_app">Afficher dans un écran de l\'application</string>
     <string name="pref_search_publication_time">Chercher des nouvelles publication chaque:</string>
-    <string name="pref_publication_item_number">Nombres d\'éléments dans la liste des publications</string>
+    <string name="pref_publication_item_number">Nombre maximum de publications à conserver</string>
     <string name="pref_delete_all_publications">Supprimer toute les publications</string>
     <string name="pref_delete_all_publications_confirm">Vous allez supprimer toutes les publications.</string>
     <string name="pref_not_run_on_boot">Lancer le processus d\'actualisation au démarrage de l\'application</string>

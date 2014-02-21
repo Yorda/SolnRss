@@ -6,6 +6,7 @@ public class SyndicationItem {
 
 	private TextView title;
 	private TextView numberOfClick;
+	private TextView lastSearchError;
 
 	public SyndicationItem() {
 
@@ -25,5 +26,13 @@ public class SyndicationItem {
 
 	public void setNumberOfClick(TextView numberOfClick) {
 		this.numberOfClick = numberOfClick;
+	}
+
+	public TextView getLastSearchError() {
+		return lastSearchError;
+	}
+
+	public void setLastSearchError(TextView lastSearchError) {
+		this.lastSearchError = lastSearchError;
 	}
 }

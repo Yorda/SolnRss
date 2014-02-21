@@ -20,21 +20,31 @@
         android:textSize="16sp" />
 
     <TextView
+        android:id="@+id/syndication_activity"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="5dp"
-        android:tag="sleepImage"
         android:text="@string/pause_syndication"
         android:textSize="16sp"
         android:visibility="gone" />
 
     <TextView
+        android:id="@+id/syndication_display_mode"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="5dp"
         android:src="@drawable/ic_stealth"
-        android:tag="stealthImage"
         android:text="@string/hide_syndication"
+        android:textSize="16sp"
+        android:visibility="gone" />
+    
+     <TextView
+        android:id="@+id/syndication_last_search_result"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="5dp"
+        android:src="@drawable/ic_stealth"
+        android:text="@string/syndication_last_search_result"
         android:textSize="16sp"
         android:visibility="gone" />
 

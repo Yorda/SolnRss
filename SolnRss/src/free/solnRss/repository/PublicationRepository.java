@@ -9,6 +9,7 @@ import android.content.Context;
 import android.content.CursorLoader;
 import android.database.Cursor;
 import android.net.Uri;
+import android.preference.PreferenceManager;
 import android.text.TextUtils;
 import free.solnRss.provider.SolnRssProvider;
 
@@ -244,8 +245,10 @@ public class PublicationRepository {
 		context.getContentResolver().applyBatch(SolnRssProvider.AUTHORITY, operations);	
 	}
 	
-	private int maxPublicationToKeep(){
-		return 100;
+	private int maxPublicationToKeep() {
+		int max = PreferenceManager.getDefaultSharedPreferences(context)
+				.getInt("pref_max_publication_item", 100);
+		return max;
 	}
 
 	/*

@@ -14,9 +14,7 @@ public class SyndicationTable {
 	public static final String COLUMN_LAST_EXTRACT_TIME    = "syn_last_extract_time";
 	public static final String COLUMN_LAST_EXTRACT_DATE   = "syn_creation_date";
 	public static final String COLUMN_DISPLAY_ON_TIMELINE = "syn_display_on_timeline";
-	public static final String COLUMN_LAST_RSS_SEARCH_RESULT = "syn_last_rss_search_result";
-	//public static final String COLUMN_LAST_RSS_PUBLISHED  = "syn_last_rss_published";
-	
+	public static final String COLUMN_LAST_RSS_SEARCH_RESULT = "syn_last_rss_search_result";	
 	
 	private static final String DATABASE_CREATE ="create table d_syndication (\r\n" + 
 			"	_id INTEGER PRIMARY KEY autoincrement,\r\n" + 

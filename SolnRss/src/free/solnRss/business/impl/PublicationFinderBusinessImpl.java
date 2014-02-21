@@ -141,7 +141,10 @@ public class PublicationFinderBusinessImpl implements PublicationFinderBusiness 
 				operations.add(ContentProviderOperation.newInsert(Uri.parse(SolnRssProvider.URI + "/publicationContent"))
 						.withValue("syndicationId",  syndicationId.toString())
 						.withValue(PublicationContentTable.COLUMN_LINK, syndEntry.getLink())
+						
 						.withValue(PublicationContentTable.COLUMN_PUBLICATION,makeSomeFixInDescription(getDescription(syndEntry)))
+						// .withValue(PublicationContentTable.COLUMN_PUBLICATION,WebSiteUtil.htmlToReadableText(syndEntry.getLink()))
+						
 						.withValueBackReference(PublicationContentTable.COLUMN_PUBLICATION_ID, operations.size()-1)
 						.withYieldAllowed(true).build());
 				
@@ -248,7 +251,6 @@ public class PublicationFinderBusinessImpl implements PublicationFinderBusiness 
 		editor.putLong("publicationsLastRefresh", Calendar.getInstance().getTimeInMillis());
 		editor.commit();
 	}
-	
 	
 	private String makeSomeFixInDescription(String description) {
 		String fixedDescription = description;

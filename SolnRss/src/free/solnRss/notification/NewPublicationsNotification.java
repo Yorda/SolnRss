@@ -76,7 +76,7 @@ public class NewPublicationsNotification {
 		number += newPublicationsNumber;
 		
 		editor.putInt("newPublicationsRecorded", number);
-		if(sharedPreferences.getString("newPublicationsRecordDate", null) == null){
+		if(sharedPreferences.getString("newPublicationsRecordDate", null) == null) {
 			editor.putString("newPublicationsRecordDate", dateNewPublicationsFound);
 		}
 		

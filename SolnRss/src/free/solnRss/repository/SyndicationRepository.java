@@ -48,7 +48,8 @@ public class SyndicationRepository {
 		syndicationTable + "." + SyndicationTable.COLUMN_URL,
 		syndicationTable + "." + SyndicationTable.COLUMN_IS_ACTIVE,
 		syndicationTable + "." + SyndicationTable.COLUMN_NUMBER_CLICK,
-		syndicationTable + "." + SyndicationTable.COLUMN_DISPLAY_ON_TIMELINE
+		syndicationTable + "." + SyndicationTable.COLUMN_DISPLAY_ON_TIMELINE,
+		syndicationTable + "." + SyndicationTable.COLUMN_LAST_RSS_SEARCH_RESULT
 	};
 	
 	public CursorLoader loadSyndications(String filterText) {

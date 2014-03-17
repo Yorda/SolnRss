@@ -52,6 +52,8 @@ public class SyndicationRepository {
 		syndicationTable + "." + SyndicationTable.COLUMN_LAST_RSS_SEARCH_RESULT
 	};
 	
+	public static final String syndicationTableJoinToErrorTable = "" ;
+	
 	public CursorLoader loadSyndications(String filterText) {
 
 		selection.setLength(0);

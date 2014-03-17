@@ -35,7 +35,6 @@ import free.solnRss.R;
 import free.solnRss.adapter.SectionsPagerAdapter;
 import free.solnRss.alarmManager.FindNewPublicationsAlarmManager;
 import free.solnRss.dialog.OneEditTextDialogBox;
-import free.solnRss.fragment.PublicationsFragment;
 import free.solnRss.fragment.listener.CategoriesFragmentListener;
 import free.solnRss.fragment.listener.PublicationsFragmentListener;
 import free.solnRss.fragment.listener.SyndicationsFragmentListener;
@@ -54,95 +53,16 @@ public class SolnRss extends Activity implements ActionBar.TabListener,
 	private SectionsPagerAdapter sectionPageAdapter;
 	private ViewPager viewPager;
 	
-	@Override
-	public boolean onCreateOptionsMenu(Menu menu) {
-		return super.onCreateOptionsMenu(menu);
-	}
-	
-	@Override
-	public boolean onMenuOpened(int featureId, Menu menu) {
-		if(menu != null){
-			if (displayAlreadyReadPublications()) {
-				menu.getItem(2).setTitle(
-						getResources().getString(R.string.menu_hide_already_read));
-			} else {
-				menu.getItem(2).setTitle(
-						getResources().getString(R.string.menu_show_already_read));
-			}
+	// --
+	// Refresh list after found new publications
+	// --
+	private BroadcastReceiver newPublicationsFoundBroadcastReceiver = 
+			new BroadcastReceiver() {
+		@Override
+		public void onReceive(Context context, Intent intent) {
+			publicationsListener.reLoadPublicationsWithLastFound();
 		}
-		return super.onMenuOpened(featureId, menu);
-	}
-	
-	@Override
-	protected void onRestart() {
-		super.onRestart();
-	}
-	
-	@Override
-	protected void onStop() {
-		super.onStop();
-	}
-	
-	@Override
-	protected void onDestroy() {
-		Log.e(SolnRss.class.getName(), "ON DESTROY");
-		LocalBroadcastManager.getInstance(this).unregisterReceiver(mMessageReceiver);
-		super.onDestroy();
-	}
-	
-	@Override
-	public void onSharedPreferenceChanged(SharedPreferences shared, String key) {
-
-		if (key.compareTo("pref_display_unread") == 0) {
-			publicationsListener.refreshPublications();
-		} 
-		else if (key.compareTo("pref_delete_all_publications") == 0) {
-			publicationsListener.refreshPublications();
-		} 
-		else if (key.compareTo("pref_sort_syndications") == 0) {
-			syndicationsListener.reloadSyndications();
-		} 
-		else if (key.compareTo("pref_sort_categories") == 0) {
-			categoriesListener.reloadCategories();
-		} 
-		else if (key.compareTo("pref_user_font_face") == 0 
-				|| key.compareTo("pref_user_font_size") == 0) {
-			syndicationsListener.reloadSyndications();
-			publicationsListener.refreshPublications();
-			categoriesListener.reloadCategories();
-		} 
-	}
-
-	public void registerPreferenceManager() {
-		PreferenceManager.getDefaultSharedPreferences(this)
-				.registerOnSharedPreferenceChangeListener(this);
-		
-		SharedPreferences pref = PreferenceManager
-				.getDefaultSharedPreferences(this);
-		
-		FindNewPublicationsAlarmManager.createInstance(pref, this);
-		
-		TypeFaceSingleton.getInstance(this);
-		
-		LocalBroadcastManager.getInstance(this).registerReceiver(
-				mMessageReceiver, new IntentFilter("newPublicationFound"));
-	}
-	
-	private boolean displayAlreadyReadPublications() {
-		return PreferenceManager.getDefaultSharedPreferences(this)
-					.getBoolean("pref_display_unread", true);
-	}
-	
-	private void removeNotification(){
-		NotificationManager notificationManager = 
-				(NotificationManager) getSystemService(NOTIFICATION_SERVICE);
-		notificationManager.cancel(0x000001);
-
-		SharedPreferences.Editor editor =  PreferenceManager.getDefaultSharedPreferences(this).edit();
-		editor.putInt("newPublicationsRecorded", 0);
-		editor.putString("newPublicationsRecordDate", null);
-		editor.commit();
-	}
+	};
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -158,6 +78,8 @@ public class SolnRss extends Activity implements ActionBar.TabListener,
 		// Restart activity.
 		if (event != null
 				&& event.compareTo(NewPublicationsNotification.NotifyEvent.RESTART_ACTIVITY) == 0) {
+			
+			// Log.e(SolnRss.class.getName(), "REFRESH ACTIVITY NEW INTENT");
 			
 			String dateNewPublicationsFound = getIntent().getStringExtra("dateNewPublicationsFound");
 			SharedPreferences.Editor editor = getPreferences(0).edit();
@@ -225,50 +147,67 @@ public class SolnRss extends Activity implements ActionBar.TabListener,
 		removeNotification();
 		registerPreferenceManager();
 	}
+	
+	@Override
+	public void onSharedPreferenceChanged(SharedPreferences shared, String key) {
 
+		if (key.compareTo("pref_display_unread") == 0) {
+			publicationsListener.refreshPublications();
+		} 
+		else if (key.compareTo("pref_delete_all_publications") == 0) {
+			publicationsListener.refreshPublications();
+		} 
+		else if (key.compareTo("pref_sort_syndications") == 0) {
+			syndicationsListener.reloadSyndications();
+		} 
+		else if (key.compareTo("pref_sort_categories") == 0) {
+			categoriesListener.reloadCategories();
+		} 
+		else if (key.compareTo("pref_user_font_face") == 0 
+				|| key.compareTo("pref_user_font_size") == 0) {
+			syndicationsListener.reloadSyndications();
+			publicationsListener.refreshPublications();
+			categoriesListener.reloadCategories();
+		} 
+	}
+
+	public void registerPreferenceManager() {
+		PreferenceManager.getDefaultSharedPreferences(this)
+				.registerOnSharedPreferenceChangeListener(this);
+		
+		SharedPreferences pref = PreferenceManager
+				.getDefaultSharedPreferences(this);
+		
+		FindNewPublicationsAlarmManager.createInstance(pref, this);
+		
+		TypeFaceSingleton.getInstance(this);
+		
+		LocalBroadcastManager.getInstance(this).registerReceiver(
+				newPublicationsFoundBroadcastReceiver, new IntentFilter("newPublicationFound"));
+	}
+	
+	private void removeNotification(){
+		NotificationManager notificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
+		notificationManager.cancel(0x000001);
+
+		SharedPreferences.Editor editor =  PreferenceManager.getDefaultSharedPreferences(this).edit();
+		editor.putInt("newPublicationsRecorded", 0);
+		editor.putString("newPublicationsRecordDate", null);
+		editor.commit();
+	}
+	
 	@Override
-	protected void onPause() {
-		Log.e(SolnRss.class.getName(), "ON PAUSE");
-		if (isFinishing()) {
-			publicationsListener.removeTooOLdPublications();
+	public boolean onMenuOpened(int featureId, Menu menu) {
+		if(menu != null){
+			if (displayAlreadyReadPublications()) {
+				menu.getItem(2).setTitle(
+						getResources().getString(R.string.menu_hide_already_read));
+			} else {
+				menu.getItem(2).setTitle(
+						getResources().getString(R.string.menu_show_already_read));
+			}
 		}
-		super.onPause();
-	}
-	
-	@Override
-	protected void onSaveInstanceState(Bundle outState) {
-		super.onSaveInstanceState(outState);
-		// Save publication list view state
-		// Parcelable state = publicationsListener.getListViewInstanceState();
-		// outState.putParcelable("publicationlistViewState", state);
-	}
-	
-	@Override
-	protected void onResume() {
-		Log.e(SolnRss.class.getName(), "ON RESUME");
-		super.onResume();
-	}
-	
-	// handler for received Intents for the "my-event" event 
-	private BroadcastReceiver mMessageReceiver = new BroadcastReceiver() {
-		@Override
-		public void onReceive(Context context, Intent intent) {
-			publicationsListener.reLoadPublicationsWithLastFound();
-		}
-	};
-	
-	@Override
-	public void onActivityResult(int requestCode, int resultCode, Intent data) {
-		super.onActivityResult(requestCode, resultCode, data);
-		switch (resultCode) {
-		default:
-			break;
-		}
-	}
-	
-	@Override
-	public void onBackPressed() {
-		super.onBackPressed();
+		return super.onMenuOpened(featureId, menu);
 	}
 	
 	@Override
@@ -291,8 +230,7 @@ public class SolnRss extends Activity implements ActionBar.TabListener,
 			
 		case R.id.menu_add_site:	
 			if (SyndicationFinderService.isAlreadyRunning == 1) {
-				Toast.makeText(SolnRss.this, 
-						"Service is already running", Toast.LENGTH_LONG).show();
+				Toast.makeText(SolnRss.this, "Service is already running", Toast.LENGTH_LONG).show();
 			} else {
 				openDialogForAddSyndication();
 			}
@@ -394,7 +332,7 @@ public class SolnRss extends Activity implements ActionBar.TabListener,
 
 		Intent intent = new Intent(this, SyndicationFinderService.class);
 		intent.setAction("REGISTER_RECEIVER");
-		intent.putExtra("ResultReceiver", resultReceiver);
+		intent.putExtra("ResultReceiver", findNewSyndicationResultReceiver);
 		intent.putExtra("ResultReceiver_ID", hashCode());
 		intent.putExtra("url", url);
 		
@@ -408,9 +346,8 @@ public class SolnRss extends Activity implements ActionBar.TabListener,
 		}
 	}
 	
-	private ResultReceiver resultReceiver = new ResultReceiver(new Handler()) {
+	private ResultReceiver findNewSyndicationResultReceiver = new ResultReceiver(new Handler()) {
 		protected void onReceiveResult(int resultCode, Bundle resultData) {
-			
 			// Refresh the syndication tab
 			refreshSyndications();
 			
@@ -485,17 +422,32 @@ public class SolnRss extends Activity implements ActionBar.TabListener,
 		super.onNewIntent(intent);
 		
 	    setIntent(intent);
-	    Log.e(PublicationsFragment.class.getName(), "CALL NEW INTENT");
-	    NewPublicationsNotification.NotifyEvent event = 
-	    		NewPublicationsNotification.NotifyEvent.detachFrom(intent);
+	    Log.e(SolnRss.class.getName(), "CALL NEW INTENT");
+	    NewPublicationsNotification.NotifyEvent event = NewPublicationsNotification.NotifyEvent.detachFrom(intent);
 	    
 		if (event != null
 				&& event.compareTo(NewPublicationsNotification.NotifyEvent.RESTART_ACTIVITY) == 0) {
 			
-			publicationsListener.reLoadPublicationsByLastFound(
-					intent.getExtras().getString("newPublicationsRecordDate"));
+			publicationsListener.reLoadPublicationsByLastFound(intent.getExtras().getString("dateNewPublicationsFound"));
+			
+			// TODO UNE SEUL METHODE POUR CA
+			SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
+			SharedPreferences.Editor editor = sharedPreferences.edit();
+			editor.putInt("newPublicationsRecorded", 0);
+			editor.putString("newPublicationsRecordDate", null);
+			editor.commit();
+			// --
+
 		}
 	};
+	
+	public void deleteLastPublicationFoundPreference() {
+		SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
+		SharedPreferences.Editor editor = sharedPreferences.edit();
+		editor.putInt("newPublicationsRecorded", 0);
+		editor.putString("newPublicationsRecordDate", null);
+		editor.commit();
+	}
 	
 	private void warmUser(String msg) {
 		String ok = getResources().getString(android.R.string.ok);
@@ -515,6 +467,64 @@ public class SolnRss extends Activity implements ActionBar.TabListener,
 		dialog.show();
 	}
 
+	private boolean displayAlreadyReadPublications() {
+		return PreferenceManager.getDefaultSharedPreferences(this).getBoolean(
+				"pref_display_unread", true);
+	}
+	
+	@Override
+	protected void onRestart() {
+		Log.e(SolnRss.class.getName(), "ON RESTART");
+		super.onRestart();
+	}
+	
+	@Override
+	protected void onStop() {
+		Log.e(SolnRss.class.getName(), "ON STOP");
+		super.onStop();
+	}
+	
+	@Override
+	protected void onDestroy() {
+		Log.e(SolnRss.class.getName(), "ON DESTROY");
+		LocalBroadcastManager.getInstance(this).unregisterReceiver(newPublicationsFoundBroadcastReceiver);
+		super.onDestroy();
+	}
+	
+	@Override
+	protected void onPause() {
+		Log.e(SolnRss.class.getName(), "ON PAUSE");
+		if (isFinishing()) {
+			publicationsListener.removeTooOLdPublications();
+		}
+		super.onPause();
+	}
+	
+	@Override
+	protected void onResume() {
+		Log.e(SolnRss.class.getName(), "ON RESUME");
+		super.onResume();
+	}
+	
+	@Override
+	protected void onSaveInstanceState(Bundle outState) {
+		super.onSaveInstanceState(outState);
+	}
+	
+	@Override
+	public void onActivityResult(int requestCode, int resultCode, Intent data) {
+		super.onActivityResult(requestCode, resultCode, data);
+		switch (resultCode) {
+		default:
+			break;
+		}
+	}
+	
+	@Override
+	public boolean onCreateOptionsMenu(Menu menu) {
+		return super.onCreateOptionsMenu(menu);
+	}
+	
 	public void setCategoriesFragmentListener(CategoriesFragmentListener categoriesFragmentListener) {
 		this.categoriesListener = categoriesFragmentListener;
 	}

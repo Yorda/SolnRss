@@ -7,6 +7,7 @@ import android.support.v4.content.LocalBroadcastManager;
 import android.util.SparseArray;
 import free.solnRss.business.PublicationFinderBusiness;
 import free.solnRss.business.impl.PublicationFinderBusinessImpl;
+import free.solnRss.manager.UpdatingProcessConnectionManager;
 
 public class PublicationsFinderService extends IntentService {
 
@@ -15,7 +16,7 @@ public class PublicationsFinderService extends IntentService {
 	private int resultReceiverId = -1;
 
 	public PublicationsFinderService() {
-		super("PublicationsFinderService2");
+		super("PublicationsFinderService");
 	}
 
 	@Override
@@ -26,14 +27,19 @@ public class PublicationsFinderService extends IntentService {
 
 	@Override
 	protected void onHandleIntent(Intent intent) {
-		publicationFinderBusiness = new PublicationFinderBusinessImpl(getApplicationContext());
-		publicationFinderBusiness.searchNewPublications();
 		
-		if (publicationFinderBusiness.getNewPublicationsRecorded() > 0) {
+		if (UpdatingProcessConnectionManager.canUseConnection(getApplicationContext())) {
 			
-			Intent broadcast = new Intent("newPublicationFound");
-			broadcast.putExtra("newPublicationsRecorded", publicationFinderBusiness.getNewPublicationsRecorded());
-			LocalBroadcastManager.getInstance(this).sendBroadcast(broadcast);
+			publicationFinderBusiness = new PublicationFinderBusinessImpl(getApplicationContext());
+			publicationFinderBusiness.searchNewPublications();
+			
+			if (publicationFinderBusiness.getNewPublicationsRecorded() > 0) {
+				
+				Intent broadcast = new Intent("newPublicationFound");
+				broadcast.putExtra("newPublicationsRecorded", publicationFinderBusiness.getNewPublicationsRecorded());
+				LocalBroadcastManager.getInstance(this).sendBroadcast(broadcast);
+			}
+			
 		}
 	}
 
@@ -47,8 +53,7 @@ public class PublicationsFinderService extends IntentService {
 
 		} else if ("REGISTER_RECEIVER".equals(intent.getAction())) {
 			// Extract the ResultReceiver and store it into the map
-			ResultReceiver receiver = intent
-					.getParcelableExtra("ResultReceiver");
+			ResultReceiver receiver = intent.getParcelableExtra("ResultReceiver");
 			resultReceiverId = intent.getIntExtra("ResultReceiver_ID", 0);
 			receiverMap.put(resultReceiverId, receiver);
 		}

@@ -27,6 +27,7 @@ import com.google.code.rome.android.repackaged.com.sun.syndication.feed.synd.Syn
 import free.solnRss.business.PublicationFinderBusiness;
 import free.solnRss.business.SyndicationBusiness;
 import free.solnRss.exception.ExtractFeedException;
+import free.solnRss.manager.UpdatingProcessConnectionManager;
 import free.solnRss.notification.NewPublicationsNotification;
 import free.solnRss.provider.SolnRssProvider;
 import free.solnRss.repository.PublicationContentTable;
@@ -81,8 +82,9 @@ public class PublicationFinderBusinessImpl implements PublicationFinderBusiness 
 	}
 	
 	private void retrieveNewPublications() {
-		
-		//StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();StrictMode.setThreadPolicy(policy);
+		// For test
+		//StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder()
+		//.permitAll().build();StrictMode.setThreadPolicy(policy);
 
 		newPublicationsRecorded = 0;
 		
@@ -100,18 +102,22 @@ public class PublicationFinderBusinessImpl implements PublicationFinderBusiness 
 			url = syndications.get(syndicationId);
 
 			try {
-				syndEntries = syndicationBusiness.newRssPublished(url);
+				if (UpdatingProcessConnectionManager.canUseConnection(context)) {
+					
+					syndEntries = syndicationBusiness.newRssPublished(url);
+					
+					addNewPublicationIfNotAlreadyRegistered(syndicationId, updateDate);
+					
+					updateRegisteredRss(syndicationId);
+					
+					updateRefreshTime(syndicationId, updateDate);
+					
+				} 
+				
 			} catch (ExtractFeedException fe) {
 				// Set this syndication in error
 				setSyndicationInError(syndicationId, fe.getError().getId(),	updateDate);
-				continue;
 			}
-			
-			addNewPublicationIfNotAlreadyRegistered(syndicationId, updateDate);
-			
-			updateRegisteredRss(syndicationId);
-			
-			updateRefreshTime(syndicationId, updateDate);
 		}
 
 		registerNewPublications(updateDate);
@@ -134,9 +140,6 @@ public class PublicationFinderBusinessImpl implements PublicationFinderBusiness 
 				operations.add(ContentProviderOperation.newInsert(Uri.parse(SolnRssProvider.URI + "/publication"))
 						.withValues(addNewPublication(syndicationId, syndEntry, updateDateFormat))
 						.withYieldAllowed(true)	.build());
-					
-				//Uri uri = Uri.parse(SolnRssProvider.URI + "/publicationContent");
-				//uri = uri.buildUpon().appendQueryParameter("tableKey", syndicationId.toString()).build();
 				
 				operations.add(ContentProviderOperation.newInsert(Uri.parse(SolnRssProvider.URI + "/publicationContent"))
 						.withValue("syndicationId",  syndicationId.toString())
@@ -176,7 +179,6 @@ public class PublicationFinderBusinessImpl implements PublicationFinderBusiness 
 				// Notify
 				if (mustDisplayNotification()) {
 					newPublicationsNotification.notificationForNewPublications(newPublicationsRecorded, updateDate);
-					//notificationForNewPublications(newPublicationsRecorded);
 				}
 			} catch (OperationApplicationException e) {
 				

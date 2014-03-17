@@ -22,6 +22,9 @@ import free.solnRss.utility.HttpUtil;
 
 public class SyndicationFinderService extends IntentService {
 
+	private SparseArray<ResultReceiver> receiverMap = new SparseArray<ResultReceiver>();
+	private int resultReceiverId = -1;
+	
 	public static Integer isAlreadyRunning = 0;
 	private final Integer numberOfSteps = 100;
 
@@ -37,6 +40,22 @@ public class SyndicationFinderService extends IntentService {
 		super("SyndicationFinderService");
 	}
 
+	private void registerOrUnregisterReceiver(Intent intent) {
+		if (intent == null) {
+			receiverMap = new SparseArray<ResultReceiver>();
+		} else if ("UNREGISTER_RECEIVER".equals(intent.getAction())) {
+			// Extract the ResultReceiver ID and remove it from the map
+			resultReceiverId = intent.getIntExtra("ResultReceiver_ID", 0);
+			receiverMap.remove(resultReceiverId);
+			
+		} else if ("REGISTER_RECEIVER".equals(intent.getAction())) {
+			// Extract the ResultReceiver and store it into the map
+			ResultReceiver receiver = intent.getParcelableExtra("ResultReceiver");
+			resultReceiverId = intent.getIntExtra("ResultReceiver_ID", 0);
+			receiverMap.put(resultReceiverId, receiver);
+		}
+	}
+	
 	// Create the notification
 	protected void createNotification() {
 
@@ -72,19 +91,7 @@ public class SyndicationFinderService extends IntentService {
 		notificationManager.notify(0, notification);
 	}
 
-	// 1 - Is the device connected ?
-	/*public boolean isOnline() {
-		ConnectivityManager cm = (ConnectivityManager) getApplication()
-				.getSystemService(Context.CONNECTIVITY_SERVICE);
-		if (cm.getActiveNetworkInfo() != null
-				&& cm.getActiveNetworkInfo().isConnected()) {
-			return true;
-		}
-		processNotification(numberOfSteps, getString(R.string.no_connection));
-		return false;
-	}*/
-
-	// 2 - Is the URL is ok ?
+	// 1 - Is the URL is ok ?
 	protected boolean isUrlIsright(String url) {
 		if (!HttpUtil.isValidUrl(url)) {
 			processNotification(numberOfSteps, 
@@ -94,7 +101,7 @@ public class SyndicationFinderService extends IntentService {
 		return true;
 	}
 
-	// 3 - Is already a syndication with this url ?
+	// 2 - Is already a syndication with this url ?
 	protected boolean isAlreadyInDatabase(String url) {
 		SyndicationRepository repository = new SyndicationRepository(getApplicationContext());
 
@@ -106,11 +113,11 @@ public class SyndicationFinderService extends IntentService {
 		return false;
 	}
 
-	// 4 - Retrieve content
+	// 3 - Retrieve content
 	protected String retrieveHttpContent(String url) {
 		String contentFromHttp = null;
 		try {
-			contentFromHttp = HttpUtil.htmlFromSite(url);
+			contentFromHttp = HttpUtil.retrieveHtml(url);
 			if (contentFromHttp == null) {
 				processNotification(numberOfSteps,
 						getString(R.string.feed_not_found));
@@ -122,7 +129,7 @@ public class SyndicationFinderService extends IntentService {
 		return contentFromHttp;
 	}
 
-	// 5 - Search the RSS feed
+	// 4 - Search the RSS feed
 	protected Syndication searchRssFeed(String html, String url) {
 		Syndication syndication = null;
 		try {
@@ -138,7 +145,7 @@ public class SyndicationFinderService extends IntentService {
 		return syndication;
 	}
 
-	// 6 - Record new syndication
+	// 5 - Record new syndication
 	protected Long recordNewSyndication(Syndication syndication) {
 		SyndicationRepository repository = new SyndicationRepository(
 				getApplicationContext());
@@ -153,28 +160,9 @@ public class SyndicationFinderService extends IntentService {
 		return newSyndicationId;
 	}
 
-	// 7 - End process
+	// 6 - End process
 	protected void refreshActivity(Syndication syndication) {
 		notifyNewSyndication(syndication);
-	}
-
-	private SparseArray<ResultReceiver> receiverMap = new SparseArray<ResultReceiver>();
-	private int resultReceiverId = -1;
-
-	private void registerOrUnregisterReceiver(Intent intent) {
-		if (intent == null) {
-			receiverMap = new SparseArray<ResultReceiver>();
-		} else if ("UNREGISTER_RECEIVER".equals(intent.getAction())) {
-			// Extract the ResultReceiver ID and remove it from the map
-			resultReceiverId = intent.getIntExtra("ResultReceiver_ID", 0);
-			receiverMap.remove(resultReceiverId);
-			
-		} else if ("REGISTER_RECEIVER".equals(intent.getAction())) {
-			// Extract the ResultReceiver and store it into the map
-			ResultReceiver receiver = intent.getParcelableExtra("ResultReceiver");
-			resultReceiverId = intent.getIntExtra("ResultReceiver_ID", 0);
-			receiverMap.put(resultReceiverId, receiver);
-		}
 	}
 	
 	private void notifyNewSyndication(Syndication syndication) {
@@ -268,6 +256,7 @@ public class SyndicationFinderService extends IntentService {
 			refreshActivity(syndication);
 
 		} catch (Exception e) {
+			
 		} finally {
 			isAlreadyRunning = 0;
 		}

@@ -7,6 +7,7 @@ import java.net.URL;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.StatusLine;
+import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpUriRequest;
@@ -22,27 +23,32 @@ import android.graphics.BitmapFactory;
 public class HttpUtil {
 	
 
-	public static String htmlFromSite(String url) throws Exception {
+	public enum HTTP_FAILURE {
 		
+	}
+
+	public static String retrieveHtml(String url)
+			throws ClientProtocolException, IOException {
+
 		final HttpParams httpParams = new BasicHttpParams();
-	    HttpConnectionParams.setConnectionTimeout(httpParams, 6000);
-	    HttpConnectionParams.setSoTimeout(httpParams, 6000);
+		HttpConnectionParams.setConnectionTimeout(httpParams, 6000);
+		HttpConnectionParams.setSoTimeout(httpParams, 6000);
 		HttpClient httpclient = new DefaultHttpClient(httpParams);
-		
-		
+
 		HttpGet httpget = null;
 		HttpResponse response = null;
 		String html = null;
 		try {
-			
+
 			httpget = new HttpGet(url.trim());
 			response = httpclient.execute(httpget);
-			
+
 			int code = response.getStatusLine().getStatusCode();
-			if (code != 200) {
-				//TODO throw error or redirect...
+
+			if (code < 200 || code > 300) {
+				throw new IOException("Response code from site not OK");
 			}
-			
+
 			HttpEntity entity = response.getEntity();
 
 			if (entity != null) {
@@ -116,4 +122,45 @@ public class HttpUtil {
 	protected static String getImageUrl(String webSiteUrl, String imageTag){
 		return null;
 	}
+	
+	
+	/*final HttpParams httpParams = new BasicHttpParams();
+	HttpConnectionParams.setConnectionTimeout(httpParams, 6000);
+	HttpConnectionParams.setSoTimeout(httpParams, 6000);
+	HttpClient httpclient = new DefaultHttpClient(httpParams);
+
+	HttpGet httpget = null;
+	String response = null;
+
+	try {
+
+		httpget = new HttpGet(url.trim());
+		
+		// Create a custom response handler
+		ResponseHandler<String> responseHandler = new ResponseHandler<String>() {
+
+			public String handleResponse(final HttpResponse response)
+					throws ClientProtocolException, IOException {
+
+				int status = response.getStatusLine().getStatusCode();
+
+				if (status >= 200 && status < 300) {
+					HttpEntity entity = response.getEntity();
+					return entity != null ? StreamUtil.readInputStreamAsString(entity.getContent()) : null;
+				} else {
+					throw new ClientProtocolException("Unexpected response from site: " + status);
+				}
+			}
+		};
+
+		response = httpclient.execute(httpget, responseHandler);
+
+	} finally {
+		
+		if (httpget != null) {
+			httpget.abort();
+		}
+		httpclient.getConnectionManager().shutdown();
+	}
+	return response;*/
 }

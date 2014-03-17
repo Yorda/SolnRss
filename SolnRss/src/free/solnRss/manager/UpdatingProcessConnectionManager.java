@@ -8,6 +8,7 @@ import android.preference.PreferenceManager;
 
 public class UpdatingProcessConnectionManager {
 	private static String noConnectionReason;
+
 	public static boolean canUseConnection(Context context) {
 
 		ConnectivityManager connectivityManager = (ConnectivityManager) context
@@ -18,17 +19,18 @@ public class UpdatingProcessConnectionManager {
 				ConnectivityManager.TYPE_WIFI).isConnectedOrConnecting();
 
 		boolean isMobile = false;
-		
+
 		// For Device connection
 		// Could be null on tablet
-		if( connectivityManager.getNetworkInfo(
-				ConnectivityManager.TYPE_MOBILE) != null){
+		if (connectivityManager.getNetworkInfo(ConnectivityManager.TYPE_MOBILE) != null) {
+
 			isMobile = connectivityManager.getNetworkInfo(
 					ConnectivityManager.TYPE_MOBILE).isConnectedOrConnecting();
-		} 
+		}
 
 		if (!isMobile && !isWifi) {
-			noConnectionReason = context.getResources().getString(R.string.no_connection);
+			noConnectionReason = context.getResources().getString(
+					R.string.no_connection);
 			return false;
 		}
 
@@ -37,13 +39,14 @@ public class UpdatingProcessConnectionManager {
 
 		if (preferences.getBoolean("pref_what_type_of_connection", true)
 				&& !isWifi) {
-			noConnectionReason = context.getResources().getString(R.string.no_connection_wifi);
+			noConnectionReason = context.getResources().getString(
+					R.string.no_connection_wifi);
 			return false;
 		}
 
 		return true;
 	}
-	
+
 	public static String noConnectionReason() {
 		return noConnectionReason;
 	}

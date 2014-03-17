@@ -17,6 +17,7 @@ import android.preference.PreferenceManager;
 import android.text.Html;
 import android.text.Spanned;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.ContextMenu;
 import android.view.ContextMenu.ContextMenuInfo;
 import android.view.LayoutInflater;
@@ -87,6 +88,9 @@ public class PublicationsFragment extends AbstractFragment implements
 		// NewPublicationsNotification notify = new NewPublicationsNotification(getActivity());
 		// DateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.FRENCH);
 		// notify.notificationForNewPublications(25, "2014-01-31 09:30:00");
+		
+		//NewPublicationsNotification notify = new NewPublicationsNotification(getActivity());
+		// notify.notificationForNewPublications(25, "2014-03-14 13:30:00");
 	}
 	
 	private void displayList(Bundle save) {
@@ -308,7 +312,7 @@ public class PublicationsFragment extends AbstractFragment implements
 	}
 	
 	@Override public void onPause() {
-
+		Log.e(PublicationsFragment.class.getName(), "FRG ON PAUSE");
 		super.onPause();
 		SharedPreferences.Editor editor = getActivity().getPreferences(0).edit();
 		if (selectedSyndicationID != null) {
@@ -338,6 +342,12 @@ public class PublicationsFragment extends AbstractFragment implements
 		editor.commit();
 	}
 	
+	@Override
+	public void onDestroy() {
+		Log.e(SolnRss.class.getName(), "FRG ON DESTROY");
+		super.onDestroy();
+	}
+	
 	private void savePositionOnScreen(SharedPreferences.Editor editor) {
 		
 		int index = getListView().getFirstVisiblePosition();
@@ -346,6 +356,8 @@ public class PublicationsFragment extends AbstractFragment implements
 		View v = getListView().getChildAt(0);
 		int position = (v == null) ? 0 : v.getTop();
 		editor.putInt("publicationsListViewPosition", position);
+		
+		Log.e(PublicationsFragment.class.getName(), "FRG SAVE POSITION: Index = "+index +" Position = " +position);
 	}
 	
 	@Override
@@ -358,7 +370,12 @@ public class PublicationsFragment extends AbstractFragment implements
 
 		SharedPreferences.Editor editor = prefs.edit();
 		
+		Log.e(PublicationsFragment.class.getName(), "FRG RESTORE POSITION: Index = "+index +" Position = " +position);
+		
 		if (cursorCount != -1) {
+			
+			Log.e(PublicationsFragment.class.getName(), "FRG RESTORE POSITION: with cursorCount");
+			
 			// Get differece between old and new cursor
 			int newCursorCount = 
 				((PublicationAdapter) getListAdapter()).getCursor().getCount() - cursorCount;
@@ -373,9 +390,11 @@ public class PublicationsFragment extends AbstractFragment implements
 			editor.commit();
 		}
 		else if (index != -1) {
+			Log.e(PublicationsFragment.class.getName(), "FRG RESTORE POSITION: with index");
 			// Set list view at position
 			getListView().setSelectionFromTop(index, position);
 			// Reset position save
+			editor.putInt("cursorCount", -1);
 			editor.putInt("publicationsListViewIndex", -1);
 			editor.putInt("publicationsListViewPosition", -1);
 			editor.commit();
@@ -494,6 +513,7 @@ public class PublicationsFragment extends AbstractFragment implements
 		editor.commit();
 	}
 	
+	// Refresh the list after event like a syndication delete.
 	public void refreshPublications() {
 		if (this.selectedSyndicationID != null) {
 			reLoadPublicationsBySyndication(this.selectedSyndicationID);
@@ -568,15 +588,6 @@ public class PublicationsFragment extends AbstractFragment implements
 		
 		this.selectedSyndicationID = null;
 		this.selectedCategoryID = null;
-		
-		SharedPreferences sharedPreferences = 
-				PreferenceManager.getDefaultSharedPreferences(getActivity());
-		
-		SharedPreferences.Editor editor = sharedPreferences.edit();
-		editor.putInt("newPublicationsRecorded", 0);
-		editor.putString("newPublicationsRecordDate", null);
-		editor.commit();
-
 		Bundle bundle = new Bundle();
 		bundle.putString("dateNewPublicationsFound", dateNewPublicationsFound);
 
@@ -586,21 +597,11 @@ public class PublicationsFragment extends AbstractFragment implements
 		}
 	}
 
+	// Load application with date last found
 	public void loadPublicationsByLastFound(String dateNewPublicationsFound) {
 		
 		this.selectedSyndicationID = null;
 		this.selectedCategoryID = null;
-		
-		SharedPreferences sharedPreferences = 
-				PreferenceManager.getDefaultSharedPreferences(getActivity());
-		
-		SharedPreferences.Editor editor = sharedPreferences.edit();
-		editor.putInt("newPublicationsRecorded", 0);
-		editor.putString("newPublicationsRecordDate", null);
-		editor.putInt("publicationsListViewIndex", -1);
-		editor.putInt("publicationsListViewPosition", -1);
-		editor.commit();
-
 		Bundle bundle = new Bundle();
 		bundle.putString("dateNewPublicationsFound", dateNewPublicationsFound);
 
@@ -612,6 +613,8 @@ public class PublicationsFragment extends AbstractFragment implements
 	
 
 	@Override
+	// Call by broadcast receiver for refresh list with last items found and without change position 
+	// when user use application 
 	public void reLoadPublicationsWithLastFound() {
 		
 		SharedPreferences preferences =  getActivity().getPreferences(0);
@@ -783,11 +786,22 @@ public class PublicationsFragment extends AbstractFragment implements
 
 	@Override
 	public void removeTooOLdPublications() {
-		try {
+		
+		new Runnable() {
+			public void run() {
+				try {
+					publicationRepository.removeTooOLdPublications();
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+			}
+		};
+		
+		/*try {
 			publicationRepository.removeTooOLdPublications();
 		} catch (Exception e) {
 			e.printStackTrace();
-		}
+		}*/
 	}
 
 	@Override

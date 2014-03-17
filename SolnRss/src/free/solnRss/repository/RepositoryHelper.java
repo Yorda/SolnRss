@@ -1,21 +1,13 @@
 package free.solnRss.repository;
 
-import java.util.List;
-
 import android.content.Context;
-import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteDatabase.CursorFactory;
 import android.database.sqlite.SQLiteOpenHelper;
-import android.text.TextUtils;
-
-import com.google.code.rome.android.repackaged.com.sun.syndication.feed.synd.SyndEntry;
-
-import free.solnRss.utility.SyndicateUtil;
 
 public class RepositoryHelper extends SQLiteOpenHelper {
 
-	public static int VERSION = 14;
+	public static int VERSION = 15;
 	public static String DATABASE_NAME = "SOLNRSS2.db";
 
 	private static RepositoryHelper instance;
@@ -45,18 +37,9 @@ public class RepositoryHelper extends SQLiteOpenHelper {
 
 	@Override
 	public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-		if (newVersion == 10) {
-			upgradeToV10(db);
-		}
-		if (newVersion == 11) {
-			upgradeToV11(db);
-		}
-		if (newVersion == 12) {
-			upgradeToV12(db);
-		}
-		if (newVersion == 14) {
-			upgradeToV14(db);
-		}
+		//if (newVersion == 16) {
+		//	upgradeToV16(db);
+		//}
 	}
 
 	private void setDatabase(SQLiteDatabase db) {
@@ -117,291 +100,33 @@ public class RepositoryHelper extends SQLiteOpenHelper {
 			"	FOREIGN KEY(syn_syndication_id) REFERENCES d_syndication( _id)\r\n" + 
 			");"
 			
-			/*,"create table d_publication_content (\r\n" + 
-			"	_id INTEGER PRIMARY KEY autoincrement,\r\n" + 
-			"	pct_link text NOT NULL,\r\n" + 
-			"	pct_publication text,\r\n" + 
-			"	pub_publication_id INTEGER NOT NULL,\r\n" + 
-			"	FOREIGN KEY(pub_publication_id) REFERENCES d_publication( _id)\r\n" + 
-			"); \r\n"*/
+			,"create table r_error (\r\n"+
+			"	err_code INTEGER,\r\n"+
+			"	err_msg  text\r\n"+ 
+			");" 
+					+ " insert into r_error values (1, 'err_search_bad_url');"
+					+ " insert into r_error values (2, 'err_load_http_data');"
+					+ " insert into r_error values (3, 'err_extract_rss');"
+			
 			};
 	
-	private void upgradeToV10(SQLiteDatabase db) {
-		SyndicateUtil syndicateUtil = new SyndicateUtil();
-		db.beginTransaction();
-		try {
-			
-			db.execSQL(tables[4]);
-			
-			Cursor c = db.rawQuery(" select _id, syn_last_rss_published from d_syndication ",null);
-			
-			c.moveToFirst();
-			Integer id = -1;
-			String lastRSS = null;
-			
-			while (c.moveToNext()) {
-				id = c.getInt(0);
-				lastRSS = c.getString(1);
-				
-				if (!TextUtils.isEmpty(lastRSS)) {
-					syndicateUtil.init(lastRSS);
-					List<SyndEntry> entries = syndicateUtil.lastEntries();
-					
-					for (SyndEntry e : entries) {
-						String[] args = new String[3];
-						args[0] = e.getLink();
-						args[1] = e.getTitle();
-						args[2] = id.toString();
-						db.execSQL("insert into d_rss_title_url (rss_url, rss_title, syn_syndication_id) values (?,?,?) ",args);
-					}
-				}
-			}
-			
-			db.execSQL(" update d_syndication set syn_last_rss_published = null ");		
-			
-			String tmp = "create table d_syndication_tmp (\r\n" + 
-			"	_id INTEGER PRIMARY KEY autoincrement,\r\n" + 
-			"	syn_name text NOT NULL,	\r\n" + 
-			"	syn_url text NOT NULL,\r\n" + 
-			"	syn_website_url text NOT NULL,\r\n" + 
-			"	syn_is_active INTEGER NOT NULL,\r\n" + 
-			"	syn_number_click INTEGER NOT NULL,\r\n" + 
-			"	syn_last_extract_time datetime NOT NULL,\r\n" + 
-			"	syn_creation_date datetime NOT NULL,\r\n" + 
-			"   syn_display_on_timeline INTEGER NOT NULL \r\n" +
-			"); \r\n";
-			
-			db.execSQL(tmp);
-			
-			c = db.rawQuery(" select _id,syn_name,syn_url,syn_website_url,syn_is_active,syn_number_click,syn_last_extract_time,syn_creation_date,syn_display_on_timeline  from d_syndication ",null);
-			c.moveToFirst();
-			
-			do {
-				
-				db.execSQL("insert into d_syndication_tmp " +
-						"(_id,syn_name,syn_url,syn_website_url,syn_is_active,syn_number_click,syn_last_extract_time,syn_creation_date,syn_display_on_timeline) " +
-						"values (?,?,?,?,?,?,?,?,?) ",new String[]{
-						Integer.valueOf(c.getInt(0)).toString(), 
-						c.getString(1),
-						c.getString(2),
-						c.getString(3),
-						Integer.valueOf(c.getInt(4)).toString(),
-						Integer.valueOf(c.getInt(5)).toString(), 
-						c.getString(6),
-						c.getString(7),
-						Integer.valueOf(c.getInt(8)).toString()
-				} );
-			}while (c.moveToNext());
-			
-			db.execSQL("drop table d_syndication ");	
-			
-			String newTable = "create table d_syndication (\r\n" + 
-					"	_id INTEGER PRIMARY KEY autoincrement,\r\n" + 
-					"	syn_name text NOT NULL,	\r\n" + 
-					"	syn_url text NOT NULL,\r\n" + 
-					"	syn_website_url text NOT NULL,\r\n" + 
-					"	syn_is_active INTEGER NOT NULL,\r\n" + 
-					"	syn_number_click INTEGER NOT NULL,\r\n" + 
-					"	syn_last_extract_time datetime NOT NULL,\r\n" + 
-					"	syn_creation_date datetime NOT NULL,\r\n" + 
-					"   syn_display_on_timeline INTEGER NOT NULL, \r\n" +
-					"  	syn_last_rss_search_result INTEGER \r\n" +
-					"); \r\n";
-			
-			db.execSQL(newTable);	
-			
-			c = db.rawQuery(" select _id,syn_name,syn_url,syn_website_url,syn_is_active,syn_number_click,syn_last_extract_time,syn_creation_date,syn_display_on_timeline  from d_syndication_tmp ",null);
-			c.moveToFirst();
-			
-			
-			do {
-				
-				db.execSQL("insert into d_syndication " +
-						"(_id,syn_name,syn_url,syn_website_url,syn_is_active,syn_number_click,syn_last_extract_time,syn_creation_date,syn_display_on_timeline) " +
-						"values (?,?,?,?,?,?,?,?,?) ",new String[]{
-						Integer.valueOf(c.getInt(0)).toString(), 
-						c.getString(1),
-						c.getString(2),
-						c.getString(3),
-						Integer.valueOf(c.getInt(4)).toString(),
-						Integer.valueOf(c.getInt(5)).toString(), 
-						c.getString(6),
-						c.getString(7),
-						Integer.valueOf(c.getInt(8)).toString()
-				} );
-			}while (c.moveToNext());
-			
-			
-			db.execSQL("drop table d_syndication_tmp ");	
-			
-			db.setTransactionSuccessful();
-			
-		} catch (Exception e) {
-			e.printStackTrace();
-		} finally {
-			db.endTransaction();
-		}
-	}
 
 	
-	protected void upgradeToV11(SQLiteDatabase db) {
-		db.beginTransaction();
-		try {
-
-			String sql = "create table d_publication_content (\r\n" + 
-					"	_id INTEGER PRIMARY KEY autoincrement,\r\n" + 
-					"	pct_link text NOT NULL,\r\n" + 
-					"	pct_publication text,\r\n" + 
-					"	pub_publication_id INTEGER NOT NULL,\r\n" + 
-					"	FOREIGN KEY(pub_publication_id) REFERENCES d_publication( _id)\r\n" + 
-					"); \r\n";
-
-			
-			db.execSQL(sql);
-					
-			sql= "insert into d_publication_content(pct_link,pct_publication,pub_publication_id) select pub_link, pub_publication, _id from d_publication ";
-			
-			db.execSQL(sql);
-			
-			sql = "create table d_publication_tmp (\r\n" + 
-					"	_id INTEGER PRIMARY KEY autoincrement,\r\n" + 
-					"	pub_link text NOT NULL,\r\n" +  //
-					"	pub_title text NOT NULL,\r\n" + 
-					"	pub_already_read integer,\r\n" + 
-					"	pub_publication text,\r\n" + 
-					"	pub_publication_date datetime NOT NULL,\r\n" + 
-					"	syn_syndication_id INTEGER NOT NULL,\r\n" + 
-					"	FOREIGN KEY(syn_syndication_id) REFERENCES d_syndication( _id)\r\n" + 
-					"); \r\n";
-			
-			db.execSQL(sql);
-			
-			sql= "insert into d_publication_tmp select * from d_publication ";
-			
-			db.execSQL(sql);
-			
-			db.execSQL("drop table d_publication ");	
-			
-			sql = "create table d_publication (\r\n" + 
-					"	_id INTEGER PRIMARY KEY autoincrement,\r\n" + 
-					"	pub_title text NOT NULL,\r\n" + 
-					"	pub_already_read integer,\r\n" + 
-					"	pub_publication_date datetime NOT NULL,\r\n" + 
-					"	syn_syndication_id INTEGER NOT NULL,\r\n" + 
-					"	FOREIGN KEY(syn_syndication_id) REFERENCES d_syndication( _id)\r\n" + 
-					"); \r\n";
-			
-			db.execSQL(sql);
-			
-			sql= "insert into d_publication (_id,pub_title,pub_already_read,pub_publication_date,syn_syndication_id) select _id,pub_title,pub_already_read,pub_publication_date,syn_syndication_id from d_publication_tmp ";
-			
-			db.execSQL(sql);
-			
-			db.execSQL("drop table d_publication_tmp ");
-			
-			db.setTransactionSuccessful();
-			
-		} catch (Exception e) {
-			e.printStackTrace();
-		} finally {
-			db.endTransaction();
-		}
-	}
-	
-	protected void upgradeToV12(SQLiteDatabase db) {
-		db.beginTransaction();
-		try {
-
-			Cursor c = db.rawQuery("select _id from d_syndication ",null);
-			c.moveToFirst();
-			Integer syndicationId = null;
-			do {
-				syndicationId = c.getInt(0);
-				db.execSQL( "create table d_publication_content_" + syndicationId + " (\r\n" + 
-						"	_id INTEGER PRIMARY KEY autoincrement,\r\n" + 
-						"	pct_link text NOT NULL,\r\n" + 
-						"	pct_publication text,\r\n" + 
-						"	pub_publication_id INTEGER NOT NULL,\r\n" + 
-						"	FOREIGN KEY(pub_publication_id) REFERENCES d_publication( _id)\r\n" + 
-						"); \r\n");
-				
-				Cursor c2 = db.rawQuery("select pct_link,pct_publication,pub_publication_id from d_publication_content " +
-						"where pub_publication_id in (select _id from d_publication where syn_syndication_id = "+ syndicationId + ") ", null);
-				
-				c2.moveToFirst();
-				if(c2.getCount() > 0 ){
-					do {
-						db.execSQL("insert into d_publication_content_" + syndicationId + " (pct_link,pct_publication,pub_publication_id) values (?,?,?) ", 
-								new String[]{
-								c2.getString(0),
-								c2.getString(1),
-								String.valueOf(c2.getInt(2))
-						});
-						
-					} while (c2.moveToNext());
-				}
-				
-
-			} while (c.moveToNext());
-			
-			db.setTransactionSuccessful();
-
-		} catch (Exception e) {
-			e.printStackTrace();
-		} finally {
-			db.endTransaction();
-		}
-
-	}
-	
-	private void upgradeToV14(SQLiteDatabase db) {
+	protected void upgradeToV16(SQLiteDatabase db) {
 		try {
 			db.beginTransaction();
-			
-			db.execSQL("drop table d_publication_content ");
-			
-			// Add favorite column in publication table
-			String sql = "create table d_publication_tmp (\r\n" + 
-					"	_id INTEGER PRIMARY KEY autoincrement,\r\n" + 
-					"	pub_title text NOT NULL,\r\n" + 
-					"	pub_already_read integer,\r\n" + 
-					"	pub_publication_date datetime NOT NULL,\r\n" + 
-					"	syn_syndication_id INTEGER NOT NULL,\r\n" + 
-					"	FOREIGN KEY(syn_syndication_id) REFERENCES d_syndication( _id)\r\n" + 
-					"); \r\n";
-			
-			db.execSQL(sql);
-			
-			sql= "insert into d_publication_tmp select * from d_publication ";
+			String sql = " ";
 			
 			db.execSQL(sql);
 						
-			db.execSQL("drop table d_publication ");
-			
-			sql = "create table d_publication (\r\n" + 
-					"	_id INTEGER PRIMARY KEY autoincrement,\r\n" + 
-					"	pub_title text NOT NULL,\r\n" + 
-					"	pub_already_read integer,\r\n" + 
-					"	pub_publication_date datetime NOT NULL,\r\n" + 
-					"	syn_syndication_id INTEGER NOT NULL,\r\n" + 
-					"	pub_favorite INTEGER, \r\n" + 
-					"	FOREIGN KEY(syn_syndication_id) REFERENCES d_syndication( _id)\r\n" + 
-					"); \r\n";
-			
-			db.execSQL(sql);
-			
-			sql= "insert into d_publication (_id,pub_title,pub_already_read,pub_publication_date,syn_syndication_id) select _id,pub_title,pub_already_read,pub_publication_date,syn_syndication_id from d_publication_tmp ";
-			
-			db.execSQL(sql);
-			
-			db.execSQL("drop table d_publication_tmp ");
-			
 			db.setTransactionSuccessful();
 			
 		} catch (Exception e) {
 			e.printStackTrace();
+			
 		} finally {
 			db.endTransaction();
 		}
 	}
+	
 }

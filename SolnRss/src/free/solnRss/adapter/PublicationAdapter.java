@@ -53,9 +53,9 @@ public class PublicationAdapter extends SimpleCursorAdapter {
 			item = (PublicationItem) convertView.getTag();
 		}
 		
-		String title = getCursor().getString(1); // pub_title
-		String name = getCursor().getString(3); // syn_name
-		Integer isRead = getCursor().getInt(2); // pub_already_read
+		String title   = getCursor().getString(1); // pub_title
+		String name    = getCursor().getString(3); // syn_name
+		Integer isRead = getCursor().getInt(2);    // pub_already_read
 		
 		item.getTitle().setText(title);
 		item.getName().setText(Html.fromHtml("<u>" + name + "</u>"));
@@ -66,7 +66,7 @@ public class PublicationAdapter extends SimpleCursorAdapter {
 		
 		if (userTypeFace != null) {
 			item.getName().setTypeface(userTypeFace, Typeface.BOLD);
-			item.getTitle().setTypeface(userTypeFace);
+			item.getTitle().setTypeface(userTypeFace, Typeface.NORMAL);
 		}
 		if (userFontSize != Constants.FONT_SIZE) {
 			item.getName().setTextSize(userFontSize);

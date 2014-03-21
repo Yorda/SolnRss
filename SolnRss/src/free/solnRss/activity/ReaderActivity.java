@@ -2,6 +2,7 @@ package free.solnRss.activity;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 import android.graphics.drawable.ColorDrawable;
 import android.net.Uri;
@@ -18,6 +19,7 @@ import android.webkit.WebSettings.PluginState;
 import android.webkit.WebView;
 import android.widget.Toast;
 import free.solnRss.R;
+import free.solnRss.singleton.TypeFaceSingleton;
 
 /**
  * Display publication's description vale
@@ -51,26 +53,25 @@ public class ReaderActivity extends Activity {
 		settings.setDefaultTextEncodingName("utf-8");
 		
 		// For enable video
-		webView.setWebChromeClient(new WebChromeClient());
-
+		webView.setWebChromeClient(new WebChromeClient());;
+		
 		settings.setPluginState(PluginState.ON);
 		
 		settings.setJavaScriptEnabled(true);
 		
+		settings.setDefaultFontSize(TypeFaceSingleton.getInstance(getApplicationContext()).getUserFontSize());
+	
 		webView.getSettings().setLayoutAlgorithm(LayoutAlgorithm.SINGLE_COLUMN);
 		
-		webView.loadDataWithBaseURL(null, text, "text/html", "utf-8", null);
+		webView.loadDataWithBaseURL(null, getHtmlData(getApplicationContext(), text) , "text/html", "utf-8", null);
 	}
 	
 	private void goToSite() {
-
 		Intent openUrlIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(link));
 		try {
 			startActivity(openUrlIntent);
 		} catch (Exception e) {
-			Toast.makeText(this, 
-				this.getResources()	.getString(
-					R.string.open_browser_bad_url),
+			Toast.makeText(this, this.getResources().getString(R.string.open_browser_bad_url),
 					Toast.LENGTH_LONG).show();
 		}
 	}
@@ -94,6 +95,21 @@ public class ReaderActivity extends Activity {
 			return super.onOptionsItemSelected(item);
 		}
 	}
+	
+	private String getHtmlData(Context context, String data){
+		String head = "<head>" +
+				"<style>@font-face {" +
+				" font-family: 'monofur';" +
+				" src: url('file:///android_asset/fonts/monofur/MONOF55.TTF'); " +
+				" font-weight: bold; " + 
+				" font-style: normal;" +
+				" " +
+				" }" +
+				"body {font-family: 'monofur'; font-size:17px; }</style>" +
+				"</head>";
+	    String htmlData= "<html>"+head+"<body>"+data+"</body></html>" ;
+	    return htmlData;
+	 }
 	
 	// somewhere on your code...
 	/*WebViewClient yourWebClient = new WebViewClient(){

@@ -138,12 +138,12 @@ public class SeekBarPreference extends Preference implements
 	
 	@Override
 	public void onStartTrackingTouch(SeekBar seekBar) {
-		//Log.e(SeekBarPreference.class.getName() , "------> START TRACKING !!!! ");
+		
 	}
 
 	@Override
 	public void onStopTrackingTouch(SeekBar seekBar) {
-		//Log.e(SeekBarPreference.class.getName() , "------> STOP TRACKING !!!! ");
+
 		updatePreference(this.oldValue);
 		
 		if (this.oldValue == 0) {

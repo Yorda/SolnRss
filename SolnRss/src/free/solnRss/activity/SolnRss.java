@@ -24,7 +24,6 @@ import android.support.v4.content.LocalBroadcastManager;
 import android.support.v4.view.ViewPager;
 import android.text.Html;
 import android.text.TextUtils;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -66,39 +65,9 @@ public class SolnRss extends Activity implements ActionBar.TabListener,
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
-		Log.e(SolnRss.class.getName(), "ON CREATE");
 		
 		super.onCreate(savedInstanceState);
-		requestWindowFeature(Window.FEATURE_INDETERMINATE_PROGRESS); 
-		
-		NewPublicationsNotification.NotifyEvent event = 
-				NewPublicationsNotification.NotifyEvent.detachFrom(getIntent());
-
-		// Because https://stackoverflow.com/questions/6584997/cant-remove-intent-extra
-		// Restart activity.
-		if (event != null
-				&& event.compareTo(NewPublicationsNotification.NotifyEvent.RESTART_ACTIVITY) == 0) {
-			
-			// Log.e(SolnRss.class.getName(), "REFRESH ACTIVITY NEW INTENT");
-			
-			String dateNewPublicationsFound = getIntent().getStringExtra("dateNewPublicationsFound");
-			SharedPreferences.Editor editor = getPreferences(0).edit();
-			
-			editor.putInt("selectedSyndicationID", -1);
-			editor.putInt("selectedCategoryID", -1);
-			editor.putString("filterText", null);
-			editor.putInt("publicationsListViewIndex", -1);
-			editor.putInt("publicationsListViewPosition", -1);
-			editor.putString("dateNewPublicationsFound", dateNewPublicationsFound);
-			editor.commit();
-			
-			Intent intent = getIntent();
-			intent.removeExtra(NewPublicationsNotification.NotifyEvent.RESTART_ACTIVITY.name());
-			finish();
-			
-			startActivity(intent);
-			return;
-		}
+		requestWindowFeature(Window.FEATURE_INDETERMINATE_PROGRESS); 	
 		
 		setContentView(R.layout.activity_soln_rss);
 
@@ -108,7 +77,7 @@ public class SolnRss extends Activity implements ActionBar.TabListener,
 		actionBar.setDisplayHomeAsUpEnabled(true);
 		actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_TABS);
 		actionBar.setTitle(Html.fromHtml("<b><u>" + getTitle() + "</u><b>"));
-		
+		    
 		int apiVersion = android.os.Build.VERSION.SDK_INT;
 		if (apiVersion >= android.os.Build.VERSION_CODES.ICE_CREAM_SANDWICH) {
 			actionBar.setBackgroundDrawable(new ColorDrawable(0xeeeeee));
@@ -146,6 +115,35 @@ public class SolnRss extends Activity implements ActionBar.TabListener,
 		
 		removeNotification();
 		registerPreferenceManager();
+	}
+	
+	@Override
+	protected void onStart() {
+		super.onStart();
+		NewPublicationsNotification.NotifyEvent event = NewPublicationsNotification.NotifyEvent.detachFrom(getIntent());
+
+		// Because https://stackoverflow.com/questions/6584997/cant-remove-intent-extra
+		// Restart activity.
+		if (event != null
+				&& event.compareTo(NewPublicationsNotification.NotifyEvent.RESTART_ACTIVITY) == 0) {			
+			String dateNewPublicationsFound = getIntent().getStringExtra("dateNewPublicationsFound");
+			SharedPreferences.Editor editor = getPreferences(0).edit();
+			
+			editor.putInt("selectedSyndicationID", -1);
+			editor.putInt("selectedCategoryID", -1);
+			editor.putString("filterText", null);
+			editor.putInt("publicationsListViewIndex", -1);
+			editor.putInt("publicationsListViewPosition", -1);
+			editor.putString("dateNewPublicationsFound", dateNewPublicationsFound);
+			editor.commit();
+			
+			Intent intent = getIntent();
+			intent.removeExtra(NewPublicationsNotification.NotifyEvent.RESTART_ACTIVITY.name());
+			finish();
+			startActivity(intent);
+			
+			
+		}
 	}
 	
 	@Override
@@ -422,7 +420,6 @@ public class SolnRss extends Activity implements ActionBar.TabListener,
 		super.onNewIntent(intent);
 		
 	    setIntent(intent);
-	    Log.e(SolnRss.class.getName(), "CALL NEW INTENT");
 	    NewPublicationsNotification.NotifyEvent event = NewPublicationsNotification.NotifyEvent.detachFrom(intent);
 	    
 		if (event != null
@@ -474,26 +471,22 @@ public class SolnRss extends Activity implements ActionBar.TabListener,
 	
 	@Override
 	protected void onRestart() {
-		Log.e(SolnRss.class.getName(), "ON RESTART");
 		super.onRestart();
 	}
 	
 	@Override
 	protected void onStop() {
-		Log.e(SolnRss.class.getName(), "ON STOP");
 		super.onStop();
 	}
 	
 	@Override
 	protected void onDestroy() {
-		Log.e(SolnRss.class.getName(), "ON DESTROY");
 		LocalBroadcastManager.getInstance(this).unregisterReceiver(newPublicationsFoundBroadcastReceiver);
 		super.onDestroy();
 	}
 	
 	@Override
 	protected void onPause() {
-		Log.e(SolnRss.class.getName(), "ON PAUSE");
 		if (isFinishing()) {
 			publicationsListener.removeTooOLdPublications();
 		}
@@ -502,7 +495,6 @@ public class SolnRss extends Activity implements ActionBar.TabListener,
 	
 	@Override
 	protected void onResume() {
-		Log.e(SolnRss.class.getName(), "ON RESUME");
 		super.onResume();
 	}
 	

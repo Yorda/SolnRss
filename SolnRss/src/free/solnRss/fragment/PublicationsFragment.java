@@ -17,7 +17,6 @@ import android.preference.PreferenceManager;
 import android.text.Html;
 import android.text.Spanned;
 import android.text.TextUtils;
-import android.util.Log;
 import android.view.ContextMenu;
 import android.view.ContextMenu.ContextMenuInfo;
 import android.view.LayoutInflater;
@@ -82,6 +81,34 @@ public class PublicationsFragment extends AbstractFragment implements
 		
 		setHasOptionsMenu(true);
 
+
+		
+		
+		/*getListView().setOnScrollListener(new OnScrollListener() {
+			int mLastFirstVisibleItem = 0;
+
+			@Override
+			public void onScrollStateChanged(AbsListView view, int scrollState) {
+				
+			}
+
+			@Override
+			public void onScroll(AbsListView view, int firstVisibleItem,
+					int visibleItemCount, int totalItemCount) {
+				if (view.getId() == getListView().getId()) {
+					final int currentFirstVisibleItem = getListView().getFirstVisiblePosition();
+
+					if (currentFirstVisibleItem > mLastFirstVisibleItem) {
+						getActivity().getActionBar().hide();
+						
+					} else if (currentFirstVisibleItem < mLastFirstVisibleItem) {
+						getActivity().getActionBar().show();
+					}
+					mLastFirstVisibleItem = currentFirstVisibleItem;
+				}
+			}
+		});*/
+		
 		// PublicationFinderBusinessImpl finder = new PublicationFinderBusinessImpl(getActivity());
 		// finder.searchNewPublications();
 		
@@ -312,7 +339,6 @@ public class PublicationsFragment extends AbstractFragment implements
 	}
 	
 	@Override public void onPause() {
-		Log.e(PublicationsFragment.class.getName(), "FRG ON PAUSE");
 		super.onPause();
 		SharedPreferences.Editor editor = getActivity().getPreferences(0).edit();
 		if (selectedSyndicationID != null) {
@@ -344,7 +370,6 @@ public class PublicationsFragment extends AbstractFragment implements
 	
 	@Override
 	public void onDestroy() {
-		Log.e(SolnRss.class.getName(), "FRG ON DESTROY");
 		super.onDestroy();
 	}
 	
@@ -356,8 +381,6 @@ public class PublicationsFragment extends AbstractFragment implements
 		View v = getListView().getChildAt(0);
 		int position = (v == null) ? 0 : v.getTop();
 		editor.putInt("publicationsListViewPosition", position);
-		
-		Log.e(PublicationsFragment.class.getName(), "FRG SAVE POSITION: Index = "+index +" Position = " +position);
 	}
 	
 	@Override
@@ -370,11 +393,7 @@ public class PublicationsFragment extends AbstractFragment implements
 
 		SharedPreferences.Editor editor = prefs.edit();
 		
-		Log.e(PublicationsFragment.class.getName(), "FRG RESTORE POSITION: Index = "+index +" Position = " +position);
-		
 		if (cursorCount != -1) {
-			
-			Log.e(PublicationsFragment.class.getName(), "FRG RESTORE POSITION: with cursorCount");
 			
 			// Get differece between old and new cursor
 			int newCursorCount = 
@@ -390,7 +409,7 @@ public class PublicationsFragment extends AbstractFragment implements
 			editor.commit();
 		}
 		else if (index != -1) {
-			Log.e(PublicationsFragment.class.getName(), "FRG RESTORE POSITION: with index");
+			
 			// Set list view at position
 			getListView().setSelectionFromTop(index, position);
 			// Reset position save
@@ -636,7 +655,7 @@ public class PublicationsFragment extends AbstractFragment implements
 	private void updateActionBarTitle() {
 		String title = null;
 		ActionBar bar = getActivity().getActionBar();
-		
+
 		if (this.selectedSyndicationID != null) {
 			title = syndicationName();
 			
@@ -648,6 +667,7 @@ public class PublicationsFragment extends AbstractFragment implements
 		} 
 		
 		if (TextUtils.isEmpty(title)) {
+			
 			bar.setTitle(titleToHtml(getActivity().getTitle().toString()));
 		} else {
 			bar.setTitle(titleToHtml(title));
@@ -786,7 +806,6 @@ public class PublicationsFragment extends AbstractFragment implements
 
 	@Override
 	public void removeTooOLdPublications() {
-		
 		new Runnable() {
 			public void run() {
 				try {
@@ -796,12 +815,6 @@ public class PublicationsFragment extends AbstractFragment implements
 				}
 			}
 		};
-		
-		/*try {
-			publicationRepository.removeTooOLdPublications();
-		} catch (Exception e) {
-			e.printStackTrace();
-		}*/
 	}
 
 	@Override

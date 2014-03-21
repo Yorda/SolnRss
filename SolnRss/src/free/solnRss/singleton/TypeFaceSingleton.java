@@ -18,8 +18,7 @@ public class TypeFaceSingleton {
 		if (typeFaceSingleton == null) {
 			typeFaceSingleton = new TypeFaceSingleton();
 			typeFaceSingleton.initTypeFace(context);
-			preferences = PreferenceManager
-					.getDefaultSharedPreferences(context);
+			preferences = PreferenceManager.getDefaultSharedPreferences(context);
 
 		}
 		return typeFaceSingleton;
@@ -52,8 +51,10 @@ public class TypeFaceSingleton {
 	}
 
 	private void initTypeFace(Context context) {
+		//monofur = Typeface.createFromAsset(context.getAssets(),
+		//		"fonts/monofur/MONOF55.TTF");
 		monofur = Typeface.createFromAsset(context.getAssets(),
-				"fonts/monofur/MONOF55.TTF");
+						"fonts/monaco/monaco.ttf");		
 		anonymousPro = Typeface.createFromAsset(context.getAssets(),
 				"fonts/anonymous_pro/Anonymous Pro.ttf");
 		inconsolata = Typeface.createFromAsset(context.getAssets(),

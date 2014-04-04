@@ -28,7 +28,8 @@ public class PublicationRepository {
 			publicationTable + "." + PublicationTable.COLUMN_ALREADY_READ, 
 			SyndicationTable.SYNDICATION_TABLE + "." + SyndicationTable.COLUMN_NAME,
 			publicationTable + "." + PublicationTable.COLUMN_SYNDICATION_ID,
-			SyndicationTable.SYNDICATION_TABLE + "." + SyndicationTable.COLUMN_NUMBER_CLICK
+			SyndicationTable.SYNDICATION_TABLE + "." + SyndicationTable.COLUMN_NUMBER_CLICK,
+			publicationTable + "." + PublicationTable.COLUMN_FAVORITE
 		};
 	
 	
@@ -122,6 +123,14 @@ public class PublicationRepository {
 		return new CursorLoader(context, uri, projection, selection.toString(),
 				args.toArray(new String[args.size()]), null);
 		
+	}
+	
+	public void markOnePublicationAsFavorite(Integer publicationId, Integer isFavorite) {
+		ContentValues values = new ContentValues();
+		String value = isFavorite.compareTo(Integer.valueOf(1)) == 0 ? "0": "1";
+		values.put(PublicationTable.COLUMN_FAVORITE, value);
+		String where = PublicationTable.COLUMN_ID + " = ? ";
+		context.getContentResolver().update(uri, values, where, new String[] { String.valueOf(publicationId) });
 	}
 	
 	public void markPublicationAsRead(int publicationId) {
@@ -250,38 +259,4 @@ public class PublicationRepository {
 				.getInt("pref_max_publication_item", 100);
 		return max;
 	}
-
-	/*
-	@Deprecated
-	public static String publicationsQueryLimit(String parameterPage, Context context) {
-		
-		int max = PreferenceManager.getDefaultSharedPreferences(context)
-				.getInt("pref_max_publication_item", 100);
-				
-		String maxItemInPage = Integer.valueOf(max).toString() ;
-		
-		Integer page = 1;
-		if (parameterPage != null) {
-			page = Integer.valueOf(parameterPage);
-		}
-		
-		if (page != 1) {
-			int offset = max * page;
-			maxItemInPage = maxItemInPage.concat(" offset ").concat(Integer.valueOf(offset).toString());
-		}
-		return Integer.valueOf(max).toString();
-	}
-	
-	@Deprecated
-	public static String publicationsQueryLimit(Context context) {
-		int max = PreferenceManager.getDefaultSharedPreferences(context)
-				.getInt("pref_max_publication_item", 100);
-		return Integer.valueOf(max).toString();
-	}
-
-	@Deprecated
-	public int insertNewPublications(List<ContentValues> publications) {
-		return context.getContentResolver().bulkInsert(uri,
-				publications.toArray(new ContentValues[publications.size()]));
-	}*/
 }

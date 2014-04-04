@@ -119,7 +119,7 @@ public class SolnRss extends Activity implements ActionBar.TabListener,
 	
 	@Override
 	protected void onStart() {
-		super.onStart();
+		
 		NewPublicationsNotification.NotifyEvent event = NewPublicationsNotification.NotifyEvent.detachFrom(getIntent());
 
 		// Because https://stackoverflow.com/questions/6584997/cant-remove-intent-extra
@@ -141,18 +141,18 @@ public class SolnRss extends Activity implements ActionBar.TabListener,
 			intent.removeExtra(NewPublicationsNotification.NotifyEvent.RESTART_ACTIVITY.name());
 			finish();
 			startActivity(intent);
-			
-			
 		}
+		
+		super.onStart();
 	}
 	
 	@Override
 	public void onSharedPreferenceChanged(SharedPreferences shared, String key) {
 
-		if (key.compareTo("pref_display_unread") == 0) {
+		if (key.compareTo("pref_display_unread") == 0 && publicationsListener != null) {
 			publicationsListener.refreshPublications();
 		} 
-		else if (key.compareTo("pref_delete_all_publications") == 0) {
+		else if (key.compareTo("pref_delete_all_publications") == 0 && publicationsListener != null) {
 			publicationsListener.refreshPublications();
 		} 
 		else if (key.compareTo("pref_sort_syndications") == 0) {

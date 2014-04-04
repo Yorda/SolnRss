@@ -6,10 +6,13 @@ import android.graphics.Typeface;
 import android.text.Html;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.SimpleCursorAdapter;
 import android.widget.TextView;
+import android.widget.Toast;
 import free.solnRss.R;
+import free.solnRss.repository.PublicationRepository;
 import free.solnRss.singleton.TypeFaceSingleton;
 import free.solnRss.utility.Constants;
 
@@ -18,6 +21,10 @@ public class PublicationAdapter extends SimpleCursorAdapter {
 	protected Cursor cursor;
 	private Context context;
 	private int layout;
+	private PublicationRepository publicationRepository;
+	
+	private int emptyStarImageId;
+	private int fullStarImageId;
 
 	public PublicationAdapter(final Context context, int layout, Cursor c,
 			String[] from, int[] to, int flags) {
@@ -26,6 +33,10 @@ public class PublicationAdapter extends SimpleCursorAdapter {
 		this.cursor = c;
 		this.context = context;
 		this.layout = layout;
+		this.publicationRepository = new PublicationRepository(context);
+		
+		emptyStarImageId = context.getResources().getIdentifier("empty_star" , "drawable", context.getPackageName());
+		fullStarImageId  = context.getResources().getIdentifier("full_star" , "drawable", context.getPackageName());
 	}
 
 	@Override
@@ -38,24 +49,31 @@ public class PublicationAdapter extends SimpleCursorAdapter {
 			item = new PublicationItem();
 
 			// Title of syndication
-			item.setName((TextView) convertView.findViewById(R.id.name));
+			item.setName((TextView) convertView
+					.findViewById(R.id.name));
 
 			// Title of publication
-			item.setTitle((TextView) convertView.findViewById(R.id.title));
+			item.setTitle((TextView) convertView
+					.findViewById(R.id.title));
 
 			// PNG for already read
 			item.setAlreadyRead((ImageView) convertView
 					.findViewById(R.id.check_already_read_pict));
 
+			item.setFavorite((ImageButton) convertView
+					.findViewById(R.id.isFavoriteButton));
+			
 			convertView.setTag(item);
 
 		} else {
 			item = (PublicationItem) convertView.getTag();
 		}
 		
-		String title   = getCursor().getString(1); // pub_title
-		String name    = getCursor().getString(3); // syn_name
-		Integer isRead = getCursor().getInt(2);    // pub_already_read
+		final Integer _id    = getCursor().getInt(0);     // _id
+		final String title   = getCursor().getString(1);  // pub_title
+		final String name    = getCursor().getString(3);  // syn_name
+		final Integer isRead = getCursor().getInt(2);     // pub_already_read
+		final Integer isFavorite = getCursor().getInt(6); // pud_favorite
 		
 		item.getTitle().setText(title);
 		item.getName().setText(Html.fromHtml("<u>" + name + "</u>"));
@@ -80,18 +98,41 @@ public class PublicationAdapter extends SimpleCursorAdapter {
 		} else {
 			item.getAlreadyRead().setVisibility(View.GONE);
 		}
-
-		/*String timeAgo = new String();
-		try {
-			timeAgo = toTime(sdf.parse(getCursor().getString(7)), new Date());
-		} catch (Exception e) {
-			e.printStackTrace();
-		}*/
+ 
+		if (isFavorite.compareTo(Integer.valueOf(1)) == 0) {
+			item.getFavorite().setImageResource(fullStarImageId);
+		}
+		else {
+			item.getFavorite().setImageResource(emptyStarImageId);
+		}
+		
+		item.getFavorite().setOnClickListener(new View.OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				try {
+					publicationRepository
+							.markOnePublicationAsFavorite(_id, isFavorite);
+					String value = isFavorite.compareTo(Integer.valueOf(1)) == 0
+							? "Remove to favorite": "Add to favorite";
+					Toast.makeText(context, value , Toast.LENGTH_LONG).show();
+				} catch (Exception e) {
+					Toast.makeText(context, "Error unable to add to favorite", Toast.LENGTH_LONG).show();
+				}
+			}
+		});
 		
 		return convertView;
 	}
 	
 
+	
+	
+/*String timeAgo = new String();
+try {
+timeAgo = toTime(sdf.parse(getCursor().getString(7)), new Date());
+} catch (Exception e) {
+e.printStackTrace();
+}*/
 	/*private final DateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.FRENCH);
 	
 	private final long MILLIS_PER_SEC   = 1000;

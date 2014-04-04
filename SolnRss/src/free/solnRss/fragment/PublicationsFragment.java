@@ -80,35 +80,7 @@ public class PublicationsFragment extends AbstractFragment implements
 		setListShown(false);
 		
 		setHasOptionsMenu(true);
-
-
-		
-		
-		/*getListView().setOnScrollListener(new OnScrollListener() {
-			int mLastFirstVisibleItem = 0;
-
-			@Override
-			public void onScrollStateChanged(AbsListView view, int scrollState) {
-				
-			}
-
-			@Override
-			public void onScroll(AbsListView view, int firstVisibleItem,
-					int visibleItemCount, int totalItemCount) {
-				if (view.getId() == getListView().getId()) {
-					final int currentFirstVisibleItem = getListView().getFirstVisiblePosition();
-
-					if (currentFirstVisibleItem > mLastFirstVisibleItem) {
-						getActivity().getActionBar().hide();
-						
-					} else if (currentFirstVisibleItem < mLastFirstVisibleItem) {
-						getActivity().getActionBar().show();
-					}
-					mLastFirstVisibleItem = currentFirstVisibleItem;
-				}
-			}
-		});*/
-		
+	
 		// PublicationFinderBusinessImpl finder = new PublicationFinderBusinessImpl(getActivity());
 		// finder.searchNewPublications();
 		

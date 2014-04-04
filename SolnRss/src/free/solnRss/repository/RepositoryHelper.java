@@ -100,13 +100,13 @@ public class RepositoryHelper extends SQLiteOpenHelper {
 			"	FOREIGN KEY(syn_syndication_id) REFERENCES d_syndication( _id)\r\n" + 
 			");"
 			
-			,"create table r_error (\r\n"+
+			/*,"create table r_error (\r\n"+
 			"	err_code INTEGER,\r\n"+
 			"	err_msg  text\r\n"+ 
 			");" 
 					+ " insert into r_error values (1, 'err_search_bad_url');"
 					+ " insert into r_error values (2, 'err_load_http_data');"
-					+ " insert into r_error values (3, 'err_extract_rss');"
+					+ " insert into r_error values (3, 'err_extract_rss');"*/
 			
 			};
 	

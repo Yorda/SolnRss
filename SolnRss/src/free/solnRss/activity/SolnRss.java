@@ -222,6 +222,10 @@ public class SolnRss extends Activity implements ActionBar.TabListener,
 			openDialogForAddCategorie(); 
 			return true;
 			
+		case R.id.menu_display_favorite:
+			displayPublicationFavorite();
+			return true;
+			
 		case R.id.menu_already_read:
 			 updateOptionDisplayPublicationsAlreadyRead();
 			return true;
@@ -579,6 +583,10 @@ public class SolnRss extends Activity implements ActionBar.TabListener,
 	
 	public void reLoadAllPublications(View v) {
 		reLoadAllPublications();
+	}
+	
+	public void displayPublicationFavorite() {
+		publicationsListener.displayFavoritePublications();
 	}
 
 	public void displaySyndications() {

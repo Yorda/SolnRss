@@ -16,6 +16,7 @@
     <string name="menu_show_already_read">Voir les publications lues</string>
     <string name="menu_hide_already_read">Cacher les publications lues</string>
     <string name="menu_read_on_web_site">Lire sur le site web</string>
+    <string name="menu_show_favorite">Voir les favoris.</string>
     <string name="read">Lue</string>
     <string name="rename">Renommer</string>
     <string name="all">tous</string>

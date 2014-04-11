@@ -7,6 +7,7 @@ import android.content.ContentProviderOperation;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.CursorLoader;
+import android.content.Loader;
 import android.database.Cursor;
 import android.net.Uri;
 import android.preference.PreferenceManager;
@@ -123,6 +124,21 @@ public class PublicationRepository {
 		return new CursorLoader(context, uri, projection, selection.toString(),
 				args.toArray(new String[args.size()]), null);
 		
+	}
+	
+
+	public Loader<Cursor> loadFavoritePublications() {
+		
+		selection.setLength(0);
+		selection.append(" 1 = 1 ") ;
+		args.clear();
+		
+		selection.append(" and ");
+		selection.append( PublicationTable.COLUMN_FAVORITE);
+		selection.append(" = 1 ");
+		
+		return new CursorLoader(context, uri, projection, selection.toString(),
+				args.toArray(new String[args.size()]), null);
 	}
 	
 	public void markOnePublicationAsFavorite(Integer publicationId, Integer isFavorite) {

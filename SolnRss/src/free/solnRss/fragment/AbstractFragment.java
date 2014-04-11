@@ -193,4 +193,5 @@ public abstract class AbstractFragment extends ListFragment implements	OnQueryTe
 	public void setListShownNoAnimation(boolean shown) {
 		setListShown(shown, false);
 	}
+
 }

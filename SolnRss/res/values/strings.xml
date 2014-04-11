@@ -16,6 +16,7 @@
     <string name="menu_show_already_read">See publications already read</string>
     <string name="menu_hide_already_read">Hide publications already read</string>
     <string name="menu_read_on_web_site">Read on the web site.</string>
+    <string name="menu_show_favorite">Display favorite.</string>
     <string name="read">Read</string>
     <string name="rename">Rename</string>
     <string name="all">all</string>

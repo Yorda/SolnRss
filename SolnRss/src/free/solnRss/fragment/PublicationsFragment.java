@@ -51,6 +51,7 @@ public class PublicationsFragment extends AbstractFragment implements
 	private Integer selectedSyndicationID;
 	private Integer nextSelectedSyndicationID; // Selected by context menu
 	private Integer selectedCategoryID;
+	private Boolean selectFavoritePublications = false;
 	
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup vg, Bundle save) {
@@ -110,6 +111,11 @@ public class PublicationsFragment extends AbstractFragment implements
 			dateNewPublicationsFound = prefs.getString("dateNewPublicationsFound", null);
 			loadPublicationsByLastFound(dateNewPublicationsFound);
 		}
+		
+		else if (prefs.getBoolean("displayFavoritePublications", true)) {
+			displayFavoritePublications();
+		}
+
 
 		else {
 			loadPublications();
@@ -331,6 +337,12 @@ public class PublicationsFragment extends AbstractFragment implements
 			editor.putString("dateNewPublicationsFound", null);
 		}
 
+		if (selectFavoritePublications == true) {
+			editor.putBoolean("displayFavoritePublications", true);
+		} else {
+			editor.putBoolean("displayFavoritePublications", false);
+		}
+		
 		if (!TextUtils.isEmpty(getFilterText())) {
 			editor.putString("filterText", getFilterText());
 		} else {
@@ -421,6 +433,9 @@ public class PublicationsFragment extends AbstractFragment implements
 			else if (bundle.getString("dateNewPublicationsFound") != null) {
 				dateNewPublicationsFound = bundle.getString("dateNewPublicationsFound");
 			}
+			else if (bundle.getBoolean("displayFavoritePublications") == true) {
+				return publicationRepository.loadFavoritePublications();
+			}
 		}
 		
 		return publicationRepository.loadPublications(getFilterText(),
@@ -447,6 +462,10 @@ public class PublicationsFragment extends AbstractFragment implements
 		
 		if (dateNewPublicationsFound != null) {
 			bundle.putString("dateNewPublicationsFound", dateNewPublicationsFound);
+		}
+		
+		if (selectFavoritePublications != null) {
+			bundle.putString("displayFavoritePublications", "displayFavoritePublications");
 		}
 		
 		getLoaderManager().restartLoader(0, bundle, this);
@@ -491,6 +510,8 @@ public class PublicationsFragment extends AbstractFragment implements
 		this.selectedSyndicationID = null;
 		this.selectedCategoryID = null;
 		this.dateNewPublicationsFound = null;
+		this.selectFavoritePublications = false;
+		
 		if (isAdded()) {
 			getLoaderManager().restartLoader(0, null, this);
 			updateActionBarTitle();
@@ -512,7 +533,9 @@ public class PublicationsFragment extends AbstractFragment implements
 			reLoadPublicationsByCategory(this.selectedCategoryID);
 		} else if (this.dateNewPublicationsFound != null) {
 			reLoadPublicationsByLastFound(dateNewPublicationsFound);
-		} 
+		} else if (this.selectFavoritePublications == true) {
+			displayFavoritePublications();
+		}
 		else {
 			reloadPublications();
 		}
@@ -529,6 +552,7 @@ public class PublicationsFragment extends AbstractFragment implements
 		this.selectedSyndicationID = null;
 		this.dateNewPublicationsFound = null;
 		this.selectedCategoryID = categoryID;
+		this.selectFavoritePublications = false;
 		Bundle bundle = new Bundle();
 		bundle.putInt("selectedCategoryID",this.selectedCategoryID);
 		if(isAdded()){
@@ -548,6 +572,8 @@ public class PublicationsFragment extends AbstractFragment implements
 		this.selectedSyndicationID = syndicationID;
 		this.selectedCategoryID = null;
 		this.dateNewPublicationsFound = null;
+		this.selectFavoritePublications = false;
+		
 		Bundle bundle = new Bundle();
 		bundle.putInt("selectedSyndicationID", this.selectedSyndicationID);
 		if (isAdded()) {
@@ -579,6 +605,8 @@ public class PublicationsFragment extends AbstractFragment implements
 		
 		this.selectedSyndicationID = null;
 		this.selectedCategoryID = null;
+		this.selectFavoritePublications = false;
+		
 		Bundle bundle = new Bundle();
 		bundle.putString("dateNewPublicationsFound", dateNewPublicationsFound);
 
@@ -593,6 +621,8 @@ public class PublicationsFragment extends AbstractFragment implements
 		
 		this.selectedSyndicationID = null;
 		this.selectedCategoryID = null;
+		this.selectFavoritePublications = false;
+		
 		Bundle bundle = new Bundle();
 		bundle.putString("dateNewPublicationsFound", dateNewPublicationsFound);
 
@@ -601,6 +631,8 @@ public class PublicationsFragment extends AbstractFragment implements
 			updateActionBarTitle();
 		}
 	}
+	
+	
 	
 
 	@Override
@@ -622,6 +654,26 @@ public class PublicationsFragment extends AbstractFragment implements
 		editor.commit();
 		
 		refreshPublications();
+	}
+	
+	@Override
+	public void displayFavoritePublications() {
+		Bundle bundle = new Bundle();
+		
+		this.selectedSyndicationID = null;
+		this.selectedCategoryID = null;
+		this.dateNewPublicationsFound = null;
+		this.selectFavoritePublications = true;
+		
+		bundle.putBoolean("displayFavoritePublications", true);
+		
+		if (getLoaderManager() != null && getLoaderManager().getLoader(0) != null 
+				&& getLoaderManager().getLoader(0).isStarted()) {
+			getLoaderManager().restartLoader(0, bundle, this);
+		}
+		else {
+			getLoaderManager().initLoader(0, bundle, this);
+		}
 	}
 	
 	private void updateActionBarTitle() {

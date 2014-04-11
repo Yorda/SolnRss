@@ -1,6 +1,5 @@
 package free.solnRss.activity;
 
-import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
@@ -15,7 +14,6 @@ import android.view.MenuItem;
 import android.webkit.WebChromeClient;
 import android.webkit.WebSettings;
 import android.webkit.WebSettings.LayoutAlgorithm;
-import android.webkit.WebSettings.PluginState;
 import android.webkit.WebView;
 import android.widget.Toast;
 import free.solnRss.R;
@@ -31,7 +29,7 @@ public class ReaderActivity extends Activity {
 	
 	private String link;
 
-	@SuppressLint("SetJavaScriptEnabled")
+	//@SuppressLint("SetJavaScriptEnabled")
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -53,11 +51,11 @@ public class ReaderActivity extends Activity {
 		settings.setDefaultTextEncodingName("utf-8");
 		
 		// For enable video
-		webView.setWebChromeClient(new WebChromeClient());;
+		webView.setWebChromeClient(new WebChromeClient());
 		
-		settings.setPluginState(PluginState.ON);
+		//settings.setPluginState(PluginState.ON);
 		
-		settings.setJavaScriptEnabled(true);
+		//settings.setJavaScriptEnabled(true);
 		
 		settings.setDefaultFontSize(TypeFaceSingleton.getInstance(getApplicationContext()).getUserFontSize());
 	

@@ -105,4 +105,9 @@ public interface PublicationsFragmentListener {
 	 */
 	public Parcelable getListViewInstanceState();
 
+	/**
+	 * 
+	 */
+	public void displayFavoritePublications();
+
 }

@@ -247,9 +247,12 @@ public class PublicationsFragment extends AbstractFragment implements
 			return;
 		}
 		
-		String[] publicationContent = publicationContentRepository.retrievePublicationContent(
-				cursor.getInt(cursor.getColumnIndex(PublicationTable.COLUMN_SYNDICATION_ID)), 
-				cursor.getInt(0));
+		final Integer syndicationId = cursor.getInt(cursor.getColumnIndex(PublicationTable.COLUMN_SYNDICATION_ID));
+		final Integer publicationId = cursor.getInt(0);
+		final boolean isFavorite = cursor.getInt(6) != 1 ? false : true;
+				
+		String[] publicationContent = publicationContentRepository
+				.retrievePublicationContent(syndicationId, publicationId);
 		
 		String title = cursor.getString(1);         //getPublicationTitle(cursor);
 		String link = publicationContent[0];        //getPublicationUrl(cursor);
@@ -259,7 +262,8 @@ public class PublicationsFragment extends AbstractFragment implements
 		
 		if (description != null && description.trim().length() > 0) {
 			if (isPreferenceToDisplayOnAppReader()) {
-				displayOnApplicationReader(description, link, title);
+				//displayOnApplicationReader(description, link, title);
+				displayOnApplicationReader(publicationId, syndicationId, isFavorite, description, link, title);
 			} else {
 				displayOnSystemBrowser(link);
 			}
@@ -434,6 +438,7 @@ public class PublicationsFragment extends AbstractFragment implements
 				dateNewPublicationsFound = bundle.getString("dateNewPublicationsFound");
 			}
 			else if (bundle.getBoolean("displayFavoritePublications") == true) {
+				selectFavoritePublications = true;
 				return publicationRepository.loadFavoritePublications();
 			}
 		}
@@ -632,9 +637,6 @@ public class PublicationsFragment extends AbstractFragment implements
 		}
 	}
 	
-	
-	
-
 	@Override
 	// Call by broadcast receiver for refresh list with last items found and without change position 
 	// when user use application 
@@ -670,9 +672,11 @@ public class PublicationsFragment extends AbstractFragment implements
 		if (getLoaderManager() != null && getLoaderManager().getLoader(0) != null 
 				&& getLoaderManager().getLoader(0).isStarted()) {
 			getLoaderManager().restartLoader(0, bundle, this);
+			updateActionBarTitle();
 		}
 		else {
 			getLoaderManager().initLoader(0, bundle, this);
+			updateActionBarTitle();
 		}
 	}
 	
@@ -689,7 +693,10 @@ public class PublicationsFragment extends AbstractFragment implements
 		else if (this.dateNewPublicationsFound!= null) {
 			title = dataNewPublicationsFoundLabel();
 		} 
-		
+		else if (this.selectFavoritePublications) {
+            title = getResources().getString(R.string.title_favorite);
+		} 
+
 		if (TextUtils.isEmpty(title)) {
 			
 			bar.setTitle(titleToHtml(getActivity().getTitle().toString()));
@@ -707,7 +714,9 @@ public class PublicationsFragment extends AbstractFragment implements
 				.getBoolean("pref_display_publication", true);
 	}
 
-	private void displayOnApplicationReader(String text, String link,String title) {
+	private void displayOnApplicationReader(Integer publicationId,
+			Integer syndicationId, boolean isFavorite, String text,
+			String link, String title) {
 		Intent i = new Intent(getActivity(), ReaderActivity.class);
 		
 		i.addFlags(
@@ -718,6 +727,11 @@ public class PublicationsFragment extends AbstractFragment implements
 		i.putExtra("read", text);
 		i.putExtra("link", link);
 		i.putExtra("title", title);
+		
+		i.putExtra("publicationId", publicationId);
+		i.putExtra("syndicationId", syndicationId);
+		i.putExtra("isFavorite", isFavorite);
+		
 		startActivity(i);
 	}
 
@@ -830,7 +844,13 @@ public class PublicationsFragment extends AbstractFragment implements
 
 	@Override
 	public void removeTooOLdPublications() {
-		new Runnable() {
+		try {
+			publicationRepository.removeTooOLdPublications();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		
+		/*new Runnable() {
 			public void run() {
 				try {
 					publicationRepository.removeTooOLdPublications();
@@ -838,7 +858,7 @@ public class PublicationsFragment extends AbstractFragment implements
 					e.printStackTrace();
 				}
 			}
-		};
+		};*/
 	}
 
 	@Override

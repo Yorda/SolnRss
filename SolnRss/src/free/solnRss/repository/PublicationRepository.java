@@ -275,4 +275,21 @@ public class PublicationRepository {
 				.getInt("pref_max_publication_item", 100);
 		return max;
 	}
+
+	public void deletePublication(Integer publicationId, Integer syndicationId) throws Exception {
+		ArrayList<ContentProviderOperation> operations = new ArrayList<ContentProviderOperation>();
+		
+		operations.add(ContentProviderOperation.newDelete(uri)
+				.withSelection("_id =  ? ",	new String[] { publicationId.toString() })
+				.build());
+		
+		final Uri publicationContentUri = PublicationContentRepository.uri.buildUpon()
+				.appendQueryParameter("tableKey", String.valueOf(syndicationId)).build();
+		
+		operations.add(ContentProviderOperation.newDelete(publicationContentUri)
+				.withSelection(" pub_publication_id = ? ", new String[] { publicationId.toString() } )
+				.build());
+		
+		context.getContentResolver().applyBatch(SolnRssProvider.AUTHORITY, operations);	
+	}
 }

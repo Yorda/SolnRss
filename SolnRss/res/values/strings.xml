@@ -9,14 +9,24 @@
     <string name="title_categories">Categories</string>
     <string name="title_category">Category</string>
     <string name="title_network">Network</string>
+    <string name="title_favorite">Favorite</string>
     <string name="title_look_and_fell">Look and feel</string>
     <string name="menu_settings">Settings</string>
     <string name="menu_add_categorie">Add a new category</string>
     <string name="menu_add_site">Add a new web site</string>
     <string name="menu_show_already_read">See publications already read</string>
     <string name="menu_hide_already_read">Hide publications already read</string>
-    <string name="menu_read_on_web_site">Read on the web site.</string>
-    <string name="menu_show_favorite">Display favorite.</string>
+    <string name="menu_read_on_web_site">Read on the web site</string>
+    <string name="menu_show_favorite">Display favorite</string>
+    
+     <string name="menu_favorite">Favorite</string>
+     <string name="menu_Share">Share</string>
+     <string name="menu_delete">Delete</string>
+       
+    <string name="add_favorite">Add to favorite</string>
+    <string name="remove_favorite">Remove to favorite</string>
+    <string name="Delete">Delete</string>
+    <string name="Delete_fail">Deletion has fail !</string>
     <string name="read">Read</string>
     <string name="rename">Rename</string>
     <string name="all">all</string>

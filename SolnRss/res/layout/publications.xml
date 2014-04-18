@@ -36,7 +36,7 @@
             android:layout_weight="1.0"
             android:background="@android:color/transparent"
             android:contentDescription="@string/read"
-            android:src="@drawable/empty_star" />
+            android:src="@drawable/ic_favorite_empty" />
     </LinearLayout>
 
     <TextView

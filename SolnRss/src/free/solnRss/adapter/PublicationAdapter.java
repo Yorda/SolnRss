@@ -1,6 +1,7 @@
 package free.solnRss.adapter;
 
 import android.content.Context;
+import android.content.res.Resources;
 import android.database.Cursor;
 import android.graphics.Typeface;
 import android.text.Html;
@@ -35,8 +36,11 @@ public class PublicationAdapter extends SimpleCursorAdapter {
 		this.layout = layout;
 		this.publicationRepository = new PublicationRepository(context);
 		
-		emptyStarImageId = context.getResources().getIdentifier("empty_star" , "drawable", context.getPackageName());
-		fullStarImageId  = context.getResources().getIdentifier("full_star" , "drawable", context.getPackageName());
+		final String pn     = context.getPackageName();
+		final Resources res = context.getResources();
+		
+		this.emptyStarImageId = res.getIdentifier("ic_favorite_empty", "drawable", pn);
+		this.fullStarImageId  = res.getIdentifier("ic_favorite_full" , "drawable", pn);
 	}
 
 	@Override

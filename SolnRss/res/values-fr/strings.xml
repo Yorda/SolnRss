@@ -5,10 +5,10 @@
     <string name="app_name">Soln.R</string>
     <string name="title_publications">Publications</string>
     <string name="title_syndications">Flus RSS</string>
-    <string name="title_site">Web site</string>
-    <string name="title_categories">Catégories</string>
+    <string name="title_site">Web site</string><string name="title_categories">Catégories</string>
     <string name="title_category">Categorie</string>
     <string name="title_network">Réseau</string>
+    <string name="title_favorite">Favoris</string>
     <string name="title_look_and_fell">Apparence</string>
     <string name="menu_settings">Paramètres</string>
     <string name="menu_add_categorie">Nouvelle catégorie</string>
@@ -17,8 +17,16 @@
     <string name="menu_hide_already_read">Cacher les publications lues</string>
     <string name="menu_read_on_web_site">Lire sur le site web</string>
     <string name="menu_show_favorite">Voir les favoris.</string>
+    <string name="menu_favorite">Favoris</string>
+    <string name="menu_Share">Partagez</string>
+    <string name="menu_delete">Supprimez</string>
+    <string name="add_favorite">Ajouté aux favoris</string>
+    <string name="remove_favorite">Supprimé des favoris</string>
+    <string name="Delete">Supprimé</string>
+    <string name="Delete_fail">La suppréssion a échoué</string>
     <string name="read">Lue</string>
     <string name="rename">Renommer</string>
+
     <string name="all">tous</string>
     <string name="action_bar_search">Recherche</string>
     <string name="stop_search">Définir l\'intervalle à zéro arrête la recherche de nouvelles publications</string>

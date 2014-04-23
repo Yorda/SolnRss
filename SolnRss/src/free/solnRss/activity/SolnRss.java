@@ -184,11 +184,12 @@ public class SolnRss extends Activity implements ActionBar.TabListener,
 				newPublicationsFoundBroadcastReceiver, new IntentFilter("newPublicationFound"));
 	}
 	
-	private void removeNotification(){
+	private void removeNotification() {
+		
 		NotificationManager notificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
 		notificationManager.cancel(0x000001);
 
-		SharedPreferences.Editor editor =  PreferenceManager.getDefaultSharedPreferences(this).edit();
+		SharedPreferences.Editor editor = PreferenceManager.getDefaultSharedPreferences(this).edit();
 		editor.putInt("newPublicationsRecorded", 0);
 		editor.putString("newPublicationsRecordDate", null);
 		editor.commit();

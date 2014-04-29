@@ -247,22 +247,29 @@ public class PublicationRepository {
 		Uri publicationContentUri = null;
 		// Add an operation for delete publication content
 		if (cursor.getCount() > 0) {
+			final int max =  maxPublicationToKeep();
 			do {
 				
 				syndicationId = cursor.getInt(0);
 				
 				// Delete publication
 				operations.add(ContentProviderOperation.newDelete(uri)
-						.withSelection(" _id in (select _id from d_publication as p where p.syn_syndication_id = ? order by p._id desc LIMIT -1 OFFSET " 
-								+ maxPublicationToKeep() + ") ", new String[] { syndicationId.toString() }).build());
+						.withSelection(
+						" _id in (select _id from d_publication as p where p.syn_syndication_id = ? "
+						+ " order by p._id desc LIMIT -1 OFFSET "
+						+ max + ") ", 
+					new String[] { syndicationId.toString() }).build());
 				
 				// Delete publication content
 				publicationContentUri = PublicationContentRepository.uri.buildUpon()
 						.appendQueryParameter("tableKey", String.valueOf(syndicationId)).build();
 				
 				operations.add(ContentProviderOperation.newDelete(publicationContentUri)
-						.withSelection(" _id in (select _id from d_publication_content_" + syndicationId.toString()
-								+ " as p order by p._id desc LIMIT -1 OFFSET "+ maxPublicationToKeep() + ") ", null).build());
+						.withSelection(
+						" _id in (select _id from d_publication_content_" 
+						+ syndicationId.toString()	
+						+ " as p order by p._id desc LIMIT -1 OFFSET "
+						+ max + ")", null).build());
 				
 			} while (cursor.moveToNext());
 		}

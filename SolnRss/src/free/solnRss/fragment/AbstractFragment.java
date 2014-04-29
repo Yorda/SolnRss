@@ -2,8 +2,17 @@ package free.solnRss.fragment;
 
 import android.app.ListFragment;
 import android.app.LoaderManager;
+import android.content.Context;
 import android.content.Loader;
 import android.database.Cursor;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.Canvas;
+import android.graphics.Color;
+import android.graphics.Paint;
+import android.graphics.Paint.Style;
+import android.graphics.Typeface;
+import android.graphics.drawable.BitmapDrawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.text.TextUtils;
@@ -119,8 +128,13 @@ public abstract class AbstractFragment extends ListFragment implements	OnQueryTe
 
 		inflater.inflate(R.menu.activity_soln_rss, menu);
 		
-	    MenuItem item = menu.add("Search");
+		/*MenuItem item2 = menu.add("count");
+		item2.setIcon(writeOnDrawable(getActivity(),R.drawable.ic_abar_search, "15"));
+	    item2.setShowAsAction(MenuItem.SHOW_AS_ACTION_IF_ROOM
+	               | MenuItem.SHOW_AS_ACTION_COLLAPSE_ACTION_VIEW);*/
+	  
 	    
+	    MenuItem item = menu.add("Search");
 	    item.setIcon(R.drawable.ic_abar_search);
         item.setShowAsAction(MenuItem.SHOW_AS_ACTION_IF_ROOM
                 | MenuItem.SHOW_AS_ACTION_COLLAPSE_ACTION_VIEW);
@@ -130,6 +144,49 @@ public abstract class AbstractFragment extends ListFragment implements	OnQueryTe
         item.setActionView(sv);
     }
 
+
+
+	public BitmapDrawable writeOnDrawable(Context mContext,int drawableId, String text){
+
+        Bitmap bm = BitmapFactory.decodeResource(getResources(), drawableId).copy(Bitmap.Config.ARGB_8888, true);
+
+        Paint paint = new Paint(); 
+        paint.setStyle(Style.FILL);  
+        paint.setColor(Color.RED); 
+        paint.setTextSize(22);
+        paint.setTypeface(Typeface.create("",Typeface.BOLD));
+        paint.setFlags(Paint.ANTI_ALIAS_FLAG);
+
+        Canvas canvas = new Canvas(bm);
+        canvas.drawText(text, 0, bm.getHeight()/2, paint);
+
+        return new BitmapDrawable(mContext.getResources(),bm);
+    }
+	
+	 /*public Drawable makeBorderedDrawable(Context mContext, int width) {
+	    Bitmap bkg = null;
+	    // first create a mutable bitmap
+	    bkg = Bitmap.createBitmap(100, 100, Bitmap.Config.ARGB_8888);
+	    Canvas c = new Canvas(bkg);
+	    
+	    Paint paint = new Paint();
+	    paint.setColor(Color.WHITE);
+	    paint.setStyle(Style.FILL);
+	    final int FULL_ALPHA = 0xFF123456;
+	    paint.setAlpha(FULL_ALPHA);
+	    c.drawPaint(paint);
+
+	    paint.setColor(Color.RED);
+	    paint.setTextSize(20);
+	    
+	    c.drawText("55", 0, 0, paint);
+	    
+	    return new BitmapDrawable(mContext.getResources(), bkg);
+
+	}*/
+
+
+	 
 	@Override public boolean onQueryTextChange(String newText) {
         String newFilter = !TextUtils.isEmpty(newText) ? newText : null;
         if (getFilterText() == null && newFilter == null) {

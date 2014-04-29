@@ -148,7 +148,7 @@ public class PublicationFinderBusinessImpl implements PublicationFinderBusiness 
 						.withValue(PublicationContentTable.COLUMN_PUBLICATION,makeSomeFixInDescription(getDescription(syndEntry)))
 						// .withValue(PublicationContentTable.COLUMN_PUBLICATION,WebSiteUtil.htmlToReadableText(syndEntry.getLink()))
 						
-						.withValueBackReference(PublicationContentTable.COLUMN_PUBLICATION_ID, operations.size()-1)
+						.withValueBackReference(PublicationContentTable.COLUMN_PUBLICATION_ID, operations.size() - 1)
 						.withYieldAllowed(true).build());
 				
 				newPublicationsRecorded++;

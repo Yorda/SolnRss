@@ -55,6 +55,7 @@ containing a value of this type.
         public static final int ic_tab_file=0x7f02000d;
         public static final int ic_tab_folder=0x7f02000e;
         public static final int ic_trash=0x7f02000f;
+        public static final int three_dots_menu_grey=0x7f020010;
     }
     public static final class id {
         public static final int action_search=0x7f090036;

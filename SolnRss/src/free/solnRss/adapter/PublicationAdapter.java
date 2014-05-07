@@ -26,6 +26,7 @@ public class PublicationAdapter extends SimpleCursorAdapter {
 	
 	private int emptyStarImageId;
 	private int fullStarImageId;
+	// private int threeDotsMenu;
 
 	public PublicationAdapter(final Context context, int layout, Cursor c,
 			String[] from, int[] to, int flags) {
@@ -41,6 +42,7 @@ public class PublicationAdapter extends SimpleCursorAdapter {
 		
 		this.emptyStarImageId = res.getIdentifier("ic_favorite_empty", "drawable", pn);
 		this.fullStarImageId  = res.getIdentifier("ic_favorite_full" , "drawable", pn);
+		// this.threeDotsMenu = res.getIdentifier("three_dots_menu_grey" , "drawable", pn);
 	}
 
 	@Override
@@ -104,10 +106,13 @@ public class PublicationAdapter extends SimpleCursorAdapter {
 		}
  
 		if (isFavorite.compareTo(Integer.valueOf(1)) == 0) {
-			item.getFavorite().setImageResource(fullStarImageId);
+			//item.getFavorite().setImageResource(fullStarImageId);
+			item.getFavorite().setBackgroundResource(fullStarImageId);
 		}
 		else {
-			item.getFavorite().setImageResource(emptyStarImageId);
+			// item.getFavorite().setImageResource(emptyStarImageId);
+			item.getFavorite().setBackgroundResource(emptyStarImageId);
+			// item.getFavorite().setBackgroundResource(threeDotsMenu);
 		}
 		
 		item.getFavorite().setOnClickListener(new View.OnClickListener() {

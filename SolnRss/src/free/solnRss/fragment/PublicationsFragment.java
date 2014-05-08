@@ -485,8 +485,7 @@ public class PublicationsFragment extends AbstractFragment implements
 		new Runnable() {
 			public void run() {
 				try {
-					publicationRepository.markOnePublicationAsReadByUser(
-							cursor.getInt(0), 
+					publicationRepository.markOnePublicationAsReadByUser(cursor.getInt(0), 
 							cursor.getInt(cursor.getColumnIndex(PublicationTable.COLUMN_SYNDICATION_ID)),
 							cursor.getInt(cursor.getColumnIndex(SyndicationTable.COLUMN_NUMBER_CLICK)));
 					((PublicationAdapter)getListAdapter()).notifyDataSetChanged();
@@ -637,12 +636,11 @@ public class PublicationsFragment extends AbstractFragment implements
 		}
 	}
 	
-	@Override
 	// Call by broadcast receiver for refresh list with last items found and without change position 
 	// when user use application 
-	public void reLoadPublicationsWithLastFound() {
+	@Override public void reLoadPublicationsWithLastFound() {
 		
-		SharedPreferences preferences =  getActivity().getPreferences(0);
+		SharedPreferences preferences   =  getActivity().getPreferences(0);
 		SharedPreferences.Editor editor = preferences.edit();
 
 		int index = getListView().getFirstVisiblePosition();

@@ -127,12 +127,6 @@ public abstract class AbstractFragment extends ListFragment implements	OnQueryTe
 	@Override public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
 
 		inflater.inflate(R.menu.activity_soln_rss, menu);
-		
-		/*MenuItem item2 = menu.add("count");
-		item2.setIcon(writeOnDrawable(getActivity(),R.drawable.ic_abar_search, "15"));
-	    item2.setShowAsAction(MenuItem.SHOW_AS_ACTION_IF_ROOM
-	               | MenuItem.SHOW_AS_ACTION_COLLAPSE_ACTION_VIEW);*/
-	  
 	    
 	    MenuItem item = menu.add("Search");
 	    item.setIcon(R.drawable.ic_abar_search);
@@ -142,11 +136,21 @@ public abstract class AbstractFragment extends ListFragment implements	OnQueryTe
         SearchView sv = new SearchView(getActivity());
         sv.setOnQueryTextListener(this);
         item.setActionView(sv);
+        
+        this.menu = menu;
     }
-
-
-
-	public BitmapDrawable writeOnDrawable(Context mContext,int drawableId, String text){
+	
+	private Menu menu;
+	
+	public void addNumberOfLastFoundInMenu(Integer muberOfLastFound) {
+		
+		MenuItem item = menu.add("count");
+		item.setIcon(writeOnDrawable(getActivity(),R.drawable.ic_abar_search, String.valueOf(muberOfLastFound)));
+	    item.setShowAsAction(MenuItem.SHOW_AS_ACTION_IF_ROOM
+	    		| MenuItem.SHOW_AS_ACTION_COLLAPSE_ACTION_VIEW);
+	}
+	
+	private BitmapDrawable writeOnDrawable(Context mContext,int drawableId, String text){
 
         Bitmap bm = BitmapFactory.decodeResource(getResources(), drawableId).copy(Bitmap.Config.ARGB_8888, true);
 
@@ -163,30 +167,6 @@ public abstract class AbstractFragment extends ListFragment implements	OnQueryTe
         return new BitmapDrawable(mContext.getResources(),bm);
     }
 	
-	 /*public Drawable makeBorderedDrawable(Context mContext, int width) {
-	    Bitmap bkg = null;
-	    // first create a mutable bitmap
-	    bkg = Bitmap.createBitmap(100, 100, Bitmap.Config.ARGB_8888);
-	    Canvas c = new Canvas(bkg);
-	    
-	    Paint paint = new Paint();
-	    paint.setColor(Color.WHITE);
-	    paint.setStyle(Style.FILL);
-	    final int FULL_ALPHA = 0xFF123456;
-	    paint.setAlpha(FULL_ALPHA);
-	    c.drawPaint(paint);
-
-	    paint.setColor(Color.RED);
-	    paint.setTextSize(20);
-	    
-	    c.drawText("55", 0, 0, paint);
-	    
-	    return new BitmapDrawable(mContext.getResources(), bkg);
-
-	}*/
-
-
-	 
 	@Override public boolean onQueryTextChange(String newText) {
         String newFilter = !TextUtils.isEmpty(newText) ? newText : null;
         if (getFilterText() == null && newFilter == null) {

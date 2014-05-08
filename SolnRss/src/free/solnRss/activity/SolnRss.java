@@ -77,10 +77,6 @@ public class SolnRss extends Activity implements ActionBar.TabListener,
 		actionBar.setDisplayHomeAsUpEnabled(true);
 		actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_TABS);
 		actionBar.setTitle(Html.fromHtml("<b><u>" + getTitle() + "</u><b>"));
-		    
-		//getWindow().setBackgroundDrawable(new ColorDrawable(Color.parseColor("#eeeced")));
-		//actionBar.setBackgroundDrawable(new ColorDrawable(Color.parseColor("#eeeced")));
-		//actionBar.setStackedBackgroundDrawable(new ColorDrawable(Color.parseColor("#eeeced")));
 		
 		int apiVersion = android.os.Build.VERSION.SDK_INT;
 		if (apiVersion >= android.os.Build.VERSION_CODES.ICE_CREAM_SANDWICH) {
@@ -91,8 +87,6 @@ public class SolnRss extends Activity implements ActionBar.TabListener,
 		// Set up the ViewPager with the sections adapter.
 		viewPager = (ViewPager) findViewById(R.id.pager);
 		
-		
-
 		// Create the adapter that will return a fragment for each of the three
 		// primary sections of the app.		
 		sectionPageAdapter = new SectionsPagerAdapter(getFragmentManager(), getResources());

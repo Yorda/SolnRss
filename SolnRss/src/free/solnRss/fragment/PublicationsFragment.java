@@ -653,6 +653,12 @@ public class PublicationsFragment extends AbstractFragment implements
 		editor.putInt("publicationsListViewPosition", position);
 		editor.commit();
 		
+		// Set the number found in menu
+		Integer muberOfLastFound = preferences.getInt("newPublicationsRecorded", 0);
+		if(muberOfLastFound > 0) {
+			addNumberOfLastFoundInMenu(muberOfLastFound);
+		}
+		
 		refreshPublications();
 	}
 	

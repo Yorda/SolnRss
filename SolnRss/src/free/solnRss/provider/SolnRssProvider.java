@@ -55,7 +55,6 @@ public class SolnRssProvider extends ContentProvider {
 			
 			cursor = db.query(PublicationRepository.publicationTableJoinToSyndication, projection,
 					selection, selectionArgs, null, null, PublicationRepository.orderBy(getContext()), null);
-					//PublicationRepository.publicationsQueryLimit(uri.getQueryParameter("page"),getContext()));
 			break;
 			
 		case CATEGORY:

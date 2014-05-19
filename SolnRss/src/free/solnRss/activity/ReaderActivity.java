@@ -11,6 +11,8 @@ import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Color;
+import android.graphics.Typeface;
 import android.graphics.drawable.ColorDrawable;
 import android.net.Uri;
 import android.os.Bundle;
@@ -41,18 +43,30 @@ public class ReaderActivity extends Activity {
 	private boolean isFavorite;
 	private PublicationRepository publicationRepository;
 
-	@SuppressLint("SetJavaScriptEnabled") @Override
-	protected void onCreate(Bundle savedInstanceState) {
+	@SuppressLint("SetJavaScriptEnabled")
+	@Override protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		
 		setContentView(R.layout.activity_reader);
 
+		int apiVersion = android.os.Build.VERSION.SDK_INT;
+		if (apiVersion >= android.os.Build.VERSION_CODES.ICE_CREAM_SANDWICH) {
+			getActionBar().setBackgroundDrawable(new ColorDrawable(Color.WHITE));
+			getActionBar().setStackedBackgroundDrawable(new ColorDrawable(Color.WHITE));
+		}
+		
 		this.title = getIntent().getStringExtra("title");
 		
 		if (!TextUtils.isEmpty(title)) {
-			getActionBar().setTitle(Html.fromHtml("<b><u>" + this.getTitle().toString() + "</u><b>"));
+			getActionBar().setTitle(Html.fromHtml("<b><u>" + this.getTitle().toString()	+ "</u><b>"));
+			
 			TextView tv = (TextView) findViewById(R.id.reader_title);
-			tv.setText(Html.fromHtml("<b><u>" + title + "</u><b>"));
+			
+			tv.setTypeface(TypeFaceSingleton.getInstance(this).getUserTypeFace(), Typeface.BOLD);
+			tv.setText(title);
+			
+			
+			getWindow().setBackgroundDrawable(new ColorDrawable(Color.WHITE));
 		}
 
 		getActionBar().setBackgroundDrawable(
@@ -80,6 +94,15 @@ public class ReaderActivity extends Activity {
 		webView.loadDataWithBaseURL(null, getHtmlData(getApplicationContext(), text) , "text/html", "utf-8", null);
 		
 		publicationRepository = new PublicationRepository(this);
+	}
+	
+	@Override
+	protected void onPause() {
+		// When press home button
+		if (!isFinishing()) {
+			this.finish();
+		}
+		super.onPause();
 	}
 	
 	private void goToSite() {
@@ -186,7 +209,7 @@ public class ReaderActivity extends Activity {
 	}
 
 	
-	private String getHtmlData(Context context, String data){
+	private String getHtmlData(Context context, String data) {
 		
 		final String head = "<head>" +
 				"<style>@font-face {" +

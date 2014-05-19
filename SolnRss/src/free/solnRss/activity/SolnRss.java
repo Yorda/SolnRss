@@ -15,6 +15,7 @@ import android.content.DialogInterface.OnClickListener;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
+import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.os.Handler;
@@ -82,6 +83,7 @@ public class SolnRss extends Activity implements ActionBar.TabListener,
 		if (apiVersion >= android.os.Build.VERSION_CODES.ICE_CREAM_SANDWICH) {
 			actionBar.setBackgroundDrawable(new ColorDrawable(0xeeeeee));
 			actionBar.setStackedBackgroundDrawable(new ColorDrawable(0xeeeeee));
+			getWindow().setBackgroundDrawable(new ColorDrawable(Color.WHITE));
 		}
 		
 		// Set up the ViewPager with the sections adapter.

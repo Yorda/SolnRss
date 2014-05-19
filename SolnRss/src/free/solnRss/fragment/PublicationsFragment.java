@@ -91,6 +91,8 @@ public class PublicationsFragment extends AbstractFragment implements
 		
 		//NewPublicationsNotification notify = new NewPublicationsNotification(getActivity());
 		// notify.notificationForNewPublications(25, "2014-03-14 13:30:00");
+		
+		// addNumberOfLastFoundInMenu(25);
 	}
 	
 	private void displayList(Bundle save) {
@@ -321,38 +323,39 @@ public class PublicationsFragment extends AbstractFragment implements
 	}
 	
 	@Override public void onPause() {
-		super.onPause();
+		
+		super.onPause();		
 		SharedPreferences.Editor editor = getActivity().getPreferences(0).edit();
+		
+		editor.putInt("selectedSyndicationID", -1);
+		editor.putInt("selectedCategoryID", -1);
+		editor.putString("dateNewPublicationsFound", null);
+		editor.putBoolean("displayFavoritePublications", false);
+		editor.putString("filterText", null);
+		
 		if (selectedSyndicationID != null) {
 			editor.putInt("selectedSyndicationID", selectedSyndicationID);
-		} else {
-			editor.putInt("selectedSyndicationID", -1);
 		}
-
 		if (selectedCategoryID != null) {
 			editor.putInt("selectedCategoryID", selectedCategoryID);
-		} else {
-			editor.putInt("selectedCategoryID", -1);
 		}
-		
 		if (dateNewPublicationsFound != null) {
 			editor.putString("dateNewPublicationsFound", dateNewPublicationsFound);
-		} else {
-			editor.putString("dateNewPublicationsFound", null);
 		}
-
 		if (selectFavoritePublications == true) {
 			editor.putBoolean("displayFavoritePublications", true);
-		} else {
-			editor.putBoolean("displayFavoritePublications", false);
 		}
-		
 		if (!TextUtils.isEmpty(getFilterText())) {
 			editor.putString("filterText", getFilterText());
-		} else {
-			editor.putString("filterText", null);
 		}
-		savePositionOnScreen(editor);
+		
+		int index = getListView().getFirstVisiblePosition();
+		editor.putInt("publicationsListViewIndex", index);
+
+		View v = getListView().getChildAt(0);
+		int position = (v == null) ? 0 : v.getTop();
+		editor.putInt("publicationsListViewPosition", position);
+		
 		editor.commit();
 	}
 	
@@ -361,16 +364,7 @@ public class PublicationsFragment extends AbstractFragment implements
 		super.onDestroy();
 	}
 	
-	private void savePositionOnScreen(SharedPreferences.Editor editor) {
-		
-		int index = getListView().getFirstVisiblePosition();
-		editor.putInt("publicationsListViewIndex", index);
 
-		View v = getListView().getChildAt(0);
-		int position = (v == null) ? 0 : v.getTop();
-		editor.putInt("publicationsListViewPosition", position);
-	}
-	
 	@Override
 	protected void setListPositionOnScreen() {
 		

@@ -127,10 +127,10 @@ public abstract class AbstractFragment extends ListFragment implements	OnQueryTe
 	@Override public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
 
 		inflater.inflate(R.menu.activity_soln_rss, menu);
-	    
+        
 	    MenuItem item = menu.add("Search");
 	    item.setIcon(R.drawable.ic_abar_search);
-        item.setShowAsAction(MenuItem.SHOW_AS_ACTION_IF_ROOM
+        item.setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS
                 | MenuItem.SHOW_AS_ACTION_COLLAPSE_ACTION_VIEW);
         
         SearchView sv = new SearchView(getActivity());
@@ -138,6 +138,7 @@ public abstract class AbstractFragment extends ListFragment implements	OnQueryTe
         item.setActionView(sv);
         
         this.menu = menu;
+        addNumberOfLastFoundInMenu(0);
     }
 	
 	private Menu menu;
@@ -146,7 +147,7 @@ public abstract class AbstractFragment extends ListFragment implements	OnQueryTe
 		
 		MenuItem item = menu.add("count");
 		item.setIcon(writeOnDrawable(getActivity(),R.drawable.ic_abar_search, String.valueOf(muberOfLastFound)));
-	    item.setShowAsAction(MenuItem.SHOW_AS_ACTION_IF_ROOM
+	    item.setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS
 	    		| MenuItem.SHOW_AS_ACTION_COLLAPSE_ACTION_VIEW);
 	}
 	

@@ -2,17 +2,8 @@ package free.solnRss.fragment;
 
 import android.app.ListFragment;
 import android.app.LoaderManager;
-import android.content.Context;
 import android.content.Loader;
 import android.database.Cursor;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.graphics.Canvas;
-import android.graphics.Color;
-import android.graphics.Paint;
-import android.graphics.Paint.Style;
-import android.graphics.Typeface;
-import android.graphics.drawable.BitmapDrawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.text.TextUtils;
@@ -137,13 +128,13 @@ public abstract class AbstractFragment extends ListFragment implements	OnQueryTe
         sv.setOnQueryTextListener(this);
         item.setActionView(sv);
         
-        this.menu = menu;
-        addNumberOfLastFoundInMenu(0);
+         //this.menu = menu;
+         //addNumberOfLastFoundInMenu(0);
     }
 	
-	private Menu menu;
+	//private Menu menu;
 	
-	public void addNumberOfLastFoundInMenu(Integer muberOfLastFound) {
+	/*public void addNumberOfLastFoundInMenu(Integer muberOfLastFound) {
 		
 		MenuItem item = menu.add("count");
 		item.setIcon(writeOnDrawable(getActivity(),R.drawable.ic_abar_search, String.valueOf(muberOfLastFound)));
@@ -166,7 +157,7 @@ public abstract class AbstractFragment extends ListFragment implements	OnQueryTe
         canvas.drawText(text, 0, bm.getHeight()/2, paint);
 
         return new BitmapDrawable(mContext.getResources(),bm);
-    }
+    }*/
 	
 	@Override public boolean onQueryTextChange(String newText) {
         String newFilter = !TextUtils.isEmpty(newText) ? newText : null;

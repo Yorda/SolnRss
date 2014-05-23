@@ -45,7 +45,9 @@ public class NewPublicationsNotification {
 	
 	public void notificationForNewPublications(int newPublicationsNumber, String dateNewPublicationsFound) {
 
-		newPublicationsNumber = updateNewPublicationsNumberAndTime(newPublicationsNumber, dateNewPublicationsFound);
+		//newPublicationsNumber = updateNewPublicationsNumberAndTime(newPublicationsNumber, dateNewPublicationsFound);
+		newPublicationsNumber    = updateNewPublicationsNumber(newPublicationsNumber);
+		dateNewPublicationsFound = updateNewPublicationsTime(dateNewPublicationsFound);
 		
 		String text = context.getResources().getQuantityString(
 				R.plurals.notify_new_pub_msg,
@@ -67,7 +69,38 @@ public class NewPublicationsNotification {
 		notificationManager.notify(0x000001, notification);
 	}
 	
-	private int updateNewPublicationsNumberAndTime(int newPublicationsNumber, String dateNewPublicationsFound) {
+	private int updateNewPublicationsNumber(int newPublicationsNumber) {
+		SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
+		
+		SharedPreferences.Editor editor = sharedPreferences.edit();
+		
+		int number = sharedPreferences.getInt("newPublicationsRecorded", 0);
+		number += newPublicationsNumber;
+		editor.putInt("newPublicationsRecorded", number);
+		
+		editor.commit();
+		
+		return number;
+	}
+	
+	private String updateNewPublicationsTime(String dateNewPublicationsFound) {
+		
+		SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
+		SharedPreferences.Editor editor = sharedPreferences.edit();
+
+		String lastDate = sharedPreferences.getString("newPublicationsRecordDate", null) ;
+		
+		if(lastDate == null) {
+			lastDate = dateNewPublicationsFound;
+			editor.putString("newPublicationsRecordDate", lastDate);
+		}
+		
+		editor.commit();
+		
+		return lastDate;
+	}
+	
+	/*private int updateNewPublicationsNumberAndTime(int newPublicationsNumber, String dateNewPublicationsFound) {
 		SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
 		
 		SharedPreferences.Editor editor = sharedPreferences.edit();
@@ -83,7 +116,7 @@ public class NewPublicationsNotification {
 		editor.commit();
 		
 		return number;
-	}
+	}*/
 	
 	private PendingIntent createPendingIntent(NotifyEvent event,String dateNewPublicationsFound) {
 		

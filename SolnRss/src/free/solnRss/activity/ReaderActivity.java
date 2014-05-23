@@ -38,7 +38,7 @@ import free.solnRss.singleton.TypeFaceSingleton;
  */
 public class ReaderActivity extends Activity {
 	
-	private String link, title, text;
+	private String link, publicationTitle, text, syndicationName;
 	private Integer publicationId, syndicationId;
 	private boolean isFavorite;
 	private PublicationRepository publicationRepository;
@@ -55,17 +55,20 @@ public class ReaderActivity extends Activity {
 			getActionBar().setStackedBackgroundDrawable(new ColorDrawable(Color.WHITE));
 		}
 		
-		this.title = getIntent().getStringExtra("title");
-		
-		if (!TextUtils.isEmpty(title)) {
+		this.syndicationName = getIntent().getStringExtra("syndicationName");
+
+		if (!TextUtils.isEmpty(syndicationName)) {
+			getActionBar().setTitle(Html.fromHtml("<b><u>" + syndicationName + "</u><b>"));
+		} else {
 			getActionBar().setTitle(Html.fromHtml("<b><u>" + this.getTitle().toString()	+ "</u><b>"));
-			
+		}
+
+		this.publicationTitle = getIntent().getStringExtra("title");
+		if (!TextUtils.isEmpty(publicationTitle)) {
 			TextView tv = (TextView) findViewById(R.id.reader_title);
-			
 			tv.setTypeface(TypeFaceSingleton.getInstance(this).getUserTypeFace(), Typeface.BOLD);
-			tv.setText(title);
 			
-			
+			tv.setText(publicationTitle);
 			getWindow().setBackgroundDrawable(new ColorDrawable(Color.WHITE));
 		}
 
@@ -79,7 +82,7 @@ public class ReaderActivity extends Activity {
 		this.isFavorite    = getIntent().getBooleanExtra("isFavorite", false);
 		this.publicationId = getIntent().getIntExtra("publicationId", -1);
 		this.syndicationId = getIntent().getIntExtra("syndicationId", -1);
-		
+
 		WebView webView = (WebView) findViewById(R.id.reader);		
 		WebSettings settings = webView.getSettings();
 		settings.setDefaultTextEncodingName("utf-8");
@@ -153,7 +156,7 @@ public class ReaderActivity extends Activity {
 		case R.id.reader_menu_share:
 			Intent sendIntent = new Intent();
 			sendIntent.setAction(Intent.ACTION_SEND);
-			sendIntent.putExtra(Intent.EXTRA_TEXT, title + ": " + link);
+			sendIntent.putExtra(Intent.EXTRA_TEXT, publicationTitle + ": " + link);
 			sendIntent.setType("text/plain");
 			startActivity(Intent.createChooser(sendIntent, getResources().getString(R.string.menu_Share)));
 			break;

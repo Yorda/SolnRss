@@ -90,11 +90,11 @@ public class PublicationsFragment extends AbstractFragment implements
 		// notify.notificationForNewPublications(25, "2014-01-31 09:30:00");
 		
 		//NewPublicationsNotification notify = new NewPublicationsNotification(getActivity());
-		// notify.notificationForNewPublications(25, "2014-03-14 13:30:00");
+		//notify.notificationForNewPublications(25, "2014-05-21 14:45:00");
 		
-		// addNumberOfLastFoundInMenu(25);
+		// addNumberOfLastFoundInMenu(25);	
 	}
-	
+
 	private void displayList(Bundle save) {
 		
 		SharedPreferences prefs = getActivity().getPreferences(0);
@@ -117,8 +117,6 @@ public class PublicationsFragment extends AbstractFragment implements
 		else if (prefs.getBoolean("displayFavoritePublications", true)) {
 			displayFavoritePublications();
 		}
-
-
 		else {
 			loadPublications();
 		}
@@ -259,13 +257,14 @@ public class PublicationsFragment extends AbstractFragment implements
 		String title = cursor.getString(1);         //getPublicationTitle(cursor);
 		String link = publicationContent[0];        //getPublicationUrl(cursor);
 		String description = publicationContent[1]; //hasPublicationContentToDisplay(cursor);
+		String synsdicationName =  cursor.getString(3);
 		
 		clickOnPublicationItem(cursor, l, v, position, id);
 		
 		if (description != null && description.trim().length() > 0) {
 			if (isPreferenceToDisplayOnAppReader()) {
 				//displayOnApplicationReader(description, link, title);
-				displayOnApplicationReader(publicationId, syndicationId, isFavorite, description, link, title);
+				displayOnApplicationReader(publicationId, syndicationId,synsdicationName, isFavorite, description, link, title);
 			} else {
 				displayOnSystemBrowser(link);
 			}
@@ -648,10 +647,11 @@ public class PublicationsFragment extends AbstractFragment implements
 		editor.commit();
 		
 		// Set the number found in menu
-		Integer muberOfLastFound = preferences.getInt("newPublicationsRecorded", 0);
+		/*Integer muberOfLastFound = preferences.getInt("newPublicationsRecorded", 0);
 		if(muberOfLastFound > 0) {
 			addNumberOfLastFoundInMenu(muberOfLastFound);
-		}
+			getActivity().invalidateOptionsMenu();
+		}*/
 		
 		refreshPublications();
 	}
@@ -713,7 +713,7 @@ public class PublicationsFragment extends AbstractFragment implements
 	}
 
 	private void displayOnApplicationReader(Integer publicationId,
-			Integer syndicationId, boolean isFavorite, String text,
+			Integer syndicationId,String syndicationName, boolean isFavorite, String text,
 			String link, String title) {
 		Intent i = new Intent(getActivity(), ReaderActivity.class);
 		
@@ -729,7 +729,7 @@ public class PublicationsFragment extends AbstractFragment implements
 		i.putExtra("publicationId", publicationId);
 		i.putExtra("syndicationId", syndicationId);
 		i.putExtra("isFavorite", isFavorite);
-		
+		i.putExtra("syndicationName", syndicationName);
 		startActivity(i);
 	}
 

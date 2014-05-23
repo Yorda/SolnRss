@@ -127,22 +127,29 @@ public class SolnRss extends Activity implements ActionBar.TabListener,
 		// Because https://stackoverflow.com/questions/6584997/cant-remove-intent-extra
 		// Restart activity.
 		if (event != null
-				&& event.compareTo(NewPublicationsNotification.NotifyEvent.RESTART_ACTIVITY) == 0) {			
+				&& event.compareTo(NewPublicationsNotification.NotifyEvent.RESTART_ACTIVITY) == 0) {	
+			
 			String dateNewPublicationsFound = getIntent().getStringExtra("dateNewPublicationsFound");
-			SharedPreferences.Editor editor = getPreferences(0).edit();
 			
-			editor.putInt("selectedSyndicationID", -1);
-			editor.putInt("selectedCategoryID", -1);
-			editor.putString("filterText", null);
-			editor.putInt("publicationsListViewIndex", -1);
-			editor.putInt("publicationsListViewPosition", -1);
-			editor.putString("dateNewPublicationsFound", dateNewPublicationsFound);
-			editor.commit();
-			
-			Intent intent = getIntent();
-			intent.removeExtra(NewPublicationsNotification.NotifyEvent.RESTART_ACTIVITY.name());
-			finish();
-			startActivity(intent);
+			if (!TextUtils.isEmpty(dateNewPublicationsFound)) {
+				
+				SharedPreferences.Editor editor = getPreferences(0).edit();
+				
+				editor.putInt("selectedSyndicationID", -1);
+				editor.putInt("selectedCategoryID", -1);
+				editor.putString("filterText", null);
+				editor.putInt("publicationsListViewIndex", -1);
+				editor.putInt("publicationsListViewPosition", -1);
+				editor.putString("dateNewPublicationsFound", dateNewPublicationsFound);
+				editor.commit();
+				
+				getIntent().putExtra("dateNewPublicationsFound", new String());
+				 
+				// Intent intent = getIntent();
+				// intent.removeExtra(NewPublicationsNotification.NotifyEvent.RESTART_ACTIVITY.name());
+				// finish();
+				// startActivity(intent);
+			} 
 		}
 		
 		super.onStart();
@@ -441,7 +448,6 @@ public class SolnRss extends Activity implements ActionBar.TabListener,
 			editor.putString("newPublicationsRecordDate", null);
 			editor.commit();
 			// --
-
 		}
 	};
 	

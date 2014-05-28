@@ -36,6 +36,7 @@ import free.solnRss.repository.RssRepository;
 import free.solnRss.repository.RssTable;
 import free.solnRss.repository.SyndicationRepository;
 import free.solnRss.repository.SyndicationTable;
+import free.solnRss.utility.ImageLoaderUtil;
 import free.solnRss.utility.StringUtil;
 
 public class PublicationFinderBusinessImpl implements PublicationFinderBusiness {
@@ -55,6 +56,8 @@ public class PublicationFinderBusinessImpl implements PublicationFinderBusiness 
 	private Context context;
 	private Integer newPublicationsRecorded;
 	
+	private ImageLoaderUtil imageLoader;
+	
 	NewPublicationsNotification newPublicationsNotification;
 	
 	public PublicationFinderBusinessImpl(Context context) {
@@ -66,8 +69,8 @@ public class PublicationFinderBusinessImpl implements PublicationFinderBusiness 
 		syndicationRepository = new SyndicationRepository(context);
 		rssRepository = new RssRepository(context);
 		newPublicationsNotification = new NewPublicationsNotification(context);
-		sharedPreferences = 
-				PreferenceManager.getDefaultSharedPreferences(context);
+		sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
+		imageLoader = new ImageLoaderUtil(context);
 	}
 	
 	public void searchNewPublications() {
@@ -145,7 +148,7 @@ public class PublicationFinderBusinessImpl implements PublicationFinderBusiness 
 						.withValue("syndicationId",  syndicationId.toString())
 						.withValue(PublicationContentTable.COLUMN_LINK, syndEntry.getLink())
 						
-						.withValue(PublicationContentTable.COLUMN_PUBLICATION,makeSomeFixInDescription(getDescription(syndEntry)))
+						.withValue(PublicationContentTable.COLUMN_PUBLICATION,inmproveDescription(getDescription(syndEntry)))
 						// .withValue(PublicationContentTable.COLUMN_PUBLICATION,WebSiteUtil.htmlToReadableText(syndEntry.getLink()))
 						
 						.withValueBackReference(PublicationContentTable.COLUMN_PUBLICATION_ID, operations.size() - 1)
@@ -229,13 +232,11 @@ public class PublicationFinderBusinessImpl implements PublicationFinderBusiness 
 	protected void retrieveSyndicationsToRefresh() {
 		syndications.clear();
 		Cursor cursor = syndicationRepository.findSyndicationsToRefresh(timeToRefresh());
-		
 		if (cursor.getCount() > 0) {
 			cursor.moveToFirst();
 			do {				
 				syndications.put(cursor.getInt(0), cursor.getString(1));
 			} while (cursor.moveToNext());
-			
 			cursor.close();
 		}
 	}
@@ -254,13 +255,18 @@ public class PublicationFinderBusinessImpl implements PublicationFinderBusiness 
 		editor.commit();
 	}
 	
-	private String makeSomeFixInDescription(String description) {
+	private String inmproveDescription(String description) {
 		String fixedDescription = description;
 		
 		if (!TextUtils.isEmpty(description)) {
 			fixedDescription = StringUtil.unescapeHTML(fixedDescription);
 			fixedDescription = fixYouTubeLinkInIFrame(fixedDescription);
 		}
+		
+		// get image
+		imageLoader.setDescription(fixedDescription);
+		fixedDescription = imageLoader.saveImage();
+		
 		return fixedDescription;
 	}
 	

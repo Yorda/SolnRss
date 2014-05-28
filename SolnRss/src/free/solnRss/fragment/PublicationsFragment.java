@@ -93,6 +93,11 @@ public class PublicationsFragment extends AbstractFragment implements
 		//notify.notificationForNewPublications(25, "2014-05-21 14:45:00");
 		
 		// addNumberOfLastFoundInMenu(25);	
+		
+		//ImageLoaderUtil ilu = new ImageLoaderUtil(getActivity());
+		// ilu.initStoragePath();
+		//ilu.setDescription(d);
+		//ilu.testSaveImg2();
 	}
 
 	private void displayList(Bundle save) {

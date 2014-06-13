@@ -1,5 +1,6 @@
 package free.solnRss.activity;
 
+import de.greenrobot.event.EventBus;
 import android.app.ActionBar;
 import android.app.ActionBar.Tab;
 import android.app.Activity;
@@ -35,6 +36,7 @@ import free.solnRss.R;
 import free.solnRss.adapter.SectionsPagerAdapter;
 import free.solnRss.alarmManager.FindNewPublicationsAlarmManager;
 import free.solnRss.dialog.OneEditTextDialogBox;
+import free.solnRss.event.SyndicationEvent;
 import free.solnRss.fragment.listener.CategoriesFragmentListener;
 import free.solnRss.fragment.listener.PublicationsFragmentListener;
 import free.solnRss.fragment.listener.SyndicationsFragmentListener;
@@ -233,6 +235,7 @@ public class SolnRss extends Activity implements ActionBar.TabListener,
 			return true;
 			
 		case R.id.menu_display_favorite:
+			EventBus.getDefault().postSticky(new SyndicationEvent());
 			displayPublicationFavorite();
 			return true;
 			

@@ -38,13 +38,16 @@ import free.solnRss.singleton.TypeFaceSingleton;
  */
 public class ReaderActivity extends Activity {
 	
+	final String tag = ReaderActivity.class.getName();
 	private String link, publicationTitle, text, syndicationName;
 	private Integer publicationId, syndicationId;
 	private boolean isFavorite;
 	private PublicationRepository publicationRepository;
+	//private Drawable color = new ColorDrawable(0xeeeeee);
+	//private final Drawable color = new ColorDrawable(Color.WHITE);
 
-	@SuppressLint("SetJavaScriptEnabled")
-	@Override protected void onCreate(Bundle savedInstanceState) {
+	@SuppressLint("SetJavaScriptEnabled") @Override protected void onCreate(Bundle savedInstanceState) {
+		
 		super.onCreate(savedInstanceState);
 		
 		setContentView(R.layout.activity_reader);
@@ -101,12 +104,10 @@ public class ReaderActivity extends Activity {
 	}
 	
 	@Override
-	protected void onPause() {
-		// When press home button
-		if (!isFinishing()) {
-			this.finish();
-		}
-		super.onPause();
+	protected void onNewIntent(Intent intent) {
+		super.onNewIntent(intent);
+		this.finish();
+		startActivity(intent);
 	}
 	
 	private void goToSite() {

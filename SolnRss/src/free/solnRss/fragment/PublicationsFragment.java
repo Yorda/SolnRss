@@ -17,6 +17,7 @@ import android.preference.PreferenceManager;
 import android.text.Html;
 import android.text.Spanned;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.ContextMenu;
 import android.view.ContextMenu.ContextMenuInfo;
 import android.view.LayoutInflater;
@@ -30,10 +31,12 @@ import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
+import de.greenrobot.event.EventBus;
 import free.solnRss.R;
 import free.solnRss.activity.ReaderActivity;
 import free.solnRss.activity.SolnRss;
 import free.solnRss.adapter.PublicationAdapter;
+import free.solnRss.event.SyndicationEvent;
 import free.solnRss.fragment.listener.PublicationsFragmentListener;
 import free.solnRss.repository.PublicationContentRepository;
 import free.solnRss.repository.PublicationRepository;
@@ -63,10 +66,28 @@ public class PublicationsFragment extends AbstractFragment implements
 		
 		return fragment;
 	}
+
+	//PublicationsListState state;
 	
+	public void onEvent(SyndicationEvent event) {
+		Log.e("EVENT", "A SyndicationEvent received");
+		/*this.state = event.getState();
+		if (getLoaderManager() != null && getLoaderManager().getLoader(0) != null 
+				&& getLoaderManager().getLoader(0).isStarted()) {
+			getLoaderManager().restartLoader(0, null, this);
+			updateActionBarTitle();
+		}
+		else {
+			getLoaderManager().initLoader(0, null, this);
+			updateActionBarTitle();
+		}*/
+	}
+	  
 	@Override
 	public void onActivityCreated(Bundle savedInstanceState) {
 		super.onActivityCreated(savedInstanceState);
+		
+		EventBus.getDefault().registerSticky(this);
 		
 		publicationRepository = new PublicationRepository(getActivity());
 		publicationContentRepository = new PublicationContentRepository(getActivity());
@@ -93,11 +114,6 @@ public class PublicationsFragment extends AbstractFragment implements
 		//notify.notificationForNewPublications(25, "2014-05-21 14:45:00");
 		
 		// addNumberOfLastFoundInMenu(25);	
-		
-		//ImageLoaderUtil ilu = new ImageLoaderUtil(getActivity());
-		// ilu.initStoragePath();
-		//ilu.setDescription(d);
-		//ilu.testSaveImg2();
 	}
 
 	private void displayList(Bundle save) {
@@ -724,7 +740,7 @@ public class PublicationsFragment extends AbstractFragment implements
 		
 		i.addFlags(
 				Intent.FLAG_ACTIVITY_CLEAR_TOP | 
-				 Intent.FLAG_ACTIVITY_SINGLE_TOP | 
+				Intent.FLAG_ACTIVITY_SINGLE_TOP | 
 			    Intent.FLAG_ACTIVITY_NEW_TASK);
 		
 		i.putExtra("read", text);

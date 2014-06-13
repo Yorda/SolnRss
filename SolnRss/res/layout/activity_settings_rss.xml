@@ -67,13 +67,6 @@
             android:summaryOn="@string/pref_display_publication_app"
             android:title="@string/pref_display_publication" />
 
-        <!-- 
-        <free.solnRss.preference.ItemSeekBarPreference
-            android:defaultValue="100"
-            android:key="pref_max_publication_item"
-            android:title="@string/pref_publication_item_number" />
-             -->
-
         <free.solnRss.preference.SeekBarDialogPreference
             xmlns:app="http://schemas.android.com/apk/res-auto"
             android:defaultValue="16"
@@ -90,6 +83,15 @@
             android:negativeButtonText="@android:string/cancel"
             android:positiveButtonText="@android:string/ok"
             android:title="@string/pref_delete_all_publications" />
+        
+        <ListPreference
+            android:defaultValue="2"
+            android:entries="@array/maxPublicationsBySyndicationToKeep"
+            android:entryValues="@array/maxPublicationsBySyndicationToKeep"
+            android:key="pref_maxPublicationsBySyndicationToKeep"
+            android:title="@string/pref_maxPublicationsBySyndicationToKeep" >
+        </ListPreference>
+        
     </PreferenceScreen>
 
     <PreferenceScreen
@@ -102,13 +104,6 @@
             android:summaryOff="@string/pref_summ_display_notify_off"
             android:summaryOn="@string/pref_summ_display_notify_on"
             android:title="@string/pref_display_notify" />
-
-        <!--
-             free.solnRss.preference.SeekBarPreference
-            android:defaultValue="15"
-            android:key="pref_search_publication_time"
-            android:title="@string/pref_search_publication_time" /
-        -->
 
         <free.solnRss.preference.SeekBarDialogPreference
             xmlns:app="http://schemas.android.com/apk/res-auto"

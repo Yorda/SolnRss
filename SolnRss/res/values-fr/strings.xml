@@ -150,6 +150,8 @@
     <string name="pref_use_wifi_only">Se connecter via le wifi uniquement</string>
     <string name="pref_use_all_connection">Se connecter par tous types de connection</string>
     <string name="pref_what_type_of_connection">Type de connection</string>
+    
+     <string name="pref_maxPublicationsBySyndicationToKeep">Supprimer les plus ancienne</string>
 
     <!-- Category -->
     <string name="empty_categories">Aucune catégorie à afficher</string>

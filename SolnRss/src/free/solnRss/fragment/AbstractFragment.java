@@ -63,6 +63,12 @@ public abstract class AbstractFragment extends ListFragment implements	OnQueryTe
 		return name;
 	}
 	
+	protected boolean isLoaderManagerAlreadyStarted() {
+		return getLoaderManager() != null 
+				&& getLoaderManager().getLoader(0) != null 
+				&& getLoaderManager().getLoader(0).isStarted();
+	}
+	
 	@Override
 	public void onLoadFinished(Loader<Cursor> arg0, Cursor arg1) {
 		

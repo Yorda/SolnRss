@@ -10,7 +10,6 @@ import android.content.CursorLoader;
 import android.content.Loader;
 import android.database.Cursor;
 import android.net.Uri;
-import android.preference.PreferenceManager;
 import android.text.TextUtils;
 import free.solnRss.provider.SolnRssProvider;
 
@@ -231,12 +230,9 @@ public class PublicationRepository {
 	}
 	
 	public void removeTooOLdPublications() throws Exception {
-		// Delete too old publication
-		// select *  from d_publication where _id in 
-		//(select _id from d_publication as p where p.syn_syndication_id = 77 order by p._id desc LIMIT -1 OFFSET 50)
 		
 		ArrayList<ContentProviderOperation> operations = new ArrayList<ContentProviderOperation>();
-
+		
 		//--
 		// Get all syndication id
 		Cursor cursor = context.getContentResolver().query(SyndicationRepository.uri,
@@ -245,31 +241,40 @@ public class PublicationRepository {
 		cursor.moveToFirst();
 		Integer syndicationId = null;
 		Uri publicationContentUri = null;
+		
 		// Add an operation for delete publication content
 		if (cursor.getCount() > 0) {
 			final int max =  maxPublicationToKeep();
+			
 			do {
 				
 				syndicationId = cursor.getInt(0);
 				
-				// Delete publication
+				selection.setLength(0);
+				selection.append(" _id in " + 
+						" (select p._id FROM d_publication p where  " + 
+						" p.syn_syndication_id = ? " + 
+						" and (p.pub_favorite is null or p.pub_favorite = 0) " + 
+						" order by p._id desc LIMIT -1 OFFSET " + max + " )");
+	
 				operations.add(ContentProviderOperation.newDelete(uri)
-						.withSelection(
-						" _id in (select _id from d_publication as p where p.syn_syndication_id = ? "
-						+ " order by p._id desc LIMIT -1 OFFSET "
-						+ max + ") ", 
-					new String[] { syndicationId.toString() }).build());
+						.withSelection(selection.toString(), new String[] { syndicationId.toString() })
+						.build());
 				
 				// Delete publication content
 				publicationContentUri = PublicationContentRepository.uri.buildUpon()
 						.appendQueryParameter("tableKey", String.valueOf(syndicationId)).build();
 				
+				selection.setLength(0);
+				selection.append(" _id in (select pc._id FROM d_publication_content_"
+						+ syndicationId.toString()
+						+ " pc left join "
+						+ " d_publication p on pc.pub_publication_id = p._id "
+						+ " where (p.pub_favorite is null or p.pub_favorite = 0) order by pc._id desc LIMIT -1 OFFSET "
+						+ max + " )");
+				
 				operations.add(ContentProviderOperation.newDelete(publicationContentUri)
-						.withSelection(
-						" _id in (select _id from d_publication_content_" 
-						+ syndicationId.toString()	
-						+ " as p order by p._id desc LIMIT -1 OFFSET "
-						+ max + ")", null).build());
+						.withSelection(selection.toString(), null).build());
 				
 			} while (cursor.moveToNext());
 		}
@@ -277,10 +282,13 @@ public class PublicationRepository {
 		context.getContentResolver().applyBatch(SolnRssProvider.AUTHORITY, operations);	
 	}
 	
+	protected final String tag = PublicationRepository.class.getName();
+	
 	private int maxPublicationToKeep() {
-		int max = PreferenceManager.getDefaultSharedPreferences(context)
-				.getInt("pref_max_publication_item", 100);
-		return max;
+		//int max = PreferenceManager.getDefaultSharedPreferences(context)
+		//		.getInt("pref_maxPublicationsBySyndicationToKeep", 100);
+		// Log.e(tag, "-----------------> " + max);
+		return 100;
 	}
 
 	public void deletePublication(Integer publicationId, Integer syndicationId) throws Exception {

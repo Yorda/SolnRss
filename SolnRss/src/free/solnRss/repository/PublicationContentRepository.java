@@ -64,12 +64,15 @@ public class PublicationContentRepository {
 	}
 	
 	private String[] projection(Integer syndicationId) {
-		String key = String.valueOf(syndicationId);
+		
+		final String key = String.valueOf(syndicationId);
+		final String tableName = publicationContentTable + "_" + key + ".";
+		
 		return new String[] {
-				publicationContentTable + "_" +key + "." + PublicationContentTable.COLUMN_ID,
-				publicationContentTable + "_" +key + "." + PublicationContentTable.COLUMN_LINK,
-				publicationContentTable + "_" +key + "." + PublicationContentTable.COLUMN_PUBLICATION,
-				publicationContentTable + "_" +key + "." + PublicationContentTable.COLUMN_PUBLICATION_ID 
+				tableName + PublicationContentTable.COLUMN_ID,
+				tableName + PublicationContentTable.COLUMN_LINK,
+				tableName + PublicationContentTable.COLUMN_PUBLICATION,
+				tableName + PublicationContentTable.COLUMN_PUBLICATION_ID 
 			};
 	}
 }

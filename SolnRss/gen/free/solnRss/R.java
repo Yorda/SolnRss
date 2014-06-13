@@ -11,6 +11,7 @@ public final class R {
     public static final class array {
         public static final int listTypeFace=0x7f040000;
         public static final int listTypeFaceValues=0x7f040001;
+        public static final int maxPublicationsBySyndicationToKeep=0x7f040002;
     }
     public static final class attr {
         /** <p>Must be an integer value, such as "<code>100</code>".
@@ -158,15 +159,15 @@ containing a value of this type.
         public static final int action_bar_search=0x7f05001a;
         public static final int active_articles_btn=0x7f05004b;
         public static final int active_syndication=0x7f050057;
-        public static final int add_categorie=0x7f050081;
+        public static final int add_categorie=0x7f050082;
         /**  Dialog add item 
  Dialog add item 
          */
-        public static final int add_categorie_explain=0x7f05007f;
+        public static final int add_categorie_explain=0x7f050080;
         public static final int add_favorite=0x7f050013;
-        public static final int add_site=0x7f050082;
-        public static final int add_site_explain=0x7f050080;
-        public static final int add_to_categorie=0x7f05007b;
+        public static final int add_site=0x7f050083;
+        public static final int add_site_explain=0x7f050081;
+        public static final int add_to_categorie=0x7f05007c;
         public static final int all=0x7f050019;
         public static final int all_publications_already_read=0x7f050024;
         public static final int all_publications_by_category_already_read=0x7f050023;
@@ -179,9 +180,9 @@ containing a value of this type.
          */
         public static final int app_name=0x7f050000;
         public static final int bad_url=0x7f05003f;
-        public static final int categorie_not_use=0x7f05007c;
-        public static final int categorie_use_by_many=0x7f05007e;
-        public static final int categorie_use_by_one=0x7f05007d;
+        public static final int categorie_not_use=0x7f05007d;
+        public static final int categorie_use_by_many=0x7f05007f;
+        public static final int categorie_use_by_one=0x7f05007e;
         public static final int clean_articles_btn=0x7f050049;
         public static final int clean_confirm=0x7f050051;
         public static final int clean_syndication_ok=0x7f050047;
@@ -190,7 +191,7 @@ containing a value of this type.
         public static final int creation_date=0x7f050054;
         public static final int defaultTypeface=0x7f05001f;
         public static final int delete_articles_btn=0x7f05004a;
-        public static final int delete_categorie=0x7f050079;
+        public static final int delete_categorie=0x7f05007a;
         public static final int delete_confirm=0x7f050053;
         public static final int delete_ok=0x7f05004f;
         public static final int delete_syndication_ok=0x7f050046;
@@ -204,8 +205,8 @@ containing a value of this type.
         /**  Category 
  Category 
          */
-        public static final int empty_categories=0x7f050077;
-        public static final int empty_categories_with_filter=0x7f050078;
+        public static final int empty_categories=0x7f050078;
+        public static final int empty_categories_with_filter=0x7f050079;
         public static final int empty_publications=0x7f050025;
         public static final int empty_publications_date_last_found=0x7f050028;
         public static final int empty_publications_date_last_found_with_filter=0x7f050029;
@@ -247,8 +248,8 @@ containing a value of this type.
         public static final int menu_show_already_read=0x7f05000c;
         public static final int menu_show_favorite=0x7f05000f;
         public static final int minute_brev=0x7f05001e;
-        public static final int new_category_hint=0x7f050084;
-        public static final int new_syndication_hint=0x7f050083;
+        public static final int new_category_hint=0x7f050085;
+        public static final int new_syndication_hint=0x7f050084;
         public static final int no_connection=0x7f05003c;
         public static final int no_connection_wifi=0x7f05003d;
         /**  New publication notification 
@@ -268,23 +269,24 @@ containing a value of this type.
         public static final int pref_display_publication_app=0x7f05006c;
         public static final int pref_display_publication_browser=0x7f05006b;
         public static final int pref_how_to_start_refresh=0x7f050073;
+        public static final int pref_maxPublicationsBySyndicationToKeep=0x7f050077;
         public static final int pref_not_run_on_boot=0x7f050071;
         public static final int pref_publication_item_number=0x7f05006e;
         public static final int pref_run_on_boot=0x7f050072;
         public static final int pref_search_publication_time=0x7f05006d;
-        public static final int pref_sort_categories=0x7f05008a;
-        public static final int pref_sort_categories_alphabetic=0x7f050089;
-        public static final int pref_sort_categories_most_use=0x7f050088;
-        public static final int pref_sort_syndications=0x7f050087;
-        public static final int pref_sort_syndications_alphabetic=0x7f050086;
-        public static final int pref_sort_syndications_most_use=0x7f050085;
+        public static final int pref_sort_categories=0x7f05008b;
+        public static final int pref_sort_categories_alphabetic=0x7f05008a;
+        public static final int pref_sort_categories_most_use=0x7f050089;
+        public static final int pref_sort_syndications=0x7f050088;
+        public static final int pref_sort_syndications_alphabetic=0x7f050087;
+        public static final int pref_sort_syndications_most_use=0x7f050086;
         public static final int pref_summ_display_notify_off=0x7f050069;
         public static final int pref_summ_display_notify_on=0x7f050068;
         public static final int pref_summ_view_unread_off=0x7f050062;
         public static final int pref_summ_view_unread_on=0x7f050063;
         public static final int pref_use_all_connection=0x7f050075;
         public static final int pref_use_wifi_only=0x7f050074;
-        public static final int pref_user_type_face=0x7f05008b;
+        public static final int pref_user_type_face=0x7f05008c;
         /**  Unread font weight 
  Unread font weight 
          */
@@ -303,7 +305,7 @@ containing a value of this type.
         public static final int record_feed=0x7f050044;
         public static final int remove_favorite=0x7f050014;
         public static final int rename=0x7f050018;
-        public static final int rename_category=0x7f05007a;
+        public static final int rename_category=0x7f05007b;
         public static final int retrieve_http=0x7f050041;
         public static final int searching_feed=0x7f050042;
         public static final int site_already_recorded=0x7f05003a;

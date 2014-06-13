@@ -76,13 +76,16 @@ public class SyndicationAdapter extends SimpleCursorAdapter {
 					.setVisibility(View.VISIBLE);
 		}
 
-		if (getCursor().getInt(6) != 0) { // Last search result
+		/*if (getCursor().getInt(6) != 0) { // Last search result
 			convertView.findViewById(R.id.syndication_last_search_result)
 					.setVisibility(View.VISIBLE);
 		} else {
 			convertView.findViewById(R.id.syndication_last_search_result)
 					.setVisibility(View.GONE);
-		}
+		}*/
+		// Improve this
+		convertView.findViewById(R.id.syndication_last_search_result)
+		.setVisibility(View.GONE);
 
 		setFontTypeFace(convertView, item);
 		

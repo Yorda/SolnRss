@@ -1,5 +1,6 @@
 package free.solnRss.fragment;
 
+import de.greenrobot.event.EventBus;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -24,6 +25,7 @@ import free.solnRss.activity.SolnRss;
 import free.solnRss.activity.SyndicationsCategoriesActivity;
 import free.solnRss.adapter.CategoryAdapter;
 import free.solnRss.dialog.OneEditTextDialogBox;
+import free.solnRss.event.SyndicationEvent;
 import free.solnRss.fragment.listener.CategoriesFragmentListener;
 import free.solnRss.repository.CategoryRepository;
 
@@ -148,6 +150,9 @@ public class CategoriesFragment extends AbstractFragment implements
 	
 	@Override
 	public void onListItemClick(ListView l, View v, int position, long id) {
+		
+		EventBus.getDefault().postSticky(new SyndicationEvent());
+		
 		Cursor cursor = ((CategoryAdapter) l.getAdapter()).getCursor();
 		selectedCategoryID = cursor.getInt(cursor.getColumnIndex("_id"));
 		((SolnRss) getActivity()).reLoadPublicationsByCategorie(selectedCategoryID);

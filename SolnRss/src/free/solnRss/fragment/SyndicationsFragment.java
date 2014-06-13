@@ -20,10 +20,12 @@ import android.widget.AdapterView;
 import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.Toast;
+import de.greenrobot.event.EventBus;
 import free.solnRss.R;
 import free.solnRss.activity.SolnRss;
 import free.solnRss.adapter.SyndicationAdapter;
 import free.solnRss.dialog.OneEditTextDialogBox;
+import free.solnRss.event.SyndicationEvent;
 import free.solnRss.fragment.listener.SyndicationsFragmentListener;
 import free.solnRss.repository.SyndicationRepository;
 
@@ -63,6 +65,9 @@ public class SyndicationsFragment extends AbstractFragment implements
 
 	@Override
 	public void onListItemClick(ListView l, View v, int position, long id) {
+		
+		EventBus.getDefault().postSticky(new SyndicationEvent());
+		
 		Cursor cursor = ((SyndicationAdapter) l.getAdapter()).getCursor();
 		int syndicationID = cursor.getInt(cursor.getColumnIndex("_id"));
 		((SolnRss) getActivity()).reLoadPublicationsBySyndication(syndicationID);

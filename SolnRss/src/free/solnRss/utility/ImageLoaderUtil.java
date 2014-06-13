@@ -18,7 +18,7 @@ import com.squareup.picasso.Picasso;
 
 public class ImageLoaderUtil {
 	
-	private final String TAG = ImageLoaderUtil.class.getName();
+	private final String tag = ImageLoaderUtil.class.getName();
 	private Context context;
 	private String url, imageName, path, description;
 	private Bitmap bitmap;
@@ -37,9 +37,13 @@ public class ImageLoaderUtil {
 		for (Element image : images) {
 			try {
 				url = image.absUrl("src");
+				
 				if (TextUtils.isEmpty(url)) {
 					continue;
 				}
+				
+				// String fileName = url.substring( url.lastIndexOf('/')+1, url.length() );
+				// String fileNameWithoutExtn = fileName.substring(0, fileName.lastIndexOf('.'));
 
 				imageName = Integer.valueOf(url.hashCode()).toString() + ".jpg";
 				
@@ -53,8 +57,7 @@ public class ImageLoaderUtil {
 				image.attr("src", path);
 
 			} catch (Exception e) {
-				Log.e(TAG, "Error retrieving image file with url: " + url);
-				e.printStackTrace();
+				Log.e(tag, "Error retrieving image file with url: " + url + " -> " + e.getCause());
 			}
 		}
 		return document.html();
@@ -66,9 +69,7 @@ public class ImageLoaderUtil {
 	}
 	
 	private void loadImage() throws Exception {
-
 		bitmap = Picasso.with(context).load(url).get();
-
 		File file = new File(context.getFilesDir(), imageName);
 		
 		String filePath = file.toString();

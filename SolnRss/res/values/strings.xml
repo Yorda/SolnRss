@@ -156,7 +156,8 @@
     <string name="pref_use_wifi_only">Use wifi only</string>
     <string name="pref_use_all_connection">Use all types of connection</string>
     <string name="pref_what_type_of_connection">Connection type</string>
-
+    <string name="pref_maxPublicationsBySyndicationToKeep">Max number of publications</string>
+            
     <!-- Category -->
     <string name="empty_categories">No categories to display</string>
     <string name="empty_categories_with_filter">No categories found with %1$s search</string>

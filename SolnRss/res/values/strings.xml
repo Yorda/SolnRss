@@ -2,6 +2,7 @@
 <resources>
 
     <!-- Global app label -->
+
     <string name="app_name">Soln.R</string>
     <string name="title_publications">Publications</string>
     <string name="title_syndications">RSS feed</string>
@@ -18,11 +19,9 @@
     <string name="menu_hide_already_read">Hide publications already read</string>
     <string name="menu_read_on_web_site">Read on the web site</string>
     <string name="menu_show_favorite">Display favorite</string>
-    
-     <string name="menu_favorite">Favorite</string>
-     <string name="menu_Share">Share</string>
-     <string name="menu_delete">Delete</string>
-       
+    <string name="menu_favorite">Favorite</string>
+    <string name="menu_Share">Share</string>
+    <string name="menu_delete">Delete</string>
     <string name="add_favorite">Add to favorite</string>
     <string name="remove_favorite">Remove to favorite</string>
     <string name="Delete">Delete</string>
@@ -38,6 +37,7 @@
     <string name="defaultTypeface">Default</string>
     <string name="font_size">Font size</string>
     <string name="last_publications">What\'s new !</string>
+    <string name="keepAll">Keep all</string>
 
     <!-- Publication's tab label -->
     <string name="all_publications_by_syndication_already_read">All the publications of the syndication %1$s are marked as read</string>
@@ -46,10 +46,8 @@
     <string name="empty_publications">No publications to display.</string>
     <string name="empty_publications_with_syndication">No publications found for syndication %1$s. </string>
     <string name="empty_publications_with_category">No publications found for category %1$s. </string>
-    
     <string name="empty_publications_date_last_found">No more publication. </string>
     <string name="empty_publications_date_last_found_with_filter">No more publication with the search: %1$s </string>
-     
     <string name="empty_publications_with_filter">No publications found with the search: %1$s</string>
     <string name="empty_publications_with_syndication_with_filter">No publications found for syndication %1$s and %2$s research.</string>
     <string name="empty_publications_with_category_with_filter">No publications found for category %1$s and %2$s research.</string>
@@ -113,14 +111,13 @@
     <string name="active_syndication">The search for new publications is activated</string>
     <string name="display_syndication">The visibility of publications is complete</string>
     <string name="undisplay_syndication">Publications are visible through the category or syndication tab</string>
-    
+
     <plurals name="syndication_number_of_click">
         <item quantity="one">%1$s publication already read</item>
         <item quantity="other">%1$s publications already read</item>
     </plurals>
-    
-    <string name="syndication_last_search_result">Last search publication error</string>
 
+    <string name="syndication_last_search_result">Last search publication error</string>
     <string name="empty_syndications">No RSS feed to display.</string>
     <string name="empty_syndications_with_filter">No RSS feed found for the site %1$s with %2$s research.</string>
     <string name="sleep_img">The search for new publications for this RSS feed is paused.</string>
@@ -157,7 +154,7 @@
     <string name="pref_use_all_connection">Use all types of connection</string>
     <string name="pref_what_type_of_connection">Connection type</string>
     <string name="pref_maxPublicationsBySyndicationToKeep">Max number of publications</string>
-            
+
     <!-- Category -->
     <string name="empty_categories">No categories to display</string>
     <string name="empty_categories_with_filter">No categories found with %1$s search</string>

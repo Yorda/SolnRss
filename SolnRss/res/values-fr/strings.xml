@@ -5,7 +5,8 @@
     <string name="app_name">Soln.R</string>
     <string name="title_publications">Publications</string>
     <string name="title_syndications">Flus RSS</string>
-    <string name="title_site">Web site</string><string name="title_categories">Catégories</string>
+    <string name="title_site">Web site</string>
+    <string name="title_categories">Catégories</string>
     <string name="title_category">Categorie</string>
     <string name="title_network">Réseau</string>
     <string name="title_favorite">Favoris</string>
@@ -26,7 +27,6 @@
     <string name="Delete_fail">La suppréssion a échoué</string>
     <string name="read">Lue</string>
     <string name="rename">Renommer</string>
-
     <string name="all">tous</string>
     <string name="action_bar_search">Recherche</string>
     <string name="stop_search">Définir l\'intervalle à zéro arrête la recherche de nouvelles publications</string>
@@ -36,6 +36,7 @@
     <string name="defaultTypeface">Celle du système</string>
     <string name="font_size">Taille de la police</string>
     <string name="last_publications">Quoi de neuf !</string>
+    <string name="keepAll">Tout garder</string>
 
     <!-- Publication's tab label -->
     <string name="all_publications_by_syndication_already_read">Les publications de la syndication: %1$s, sont marquées comme lus</string>
@@ -44,7 +45,7 @@
     <string name="empty_publications">Aucune publication à afficher.</string>
     <string name="empty_publications_with_syndication">Aucune publication trouvé pour le flux RSS %1$s. </string>
     <string name="empty_publications_with_category">Aucune publication trouvé pour la catégorie %1$s. </string>
-     <string name="empty_publications_date_last_found">Plus aucune publication.</string>
+    <string name="empty_publications_date_last_found">Plus aucune publication.</string>
     <string name="empty_publications_date_last_found_with_filter">Plus aucune publication avec la recherche: %1$s </string>
     <string name="empty_publications_with_filter">Aucune publication trouvé avec la recherche: %1$s.</string>
     <string name="empty_publications_with_syndication_with_filter">Aucune publication trouvé pour le flux RSS %1$s avec la recherche %2$s.</string>
@@ -105,9 +106,8 @@
     <string name="active_syndication">La recherche de nouvelles publications est activé</string>
     <string name="display_syndication">La visibilité des publications est complète</string>
     <string name="undisplay_syndication">Les publications sont visibles via l\'onglet catégorie ou syndication</string>
-    
     <string name="syndication_last_search_result">Dernière recherche en erreur</string>
-    
+
     <plurals name="syndication_number_of_click">
         <item quantity="one">%1$s publication lue</item>
         <item quantity="other">%1$s publications lues</item>
@@ -150,8 +150,7 @@
     <string name="pref_use_wifi_only">Se connecter via le wifi uniquement</string>
     <string name="pref_use_all_connection">Se connecter par tous types de connection</string>
     <string name="pref_what_type_of_connection">Type de connection</string>
-    
-     <string name="pref_maxPublicationsBySyndicationToKeep">Supprimer les plus ancienne</string>
+    <string name="pref_maxPublicationsBySyndicationToKeep">Supprimer les plus ancienne</string>
 
     <!-- Category -->
     <string name="empty_categories">Aucune catégorie à afficher</string>

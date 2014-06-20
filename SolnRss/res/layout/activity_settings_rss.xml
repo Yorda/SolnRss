@@ -67,6 +67,7 @@
             android:summaryOn="@string/pref_display_publication_app"
             android:title="@string/pref_display_publication" />
 
+        <!-- 
         <free.solnRss.preference.SeekBarDialogPreference
             xmlns:app="http://schemas.android.com/apk/res-auto"
             android:defaultValue="16"
@@ -75,6 +76,7 @@
             app:max="500"
             app:min="20"
             app:progressTextSuffix=" items" />
+            -->
 
         <free.solnRss.preference.DeleteAllPublicationsPreferences
             android:dialogMessage="@string/pref_delete_all_publications_confirm"
@@ -85,9 +87,9 @@
             android:title="@string/pref_delete_all_publications" />
         
         <ListPreference
-            android:defaultValue="2"
+            android:defaultValue="100"
             android:entries="@array/maxPublicationsBySyndicationToKeep"
-            android:entryValues="@array/maxPublicationsBySyndicationToKeep"
+            android:entryValues="@array/maxPublicationsBySyndicationToKeepValue"
             android:key="pref_maxPublicationsBySyndicationToKeep"
             android:title="@string/pref_maxPublicationsBySyndicationToKeep" >
         </ListPreference>

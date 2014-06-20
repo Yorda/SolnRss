@@ -3,6 +3,7 @@ package free.solnRss.activity;
 import android.os.Bundle;
 import android.preference.PreferenceActivity;
 import android.preference.PreferenceFragment;
+import android.preference.PreferenceManager;
 import free.solnRss.R;
 
 public class SettingsActivity extends PreferenceActivity {
@@ -19,6 +20,7 @@ public class SettingsActivity extends PreferenceActivity {
 		@Override
 		public void onCreate(final Bundle savedInstanceState) {
 			super.onCreate(savedInstanceState);
+			PreferenceManager.setDefaultValues(getActivity(), R.layout.activity_settings_rss, false);
 			addPreferencesFromResource(R.layout.activity_settings_rss);
 		}
 	}

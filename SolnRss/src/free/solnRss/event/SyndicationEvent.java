@@ -2,8 +2,6 @@ package free.solnRss.event;
 
 import free.solnRss.state.PublicationsListState;
 
-
-
 public class SyndicationEvent {
 
 	private PublicationsListState state;

@@ -28,6 +28,7 @@ import free.solnRss.dialog.OneEditTextDialogBox;
 import free.solnRss.event.SyndicationEvent;
 import free.solnRss.fragment.listener.SyndicationsFragmentListener;
 import free.solnRss.repository.SyndicationRepository;
+import free.solnRss.state.BySyndicationPublicationListState;
 
 /**
  * 
@@ -66,10 +67,15 @@ public class SyndicationsFragment extends AbstractFragment implements
 	@Override
 	public void onListItemClick(ListView l, View v, int position, long id) {
 		
-		EventBus.getDefault().postSticky(new SyndicationEvent());
-		
 		Cursor cursor = ((SyndicationAdapter) l.getAdapter()).getCursor();
 		int syndicationID = cursor.getInt(cursor.getColumnIndex("_id"));
+		
+		SyndicationEvent event = new SyndicationEvent();
+		BySyndicationPublicationListState state = new BySyndicationPublicationListState();
+		state.init(getActivity(), syndicationID);		
+		event.setState(state);
+		EventBus.getDefault().postSticky(event);
+		
 		((SolnRss) getActivity()).reLoadPublicationsBySyndication(syndicationID);
 	}
 	

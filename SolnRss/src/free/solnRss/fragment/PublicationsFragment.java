@@ -453,8 +453,8 @@ public class PublicationsFragment extends AbstractFragment implements
 				dateNewPublicationsFound = bundle.getString("dateNewPublicationsFound");
 			}
 			else if (bundle.getBoolean("displayFavoritePublications") == true) {
-				selectFavoritePublications = true;
-				return publicationRepository.loadFavoritePublications();
+				// selectFavoritePublications = true;
+				return publicationRepository.loadFavoritePublications(getFilterText());
 			}
 		}
 		// return state.displayList();
@@ -484,8 +484,8 @@ public class PublicationsFragment extends AbstractFragment implements
 			bundle.putString("dateNewPublicationsFound", dateNewPublicationsFound);
 		}
 		
-		if (selectFavoritePublications != null) {
-			bundle.putString("displayFavoritePublications", "displayFavoritePublications");
+		if (selectFavoritePublications != null && selectFavoritePublications) {
+			bundle.putBoolean("displayFavoritePublications", true);
 		}
 		
 		getLoaderManager().restartLoader(0, bundle, this);

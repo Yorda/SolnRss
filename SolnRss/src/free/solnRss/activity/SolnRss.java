@@ -55,7 +55,7 @@ public class SolnRss extends Activity implements ActionBar.TabListener,
 	private SectionsPagerAdapter sectionPageAdapter;
 	private ViewPager viewPager;
 	
-	// --
+	// ---
 	// Refresh list after found new publications
 	// --
 	private BroadcastReceiver newPublicationsFoundBroadcastReceiver = 

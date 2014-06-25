@@ -10,6 +10,7 @@ import android.content.CursorLoader;
 import android.content.Loader;
 import android.database.Cursor;
 import android.net.Uri;
+import android.preference.PreferenceManager;
 import android.text.TextUtils;
 import free.solnRss.provider.SolnRssProvider;
 
@@ -126,15 +127,23 @@ public class PublicationRepository {
 	}
 	
 
-	public Loader<Cursor> loadFavoritePublications() {
+	public Loader<Cursor> loadFavoritePublications(String filterText) {
 		
 		selection.setLength(0);
 		selection.append(" 1 = 1 ") ;
 		args.clear();
 		
 		selection.append(" and ");
-		selection.append( PublicationTable.COLUMN_FAVORITE);
+		selection.append(PublicationTable.COLUMN_FAVORITE);
 		selection.append(" = 1 ");
+		
+		if (!TextUtils.isEmpty(filterText)) {
+
+			selection.append(" and ");
+			selection.append(PublicationTable.COLUMN_TITLE);
+			selection.append(" like ? ");
+			args.add("%" + filterText + "%");
+		}
 		
 		return new CursorLoader(context, uri, projection, selection.toString(),
 				args.toArray(new String[args.size()]), null);
@@ -231,6 +240,11 @@ public class PublicationRepository {
 	
 	public void removeTooOLdPublications() throws Exception {
 		
+		final int max = maxPublicationToKeep();
+		if (max == -1) {
+			return;
+		}
+		
 		ArrayList<ContentProviderOperation> operations = new ArrayList<ContentProviderOperation>();
 		
 		//--
@@ -244,7 +258,6 @@ public class PublicationRepository {
 		
 		// Add an operation for delete publication content
 		if (cursor.getCount() > 0) {
-			final int max =  maxPublicationToKeep();
 			
 			do {
 				
@@ -285,10 +298,8 @@ public class PublicationRepository {
 	protected final String tag = PublicationRepository.class.getName();
 	
 	private int maxPublicationToKeep() {
-		//int max = PreferenceManager.getDefaultSharedPreferences(context)
-		//		.getInt("pref_maxPublicationsBySyndicationToKeep", 100);
-		// Log.e(tag, "-----------------> " + max);
-		return 100;
+		return Integer.valueOf(PreferenceManager.getDefaultSharedPreferences(context)
+				.getString("pref_maxPublicationsBySyndicationToKeep", "100"));
 	}
 
 	public void deletePublication(Integer publicationId, Integer syndicationId) throws Exception {

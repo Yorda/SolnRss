@@ -22,7 +22,15 @@
         <item>50</item>
         <item>100</item>
         <item>200</item>
-        <item>@string/title_site</item>
+        <item>@string/keepAll</item>
     </string-array>
 
+    <string-array name="maxPublicationsBySyndicationToKeepValue">
+        <item>25</item>
+        <item>50</item>
+        <item>100</item>
+        <item>200</item>
+        <item>-1</item>
+    </string-array>
+    
 </resources>

@@ -46,8 +46,7 @@ public abstract class AbstractFragment extends ListFragment implements	OnQueryTe
 		Cursor c = getActivity().getContentResolver().query(uri, projection,
 				" _id = ? ", new String[] { id.toString() }, null);
 		c.moveToFirst();
-		String name = c.getCount() > 0 && c.getString(0) != null ? c
-				.getString(0) : null;
+		String name = c.getCount() > 0 && c.getString(0) != null ? c.getString(0) : null;
 		c.close();
 		return name;
 	}

@@ -13,7 +13,7 @@ public class BySyndicationPublicationListState implements PublicationsListState 
 	private PublicationRepository repository;
 	private boolean displayAlreadyRead;
 
-	public void init(Context context) {
+	public void init(Context context, Integer syndicationId) {
 		this.context = context;
 		repository = new PublicationRepository(this.context);
 	}
@@ -26,7 +26,7 @@ public class BySyndicationPublicationListState implements PublicationsListState 
 
 	@Override
 	public String getActionBarTitle() {
-		return null;
+		return repository.syndicationName(syndicationId);
 	}
 
 	@Override

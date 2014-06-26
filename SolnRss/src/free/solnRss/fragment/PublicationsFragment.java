@@ -43,6 +43,7 @@ import free.solnRss.repository.PublicationRepository;
 import free.solnRss.repository.PublicationTable;
 import free.solnRss.repository.SyndicationTable;
 import free.solnRss.singleton.TypeFaceSingleton;
+import free.solnRss.state.PublicationsListState;
 import free.solnRss.utility.Constants;
 
 public class PublicationsFragment extends AbstractFragment implements
@@ -67,7 +68,7 @@ public class PublicationsFragment extends AbstractFragment implements
 		return fragment;
 	}
 
-	//PublicationsListState state;
+	PublicationsListState state;
 	
 	public void onEvent(SyndicationEvent event) {
 		Log.e("EVENT", "A SyndicationEvent received");
@@ -456,7 +457,7 @@ public class PublicationsFragment extends AbstractFragment implements
 				return publicationRepository.loadFavoritePublications(getFilterText());
 			}
 		}
-		
+		// return state.displayList();
 		return publicationRepository.loadPublications(getFilterText(),
 				selectedSyndicationID, selectedCategoryID, dateNewPublicationsFound,
 				displayAlreadyReadPublications());
@@ -716,12 +717,15 @@ public class PublicationsFragment extends AbstractFragment implements
             title = getResources().getString(R.string.title_favorite);
 		} 
 
+		// title = state.getActionBarTitle();
+		
 		if (TextUtils.isEmpty(title)) {
 			
 			bar.setTitle(titleToHtml(getActivity().getTitle().toString()));
 		} else {
 			bar.setTitle(titleToHtml(title));
 		}
+		
 	}
 	
 	private Spanned titleToHtml(String s) {

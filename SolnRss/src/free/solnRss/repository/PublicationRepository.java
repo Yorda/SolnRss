@@ -318,4 +318,15 @@ public class PublicationRepository {
 		
 		context.getContentResolver().applyBatch(SolnRssProvider.AUTHORITY, operations);	
 	}
+	
+	public String syndicationName(Integer id) {
+		String[] projection = { SyndicationTable.COLUMN_NAME };
+		Uri uri = Uri.parse(SolnRssProvider.URI + "/syndication");
+		Cursor c = context.getContentResolver().query(uri, projection,
+				" _id = ? ", new String[] { id.toString() }, null);
+		c.moveToFirst();
+		String name = c.getCount() > 0 && c.getString(0) != null ? c.getString(0) : null;
+		c.close();
+		return name;
+	}
 }

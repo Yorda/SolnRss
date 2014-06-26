@@ -135,7 +135,7 @@ public class PublicationsFragment extends AbstractFragment implements
 			loadPublicationsByLastFound(dateNewPublicationsFound);
 		}
 		
-		else if (prefs.getBoolean("displayFavoritePublications", true)) {
+		else if (prefs.getBoolean("displayFavoritePublications", false)) {
 			displayFavoritePublications();
 		}
 		else {

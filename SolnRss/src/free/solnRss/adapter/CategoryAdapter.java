@@ -16,8 +16,8 @@ import free.solnRss.utility.Constants;
 public class CategoryAdapter extends SimpleCursorAdapter {
 
 	protected Cursor cursor;
-	private Context context;
-	private int layout;
+	private final Context context;
+	private final int layout;
 
 	public CategoryAdapter(final Context context, int layout, Cursor c,
 			String[] from, int[] to, int flags) {
@@ -32,30 +32,32 @@ public class CategoryAdapter extends SimpleCursorAdapter {
 	public View getView(int position, View convertView, ViewGroup parent) {
 		CategoryItem item = null;
 		Resources r = context.getResources();
+		View v;
 
 		if (convertView == null) {
-			convertView = View.inflate(context, layout, null);
+			v = View.inflate(context, layout, null);
 			item = new CategoryItem();
 
-			item.setName((TextView) convertView
-					.findViewById(R.id.categorie_name));
-			item.setNumberOfUse((TextView) convertView
+			item.setName((TextView) v.findViewById(R.id.categorie_name));
+			item.setNumberOfUse((TextView) v
 					.findViewById(R.id.categorie_number_of_use));
-			convertView.setTag(item);
+			v.setTag(item);
 
 		} else {
-			item = (CategoryItem) convertView.getTag();
+			v = convertView;
+			item = (CategoryItem) v.getTag();
 		}
 
 		getCursor().moveToPosition(position);
-		
+
 		// getCursor().getColumnIndex("cat_name")
-		item.getName().setText(Html.fromHtml("<u>" + getCursor().getString(1) + "</u>"));
+		item.getName().setText(
+				Html.fromHtml("<u>" + getCursor().getString(1) + "</u>"));
 
 		// getCursor().getColumnIndex("number_of_use")
 		Integer numberOfUse = getCursor().getInt(2);
 		String use = new String();
-		
+
 		if (numberOfUse == null || numberOfUse == 0) {
 			use = r.getString(R.string.categorie_not_use);
 		} else if (numberOfUse == 1) {
@@ -70,6 +72,7 @@ public class CategoryAdapter extends SimpleCursorAdapter {
 				.getUserTypeFace();
 		int userFontSize = TypeFaceSingleton.getInstance(context)
 				.getUserFontSize();
+		
 		if (userTypeFace != null) {
 			item.getName().setTypeface(userTypeFace, Typeface.BOLD);
 			item.getNumberOfUse().setTypeface(userTypeFace);
@@ -78,6 +81,6 @@ public class CategoryAdapter extends SimpleCursorAdapter {
 			item.getName().setTextSize(userFontSize);
 			item.getNumberOfUse().setTextSize(userFontSize);
 		}
-		return convertView;
+		return v;
 	}
 }

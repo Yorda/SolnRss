@@ -99,8 +99,8 @@ public class FindNewPublicationsAlarmManager implements
 	}
 
 	public boolean isAlarmAlreadyDefined() {
-		return (PendingIntent.getBroadcast(context, 0, new Intent(
+		return PendingIntent.getBroadcast(context, 0, new Intent(
 				"free.solnRss.service.PublicationsFinderService"),
-				PendingIntent.FLAG_NO_CREATE) != null);
+				PendingIntent.FLAG_NO_CREATE) != null;
 	}
 }

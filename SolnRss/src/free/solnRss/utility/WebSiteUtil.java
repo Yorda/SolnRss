@@ -10,7 +10,7 @@ import org.jsoup.select.Elements;
 import de.jetwick.snacktory.HtmlFetcher;
 import de.jetwick.snacktory.JResult;
 
-public class WebSiteUtil {
+public final class WebSiteUtil {
 
 	
 	public static String htmlToReadableText(String url) {

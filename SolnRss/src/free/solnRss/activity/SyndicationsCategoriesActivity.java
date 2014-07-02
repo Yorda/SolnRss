@@ -26,6 +26,9 @@ public class SyndicationsCategoriesActivity extends ListActivity implements
 	private Integer selectedCategorieID;
 	private String selectedCategoryName;
 	
+	private final String[] from = { "syn_name" };
+	private final int[] to = { android.R.id.text1 };
+	
 	private SyndicationsByCategoryRepository syndicationsByCategoryRepository;
 
 	@Override
@@ -126,9 +129,6 @@ public class SyndicationsCategoriesActivity extends ListActivity implements
 			}
 		}
 	}
-	
-	private final String[] from = { "syn_name" };
-	private final int[] to = { android.R.id.text1 };
 	
 	SyndicationsCategorieAdapter adapter;
 	private void initAdapter() {		

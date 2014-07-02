@@ -454,13 +454,15 @@ public class PublicationsFragment extends AbstractFragment implements
 			}
 			else if (bundle.getBoolean("displayFavoritePublications") == true) {
 				// selectFavoritePublications = true;
-				return publicationRepository.loadFavoritePublications(getFilterText());
+				return publicationRepository.loadBookmarkedPublications(getFilterText());
 			}
 		}
-		// return state.displayList();
+		
 		return publicationRepository.loadPublications(getFilterText(),
 				selectedSyndicationID, selectedCategoryID, dateNewPublicationsFound,
 				displayAlreadyReadPublications());
+		
+		// return state.displayList();
 	}
 	
 	private boolean displayAlreadyReadPublications() {
@@ -872,16 +874,12 @@ public class PublicationsFragment extends AbstractFragment implements
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-		
-		/*new Runnable() {
-			public void run() {
-				try {
-					publicationRepository.removeTooOLdPublications();
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
-			}
-		};*/
+
+		/*
+		 * new Runnable() { public void run() { try {
+		 * publicationRepository.removeTooOLdPublications(); } catch (Exception
+		 * e) { e.printStackTrace(); } } };
+		 */
 	}
 
 	@Override

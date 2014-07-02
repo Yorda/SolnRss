@@ -12,4 +12,5 @@ public interface PublicationsListState {
 	public void setFilterText(String filterText);
 	
 	public String getFilterText();
+	
 }

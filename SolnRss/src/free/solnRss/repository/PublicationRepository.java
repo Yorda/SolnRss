@@ -65,10 +65,148 @@ public class PublicationRepository {
 		 context.getContentResolver().applyBatch(SolnRssProvider.AUTHORITY, operations);
 	}
 	
+	
+	public Loader<Cursor> loadPublicationsByLastFound(String filterText,
+			Integer lastFound) {
+
+		selection.setLength(0);
+		selection.append(" 1 = 1 ");
+		args.clear();
+
+		if (!TextUtils.isEmpty(filterText)) {
+
+			selection.append(" and ");
+			selection.append(PublicationTable.COLUMN_TITLE);
+			selection.append(" like ? ");
+			args.add("%" + filterText + "%");
+		}
+		
+		if (!isDisplayAlreadyRead()) {	
+			
+			selection.append(" and ");
+			selection.append( PublicationTable.COLUMN_ALREADY_READ);
+			selection.append(" = 0 ");
+		}
+
+		selection.append(" order by _id desc LIMIT " + lastFound + " ");
+		 
+		return new CursorLoader(context, uri, projection, selection.toString(),
+				args.toArray(new String[args.size()]), null);
+	}
+	
+	
+	public Loader<Cursor> loadPublicationsBySyndication(String filterText,
+			Integer syndicationId) {
+
+		selection.setLength(0);
+		selection.append(" 1 = 1 ");
+		args.clear();
+
+		if (!TextUtils.isEmpty(filterText)) {
+
+			selection.append(" and ");
+			selection.append(PublicationTable.COLUMN_TITLE);
+			selection.append(" like ? ");
+			args.add("%" + filterText + "%");
+		}
+		
+		selection.append(" and ");
+		selection.append( PublicationTable.COLUMN_SYNDICATION_ID);
+		selection.append(" = ? ");
+		args.add(syndicationId.toString());
+		
+		if (!isDisplayAlreadyRead()) {	
+			selection.append(" and ");
+			selection.append( PublicationTable.COLUMN_ALREADY_READ);
+			selection.append(" = 0 ");
+		}
+
+		return new CursorLoader(context, uri, projection, selection.toString(),
+				args.toArray(new String[args.size()]), null);
+	}
+	
+	public Loader<Cursor> loadPublicationsByCategory(String filterText,
+			Integer categoryId) {
+
+		selection.setLength(0);
+		selection.append(" 1 = 1 ");
+		args.clear();
+
+		if (!TextUtils.isEmpty(filterText)) {
+
+			selection.append(" and ");
+			selection.append(PublicationTable.COLUMN_TITLE);
+			selection.append(" like ? ");
+			args.add("%" + filterText + "%");
+		}
+		
+		selection.append(" and ");
+		selection.append( PublicationTable.COLUMN_SYNDICATION_ID);
+		selection.append(" in (select syn_syndication_id from d_categorie_syndication where cas_categorie_id = ?) ");
+		args.add(categoryId.toString());
+		
+		if (!isDisplayAlreadyRead()) {	
+			selection.append(" and ");
+			selection.append( PublicationTable.COLUMN_ALREADY_READ);
+			selection.append(" = 0 ");
+		}
+
+		return new CursorLoader(context, uri, projection, selection.toString(),
+				args.toArray(new String[args.size()]), null);
+	}
+	
+	public Loader<Cursor> loadBookmarkedPublications(String filterText) {
+		
+		selection.setLength(0);
+		selection.append(" 1 = 1 ") ;
+		args.clear();
+		
+		selection.append(" and ");
+		selection.append(PublicationTable.COLUMN_FAVORITE);
+		selection.append(" = 1 ");
+		
+		if (!TextUtils.isEmpty(filterText)) {
+
+			selection.append(" and ");
+			selection.append(PublicationTable.COLUMN_TITLE);
+			selection.append(" like ? ");
+			args.add("%" + filterText + "%");
+		}
+		
+		return new CursorLoader(context, uri, projection, selection.toString(),
+				args.toArray(new String[args.size()]), null);
+	}
+	
+	public Loader<Cursor> loadAllPublications(String filterText) {
+		selection.setLength(0);
+		selection.append(" 1 = 1 ") ;
+		args.clear();
+		
+		if (!TextUtils.isEmpty(filterText)) {
+			selection.append(" and ");
+			selection.append(PublicationTable.COLUMN_TITLE);
+			selection.append(" like ? ");
+			args.add("%" + filterText + "%");
+		}
+		
+		return new CursorLoader(context, uri, projection, selection.toString(),
+				args.toArray(new String[args.size()]), null);
+	}
+	
+	private boolean isDisplayAlreadyRead() {
+		return PreferenceManager.getDefaultSharedPreferences(context)
+				.getBoolean("pref_display_unread", true);
+	}
+	
+	
+	
+	
+	
 	/**
 	 * Clean the publications list in table for a syndication
 	 * @param id
 	 */
+	@Deprecated
 	public CursorLoader loadPublications(String filterText,
 			Integer selectedSyndicationID, Integer selectedCategoryID, String lastUpdateDate,
 			Boolean displayAlreadyRead) {
@@ -124,29 +262,6 @@ public class PublicationRepository {
 		return new CursorLoader(context, uri, projection, selection.toString(),
 				args.toArray(new String[args.size()]), null);
 		
-	}
-	
-
-	public Loader<Cursor> loadFavoritePublications(String filterText) {
-		
-		selection.setLength(0);
-		selection.append(" 1 = 1 ") ;
-		args.clear();
-		
-		selection.append(" and ");
-		selection.append(PublicationTable.COLUMN_FAVORITE);
-		selection.append(" = 1 ");
-		
-		if (!TextUtils.isEmpty(filterText)) {
-
-			selection.append(" and ");
-			selection.append(PublicationTable.COLUMN_TITLE);
-			selection.append(" like ? ");
-			args.add("%" + filterText + "%");
-		}
-		
-		return new CursorLoader(context, uri, projection, selection.toString(),
-				args.toArray(new String[args.size()]), null);
 	}
 	
 	public void markOnePublicationAsFavorite(Integer publicationId, Integer isFavorite) {
@@ -298,8 +413,8 @@ public class PublicationRepository {
 	protected final String tag = PublicationRepository.class.getName();
 	
 	private int maxPublicationToKeep() {
-		return Integer.valueOf(PreferenceManager.getDefaultSharedPreferences(context)
-				.getString("pref_maxPublicationsBySyndicationToKeep", "100"));
+		return 100; //Integer.valueOf(PreferenceManager.getDefaultSharedPreferences(context)
+				//.getString("pref_maxPublicationsBySyndicationToKeep", "100"));
 	}
 
 	public void deletePublication(Integer publicationId, Integer syndicationId) throws Exception {
@@ -329,4 +444,16 @@ public class PublicationRepository {
 		c.close();
 		return name;
 	}
+
+	public String categoryName(Integer id) {
+		Uri uri = Uri.parse(SolnRssProvider.URI + "/category_name");
+		String[] projection = { CategoryTable.COLUMN_NAME };
+		Cursor c = context.getContentResolver().query(uri, projection,
+				" _id = ? ",  new String[] { id.toString() }, null);
+		c.moveToFirst();
+		String name =  c.getCount() > 0 && c.getString(0) != null ? c.getString(0) : null;
+		c.close();
+		return name;
+	}
+
 }

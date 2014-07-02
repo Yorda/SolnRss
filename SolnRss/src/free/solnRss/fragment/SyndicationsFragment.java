@@ -28,7 +28,7 @@ import free.solnRss.dialog.OneEditTextDialogBox;
 import free.solnRss.event.SyndicationEvent;
 import free.solnRss.fragment.listener.SyndicationsFragmentListener;
 import free.solnRss.repository.SyndicationRepository;
-import free.solnRss.state.BySyndicationPublicationListState;
+import free.solnRss.state.PublicationsBySyndicationListState;
 
 /**
  * 
@@ -71,8 +71,9 @@ public class SyndicationsFragment extends AbstractFragment implements
 		int syndicationID = cursor.getInt(cursor.getColumnIndex("_id"));
 		
 		SyndicationEvent event = new SyndicationEvent();
-		BySyndicationPublicationListState state = new BySyndicationPublicationListState();
-		state.init(getActivity(), syndicationID);		
+		PublicationsBySyndicationListState state = new PublicationsBySyndicationListState();
+		state.init(getActivity());		
+		state.setSyndicationId(syndicationID);
 		event.setState(state);
 		EventBus.getDefault().postSticky(event);
 		

@@ -52,7 +52,7 @@ public class SolnRss extends Activity implements ActionBar.TabListener,
 	private CategoriesFragmentListener categoriesListener;
 	private PublicationsFragmentListener publicationsListener;
 	
-	private SectionsPagerAdapter sectionPageAdapter;
+	//private SectionsPagerAdapter sectionPageAdapter;
 	private ViewPager viewPager;
 	
 	// ---
@@ -93,7 +93,7 @@ public class SolnRss extends Activity implements ActionBar.TabListener,
 		
 		// Create the adapter that will return a fragment for each of the three
 		// primary sections of the app.		
-		sectionPageAdapter = new SectionsPagerAdapter(getFragmentManager(), getResources());
+		SectionsPagerAdapter sectionPageAdapter = new SectionsPagerAdapter(getFragmentManager(), getResources());
 		viewPager.setAdapter(sectionPageAdapter);
 		viewPager.setOffscreenPageLimit(3);
 		
@@ -123,7 +123,7 @@ public class SolnRss extends Activity implements ActionBar.TabListener,
 	
 	@Override
 	protected void onStart() {
-		
+		super.onStart();
 		NewPublicationsNotification.NotifyEvent event = NewPublicationsNotification.NotifyEvent.detachFrom(getIntent());
 
 		// Because https://stackoverflow.com/questions/6584997/cant-remove-intent-extra
@@ -153,8 +153,6 @@ public class SolnRss extends Activity implements ActionBar.TabListener,
 				// startActivity(intent);
 			} 
 		}
-		
-		super.onStart();
 	}
 	
 	@Override

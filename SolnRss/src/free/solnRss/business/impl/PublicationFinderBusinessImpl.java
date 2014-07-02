@@ -36,7 +36,6 @@ import free.solnRss.repository.RssRepository;
 import free.solnRss.repository.RssTable;
 import free.solnRss.repository.SyndicationRepository;
 import free.solnRss.repository.SyndicationTable;
-import free.solnRss.utility.ImageLoaderUtil;
 import free.solnRss.utility.StringUtil;
 
 public class PublicationFinderBusinessImpl implements PublicationFinderBusiness {
@@ -56,7 +55,7 @@ public class PublicationFinderBusinessImpl implements PublicationFinderBusiness 
 	private Context context;
 	private Integer newPublicationsRecorded;
 	
-	private ImageLoaderUtil imageLoader;
+	//private ImageLoaderUtil imageLoader;
 	
 	NewPublicationsNotification newPublicationsNotification;
 	
@@ -70,7 +69,7 @@ public class PublicationFinderBusinessImpl implements PublicationFinderBusiness 
 		rssRepository = new RssRepository(context);
 		newPublicationsNotification = new NewPublicationsNotification(context);
 		sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
-		imageLoader = new ImageLoaderUtil(context);
+		//imageLoader = new ImageLoaderUtil(context);
 	}
 	
 	public void searchNewPublications() {
@@ -264,8 +263,8 @@ public class PublicationFinderBusinessImpl implements PublicationFinderBusiness 
 		}
 		
 		// get image
-		imageLoader.setDescription(fixedDescription);
-		fixedDescription = imageLoader.saveImage();
+		//imageLoader.setDescription(fixedDescription);
+		//fixedDescription = imageLoader.saveImage();
 		
 		return fixedDescription;
 	}

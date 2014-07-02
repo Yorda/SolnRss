@@ -9,7 +9,6 @@ import org.jsoup.nodes.Element;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
-import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.Typeface;
@@ -39,12 +38,10 @@ import free.solnRss.singleton.TypeFaceSingleton;
 public class ReaderActivity extends Activity {
 	
 	final String tag = ReaderActivity.class.getName();
-	private String link, publicationTitle, text, syndicationName;
+	private String link, publicationTitle,  syndicationName;
 	private Integer publicationId, syndicationId;
 	private boolean isFavorite;
 	private PublicationRepository publicationRepository;
-	//private Drawable color = new ColorDrawable(0xeeeeee);
-	//private final Drawable color = new ColorDrawable(Color.WHITE);
 
 	@SuppressLint("SetJavaScriptEnabled") @Override protected void onCreate(Bundle savedInstanceState) {
 		
@@ -60,10 +57,10 @@ public class ReaderActivity extends Activity {
 		
 		this.syndicationName = getIntent().getStringExtra("syndicationName");
 
-		if (!TextUtils.isEmpty(syndicationName)) {
-			getActionBar().setTitle(Html.fromHtml("<b><u>" + syndicationName + "</u><b>"));
-		} else {
+		if (TextUtils.isEmpty(syndicationName)) {
 			getActionBar().setTitle(Html.fromHtml("<b><u>" + this.getTitle().toString()	+ "</u><b>"));
+		} else {
+			getActionBar().setTitle(Html.fromHtml("<b><u>" + syndicationName + "</u><b>"));
 		}
 
 		this.publicationTitle = getIntent().getStringExtra("title");
@@ -80,7 +77,7 @@ public class ReaderActivity extends Activity {
 		getActionBar().setStackedBackgroundDrawable(
 				new ColorDrawable(0xeeeeee));
 	
-		this.text          = getIntent().getStringExtra("read");
+		String text        = getIntent().getStringExtra("read");
 		this.link          = getIntent().getStringExtra("link");
 		this.isFavorite    = getIntent().getBooleanExtra("isFavorite", false);
 		this.publicationId = getIntent().getIntExtra("publicationId", -1);
@@ -98,7 +95,7 @@ public class ReaderActivity extends Activity {
 		
 		settings.setDefaultFontSize(TypeFaceSingleton.getInstance(getApplicationContext()).getUserFontSize());
 		
-		webView.loadDataWithBaseURL(null, getHtmlData(getApplicationContext(), text) , "text/html", "utf-8", null);
+		webView.loadDataWithBaseURL(null, getHtmlData(text) , "text/html", "utf-8", null);
 		
 		publicationRepository = new PublicationRepository(this);
 	}
@@ -214,7 +211,7 @@ public class ReaderActivity extends Activity {
 	}
 
 	
-	private String getHtmlData(Context context, String data) {
+	private String getHtmlData(String data) {
 		
 		final String head = "<head>" +
 				"<style>@font-face {" +

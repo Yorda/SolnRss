@@ -99,7 +99,7 @@ public class PublicationAdapter extends SimpleCursorAdapter {
 
 		item.setIsRead(isRead == null ? 0 : isRead);
 
-		if (isRead != 0) {
+		if (isRead != null && isRead != 0) {
 			item.getAlreadyRead().setVisibility(View.VISIBLE);
 		} else {
 			item.getAlreadyRead().setVisibility(View.GONE);

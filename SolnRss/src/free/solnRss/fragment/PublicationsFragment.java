@@ -36,19 +36,20 @@ import free.solnRss.R;
 import free.solnRss.activity.ReaderActivity;
 import free.solnRss.activity.SolnRss;
 import free.solnRss.adapter.PublicationAdapter;
-import free.solnRss.event.SyndicationEvent;
+import free.solnRss.event.ChangePublicationListStateEvent;
 import free.solnRss.fragment.listener.PublicationsFragmentListener;
 import free.solnRss.repository.PublicationContentRepository;
 import free.solnRss.repository.PublicationRepository;
 import free.solnRss.repository.PublicationTable;
 import free.solnRss.repository.SyndicationTable;
 import free.solnRss.singleton.TypeFaceSingleton;
+import free.solnRss.state.InstancePublicationListState;
 import free.solnRss.state.PublicationsListState;
 import free.solnRss.utility.Constants;
 
 public class PublicationsFragment extends AbstractFragment implements
-		PublicationsFragmentListener {
-
+		PublicationsFragmentListener, SharedPreferences.OnSharedPreferenceChangeListener {
+	
 	private PublicationRepository publicationRepository;
 	private PublicationContentRepository publicationContentRepository;
 	private String dateNewPublicationsFound;  
@@ -65,15 +66,18 @@ public class PublicationsFragment extends AbstractFragment implements
 		emptyLayoutId = R.id.emptyPublicationsLayout;
 		listShown = true;
 		
+		SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(getActivity());
+		sharedPreferences.registerOnSharedPreferenceChangeListener(this);
+		
 		return fragment;
 	}
 
-	PublicationsListState state;
+	PublicationsListState publicationsListState;
 	
-	public void onEvent(SyndicationEvent event) {
-		Log.e("EVENT", "A SyndicationEvent received");
-		/*this.state = event.getState();
-		if (getLoaderManager() != null && getLoaderManager().getLoader(0) != null 
+	public void onEvent(ChangePublicationListStateEvent event) {
+		Log.e("EVENT", "A change list state event received");
+		this.publicationsListState = event.getState();
+		/*if (getLoaderManager() != null && getLoaderManager().getLoader(0) != null 
 				&& getLoaderManager().getLoader(0).isStarted()) {
 			getLoaderManager().restartLoader(0, null, this);
 			updateActionBarTitle();
@@ -83,12 +87,10 @@ public class PublicationsFragment extends AbstractFragment implements
 			updateActionBarTitle();
 		}*/
 	}
-	  
+	
 	@Override
 	public void onActivityCreated(Bundle savedInstanceState) {
 		super.onActivityCreated(savedInstanceState);
-		
-		EventBus.getDefault().registerSticky(this);
 		
 		publicationRepository = new PublicationRepository(getActivity());
 		publicationContentRepository = new PublicationContentRepository(getActivity());
@@ -119,30 +121,37 @@ public class PublicationsFragment extends AbstractFragment implements
 
 	private void displayList(Bundle save) {
 		
-		SharedPreferences prefs = getActivity().getPreferences(0);
+		
+		SharedPreferences sharedPreferences = getActivity().getPreferences(0);
 
-		if (prefs.getInt("selectedSyndicationID", -1) != -1) {
-			selectedSyndicationID = prefs.getInt("selectedSyndicationID", -1);
+		// Get the publication lis state
+		String savedPublicationListState = sharedPreferences.getString("publication list state", null);
+		if(savedPublicationListState != null) {
+			
+		}
+		
+		if (sharedPreferences.getInt("selectedSyndicationID", -1) != -1) {
+			selectedSyndicationID = sharedPreferences.getInt("selectedSyndicationID", -1);
 			loadPublicationsBySyndication();
 		}
 
-		else if (prefs.getInt("selectedCategoryID", -1) != -1) {
-			selectedCategoryID = prefs.getInt("selectedCategoryID", -1);
+		else if (sharedPreferences.getInt("selectedCategoryID", -1) != -1) {
+			selectedCategoryID = sharedPreferences.getInt("selectedCategoryID", -1);
 			loadPublicationsByCategory();
 		}
 
-		else if (prefs.getString("dateNewPublicationsFound", null) != null) {
-			dateNewPublicationsFound = prefs.getString("dateNewPublicationsFound", null);
+		else if (sharedPreferences.getString("dateNewPublicationsFound", null) != null) {
+			dateNewPublicationsFound = sharedPreferences.getString("dateNewPublicationsFound", null);
 			loadPublicationsByLastFound(dateNewPublicationsFound);
 		}
 		
-		else if (prefs.getBoolean("displayFavoritePublications", false)) {
+		else if (sharedPreferences.getBoolean("displayFavoritePublications", false)) {
 			displayFavoritePublications();
 		}
 		else {
 			loadPublications();
 		}
-		setFilterText(prefs.getString("filterText", null));
+		setFilterText(sharedPreferences.getString("filterText", null));
 	}
 
 	@Override
@@ -343,11 +352,24 @@ public class PublicationsFragment extends AbstractFragment implements
 		return super.onContextItemSelected(item);
 	}
 	
+	@Override
+	public void onResume() {
+		super.onResume();
+		
+		SharedPreferences sharedPreferences = getActivity().getPreferences(0);
+		InstancePublicationListState instancePublicationListState = new InstancePublicationListState();
+		publicationsListState = 
+				instancePublicationListState.restorePublicationListState(getActivity(), sharedPreferences);
+		
+		EventBus.getDefault().registerSticky(this);
+	}
+	
 	@Override public void onPause() {
 		
-		super.onPause();		
-		SharedPreferences.Editor editor = getActivity().getPreferences(0).edit();
+		super.onPause();	
 		
+		
+		SharedPreferences.Editor editor = getActivity().getPreferences(0).edit();
 		editor.putInt("selectedSyndicationID", -1);
 		editor.putInt("selectedCategoryID", -1);
 		editor.putString("dateNewPublicationsFound", null);
@@ -376,8 +398,15 @@ public class PublicationsFragment extends AbstractFragment implements
 		View v = getListView().getChildAt(0);
 		int position = (v == null) ? 0 : v.getTop();
 		editor.putInt("publicationsListViewPosition", position);
-		
 		editor.commit();
+		
+
+		publicationsListState.setPositionOnList(position, index);
+		publicationsListState.setFilterText(getFilterText() == null ? "" : getFilterText());
+		InstancePublicationListState instancePublicationListState = new InstancePublicationListState();
+		instancePublicationListState.savePublicationListState(getActivity().getPreferences(0), publicationsListState);
+		
+		EventBus.getDefault().unregister(this);
 	}
 	
 	@Override
@@ -720,14 +749,11 @@ public class PublicationsFragment extends AbstractFragment implements
 		} 
 
 		// title = state.getActionBarTitle();
-		
 		if (TextUtils.isEmpty(title)) {
-			
 			bar.setTitle(titleToHtml(getActivity().getTitle().toString()));
 		} else {
 			bar.setTitle(titleToHtml(title));
-		}
-		
+		}		
 	}
 	
 	private Spanned titleToHtml(String s) {
@@ -859,6 +885,18 @@ public class PublicationsFragment extends AbstractFragment implements
 	}
 	
 	@Override
+	public void onSharedPreferenceChanged(SharedPreferences sharedPreferences,
+			String key) {
+		
+		if (key.compareTo("pref_display_unread") == 0 
+				|| key.compareTo("pref_delete_all_publications") == 0 
+				|| key.compareTo("pref_user_font_face") == 0
+				|| key.compareTo("pref_user_font_size") == 0) {
+			refreshPublications();
+		} 
+	}
+	
+	@Override
 	public void markCategoryPublicationsAsRead(Integer categoryId) {
 		publicationRepository.markCategoryPublicationsAsRead(categoryId);
 	}
@@ -886,5 +924,4 @@ public class PublicationsFragment extends AbstractFragment implements
 	public Parcelable getListViewInstanceState() {
 		return getListView().onSaveInstanceState();
 	}
-
 }

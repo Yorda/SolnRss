@@ -15,10 +15,13 @@ public abstract class AbstractPublicationListState implements
 	protected PublicationRepository repository;
 	protected Integer position, index;
 
+	@Override
 	public void init(Context context) {
+		this.position = 0;
+		this.index = 0;
+		this.filterText = "";
 		this.context = context;
-		this.repository = PublicationRepositorySingleton.getInstance(context)
-				.getPublicationRepository();
+		this.repository = PublicationRepositorySingleton.getInstance(context).getPublicationRepository();
 	}
 
 	@Override
@@ -31,33 +34,31 @@ public abstract class AbstractPublicationListState implements
 		return filterText;
 	}
 
-	protected void setPositionOnList(Integer position, Integer index) {
+	@Override
+	public void setPositionOnList(Integer position, Integer index) {
 		this.position = position;
 		this.index = index;
 	}
 
-	protected void resetPositionOnList() {
+	@Override
+	public void resetPositionOnList() {
 		this.position = 0;
 		this.index = 0;
 	}
-	
-	public void saveListState() throws JSONException {
+
+	public JSONObject saveAbstractPublicationListState() throws JSONException {
 		JSONObject jsonObject = new JSONObject();
 		jsonObject.put("name", this.getClass().getName());
-		jsonObject.put("filterText", this.filterText);
-		jsonObject.put("position", position == null ? 0 : position);
-		jsonObject.put("index", index == null ? 0 : index);
-
+		jsonObject.put("filterText", getFilterText());
+		jsonObject.put("position", position);
+		jsonObject.put("index", index);
+		return jsonObject;
 	}
 
-	public void restoreListState(String s) throws JSONException,
-			ClassNotFoundException, IllegalAccessException, InstantiationException {
-		JSONObject jsonObject = new JSONObject(s);
-		PublicationsListState state = (PublicationsListState) Class.forName(jsonObject.getString("name")).newInstance();
-		state.setFilterText(jsonObject.getString("filterText"));
-		position = jsonObject.getInt("position");
-		index = jsonObject.getInt("index");
+	public void restoreAbstractPublicationListState(JSONObject jsonObject)
+			throws JSONException {
+		setFilterText(jsonObject.getString("filterText"));
+		this.position = jsonObject.getInt("position");
+		this.index = jsonObject.getInt("index");
 	}
-	
-	
 }

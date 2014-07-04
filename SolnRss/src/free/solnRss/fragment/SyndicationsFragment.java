@@ -5,10 +5,12 @@ import android.content.DialogInterface;
 import android.content.DialogInterface.OnClickListener;
 import android.content.Intent;
 import android.content.Loader;
+import android.content.SharedPreferences;
 import android.content.res.Resources;
 import android.database.Cursor;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.view.ContextMenu;
 import android.view.ContextMenu.ContextMenuInfo;
 import android.view.LayoutInflater;
@@ -25,7 +27,7 @@ import free.solnRss.R;
 import free.solnRss.activity.SolnRss;
 import free.solnRss.adapter.SyndicationAdapter;
 import free.solnRss.dialog.OneEditTextDialogBox;
-import free.solnRss.event.SyndicationEvent;
+import free.solnRss.event.ChangePublicationListStateEvent;
 import free.solnRss.fragment.listener.SyndicationsFragmentListener;
 import free.solnRss.repository.SyndicationRepository;
 import free.solnRss.state.PublicationsBySyndicationListState;
@@ -35,8 +37,8 @@ import free.solnRss.state.PublicationsBySyndicationListState;
  * @author jftomasi
  *
  */
-public class SyndicationsFragment extends AbstractFragment implements
-		SyndicationsFragmentListener {
+public class SyndicationsFragment extends AbstractFragment implements SyndicationsFragmentListener, 
+			SharedPreferences.OnSharedPreferenceChangeListener {
 	
 	private SyndicationRepository syndicationRepository;
 	private Integer selectedSyndicationID;
@@ -56,6 +58,9 @@ public class SyndicationsFragment extends AbstractFragment implements
 		progressContainer = fragment.findViewById(R.id.syndicationsProgressContainer);
 		listShown = true;
 
+		SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(getActivity());
+		sharedPreferences.registerOnSharedPreferenceChangeListener(this);
+		
 		return fragment;
 	}
 
@@ -68,18 +73,22 @@ public class SyndicationsFragment extends AbstractFragment implements
 	public void onListItemClick(ListView l, View v, int position, long id) {
 		
 		Cursor cursor = ((SyndicationAdapter) l.getAdapter()).getCursor();
-		int syndicationID = cursor.getInt(cursor.getColumnIndex("_id"));
+		int syndicationId = cursor.getInt(cursor.getColumnIndex("_id"));
 		
-		SyndicationEvent event = new SyndicationEvent();
-		PublicationsBySyndicationListState state = new PublicationsBySyndicationListState();
-		state.init(getActivity());		
-		state.setSyndicationId(syndicationID);
-		event.setState(state);
-		EventBus.getDefault().postSticky(event);
+		changePublicationListState(syndicationId);
 		
-		((SolnRss) getActivity()).reLoadPublicationsBySyndication(syndicationID);
+		((SolnRss) getActivity()).reLoadPublicationsBySyndication(syndicationId);
 	}
 	
+	private void changePublicationListState(int syndicationId) {
+		ChangePublicationListStateEvent event = new ChangePublicationListStateEvent();
+		PublicationsBySyndicationListState state = new PublicationsBySyndicationListState();
+		state.init(getActivity());
+		state.setSyndicationId(syndicationId);
+		event.setState(state);
+		EventBus.getDefault().postSticky(event);
+	}
+
 	@Override
 	public void onActivityCreated(Bundle savedInstanceState) {
 		super.onActivityCreated(savedInstanceState);
@@ -349,5 +358,15 @@ public class SyndicationsFragment extends AbstractFragment implements
 	@Override
 	public void moveListViewToTop() {
 		getListView().setSelection(0);
+	}
+
+	@Override
+	public void onSharedPreferenceChanged(SharedPreferences sharedPreferences,
+			String key) {
+		if (key.compareTo("pref_sort_syndications") == 0 
+				|| key.compareTo("pref_user_font_face") == 0 
+				|| key.compareTo("pref_user_font_size") == 0) {
+			reloadSyndications();
+		} 	
 	}	
 }

@@ -1,6 +1,5 @@
 package free.solnRss.activity;
 
-import de.greenrobot.event.EventBus;
 import android.app.ActionBar;
 import android.app.ActionBar.Tab;
 import android.app.Activity;
@@ -32,11 +31,12 @@ import android.view.View;
 import android.view.Window;
 import android.widget.EditText;
 import android.widget.Toast;
+import de.greenrobot.event.EventBus;
 import free.solnRss.R;
 import free.solnRss.adapter.SectionsPagerAdapter;
 import free.solnRss.alarmManager.FindNewPublicationsAlarmManager;
 import free.solnRss.dialog.OneEditTextDialogBox;
-import free.solnRss.event.SyndicationEvent;
+import free.solnRss.event.ChangePublicationListStateEvent;
 import free.solnRss.fragment.listener.CategoriesFragmentListener;
 import free.solnRss.fragment.listener.PublicationsFragmentListener;
 import free.solnRss.fragment.listener.SyndicationsFragmentListener;
@@ -44,6 +44,8 @@ import free.solnRss.manager.UpdatingProcessConnectionManager;
 import free.solnRss.notification.NewPublicationsNotification;
 import free.solnRss.service.SyndicationFinderService;
 import free.solnRss.singleton.TypeFaceSingleton;
+import free.solnRss.state.BookmarkedPublicationsListState;
+import free.solnRss.state.PublicationsByLastSearchListState;
 
 public class SolnRss extends Activity implements ActionBar.TabListener,
 		SharedPreferences.OnSharedPreferenceChangeListener {
@@ -51,8 +53,6 @@ public class SolnRss extends Activity implements ActionBar.TabListener,
 	private SyndicationsFragmentListener syndicationsListener;
 	private CategoriesFragmentListener categoriesListener;
 	private PublicationsFragmentListener publicationsListener;
-	
-	//private SectionsPagerAdapter sectionPageAdapter;
 	private ViewPager viewPager;
 	
 	// ---
@@ -146,51 +146,41 @@ public class SolnRss extends Activity implements ActionBar.TabListener,
 				editor.commit();
 				
 				getIntent().putExtra("dateNewPublicationsFound", new String());
-				 
-				// Intent intent = getIntent();
-				// intent.removeExtra(NewPublicationsNotification.NotifyEvent.RESTART_ACTIVITY.name());
-				// finish();
-				// startActivity(intent);
 			} 
+			
+			String lastFoundNumber = getIntent().getStringExtra("lastFoundNumber");
+			if(!TextUtils.isEmpty(dateNewPublicationsFound)) {
+				fireEventForPublicationBylastSearch(lastFoundNumber);
+				getIntent().putExtra("lastFoundNumber", new String());
+			}
+			
 		}
+	}
+	
+	private void fireEventForPublicationBylastSearch(String lastFoundNumber) {
+		ChangePublicationListStateEvent event = new ChangePublicationListStateEvent();
+		PublicationsByLastSearchListState publicationsByLastSearchListState = new PublicationsByLastSearchListState();
+		publicationsByLastSearchListState.init(this);
+		publicationsByLastSearchListState.setLastFound(Integer.valueOf(lastFoundNumber));
+		event.setState(publicationsByLastSearchListState);
+		EventBus.getDefault().postSticky(event);
 	}
 	
 	@Override
 	public void onSharedPreferenceChanged(SharedPreferences shared, String key) {
-
-		if (key.compareTo("pref_display_unread") == 0 && publicationsListener != null) {
-			publicationsListener.refreshPublications();
-		} 
-		else if (key.compareTo("pref_delete_all_publications") == 0 && publicationsListener != null) {
-			publicationsListener.refreshPublications();
-		} 
-		else if (key.compareTo("pref_sort_syndications") == 0) {
-			syndicationsListener.reloadSyndications();
-		} 
-		else if (key.compareTo("pref_sort_categories") == 0) {
-			categoriesListener.reloadCategories();
-		} 
-		else if (key.compareTo("pref_user_font_face") == 0 
-				|| key.compareTo("pref_user_font_size") == 0) {
-			syndicationsListener.reloadSyndications();
-			publicationsListener.refreshPublications();
-			categoriesListener.reloadCategories();
-		} 
+		
 	}
 
 	public void registerPreferenceManager() {
-		PreferenceManager.getDefaultSharedPreferences(this)
-				.registerOnSharedPreferenceChangeListener(this);
-		
-		SharedPreferences pref = PreferenceManager
-				.getDefaultSharedPreferences(this);
-		
-		FindNewPublicationsAlarmManager.createInstance(pref, this);
+
+		SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
+		sharedPreferences.registerOnSharedPreferenceChangeListener(this);
+		FindNewPublicationsAlarmManager.createInstance(sharedPreferences, this);
 		
 		TypeFaceSingleton.getInstance(this);
 		
-		LocalBroadcastManager.getInstance(this).registerReceiver(
-				newPublicationsFoundBroadcastReceiver, new IntentFilter("newPublicationFound"));
+		LocalBroadcastManager.getInstance(this).registerReceiver(newPublicationsFoundBroadcastReceiver, 
+				new IntentFilter("newPublicationFound"));
 	}
 	
 	private void removeNotification() {
@@ -233,7 +223,7 @@ public class SolnRss extends Activity implements ActionBar.TabListener,
 			return true;
 			
 		case R.id.menu_display_favorite:
-			EventBus.getDefault().postSticky(new SyndicationEvent());
+			fireEventForDisplayBookmarkedPublications();
 			displayPublicationFavorite();
 			return true;
 			
@@ -261,6 +251,14 @@ public class SolnRss extends Activity implements ActionBar.TabListener,
 		default:
 			return super.onOptionsItemSelected(item);
 		}
+	}
+	
+	private void fireEventForDisplayBookmarkedPublications() {
+		ChangePublicationListStateEvent event = new ChangePublicationListStateEvent();
+		BookmarkedPublicationsListState bookmarkedPublicationsListState = new BookmarkedPublicationsListState();
+		bookmarkedPublicationsListState.init(this);
+		event.setState(bookmarkedPublicationsListState);
+		EventBus.getDefault().postSticky(event);
 	}
 	
 	private void updateOptionDisplayPublicationsAlreadyRead() {
@@ -449,16 +447,19 @@ public class SolnRss extends Activity implements ActionBar.TabListener,
 			editor.putString("newPublicationsRecordDate", null);
 			editor.commit();
 			// --
+			
+			String lastFoundNumber = getIntent().getStringExtra("lastFoundNumber");
+			fireEventForPublicationBylastSearch(lastFoundNumber);
 		}
 	};
 	
-	public void deleteLastPublicationFoundPreference() {
+	/*public void deleteLastPublicationFoundPreference() {
 		SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
 		SharedPreferences.Editor editor = sharedPreferences.edit();
 		editor.putInt("newPublicationsRecorded", 0);
 		editor.putString("newPublicationsRecordDate", null);
 		editor.commit();
-	}
+	}*/
 	
 	private void warmUser(String msg) {
 		String ok = getResources().getString(android.R.string.ok);

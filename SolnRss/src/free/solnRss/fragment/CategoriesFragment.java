@@ -1,15 +1,19 @@
 package free.solnRss.fragment;
 
-import de.greenrobot.event.EventBus;
+import java.util.Arrays;
+import java.util.List;
+
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.DialogInterface.OnClickListener;
 import android.content.Intent;
 import android.content.Loader;
+import android.content.SharedPreferences;
 import android.content.res.Resources;
 import android.database.Cursor;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.view.ContextMenu;
 import android.view.ContextMenu.ContextMenuInfo;
 import android.view.LayoutInflater;
@@ -20,17 +24,19 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.EditText;
 import android.widget.ListView;
+import de.greenrobot.event.EventBus;
 import free.solnRss.R;
 import free.solnRss.activity.SolnRss;
 import free.solnRss.activity.SyndicationsCategoriesActivity;
 import free.solnRss.adapter.CategoryAdapter;
 import free.solnRss.dialog.OneEditTextDialogBox;
-import free.solnRss.event.SyndicationEvent;
+import free.solnRss.event.ChangePublicationListStateEvent;
 import free.solnRss.fragment.listener.CategoriesFragmentListener;
 import free.solnRss.repository.CategoryRepository;
+import free.solnRss.state.PublicationsByCategoryListState;
 
-public class CategoriesFragment extends AbstractFragment implements
-		CategoriesFragmentListener {
+public class CategoriesFragment extends AbstractFragment implements	CategoriesFragmentListener,
+		SharedPreferences.OnSharedPreferenceChangeListener {
 	
 	private Integer selectedCategoryID;
 	private String selectedCategoryName;
@@ -49,6 +55,8 @@ public class CategoriesFragment extends AbstractFragment implements
 		progressContainer = fragment.findViewById(R.id.categoriesProgressContainer);
 		listShown = true;
 		
+		SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(getActivity());
+		sharedPreferences.registerOnSharedPreferenceChangeListener(this);
 		return fragment;
 	}
 	
@@ -151,11 +159,22 @@ public class CategoriesFragment extends AbstractFragment implements
 	@Override
 	public void onListItemClick(ListView l, View v, int position, long id) {
 		
-		EventBus.getDefault().postSticky(new SyndicationEvent());
-		
 		Cursor cursor = ((CategoryAdapter) l.getAdapter()).getCursor();
 		selectedCategoryID = cursor.getInt(cursor.getColumnIndex("_id"));
+		
+		changePublicationListState(selectedCategoryID);
+		
 		((SolnRss) getActivity()).reLoadPublicationsByCategorie(selectedCategoryID);
+	}
+	
+	private void changePublicationListState(int categoryId) {
+		ChangePublicationListStateEvent event = new ChangePublicationListStateEvent();
+		PublicationsByCategoryListState state = new PublicationsByCategoryListState();
+		state.init(getActivity());
+		state.setCategoryId(categoryId);
+		state.resetPositionOnList();
+		event.setState(state);
+		EventBus.getDefault().postSticky(event);
 	}
 	
 	public void startActivityForAddSyndication() {
@@ -187,7 +206,6 @@ public class CategoriesFragment extends AbstractFragment implements
 	}
 	
 	public void addCategory(Context context, String newCatgorieName) {
-		
 		categoryRepository.addCategory(newCatgorieName);
 	}
 
@@ -249,6 +267,19 @@ public class CategoriesFragment extends AbstractFragment implements
 	@Override
 	public void moveListViewToTop() {
 		getListView().setSelection(0);
+	}
+
+	final List<String> preferenceKeys = Arrays.asList(new String[] {
+			"pref_sort_categories",
+			"pref_user_font_face",
+			"pref_user_font_size" 
+		});
+	
+	@Override
+	public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
+		if (preferenceKeys.contains(key)) {
+			reloadCategories();
+		}
 	}
 	
 }

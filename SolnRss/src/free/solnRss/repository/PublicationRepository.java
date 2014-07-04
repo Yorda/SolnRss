@@ -8,10 +8,12 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.content.CursorLoader;
 import android.content.Loader;
+import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.net.Uri;
 import android.preference.PreferenceManager;
 import android.text.TextUtils;
+import android.widget.Toast;
 import free.solnRss.provider.SolnRssProvider;
 
 public class PublicationRepository {
@@ -206,7 +208,6 @@ public class PublicationRepository {
 	 * Clean the publications list in table for a syndication
 	 * @param id
 	 */
-	@Deprecated
 	public CursorLoader loadPublications(String filterText,
 			Integer selectedSyndicationID, Integer selectedCategoryID, String lastUpdateDate,
 			Boolean displayAlreadyRead) {
@@ -356,10 +357,7 @@ public class PublicationRepository {
 	public void removeTooOLdPublications() throws Exception {
 		
 		final int max = maxPublicationToKeep();
-		if (max == -1) {
-			return;
-		}
-		
+			
 		ArrayList<ContentProviderOperation> operations = new ArrayList<ContentProviderOperation>();
 		
 		//--
@@ -413,8 +411,12 @@ public class PublicationRepository {
 	protected final String tag = PublicationRepository.class.getName();
 	
 	private int maxPublicationToKeep() {
-		return 100; //Integer.valueOf(PreferenceManager.getDefaultSharedPreferences(context)
-				//.getString("pref_maxPublicationsBySyndicationToKeep", "100"));
+		
+		SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
+		String preference = sharedPreferences.getString("pref_maxPublicationsBySyndicationToKeep", "100");
+		int max = Integer.valueOf(preference);
+		Toast.makeText(context, "Max delete required " + max , Toast.LENGTH_LONG).show();
+		return max;
 	}
 
 	public void deletePublication(Integer publicationId, Integer syndicationId) throws Exception {

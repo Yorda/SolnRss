@@ -1,7 +1,8 @@
 package free.solnRss.state;
 
-import free.solnRss.repository.PublicationRepository;
-import android.content.Context;
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import android.content.Loader;
 import android.database.Cursor;
 
@@ -9,11 +10,6 @@ public class PublicationsBySyndicationListState extends
 		AbstractPublicationListState {
 
 	private Integer syndicationId;
-
-	public void init(Context context) {
-		this.context = context;
-		repository = new PublicationRepository(this.context);
-	}
 
 	@Override
 	public Loader<Cursor> displayList() {
@@ -28,5 +24,18 @@ public class PublicationsBySyndicationListState extends
 
 	public void setSyndicationId(Integer syndicationId) {
 		this.syndicationId = syndicationId;
+	}
+
+	@Override
+	public void restore(JSONObject jsonObject) throws JSONException {
+		restoreAbstractPublicationListState(jsonObject);
+		this.syndicationId = jsonObject.getInt("syndicationId");
+	}
+
+	@Override
+	public String save() throws JSONException {
+		JSONObject jsonObject = saveAbstractPublicationListState();
+		jsonObject.put("syndicationId", syndicationId);
+		return jsonObject.toString();
 	}
 }

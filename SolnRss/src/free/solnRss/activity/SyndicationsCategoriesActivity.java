@@ -38,7 +38,7 @@ public class SyndicationsCategoriesActivity extends ListActivity implements
 		
 		getActionBar().setBackgroundDrawable(new ColorDrawable(0xeeeeee));
 		
-		selectedCategorieID = getIntent().getIntExtra("selectedCategorieID", -1);
+		selectedCategorieID  = getIntent().getIntExtra("selectedCategorieID", -1);
 		selectedCategoryName = getIntent().getStringExtra("selectedCategoryName");
 		
 		if (!TextUtils.isEmpty(selectedCategoryName)) {

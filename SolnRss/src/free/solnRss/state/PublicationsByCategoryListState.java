@@ -1,5 +1,8 @@
 package free.solnRss.state;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import android.content.Loader;
 import android.database.Cursor;
 
@@ -22,4 +25,16 @@ public class PublicationsByCategoryListState extends
 		this.categoryId = categoryId;
 	}
 
+	@Override
+	public void restore(JSONObject jsonObject) throws JSONException {
+		restoreAbstractPublicationListState(jsonObject);
+		this.categoryId = jsonObject.getInt("categoryId");
+	}
+	
+	@Override
+	public String save() throws JSONException {
+		JSONObject jsonObject = saveAbstractPublicationListState();
+		jsonObject.put("categoryId", categoryId);
+		return jsonObject.toString();
+	}
 }

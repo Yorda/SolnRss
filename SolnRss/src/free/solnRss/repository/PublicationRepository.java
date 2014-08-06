@@ -13,11 +13,10 @@ import android.database.Cursor;
 import android.net.Uri;
 import android.preference.PreferenceManager;
 import android.text.TextUtils;
-import android.widget.Toast;
 import free.solnRss.provider.SolnRssProvider;
 
 public class PublicationRepository {
-
+	protected final String tag = PublicationRepository.class.getName();
 	public  static final String publicationTable = PublicationTable.PUBLICATION_TABLE;
 	private Uri uri = Uri.parse(SolnRssProvider.URI + "/publication");
 	
@@ -408,14 +407,14 @@ public class PublicationRepository {
 		context.getContentResolver().applyBatch(SolnRssProvider.AUTHORITY, operations);	
 	}
 	
-	protected final String tag = PublicationRepository.class.getName();
+	
 	
 	private int maxPublicationToKeep() {
 		
 		SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
 		String preference = sharedPreferences.getString("pref_maxPublicationsBySyndicationToKeep", "100");
 		int max = Integer.valueOf(preference);
-		Toast.makeText(context, "Max delete required " + max , Toast.LENGTH_LONG).show();
+		//Toast.makeText(context, "Max delete required " + max , Toast.LENGTH_LONG).show();
 		return max;
 	}
 

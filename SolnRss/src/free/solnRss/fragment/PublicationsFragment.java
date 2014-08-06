@@ -17,7 +17,6 @@ import android.preference.PreferenceManager;
 import android.text.Html;
 import android.text.Spanned;
 import android.text.TextUtils;
-import android.util.Log;
 import android.view.ContextMenu;
 import android.view.ContextMenu.ContextMenuInfo;
 import android.view.LayoutInflater;
@@ -75,7 +74,7 @@ public class PublicationsFragment extends AbstractFragment implements
 	PublicationsListState publicationsListState;
 	
 	public void onEvent(ChangePublicationListStateEvent event) {
-		Log.e("EVENT", "A change list state event received");
+		// Log.e("EVENT", "A change list state event received");
 		this.publicationsListState = event.getState();
 		/*if (getLoaderManager() != null && getLoaderManager().getLoader(0) != null 
 				&& getLoaderManager().getLoader(0).isStarted()) {

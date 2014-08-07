@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android" >
+
+    <item
+        android:id="@+id/reader_go_to_site"
+        android:icon="@drawable/ic_tab_earth"
+        android:orderInCategory="0"
+        android:showAsAction="always"
+        android:title="@string/menu_read_on_web_site">
+    </item>
+    <item
+        android:id="@+id/reader_menu_add_to_favorite"
+        android:icon="@drawable/ic_favorite_empty"
+        android:orderInCategory="1"
+        android:showAsAction="always"
+        android:title="@string/menu_favorite">
+    </item>
+    <item
+        android:id="@+id/reader_menu_share"
+        android:icon="@drawable/ic_share"
+        android:orderInCategory="1"
+        android:showAsAction="always"
+        android:title="@string/menu_Share">
+    </item>
+    <item
+        android:id="@+id/reader_menu_delete"
+        android:icon="@drawable/ic_trash"
+        android:orderInCategory="2"
+        android:showAsAction="always"
+        android:title="@string/menu_delete">
+    </item>
+
+</menu>

@@ -1,0 +1,36 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android" >
+
+    <item
+        android:id="@+id/menu_all_read"
+        android:orderInCategory="100"
+        android:showAsAction="never"
+        android:title="@string/mark_as_read"/>
+    <item
+        android:id="@+id/menu_already_read"
+        android:orderInCategory="100"
+        android:showAsAction="never"
+        android:title="@string/menu_show_already_read"/>
+    
+    <item
+        android:id="@+id/menu_display_favorite"
+        android:orderInCategory="100"
+        android:showAsAction="never"
+        android:title="@string/menu_show_favorite"/>
+    
+    <item
+        android:id="@+id/menu_add_categorie"
+        android:orderInCategory="100"
+        android:showAsAction="never"
+        android:title="@string/menu_add_categorie"/>
+    <item
+        android:id="@+id/menu_add_site"
+        android:orderInCategory="100"
+        android:showAsAction="never"
+        android:title="@string/menu_add_site"/>
+    <item
+        android:id="@+id/menu_settings"
+        android:orderInCategory="100"
+        android:showAsAction="never"
+        android:title="@string/menu_settings"/>
+
+</menu>

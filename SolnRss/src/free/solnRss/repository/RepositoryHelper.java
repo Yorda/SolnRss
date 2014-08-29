@@ -7,7 +7,7 @@ import android.database.sqlite.SQLiteOpenHelper;
 
 public class RepositoryHelper extends SQLiteOpenHelper {
 
-	public static int VERSION = 15;
+	public static int VERSION = 16;
 	public static String DATABASE_NAME = "SOLNRSS2.db";
 
 	private static RepositoryHelper instance;
@@ -37,9 +37,9 @@ public class RepositoryHelper extends SQLiteOpenHelper {
 
 	@Override
 	public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-		//if (newVersion == 16) {
-		//	upgradeToV16(db);
-		//}
+		if (newVersion == 16) {
+			upgradeToV16(db);
+		}
 	}
 
 	private void setDatabase(SQLiteDatabase db) {
@@ -115,7 +115,14 @@ public class RepositoryHelper extends SQLiteOpenHelper {
 	protected void upgradeToV16(SQLiteDatabase db) {
 		try {
 			db.beginTransaction();
-			String sql = " ";
+			String sql = "create table d_publication_image (\r\n"+
+					"	_id INTEGER PRIMARY KEY autoincrement,\r\n" +
+					"	image_url text,\r\n"+
+					"	image_path text,\r\n"+
+					"	image_name text,\r\n"+
+					"	pub_publication_id INTEGER NOT NULL,\r\n" + 
+					"	FOREIGN KEY(pub_publication_id) REFERENCES d_publication( _id)\r\n" + 
+					");";
 			
 			db.execSQL(sql);
 						

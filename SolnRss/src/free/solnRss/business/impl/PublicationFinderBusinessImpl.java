@@ -28,9 +28,12 @@ import free.solnRss.business.PublicationFinderBusiness;
 import free.solnRss.business.SyndicationBusiness;
 import free.solnRss.exception.ExtractFeedException;
 import free.solnRss.manager.UpdatingProcessConnectionManager;
+import free.solnRss.model.Publication;
+import free.solnRss.model.PublicationImage;
 import free.solnRss.notification.NewPublicationsNotification;
 import free.solnRss.provider.SolnRssProvider;
 import free.solnRss.repository.PublicationContentTable;
+import free.solnRss.repository.PublicationImageTable;
 import free.solnRss.repository.PublicationTable;
 import free.solnRss.repository.RssRepository;
 import free.solnRss.repository.RssTable;
@@ -55,7 +58,6 @@ public class PublicationFinderBusinessImpl implements PublicationFinderBusiness 
 	
 	private Context context;
 	private Integer newPublicationsRecorded;
-	
 	private ImageLoaderUtil imageLoader;
 	
 	NewPublicationsNotification newPublicationsNotification;
@@ -86,8 +88,8 @@ public class PublicationFinderBusinessImpl implements PublicationFinderBusiness 
 	
 	private void retrieveNewPublications() {
 		// For test
-		//StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder()
-		//.permitAll().build();StrictMode.setThreadPolicy(policy);
+		 //StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder()
+		 //.permitAll().build();StrictMode.setThreadPolicy(policy);
 
 		newPublicationsRecorded = 0;
 		
@@ -109,7 +111,7 @@ public class PublicationFinderBusinessImpl implements PublicationFinderBusiness 
 					
 					syndEntries = syndicationBusiness.newRssPublished(url);
 					
-					addNewPublicationIfNotAlreadyRegistered(syndicationId, updateDate);
+					addNewPublicationIfNotAlreadyRegisteredNEW(syndicationId, updateDate);
 					
 					updateRegisteredRss(syndicationId);
 					
@@ -135,13 +137,60 @@ public class PublicationFinderBusinessImpl implements PublicationFinderBusiness 
 				.withYieldAllowed(true).build());
 	}
 	
+	private final Uri publicationUri        = Uri.parse(SolnRssProvider.URI + "/publication");
+	private final Uri publicationContentUri = Uri.parse(SolnRssProvider.URI + "/publicationContent");
+	private final Uri imageUri              = Uri.parse(SolnRssProvider.URI + "/publicationImage");
+	
+	private void addNewPublicationIfNotAlreadyRegisteredNEW(Integer syndicationId, String updateDateFormat) {
+		
+		for (SyndEntry syndEntry : syndEntries) {
+			Publication publication = new Publication(syndEntry);
+			publication.setImageLoader(imageLoader);
+			
+			
+			if (!rssRepository.isAlreadyRetrieved(publication.getTitle(), publication.getLink())) {
+				
+				operations.add(ContentProviderOperation.newInsert(publicationUri)
+						.withValues(addNewPublication(syndicationId, 
+								publication.getTitle(), 
+								updateDateFormat))
+						.withYieldAllowed(true).build());
+				
+				int operationInsertPublication = operations.size() - 1;
+								
+				publication.loadImages();
+				
+				// Insert publicationContent table
+				operations.add(ContentProviderOperation.newInsert(publicationContentUri)
+						.withValue("syndicationId",  syndicationId.toString())
+						.withValue(PublicationContentTable.COLUMN_LINK, publication.getLink())
+						.withValue(PublicationContentTable.COLUMN_PUBLICATION, publication.improveDescription())
+						.withValueBackReference(PublicationContentTable.COLUMN_PUBLICATION_ID, operationInsertPublication)
+						.withYieldAllowed(true).build());
+				
+				
+				for(PublicationImage publicationImage : publication.getDescriptionImages()){
+					operations.add(ContentProviderOperation.newInsert(imageUri)
+							.withValue(PublicationImageTable.COLUMN_NAME, publicationImage.getName())
+							.withValue(PublicationImageTable.COLUMN_URL, publicationImage.getUrl())
+							.withValue(PublicationImageTable.COLUMN_PATH, publicationImage.getPath())
+							.withValueBackReference(PublicationImageTable.COLUMN_PUBLICATION_ID, operationInsertPublication)
+							.withYieldAllowed(true).build());
+				}
+			
+				newPublicationsRecorded++;
+			}
+		}
+	}
+
+	
 	private void addNewPublicationIfNotAlreadyRegistered(Integer syndicationId, String updateDateFormat) {
 		
 		for (SyndEntry syndEntry : syndEntries) {
 			
 			if (!rssRepository.isAlreadyRetrieved(syndEntry.getTitle(),	syndEntry.getLink())) {
 				operations.add(ContentProviderOperation.newInsert(Uri.parse(SolnRssProvider.URI + "/publication"))
-						.withValues(addNewPublication(syndicationId, syndEntry, updateDateFormat))
+						.withValues(addNewPublication(syndicationId, syndEntry.getTitle(), updateDateFormat))
 						.withYieldAllowed(true)	.build());
 				
 				operations.add(ContentProviderOperation.newInsert(Uri.parse(SolnRssProvider.URI + "/publicationContent"))
@@ -154,6 +203,7 @@ public class PublicationFinderBusinessImpl implements PublicationFinderBusiness 
 						.withValueBackReference(PublicationContentTable.COLUMN_PUBLICATION_ID, operations.size() - 1)
 						.withYieldAllowed(true).build());
 				
+				// TODO get image and record entry
 				newPublicationsRecorded++;
 			}
 		}
@@ -199,12 +249,12 @@ public class PublicationFinderBusinessImpl implements PublicationFinderBusiness 
 			.withSelection(SyndicationTable.COLUMN_ID + " = ? " , new String[] { Integer.valueOf(syndicationId).toString() })
 			.withYieldAllowed(true).build());
 	}
-	
-	private ContentValues addNewPublication(Integer syndicationId, SyndEntry syndEntry, String date) {
+
+	private ContentValues addNewPublication(Integer syndicationId, String title, String date) {
 		
 		ContentValues values = new ContentValues();
 		values.put(PublicationTable.COLUMN_SYNDICATION_ID, syndicationId);
-		values.put(PublicationTable.COLUMN_TITLE, StringUtil.unescapeHTML(syndEntry.getTitle()));
+		values.put(PublicationTable.COLUMN_TITLE, StringUtil.unescapeHTML(title));
 		values.put(PublicationTable.COLUMN_ALREADY_READ, 0);
 		values.put(PublicationTable.COLUMN_PUBLICATION_DATE, date);
 

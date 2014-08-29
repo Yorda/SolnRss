@@ -199,10 +199,6 @@ public class PublicationRepository {
 				.getBoolean("pref_display_unread", true);
 	}
 	
-	
-	
-	
-	
 	/**
 	 * Clean the publications list in table for a syndication
 	 * @param id

@@ -79,8 +79,7 @@ public class ReaderActivity extends Activity {
 		}
 
 		getActionBar().setBackgroundDrawable(new ColorDrawable(0xeeeeee));
-		getActionBar()
-				.setStackedBackgroundDrawable(new ColorDrawable(0xeeeeee));
+		getActionBar().setStackedBackgroundDrawable(new ColorDrawable(0xeeeeee));
 
 		String text = getIntent().getStringExtra("read");
 		this.link = getIntent().getStringExtra("link");
@@ -92,8 +91,7 @@ public class ReaderActivity extends Activity {
 		WebSettings settings = webView.getSettings();
 		settings.setAllowFileAccess(true);
 		settings.setDefaultTextEncodingName("utf-8");
-
-		// For enable video
+		
 		webView.setWebChromeClient(new WebChromeClient());
 
 		settings.setJavaScriptEnabled(true);
@@ -101,8 +99,7 @@ public class ReaderActivity extends Activity {
 		settings.setDefaultFontSize(TypeFaceSingleton.getInstance(
 				getApplicationContext()).getUserFontSize());
 
-		webView.loadDataWithBaseURL(null, getHtmlData(text), "text/html",
-				"utf-8", null);
+		webView.loadDataWithBaseURL(null, getHtmlData(text), "text/html", "utf-8", null);
 
 		publicationRepository = new PublicationRepository(this);
 	}
@@ -230,7 +227,7 @@ public class ReaderActivity extends Activity {
 	}
 
 	private String getHtmlData(String data) {
-
+		
 		final String head = "<head>"
 				+ "<style>@font-face {"
 				+ " font-family: 'monaco';"

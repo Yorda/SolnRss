@@ -5,6 +5,8 @@ import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -19,11 +21,14 @@ import android.util.Log;
 
 import com.squareup.picasso.Picasso;
 
+import free.solnRss.model.Publication;
+import free.solnRss.model.PublicationImage;
+
 public class ImageLoaderUtil {
 	
 	private final String tag = ImageLoaderUtil.class.getName();
 	private Context context;
-	private String imgUrl, imageName, path, description;
+	private String imgUrl, imageName, description;
 	private Bitmap bitmap;
 
 
@@ -46,26 +51,6 @@ public class ImageLoaderUtil {
 				
 				byte[] imageRaw = null;
 				try {
-					/*
-					URL url = new URL(imgUrl);
-					HttpURLConnection urlConnection = (HttpURLConnection) url.openConnection();
-
-					InputStream in = new BufferedInputStream(urlConnection.getInputStream());
-					ByteArrayOutputStream out = new ByteArrayOutputStream();
-
-					int c;
-					while ((c = in.read()) != -1) {
-						out.write(c);
-					}
-					out.flush();
-
-					imageRaw = out.toByteArray();
-					
-					urlConnection.disconnect();
-					in.close();
-					out.close();
-					*/
-					
 					imageRaw = loadImageToByteArray().toByteArray();
 					
 					String image64 = Base64.encodeToString(imageRaw, Base64.DEFAULT);
@@ -81,38 +66,66 @@ public class ImageLoaderUtil {
 		return document.html();
 	}
 	
-	public String saveImage() {
+	private List<PublicationImage> publicationsImages = new ArrayList<PublicationImage>();
+	
+	public void saveImages(Publication publication) {
+		publicationsImages.clear();
 
-		Document document = Jsoup.parse(description);
-
+		Document document = Jsoup.parse(publication.getDescription());
 		Elements images = document.select("img");
-
+		String path = new String();
+		
 		for (Element image : images) {
 			try {
 				imgUrl = image.absUrl("src");
-				
+
 				if (TextUtils.isEmpty(imgUrl)) {
 					continue;
 				}
-				
-				imageName = Integer.valueOf(imgUrl.hashCode()).toString() + ".jpg";
-				
-				path = "file://" + context.getFilesDir() + "/" + imageName;
+
+				imageName = Integer.valueOf(imgUrl.hashCode()).toString() + ".png";
+
+				path = context.getExternalCacheDir() + "/" + imageName;
 
 				// Must not already registered
 				if (!isImageAlreadyDownloded(path)) {
-					loadImage();
+					loadImage(path);
 				}
 
-				image.attr("src", path);
+				image.attr("src", "file://" + path);
+
+				PublicationImage descriptionImage = new PublicationImage();
+				descriptionImage.setUrl(imgUrl);
+				descriptionImage.setPath(path);
+				descriptionImage.setName(imageName);
+				publicationsImages.add(descriptionImage);
 
 			} catch (Exception e) {
-				Log.e(tag, "Error retrieving image file with url: " + imgUrl + " -> " + e.getCause());
+				e.printStackTrace();
+				Log.e(tag, "Error retrieving image file with url: " + imgUrl
+						+ " -> " + e.getCause());
 			}
 		}
-		return document.html();
+		publication.setDescriptionImages(publicationsImages);
+		publication.setDescription(document.html());
 	}
 
+	private void loadImage(String path) throws Exception {
+
+		bitmap = Picasso.with(context).load(imgUrl).get();
+		//File file = new File(context.getFilesDir(), imageName);
+		File file = new File(path);
+		
+		String filePath = file.toString();
+		FileOutputStream fos = new FileOutputStream(filePath);
+
+		BufferedOutputStream out = new BufferedOutputStream(fos);
+		bitmap.compress(Bitmap.CompressFormat.PNG, 50, out);
+		out.flush();
+		out.close();
+
+	}
+	
 	private boolean isImageAlreadyDownloded(String path) {		
 		File file = new File(path);
 		return file.exists();
@@ -129,21 +142,6 @@ public class ImageLoaderUtil {
 		
 		return byos;
 	}
-	
-	private void loadImage() throws Exception {
-		bitmap = Picasso.with(context).load(imgUrl).get();
-		File file = new File(context.getFilesDir(), imageName);
-		
-		String filePath = file.toString();
-		FileOutputStream fos = new FileOutputStream(filePath);
-
-		BufferedOutputStream out = new BufferedOutputStream(fos);
-		bitmap.compress(Bitmap.CompressFormat.JPEG, 50, out);
-		out.flush();
-		out.close();
-
-	}
-	
 
 	public String getDescription() {
 		return description;

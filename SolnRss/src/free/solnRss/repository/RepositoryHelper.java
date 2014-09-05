@@ -37,9 +37,9 @@ public class RepositoryHelper extends SQLiteOpenHelper {
 
 	@Override
 	public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-		if (newVersion == 16) {
+		/*if (newVersion == 16) {
 			upgradeToV16(db);
-		}
+		}*/
 	}
 
 	private void setDatabase(SQLiteDatabase db) {
@@ -98,7 +98,15 @@ public class RepositoryHelper extends SQLiteOpenHelper {
 			"	rss_title text,\r\n"+
 			"	syn_syndication_id INTEGER NOT NULL,\r\n" + 
 			"	FOREIGN KEY(syn_syndication_id) REFERENCES d_syndication( _id)\r\n" + 
-			");"
+			");",
+			 "create table d_publication_image (\r\n"+
+						"	_id INTEGER PRIMARY KEY autoincrement,\r\n" +
+						"	image_url text,\r\n"+
+						"	image_path text,\r\n"+
+						"	image_name text,\r\n"+
+						"	pub_publication_id INTEGER NOT NULL,\r\n" + 
+						"	FOREIGN KEY(pub_publication_id) REFERENCES d_publication( _id)\r\n" + 
+						");"
 			
 			/*,"create table r_error (\r\n"+
 			"	err_code INTEGER,\r\n"+

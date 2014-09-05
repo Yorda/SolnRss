@@ -6,6 +6,7 @@ import android.content.UriMatcher;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.net.Uri;
+import android.util.Log;
 import free.solnRss.repository.CategoryRepository;
 import free.solnRss.repository.CategoryTable;
 import free.solnRss.repository.PublicationContentRepository;
@@ -55,7 +56,6 @@ public class SolnRssProvider extends ContentProvider {
 		
 		switch (uriMatcher.match(uri)) {
 		case PUBLICATION:
-			
 			cursor = db.query(PublicationRepository.publicationTableJoinToSyndication, projection,
 					selection, selectionArgs, null, null, PublicationRepository.orderBy(getContext()), null);
 			break;
@@ -202,8 +202,8 @@ public class SolnRssProvider extends ContentProvider {
 			break;
 
 		case CATEGORY:
-			rowsDeleted = db.delete(CategoryTable.CATEGORY_TABLE, selection,
-					selectionArgs);
+			rowsDeleted = db.delete(CategoryTable.CATEGORY_TABLE, 
+					selection, selectionArgs);
 			break;
 
 		case SYNDICATION:
@@ -224,6 +224,12 @@ public class SolnRssProvider extends ContentProvider {
 			
 		case PUBLICATION_CONTENT_DB:
 			db.execSQL(PublicationContentRepository.dropPublicationTableSqlReq(null));
+			break;
+			
+		case PUBLICATION_IMAGE:
+			int rows = db.delete(PublicationImageTable.PUBLICATION_IMAGE_TABLE, 
+					selection, selectionArgs);
+			Log.e(SolnRssProvider.class.getName(), " Images deleted in db -> " + rows);
 			break;
 			
 		default:

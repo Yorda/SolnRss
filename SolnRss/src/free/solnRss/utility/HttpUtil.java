@@ -1,9 +1,13 @@
 package free.solnRss.utility;
 
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
-
+/*
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.StatusLine;
@@ -12,13 +16,10 @@ import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpUriRequest;
 import org.apache.http.impl.client.DefaultHttpClient;
-import org.apache.http.params.BasicHttpParams;
-import org.apache.http.params.HttpConnectionParams;
-import org.apache.http.params.HttpParams;
-import org.apache.http.util.EntityUtils;
+import org.apache.http.util.EntityUtils;*/
 
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
+// import android.graphics.Bitmap;
+// import android.graphics.BitmapFactory;
 
 public class HttpUtil {
 	
@@ -27,10 +28,27 @@ public class HttpUtil {
 		
 	}
 
-	public static String retrieveHtml(String url)
-			throws ClientProtocolException, IOException {
+	public static String retrieveHtml(String surl)
+			throws  IOException {
 
-		final HttpParams httpParams = new BasicHttpParams();
+		String response = new String();
+		try {
+			URL url = new URL(surl);
+			HttpURLConnection httpURLConnection = (HttpURLConnection) url.openConnection();
+			int code = httpURLConnection.getResponseCode();
+			if (code < 200 || code > 300) {
+				throw new IOException("Response code from site not OK " + code);
+			}
+			response = readStream(httpURLConnection.getInputStream());
+
+		} catch (Exception e) {
+			e.printStackTrace(System.err);
+			throw new IOException("Response code from site not OK ");
+		}
+		
+		return response;
+	       
+		/*final HttpParams httpParams = new BasicHttpParams();
 		HttpConnectionParams.setConnectionTimeout(httpParams, 6000);
 		HttpConnectionParams.setSoTimeout(httpParams, 6000);
 		HttpClient httpclient = new DefaultHttpClient(httpParams);
@@ -60,9 +78,32 @@ public class HttpUtil {
 			}
 			httpclient.getConnectionManager().shutdown();
 		}
-		return html;
+		return html;*/
 	}
 
+	private static String readStream(InputStream in) {
+        BufferedReader reader = null;
+        StringBuilder sb = new StringBuilder();
+        try {
+            reader = new BufferedReader(new InputStreamReader(in));
+            String line;
+            while ((line = reader.readLine()) != null) {
+               sb.append(line);
+            }
+        } catch (IOException e) {
+            e.printStackTrace(System.err);
+        } finally {
+            if (reader != null) {
+                try {
+                    reader.close();
+                } catch (IOException e) {
+                    e.printStackTrace(System.err);
+                }
+            }
+        }
+        return sb.toString();
+    }
+	
 	public static Boolean isValidUrl(String url) {
 		try {
 			new URL(url);
@@ -72,7 +113,7 @@ public class HttpUtil {
 		return true;
 	}
 	
-	public static Bitmap downloadBitmap(String url) throws IOException {
+	/*public static Bitmap downloadBitmap(String url) throws IOException {
 		
 		HttpUriRequest request = new HttpGet(url.toString());
 		HttpClient httpClient = new DefaultHttpClient();
@@ -117,7 +158,7 @@ public class HttpUtil {
 			return imageTag;
 		}
 		return imageTagWithBinary;
-	}
+	}*/
 	
 	protected static String getImageUrl(String webSiteUrl, String imageTag){
 		return null;

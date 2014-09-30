@@ -172,6 +172,7 @@ public class SyndicationsFragment extends AbstractFragment implements Syndicatio
 	public boolean onContextItemSelected(MenuItem item) {
 		switch (item.getItemId()) {
 
+		
 		case R.id.menu_mark_syndication_as_read:
 			markSyndicationPublicationsAsRead();
 			break;
@@ -196,12 +197,45 @@ public class SyndicationsFragment extends AbstractFragment implements Syndicatio
 			rename();
 			break;
 			
+		/*case R.id.menu_search_new_publications:
+			search();
+			break;*/
+			
 		default:
 			break;
 		}
 		return super.onContextItemSelected(item);
 	}
+	
+	
+	/*@Deprecated
+	 private void search() {
+		AsyncTask<Integer, Void, Integer> t = new AsyncTask<Integer, Void, Integer>() {
+			@Override
+			protected Integer doInBackground(Integer... params) {
+				PublicationFinderBusiness finder = new PublicationFinderBusinessImpl(getActivity());
+				SparseArray<String> arr = new SparseArray<String>();
+				arr.put(selectedSyndicationID,syndicationUrl(selectedSyndicationID));
+				finder.searchNewPublications(arr);
+				return null;
+			}
+		};
+		
+		t.execute(selectedSyndicationID);
+	}*/
 
+	/*@Deprecated
+	private String syndicationUrl(Integer id) {
+		String[] projection = { SyndicationTable.COLUMN_URL };
+		Uri uri = Uri.parse(SolnRssProvider.URI + "/syndication");
+		Cursor c = getActivity().getContentResolver().query(uri, projection,
+				" _id = ? ", new String[] { id.toString() }, null);
+		c.moveToFirst();
+		String url = c.getCount() > 0 && c.getString(0) != null ? c.getString(0) : null;
+		c.close();
+		return url;
+	}*/
+	
 	private void rename() {
 		OneEditTextDialogBox oneEditTextDialogBox;
 		oneEditTextDialogBox = new OneEditTextDialogBox(getActivity(), 
@@ -216,6 +250,7 @@ public class SyndicationsFragment extends AbstractFragment implements Syndicatio
 		});
 		oneEditTextDialogBox.displayDialogBox();
 	}
+	
 	
 	private void renameSyndication(String newName){
 		syndicationRepository.renameSyndication(selectedSyndicationID, newName);

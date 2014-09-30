@@ -418,15 +418,16 @@ public class PublicationRepository {
 	
 	private List<String> findAllImagesName() {
 		
-		final Uri uri = Uri.parse(SolnRssProvider.URI + "/publicationImage");
+		final Uri imageUri              = Uri.parse(SolnRssProvider.URI + "/publicationImage");
 		final String[] selection = new String[] { PublicationImageTable.COLUMN_NAME };
-		Cursor cursor = context.getContentResolver().query(uri, selection, null, null, null);
+		Cursor cursor = context.getContentResolver().query(imageUri, selection, null, null, null);
 
 		List<String> filesNameInDatabase = new ArrayList<String>();
 		
 		if (cursor.getCount() > 0) {
+			cursor.moveToFirst();
 			do {
-				filesNameInDatabase.add(cursor.getString(0));
+				filesNameInDatabase.add(cursor.getString(cursor.getColumnIndex(PublicationImageTable.COLUMN_NAME)));
 			} while (cursor.moveToNext());
 		}
 		return filesNameInDatabase;
@@ -457,7 +458,6 @@ public class PublicationRepository {
 		SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
 		String preference = sharedPreferences.getString("pref_maxPublicationsBySyndicationToKeep", "100");
 		int max = Integer.valueOf(preference);
-		//Toast.makeText(context, "Max delete required " + max , Toast.LENGTH_LONG).show();
 		return max;
 	}
 

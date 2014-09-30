@@ -59,6 +59,7 @@
         <!-- SERVICE -->
         <service android:name="free.solnRss.service.PublicationsFinderService" />
         <service android:name="free.solnRss.service.SyndicationFinderService" />
+        <service android:name="free.solnRss.service.CleanOlderDataService" />
 
         <!-- PROVIDER -->
         <provider

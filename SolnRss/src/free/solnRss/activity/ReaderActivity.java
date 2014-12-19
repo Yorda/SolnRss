@@ -20,6 +20,7 @@ import android.text.TextUtils;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.view.Window;
 import android.webkit.WebChromeClient;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
@@ -48,6 +49,8 @@ public class ReaderActivity extends Activity {
 	protected void onCreate(Bundle savedInstanceState) {
 
 		super.onCreate(savedInstanceState);
+		
+		getWindow().requestFeature(Window.FEATURE_PROGRESS);
 
 		setContentView(R.layout.activity_reader);
 
@@ -92,7 +95,16 @@ public class ReaderActivity extends Activity {
 		settings.setAllowFileAccess(true);
 		settings.setDefaultTextEncodingName("utf-8");
 		
-		webView.setWebChromeClient(new WebChromeClient());
+		 final Activity activity = this;
+
+		 
+		webView.setWebChromeClient(new WebChromeClient() {
+			public void onProgressChanged(WebView view, int progress) {
+				// Activities and WebViews measure progress with different scales.
+				// The progress meter will automatically disappear when we reach 100%
+				activity.setProgress(progress * 1000);
+			}
+		});
 
 		settings.setJavaScriptEnabled(true);
 

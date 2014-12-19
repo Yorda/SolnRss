@@ -27,11 +27,9 @@ import free.solnRss.business.SyndicationBusiness;
 import free.solnRss.exception.ExtractFeedException;
 import free.solnRss.manager.UpdatingProcessConnectionManager;
 import free.solnRss.model.Publication;
-import free.solnRss.model.PublicationImage;
 import free.solnRss.notification.NewPublicationsNotification;
 import free.solnRss.provider.SolnRssProvider;
 import free.solnRss.repository.PublicationContentTable;
-import free.solnRss.repository.PublicationImageTable;
 import free.solnRss.repository.PublicationTable;
 import free.solnRss.repository.RssRepository;
 import free.solnRss.repository.RssTable;
@@ -109,7 +107,7 @@ public class PublicationFinderBusinessImpl implements PublicationFinderBusiness 
 					
 					syndEntries = syndicationBusiness.newRssPublished(url);
 					
-					addNewPublicationIfNotAlreadyRegisteredNEW(syndicationId, updateDate);
+					addNewPublicationIfNotAlreadyRegistered(syndicationId, updateDate);
 					
 					updateRegisteredRss(syndicationId);
 					
@@ -137,9 +135,9 @@ public class PublicationFinderBusinessImpl implements PublicationFinderBusiness 
 	
 	private final Uri publicationUri        = Uri.parse(SolnRssProvider.URI + "/publication");
 	private final Uri publicationContentUri = Uri.parse(SolnRssProvider.URI + "/publicationContent");
-	private final Uri imageUri              = Uri.parse(SolnRssProvider.URI + "/publicationImage");
+	// sprivate final Uri imageUri              = Uri.parse(SolnRssProvider.URI + "/publicationImage");
 	
-	private void addNewPublicationIfNotAlreadyRegisteredNEW(Integer syndicationId, String updateDateFormat) {
+	private void addNewPublicationIfNotAlreadyRegistered(Integer syndicationId, String updateDateFormat) {
 		
 		for (SyndEntry syndEntry : syndEntries) {
 			Publication publication = new Publication(syndEntry);
@@ -155,7 +153,7 @@ public class PublicationFinderBusinessImpl implements PublicationFinderBusiness 
 				
 				int operationInsertPublication = operations.size() - 1;
 								
-				publication.loadImages();
+				// publication.loadImages();
 				
 				// Insert publicationContent table
 				operations.add(ContentProviderOperation.newInsert(publicationContentUri)
@@ -165,14 +163,14 @@ public class PublicationFinderBusinessImpl implements PublicationFinderBusiness 
 						.withValueBackReference(PublicationContentTable.COLUMN_PUBLICATION_ID, operationInsertPublication)
 						.withYieldAllowed(true).build());
 				
-				for (PublicationImage publicationImage : publication .getDescriptionImages()) {
+				/*for (PublicationImage publicationImage : publication .getDescriptionImages()) {
 					operations.add(ContentProviderOperation.newInsert(imageUri)
 							.withValue(PublicationImageTable.COLUMN_NAME, publicationImage.getName())
 							.withValue(PublicationImageTable.COLUMN_URL, publicationImage.getUrl())
 							.withValue(PublicationImageTable.COLUMN_PATH, publicationImage.getPath())
 							.withValueBackReference(PublicationImageTable.COLUMN_PUBLICATION_ID, operationInsertPublication)
 							.withYieldAllowed(true).build());
-				}
+				}*/
 			
 				newPublicationsRecorded++;
 			}

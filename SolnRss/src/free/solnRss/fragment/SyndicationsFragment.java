@@ -78,6 +78,7 @@ public class SyndicationsFragment extends AbstractFragment implements Syndicatio
 		changePublicationListState(syndicationId);
 		
 		((SolnRss) getActivity()).reLoadPublicationsBySyndication(syndicationId);
+		
 	}
 	
 	private void changePublicationListState(int syndicationId) {

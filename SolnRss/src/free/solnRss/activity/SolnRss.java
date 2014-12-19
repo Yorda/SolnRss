@@ -33,6 +33,7 @@ import android.widget.EditText;
 import android.widget.Toast;
 import de.greenrobot.event.EventBus;
 import free.solnRss.R;
+import free.solnRss.adapter.PublicationAdapter;
 import free.solnRss.adapter.SectionsPagerAdapter;
 import free.solnRss.alarmManager.FindNewPublicationsAlarmManager;
 import free.solnRss.dialog.OneEditTextDialogBox;
@@ -438,28 +439,19 @@ public class SolnRss extends Activity implements ActionBar.TabListener,
 		if (event != null
 				&& event.compareTo(NewPublicationsNotification.NotifyEvent.RESTART_ACTIVITY) == 0) {
 			
+			resetPublicationsPositionListVew();
 			publicationsListener.reLoadPublicationsByLastFound(intent.getExtras().getString("dateNewPublicationsFound"));
 			
-			// TODO UNE SEUL METHODE POUR CA
 			SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
 			SharedPreferences.Editor editor = sharedPreferences.edit();
 			editor.putInt("newPublicationsRecorded", 0);
 			editor.putString("newPublicationsRecordDate", null);
 			editor.commit();
-			// --
 			
 			String lastFoundNumber = getIntent().getStringExtra("lastFoundNumber");
 			fireEventForPublicationBylastSearch(lastFoundNumber);
 		}
 	};
-	
-	/*public void deleteLastPublicationFoundPreference() {
-		SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
-		SharedPreferences.Editor editor = sharedPreferences.edit();
-		editor.putInt("newPublicationsRecorded", 0);
-		editor.putString("newPublicationsRecordDate", null);
-		editor.commit();
-	}*/
 	
 	private void warmUser(String msg) {
 		String ok = getResources().getString(android.R.string.ok);
@@ -554,13 +546,26 @@ public class SolnRss extends Activity implements ActionBar.TabListener,
 		return publicationsListener;
 	}
 	
+	public void resetPublicationsPositionListVew() {
+
+		SharedPreferences prefs = this.getPreferences(0);
+		SharedPreferences.Editor editor = prefs.edit();
+		// Reset position save
+		editor.putInt("cursorCount", -1);
+		editor.putInt("publicationsListViewIndex", -1);
+		editor.putInt("publicationsListViewPosition", -1);
+		editor.commit();
+	}
+	
 	public void reLoadPublicationsBySyndication(Integer syndicationID) {
+		resetPublicationsPositionListVew();
 		publicationsListener.reLoadPublicationsBySyndication(syndicationID);
 		viewPager.setCurrentItem(1);
 		publicationsListener.moveListViewToTop();
 	}
 
 	public void reLoadPublicationsByCategorie(Integer categorieID) {
+		resetPublicationsPositionListVew();
 		publicationsListener.reLoadPublicationsByCategory(categorieID);
 		viewPager.setCurrentItem(1);
 		publicationsListener.moveListViewToTop();

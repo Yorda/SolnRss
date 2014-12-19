@@ -373,16 +373,19 @@ public class PublicationRepository {
 				syndicationId = cursor.getInt(0);
 				
 				// Delete publication images
-				selection.setLength(0);
+				/*selection.setLength(0);
 				selection.append(" _id in " + 
 						" (select p._id FROM d_publication p where  " + 
 						" p.syn_syndication_id = ? " + 
 						" and (p.pub_favorite is null or p.pub_favorite = 0) " + 
 						" order by p._id desc LIMIT -1 OFFSET " + max + " )");
 				
-				operations.add(ContentProviderOperation.newDelete(Uri.parse(SolnRssProvider.URI + "/publicationImage"))
-						.withSelection(selection.toString(), null).build());
+				operations.add(ContentProviderOperation.newDelete(
+						Uri.parse(SolnRssProvider.URI + "/publicationImage"))
+						.withSelection(selection.toString(), new String[] {syndicationId.toString()})
+						.build());*/
 		
+				// Delete publication
 				selection.setLength(0);
 				selection.append(" _id in " + 
 						" (select p._id FROM d_publication p where  " + 
@@ -413,7 +416,7 @@ public class PublicationRepository {
 		//--
 		context.getContentResolver().applyBatch(SolnRssProvider.AUTHORITY, operations);	
 		
-		deleteOldImages();
+		// deleteOldImages();
 	}
 	
 	private List<String> findAllImagesName() {
@@ -433,10 +436,10 @@ public class PublicationRepository {
 		return filesNameInDatabase;
 	}
 
-	private void deleteOldImages() {
+	protected void deleteOldImages() {
 		
-		File repertoire = context.getExternalCacheDir();
-		File[] files = repertoire.listFiles();
+		File directory = context.getExternalCacheDir();
+		File[] files = directory.listFiles();
 		List<String> filesNameInCache = new ArrayList<String>();
 		for (File f : files) {
 			filesNameInCache.add(f.getName());

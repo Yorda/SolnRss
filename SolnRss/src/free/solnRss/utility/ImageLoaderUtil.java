@@ -91,7 +91,7 @@ public class ImageLoaderUtil {
 				if (!isImageAlreadyDownloded(path)) {
 					loadImage(path);
 				}
-
+				
 				image.attr("src", "file://" + path);
 
 				PublicationImage descriptionImage = new PublicationImage();
@@ -101,9 +101,8 @@ public class ImageLoaderUtil {
 				publicationsImages.add(descriptionImage);
 
 			} catch (Exception e) {
-				e.printStackTrace();
-				Log.e(tag, "Error retrieving image file with url: " + imgUrl
-						+ " -> " + e.getCause());
+				// e.printStackTrace();
+				Log.e(tag, "Error retrieving image file with url: " + imgUrl + " -> " + e.getCause());
 			}
 		}
 		publication.setDescriptionImages(publicationsImages);

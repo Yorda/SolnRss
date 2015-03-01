@@ -19,6 +19,7 @@ public class TypeFaceSingleton {
 			typeFaceSingleton = new TypeFaceSingleton();
 			typeFaceSingleton.initTypeFace(context);
 			preferences = PreferenceManager.getDefaultSharedPreferences(context);
+
 		}
 		return typeFaceSingleton;
 	}
@@ -41,23 +42,6 @@ public class TypeFaceSingleton {
 			return monofur;
 		case 4:
 			return monospace;
-		}
-		return null;
-	}
-	
-	public String getUserTypeFaceNameOf() {
-		int index = Integer.valueOf(preferences.getString("pref_user_font_face", "0"));
-		switch (index) {
-		case 0:
-			return null;
-		case 1:
-			return "fonts/anonymous_pro/Anonymous Pro.ttf";
-		case 2:
-			return "fonts/inconsolata/Inconsolata.otf";
-		case 3:
-			return "fonts/monaco/monaco.ttf";
-		case 4:
-			return null;
 		}
 		return null;
 	}

@@ -104,8 +104,44 @@ public class CategoryRepository {
 	}
 
 	public void deleteCategory(Integer categoryId) {
-			context.getContentResolver().delete(uri,
+		ContentValues values = new ContentValues();
+		values.put(CategoryTable.COLUMN_ID, categoryId);
+		context.getContentResolver().delete(uri,
 				CategoryTable.COLUMN_ID + " = ? ",
 				new String[] { categoryId.toString() });
 	}
+	
+	
+	
+	/*
+	@Deprecated
+	public Cursor fetchAllCategorie() {
+		return RepositoryHelper	.getInstance(context).getReadableDatabase()
+				.rawQuery("select c.*, count(cs.cas_categorie_id) as number_of_use "
+								+ "from d_categorie c left join d_categorie_syndication cs on c._id = cs.cas_categorie_id "
+								+ "group by c.cat_name order by number_of_use desc",
+						null);
+	}
+
+	@Deprecated
+	public void insert(String label) {
+		ContentValues values = new ContentValues();
+		values.put("cat_name", label);
+
+		RepositoryHelper.getInstance(context).getWritableDatabase()
+				.insert("d_categorie", null, values);
+	}
+
+	@Deprecated
+	public void delete(Integer id) {
+
+		RepositoryHelper.getInstance(context).getWritableDatabase()
+				.delete("d_categorie_syndication", " cas_categorie_id = ? ",
+						new String[] { id.toString() });
+
+		RepositoryHelper.getInstance(context).getWritableDatabase()
+				.delete("d_categorie", " _id = ? ",
+						new String[] { id.toString() });
+
+	}*/
 }

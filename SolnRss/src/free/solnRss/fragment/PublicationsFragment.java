@@ -2,8 +2,6 @@ package free.solnRss.fragment;
 
 import android.app.ActionBar;
 import android.app.AlertDialog;
-import android.app.PendingIntent;
-import android.app.PendingIntent.CanceledException;
 import android.content.DialogInterface;
 import android.content.DialogInterface.OnClickListener;
 import android.content.Intent;
@@ -43,7 +41,6 @@ import free.solnRss.repository.PublicationContentRepository;
 import free.solnRss.repository.PublicationRepository;
 import free.solnRss.repository.PublicationTable;
 import free.solnRss.repository.SyndicationTable;
-import free.solnRss.service.CleanOlderDataService;
 import free.solnRss.singleton.TypeFaceSingleton;
 import free.solnRss.state.InstancePublicationListState;
 import free.solnRss.state.PublicationsListState;
@@ -108,8 +105,8 @@ public class PublicationsFragment extends AbstractFragment implements
 		
 		setHasOptionsMenu(true);
 	
-		//PublicationFinderBusinessImpl finder = new PublicationFinderBusinessImpl(getActivity());
-		//finder.searchNewPublications();
+		// PublicationFinderBusinessImpl finder = new PublicationFinderBusinessImpl(getActivity());
+		// finder.searchNewPublications();
 		
 		// NewPublicationsNotification notify = new NewPublicationsNotification(getActivity());
 		// DateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.FRENCH);
@@ -119,20 +116,7 @@ public class PublicationsFragment extends AbstractFragment implements
 		//notify.notificationForNewPublications(25, "2014-05-21 14:45:00");
 		
 		// addNumberOfLastFoundInMenu(25);	
-		
-		//ImageLoaderUtil imageLoaderUtil = new ImageLoaderUtil(getActivity());
-		//imageLoaderUtil.saveImages(description);
-		
 	}
-/*
-	String description = "<p>Si vous avez un PC Windows que vous utilisez pour tout faire, y compris écouter de la musique, voici une petite application qui va vous changer la vie. Il s'agit de <strong>Stream What You Hear</strong>, un freeware disponible ici et développé par le français Sébastien Warin, qui permet de streamer le son de son PC sur les appareils compatibles Upnp / Dlna.</p>\r\n" + 
-		"<p>Vous allez pouvoir balancer le son de Spotify, de vos playlists Youtube ou de votre Soundcloud sur les appareils XBMC, PS3, Xbox 360, Freebox, Bbox mais aussi toutes les TV et appareils connectés et supportant le DLNA et l'Upnp. Pratique non ?</p>\r\n" + 
-		"<p style=\"text-align: center;\"><a href=\"http://korben.info/wp-content/uploads/2014/08/swyh-1.21.png\"><img class=\"aligncenter size-full wp-image-54262\" src=\"http://korben.info/wp-content/uploads/2014/08/swyh-1.21.png\" alt=\"swyh 1.21 Un logiciel pour balancer le son de votre ordinateur sur vos appareils compatibles DLNA / UPNP\" width=\"391\" height=\"185\" title=\"Un logiciel pour balancer le son de votre ordinateur sur vos appareils compatibles DLNA / UPNP\" /></a></p>\r\n" + 
-		"<p style=\"text-align: left;\">En plus de ça, comme SWYH est capable de récupérer le flux audio sortant de votre ordinateur, vous pouvez même réaliser des enregistrements MP3 du son.</p>\r\n" + 
-		"<p style=\"text-align: left;\">Si ça vous branche, et que vous voulez faire péter les watts dans toute la baraque, <a href=\"http://www.streamwhatyouhear.com/download/\">c'est par ici que ça se passe</a>.</p>\r\n" + 
-		"<p>Mille mercis à Aurélien qui assure grave avec ce partage !</p>\r\n" + 
-		"<p>Cet article merveilleux et sans aucun égal intitulé : <a rel=\"nofollow\" href=\"http://korben.info/dlna-upnp-serveur-windows.html\">Un logiciel pour balancer le son de votre ordinateur sur vos appareils compatibles DLNA / UPNP</a> ; a été publié sur <a rel=\"nofollow\" href=\"http://korben.info\">Korben</a>, le seul site qui t'aime plus fort que tes parents.</p>\r\n" + 
-		"";*/
 
 	private void displayList(Bundle save) {
 		
@@ -922,24 +906,17 @@ public class PublicationsFragment extends AbstractFragment implements
 
 	@Override
 	public void removeTooOLdPublications() {
-
-		Intent intent = new Intent(getActivity(), CleanOlderDataService.class);
-		PendingIntent pendingIntent = 
-				PendingIntent.getService(getActivity(), 0, intent, PendingIntent.FLAG_ONE_SHOT);
-
 		try {
-			pendingIntent.send();
-		} catch (CanceledException ce) {
-			ce.printStackTrace();
-		}
-		
-		
-		/*try {
 			publicationRepository.removeTooOLdPublications();
 		} catch (Exception e) {
 			e.printStackTrace();
-		}*/
-		
+		}
+
+		/*
+		 * new Runnable() { public void run() { try {
+		 * publicationRepository.removeTooOLdPublications(); } catch (Exception
+		 * e) { e.printStackTrace(); } } };
+		 */
 	}
 
 	@Override

@@ -18,15 +18,16 @@ import android.database.Cursor;
 import android.net.Uri;
 import android.os.RemoteException;
 import android.preference.PreferenceManager;
+import android.text.TextUtils;
 import android.util.SparseArray;
 
+import com.google.code.rome.android.repackaged.com.sun.syndication.feed.synd.SyndContent;
 import com.google.code.rome.android.repackaged.com.sun.syndication.feed.synd.SyndEntry;
 
 import free.solnRss.business.PublicationFinderBusiness;
 import free.solnRss.business.SyndicationBusiness;
 import free.solnRss.exception.ExtractFeedException;
 import free.solnRss.manager.UpdatingProcessConnectionManager;
-import free.solnRss.model.Publication;
 import free.solnRss.notification.NewPublicationsNotification;
 import free.solnRss.provider.SolnRssProvider;
 import free.solnRss.repository.PublicationContentTable;
@@ -35,7 +36,6 @@ import free.solnRss.repository.RssRepository;
 import free.solnRss.repository.RssTable;
 import free.solnRss.repository.SyndicationRepository;
 import free.solnRss.repository.SyndicationTable;
-import free.solnRss.utility.ImageLoaderUtil;
 import free.solnRss.utility.StringUtil;
 
 public class PublicationFinderBusinessImpl implements PublicationFinderBusiness {
@@ -54,7 +54,8 @@ public class PublicationFinderBusinessImpl implements PublicationFinderBusiness 
 	
 	private Context context;
 	private Integer newPublicationsRecorded;
-	private ImageLoaderUtil imageLoader;
+	
+	//private ImageLoaderUtil imageLoader;
 	
 	NewPublicationsNotification newPublicationsNotification;
 	
@@ -68,7 +69,7 @@ public class PublicationFinderBusinessImpl implements PublicationFinderBusiness 
 		rssRepository = new RssRepository(context);
 		newPublicationsNotification = new NewPublicationsNotification(context);
 		sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
-		imageLoader = new ImageLoaderUtil(context);
+		//imageLoader = new ImageLoaderUtil(context);
 	}
 	
 	public void searchNewPublications() {
@@ -84,8 +85,8 @@ public class PublicationFinderBusinessImpl implements PublicationFinderBusiness 
 	
 	private void retrieveNewPublications() {
 		// For test
-		 //StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder()
-		 //.permitAll().build();StrictMode.setThreadPolicy(policy);
+		//StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder()
+		//.permitAll().build();StrictMode.setThreadPolicy(policy);
 
 		newPublicationsRecorded = 0;
 		
@@ -133,45 +134,25 @@ public class PublicationFinderBusinessImpl implements PublicationFinderBusiness 
 				.withYieldAllowed(true).build());
 	}
 	
-	private final Uri publicationUri        = Uri.parse(SolnRssProvider.URI + "/publication");
-	private final Uri publicationContentUri = Uri.parse(SolnRssProvider.URI + "/publicationContent");
-	// sprivate final Uri imageUri              = Uri.parse(SolnRssProvider.URI + "/publicationImage");
-	
 	private void addNewPublicationIfNotAlreadyRegistered(Integer syndicationId, String updateDateFormat) {
 		
 		for (SyndEntry syndEntry : syndEntries) {
-			Publication publication = new Publication(syndEntry);
-			publication.setImageLoader(imageLoader);
 			
-			if (!rssRepository.isAlreadyRetrieved(publication.getTitle(), publication.getLink())) {
+			if (!rssRepository.isAlreadyRetrieved(syndEntry.getTitle(),	syndEntry.getLink())) {
+				operations.add(ContentProviderOperation.newInsert(Uri.parse(SolnRssProvider.URI + "/publication"))
+						.withValues(addNewPublication(syndicationId, syndEntry, updateDateFormat))
+						.withYieldAllowed(true)	.build());
 				
-				operations.add(ContentProviderOperation.newInsert(publicationUri)
-						.withValues(addNewPublication(syndicationId, 
-								publication.getTitle(), 
-								updateDateFormat))
-						.withYieldAllowed(true).build());
-				
-				int operationInsertPublication = operations.size() - 1;
-								
-				// publication.loadImages();
-				
-				// Insert publicationContent table
-				operations.add(ContentProviderOperation.newInsert(publicationContentUri)
+				operations.add(ContentProviderOperation.newInsert(Uri.parse(SolnRssProvider.URI + "/publicationContent"))
 						.withValue("syndicationId",  syndicationId.toString())
-						.withValue(PublicationContentTable.COLUMN_LINK, publication.getLink())
-						.withValue(PublicationContentTable.COLUMN_PUBLICATION, publication.improveDescription())
-						.withValueBackReference(PublicationContentTable.COLUMN_PUBLICATION_ID, operationInsertPublication)
+						.withValue(PublicationContentTable.COLUMN_LINK, syndEntry.getLink())
+						
+						.withValue(PublicationContentTable.COLUMN_PUBLICATION,inmproveDescription(getDescription(syndEntry)))
+						// .withValue(PublicationContentTable.COLUMN_PUBLICATION,WebSiteUtil.htmlToReadableText(syndEntry.getLink()))
+						
+						.withValueBackReference(PublicationContentTable.COLUMN_PUBLICATION_ID, operations.size() - 1)
 						.withYieldAllowed(true).build());
 				
-				/*for (PublicationImage publicationImage : publication .getDescriptionImages()) {
-					operations.add(ContentProviderOperation.newInsert(imageUri)
-							.withValue(PublicationImageTable.COLUMN_NAME, publicationImage.getName())
-							.withValue(PublicationImageTable.COLUMN_URL, publicationImage.getUrl())
-							.withValue(PublicationImageTable.COLUMN_PATH, publicationImage.getPath())
-							.withValueBackReference(PublicationImageTable.COLUMN_PUBLICATION_ID, operationInsertPublication)
-							.withYieldAllowed(true).build());
-				}*/
-			
 				newPublicationsRecorded++;
 			}
 		}
@@ -217,16 +198,34 @@ public class PublicationFinderBusinessImpl implements PublicationFinderBusiness 
 			.withSelection(SyndicationTable.COLUMN_ID + " = ? " , new String[] { Integer.valueOf(syndicationId).toString() })
 			.withYieldAllowed(true).build());
 	}
-
-	private ContentValues addNewPublication(Integer syndicationId, String title, String date) {
+	
+	private ContentValues addNewPublication(Integer syndicationId, SyndEntry syndEntry, String date) {
 		
 		ContentValues values = new ContentValues();
 		values.put(PublicationTable.COLUMN_SYNDICATION_ID, syndicationId);
-		values.put(PublicationTable.COLUMN_TITLE, StringUtil.unescapeHTML(title));
+		values.put(PublicationTable.COLUMN_TITLE, StringUtil.unescapeHTML(syndEntry.getTitle()));
 		values.put(PublicationTable.COLUMN_ALREADY_READ, 0);
 		values.put(PublicationTable.COLUMN_PUBLICATION_DATE, date);
 
 		return values;
+	}
+	
+	private String getDescription(SyndEntry syndEntry) {
+		String description = null;
+
+		if (syndEntry.getDescription() != null) {
+			description = syndEntry.getDescription().getValue();
+		}
+
+		if (syndEntry.getContents() != null
+				&& syndEntry.getContents().size() > 0) {
+			description = ((SyndContent) syndEntry.getContents().get(0)).getValue();
+		}
+		
+		if (description == null) {
+			return new String();
+		}
+		return description;
 	}
 	
 	protected void retrieveSyndicationsToRefresh() {
@@ -255,16 +254,7 @@ public class PublicationFinderBusinessImpl implements PublicationFinderBusiness 
 		editor.commit();
 	}
 	
-	public boolean mustDisplayNotification() {
-		return sharedPreferences.getBoolean("pref_display_notify", true);
-	}
-
-	@Override
-	public int getNewPublicationsRecorded() {
-		return newPublicationsRecorded == null ? 0 : newPublicationsRecorded;
-	}
-	
-	/*private String inmproveDescription(String description) {
+	private String inmproveDescription(String description) {
 		String fixedDescription = description;
 		
 		if (!TextUtils.isEmpty(description)) {
@@ -273,8 +263,8 @@ public class PublicationFinderBusinessImpl implements PublicationFinderBusiness 
 		}
 		
 		// get image
-		imageLoader.setDescription(fixedDescription);
-		fixedDescription = imageLoader.writeImageToBase64();
+		//imageLoader.setDescription(fixedDescription);
+		//fixedDescription = imageLoader.saveImage();
 		
 		return fixedDescription;
 	}
@@ -282,47 +272,14 @@ public class PublicationFinderBusinessImpl implements PublicationFinderBusiness 
 	private String fixYouTubeLinkInIFrame(String description) {
 		return description.replaceAll("src=\"//www.youtube.com/embed",
 				"src=\"http://www.youtube.com/embed");
-	}*/
+	}
 	
-	/*private String getDescription(SyndEntry syndEntry) {
-	String description = null;
-
-	if (syndEntry.getDescription() != null) {
-		description = syndEntry.getDescription().getValue();
+	public boolean mustDisplayNotification() {
+		return sharedPreferences.getBoolean("pref_display_notify", true);
 	}
 
-	if (syndEntry.getContents() != null
-			&& syndEntry.getContents().size() > 0) {
-		description = ((SyndContent) syndEntry.getContents().get(0)).getValue();
+	@Override
+	public int getNewPublicationsRecorded() {
+		return newPublicationsRecorded == null ? 0 : newPublicationsRecorded;
 	}
-	
-	if (description == null) {
-		return new String();
-	}
-	return description;
-}*/
-	/*private void addNewPublicationIfNotAlreadyRegistered(Integer syndicationId, String updateDateFormat) {
-	
-	for (SyndEntry syndEntry : syndEntries) {
-		
-		if (!rssRepository.isAlreadyRetrieved(syndEntry.getTitle(),	syndEntry.getLink())) {
-			operations.add(ContentProviderOperation.newInsert(Uri.parse(SolnRssProvider.URI + "/publication"))
-					.withValues(addNewPublication(syndicationId, syndEntry.getTitle(), updateDateFormat))
-					.withYieldAllowed(true)	.build());
-			
-			operations.add(ContentProviderOperation.newInsert(Uri.parse(SolnRssProvider.URI + "/publicationContent"))
-					.withValue("syndicationId",  syndicationId.toString())
-					.withValue(PublicationContentTable.COLUMN_LINK, syndEntry.getLink())
-					
-					.withValue(PublicationContentTable.COLUMN_PUBLICATION,inmproveDescription(getDescription(syndEntry)))
-					// .withValue(PublicationContentTable.COLUMN_PUBLICATION,WebSiteUtil.htmlToReadableText(syndEntry.getLink()))
-					
-					.withValueBackReference(PublicationContentTable.COLUMN_PUBLICATION_ID, operations.size() - 1)
-					.withYieldAllowed(true).build());
-			
-			// TODO get image and record entry
-			newPublicationsRecorded++;
-		}
-	}
-}*/
 }

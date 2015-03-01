@@ -1,6 +1,5 @@
 package free.solnRss.repository;
 
-import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -200,6 +199,10 @@ public class PublicationRepository {
 				.getBoolean("pref_display_unread", true);
 	}
 	
+	
+	
+	
+	
 	/**
 	 * Clean the publications list in table for a syndication
 	 * @param id
@@ -372,20 +375,6 @@ public class PublicationRepository {
 				
 				syndicationId = cursor.getInt(0);
 				
-				// Delete publication images
-				/*selection.setLength(0);
-				selection.append(" _id in " + 
-						" (select p._id FROM d_publication p where  " + 
-						" p.syn_syndication_id = ? " + 
-						" and (p.pub_favorite is null or p.pub_favorite = 0) " + 
-						" order by p._id desc LIMIT -1 OFFSET " + max + " )");
-				
-				operations.add(ContentProviderOperation.newDelete(
-						Uri.parse(SolnRssProvider.URI + "/publicationImage"))
-						.withSelection(selection.toString(), new String[] {syndicationId.toString()})
-						.build());*/
-		
-				// Delete publication
 				selection.setLength(0);
 				selection.append(" _id in " + 
 						" (select p._id FROM d_publication p where  " + 
@@ -393,8 +382,9 @@ public class PublicationRepository {
 						" and (p.pub_favorite is null or p.pub_favorite = 0) " + 
 						" order by p._id desc LIMIT -1 OFFSET " + max + " )");
 	
-				operations.add(ContentProviderOperation.newDelete(uri).withSelection(selection.toString(), 
-						new String[] { syndicationId.toString() }).build());
+				operations.add(ContentProviderOperation.newDelete(uri)
+						.withSelection(selection.toString(), new String[] { syndicationId.toString() })
+						.build());
 				
 				// Delete publication content
 				publicationContentUri = PublicationContentRepository.uri.buildUpon()
@@ -415,52 +405,16 @@ public class PublicationRepository {
 		}
 		//--
 		context.getContentResolver().applyBatch(SolnRssProvider.AUTHORITY, operations);	
-		
-		// deleteOldImages();
 	}
 	
-	private List<String> findAllImagesName() {
-		
-		final Uri imageUri              = Uri.parse(SolnRssProvider.URI + "/publicationImage");
-		final String[] selection = new String[] { PublicationImageTable.COLUMN_NAME };
-		Cursor cursor = context.getContentResolver().query(imageUri, selection, null, null, null);
-
-		List<String> filesNameInDatabase = new ArrayList<String>();
-		
-		if (cursor.getCount() > 0) {
-			cursor.moveToFirst();
-			do {
-				filesNameInDatabase.add(cursor.getString(cursor.getColumnIndex(PublicationImageTable.COLUMN_NAME)));
-			} while (cursor.moveToNext());
-		}
-		return filesNameInDatabase;
-	}
-
-	protected void deleteOldImages() {
-		
-		File directory = context.getExternalCacheDir();
-		File[] files = directory.listFiles();
-		List<String> filesNameInCache = new ArrayList<String>();
-		for (File f : files) {
-			filesNameInCache.add(f.getName());
-		}
-
-		List<String> filesNameInDatabase = findAllImagesName();
-		filesNameInCache.removeAll(filesNameInDatabase);
-
-		File file;
-		for (String fileName : filesNameInCache) {
-			file = new File(context.getExternalCacheDir() + fileName);
-			file.delete();
-		}
-
-	}
+	
 	
 	private int maxPublicationToKeep() {
 		
 		SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
 		String preference = sharedPreferences.getString("pref_maxPublicationsBySyndicationToKeep", "100");
 		int max = Integer.valueOf(preference);
+		//Toast.makeText(context, "Max delete required " + max , Toast.LENGTH_LONG).show();
 		return max;
 	}
 

@@ -10,7 +10,6 @@ import free.solnRss.repository.CategoryRepository;
 import free.solnRss.repository.CategoryTable;
 import free.solnRss.repository.PublicationContentRepository;
 import free.solnRss.repository.PublicationContentTable;
-import free.solnRss.repository.PublicationImageTable;
 import free.solnRss.repository.PublicationRepository;
 import free.solnRss.repository.PublicationTable;
 import free.solnRss.repository.RepositoryHelper;
@@ -28,8 +27,7 @@ public class SolnRssProvider extends ContentProvider {
 	private UriMatcher uriMatcher;
 	private final int PUBLICATION = 10, CATEGORY = 20, SYNDICATION = 30,
 			SYNDICATIONS_BY_CATEGORY = 40, RSS = 50, CATEGORY_NAME = 60,
-			PUBLICATION_CONTENT = 70, PUBLICATION_CONTENT_DB = 80,
-			PUBLICATION_IMAGE= 90;
+			PUBLICATION_CONTENT = 70, PUBLICATION_CONTENT_DB = 80;
 
 	@Override
 	public boolean onCreate() {
@@ -42,7 +40,6 @@ public class SolnRssProvider extends ContentProvider {
 		uriMatcher.addURI(AUTHORITY, PATH + "/category_name", CATEGORY_NAME);
 		uriMatcher.addURI(AUTHORITY, PATH + "/publicationContent", PUBLICATION_CONTENT);
 		uriMatcher.addURI(AUTHORITY, PATH + "/publicationContentUpdateDB", PUBLICATION_CONTENT_DB);
-		uriMatcher.addURI(AUTHORITY, PATH + "/publicationImage", PUBLICATION_IMAGE);
 		return true;
 	}
 
@@ -55,6 +52,7 @@ public class SolnRssProvider extends ContentProvider {
 		
 		switch (uriMatcher.match(uri)) {
 		case PUBLICATION:
+			
 			cursor = db.query(PublicationRepository.publicationTableJoinToSyndication, projection,
 					selection, selectionArgs, null, null, PublicationRepository.orderBy(getContext()), null);
 			break;
@@ -89,11 +87,6 @@ public class SolnRssProvider extends ContentProvider {
 			cursor = db.query(PublicationContentTable.PUBLICATION_CONTENT_TABLE
 					+ "_" + tableKey, projection, selection, selectionArgs,
 					null, null, null);
-			break;
-			
-		case PUBLICATION_IMAGE:
-			cursor = db.query(PublicationImageTable.PUBLICATION_IMAGE_TABLE,
-					projection, selection, selectionArgs, null, null, null);
 			break;
 
 		default:
@@ -178,10 +171,6 @@ public class SolnRssProvider extends ContentProvider {
 			db.execSQL(PublicationContentRepository.newPublicationTableSqlReq(values.getAsString("syn_syndication_id")));
 			break;
 			
-		case PUBLICATION_IMAGE:
-			db.insert(PublicationImageTable.PUBLICATION_IMAGE_TABLE, null, values);
-			break;
-			
 		default:
 			throw new IllegalArgumentException("Unknown URI: " + uri);
 		}
@@ -206,8 +195,8 @@ public class SolnRssProvider extends ContentProvider {
 			break;
 
 		case CATEGORY:
-			rowsDeleted = db.delete(CategoryTable.CATEGORY_TABLE, 
-					selection, selectionArgs);
+			rowsDeleted = db.delete(CategoryTable.CATEGORY_TABLE, selection,
+					selectionArgs);
 			break;
 
 		case SYNDICATION:
@@ -228,13 +217,6 @@ public class SolnRssProvider extends ContentProvider {
 			
 		case PUBLICATION_CONTENT_DB:
 			db.execSQL(PublicationContentRepository.dropPublicationTableSqlReq(null));
-			break;
-			
-		case PUBLICATION_IMAGE:
-			//int rows = 
-			db.delete(PublicationImageTable.PUBLICATION_IMAGE_TABLE, 
-					selection, selectionArgs);
-			// Log.e(SolnRssProvider.class.getName(), " Images deleted in db -> " + rows);
 			break;
 			
 		default:

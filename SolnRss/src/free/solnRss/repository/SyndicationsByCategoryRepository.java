@@ -1,5 +1,6 @@
 package free.solnRss.repository;
 
+
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -13,81 +14,72 @@ import android.net.Uri;
 import android.text.TextUtils;
 import free.solnRss.provider.SolnRssProvider;
 
+
 public class SyndicationsByCategoryRepository {
 
-	final DateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss",	Locale.FRENCH);
-	private Context context;
+	final DateFormat		sdf			= new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.FRENCH);
+	private Context			context;
 
-	private StringBuilder selection = new StringBuilder();
-	private List<String> args = new ArrayList<String>();
-	
-	public SyndicationsByCategoryRepository(Context context) {
+	private StringBuilder	selection	= new StringBuilder();
+	private List<String>	args		= new ArrayList<String>();
+
+	public SyndicationsByCategoryRepository(final Context context) {
 		this.context = context;
 	}
 
-	public static final String syndicationTable = SyndicationTable.SYNDICATION_TABLE;
-	public static final String categorySyndicationTable = CategorySyndicationsTable.CATEGORY_SYNDICATION_TABLE;
-	
-	public static final String syndicationsByCategoryTable = syndicationTable
-			+ " left join " + categorySyndicationTable + " on "
+	public static final String	syndicationTable					= SyndicationTable.SYNDICATION_TABLE;
+	public static final String	categorySyndicationTable			= CategorySyndicationsTable.CATEGORY_SYNDICATION_TABLE;
+
+	public static final String	syndicationsByCategoryTable			= syndicationTable + " left join " + categorySyndicationTable + " on "
 			+ syndicationTable + "." + SyndicationTable.COLUMN_ID + "="
 			+ categorySyndicationTable + "."
 			+ CategorySyndicationsTable.COLUMN_SYNDICATION_ID + " and "
 			+ CategorySyndicationsTable.COLUMN_CATEGORY_ID + "=";
-	
-	public final static String syndicationByCategoryProjection[] = new String[] {
-		syndicationTable + "." + SyndicationTable.COLUMN_ID,
+
+	public final static String	syndicationByCategoryProjection[]	= new String[] { syndicationTable + "." + SyndicationTable.COLUMN_ID,
 		syndicationTable + "." + SyndicationTable.COLUMN_NAME,
-		CategorySyndicationsTable.CATEGORY_SYNDICATION_TABLE + "."
-				+ CategorySyndicationsTable.COLUMN_CATEGORY_ID };
-	
-	public CursorLoader loadSyndicationsByCategory(Integer selectedCategorieID,
-			String filterText) {
+		CategorySyndicationsTable.CATEGORY_SYNDICATION_TABLE + "." + CategorySyndicationsTable.COLUMN_CATEGORY_ID };
+
+	public CursorLoader loadSyndicationsByCategory(final Integer selectedCategorieID, final String filterText) {
 		selection.setLength(0);
 		args.clear();
 
-		Uri uri = Uri.parse(SolnRssProvider.URI + "/syndicationsByCategory/"
-				+ selectedCategorieID);
-		
+		final Uri uri = Uri.parse(SolnRssProvider.URI + "/syndicationsByCategory/" + selectedCategorieID);
+
 		if (!TextUtils.isEmpty(filterText)) {
 			selection.append(SyndicationTable.COLUMN_NAME);
 			selection.append(" like ? ");
 			args.add("%" + filterText + "%");
 		}
-		
-		return new CursorLoader(context, uri, syndicationByCategoryProjection,
-				selection.toString(), args.toArray(new String[args.size()]),
+
+		return new CursorLoader(context, uri, syndicationByCategoryProjection, selection.toString(), args.toArray(new String[args.size()]), null);
+	}
+
+	public Cursor reloadSyndicationsByCategory(final Integer selectedCategorieID, final String filterText) {
+
+		selection.setLength(0);
+		args.clear();
+
+		final Uri uri = Uri.parse(SolnRssProvider.URI + "/syndicationsByCategory/" + selectedCategorieID);
+
+		if (!TextUtils.isEmpty(filterText)) {
+			selection.append(SyndicationTable.COLUMN_NAME);
+			selection.append(" like ? ");
+			args.add("%" + filterText + "%");
+		}
+
+		return context.getContentResolver().query(uri, syndicationByCategoryProjection, selection.toString(), args.toArray(new String[args.size()]),
 				null);
-	}
-	
-	public Cursor reloadSyndicationsByCategory(Integer selectedCategorieID,
-			String filterText) {
-		
-		selection.setLength(0);
-		args.clear();
-
-		Uri uri = Uri.parse(SolnRssProvider.URI + "/syndicationsByCategory/"
-				+ selectedCategorieID);
-		
-		if (!TextUtils.isEmpty(filterText)) {
-			selection.append(SyndicationTable.COLUMN_NAME);
-			selection.append(" like ? ");
-			args.add("%" + filterText + "%");
-		}
-
-		return context.getContentResolver().query(uri,
-				syndicationByCategoryProjection, selection.toString(),
-				args.toArray(new String[args.size()]), null);
 
 	}
-	
+
 	@Deprecated
-	public Cursor syndicationCategorie(Integer categorieId) {
+	public Cursor syndicationCategorie(final Integer categorieId) {
 
-		List<String> arr = new ArrayList<String>();
+		final List<String> arr = new ArrayList<String>();
 
-		StringBuilder sb = new StringBuilder();
-		
+		final StringBuilder sb = new StringBuilder();
+
 		sb.append("select ");
 		sb.append("s._id, s.syn_name, ");
 		sb.append("cs.cas_categorie_id ");
@@ -95,8 +87,7 @@ public class SyndicationsByCategoryRepository {
 		sb.append("and cs.cas_categorie_id = ? order by s.syn_number_click desc ");
 
 		arr.add(categorieId.toString());
-		
-		return RepositoryHelper.getInstance(context).getReadableDatabase().rawQuery(sb.toString(),
-				arr.toArray(new String[arr.size()]));
+
+		return RepositoryHelper.getInstance(context).getReadableDatabase().rawQuery(sb.toString(), arr.toArray(new String[arr.size()]));
 	}
 }

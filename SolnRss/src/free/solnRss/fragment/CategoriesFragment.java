@@ -1,5 +1,6 @@
 package free.solnRss.fragment;
 
+
 import java.util.Arrays;
 import java.util.List;
 
@@ -24,166 +25,146 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.EditText;
 import android.widget.ListView;
-import de.greenrobot.event.EventBus;
 import free.solnRss.R;
 import free.solnRss.activity.SolnRss;
 import free.solnRss.activity.SyndicationsCategoriesActivity;
 import free.solnRss.adapter.CategoryAdapter;
 import free.solnRss.dialog.OneEditTextDialogBox;
-import free.solnRss.event.ChangePublicationListStateEvent;
 import free.solnRss.fragment.listener.CategoriesFragmentListener;
 import free.solnRss.repository.CategoryRepository;
-import free.solnRss.state.PublicationsByCategoryListState;
 
-public class CategoriesFragment extends AbstractFragment implements	CategoriesFragmentListener,
-		SharedPreferences.OnSharedPreferenceChangeListener {
-	
-	private Integer selectedCategoryID;
-	private String selectedCategoryName;
-	private CategoryRepository categoryRepository;
-	
+
+public class CategoriesFragment extends AbstractFragment implements CategoriesFragmentListener, SharedPreferences.OnSharedPreferenceChangeListener {
+
+	private Integer				selectedCategoryID;
+	private String				selectedCategoryName;
+	private CategoryRepository	categoryRepository;
+
 	@Override
-	public View onCreateView(LayoutInflater inflater, ViewGroup vg,
-			Bundle savedInstanceState) {
+	public View onCreateView(final LayoutInflater inflater, final ViewGroup vg, final Bundle savedInstanceState) {
 		selectedCategoryID = null;
 		selectedCategoryName = null;
-		View fragment = inflater.inflate(R.layout.fragment_categories, vg, false);
-		
-		emptyLayoutId = R.id.emptycategoriesLayout;	
-		
+		final View fragment = inflater.inflate(R.layout.fragment_categories, vg, false);
+
+		emptyLayoutId = R.id.emptycategoriesLayout;
+
 		listContainer = fragment.findViewById(R.id.categoriesListContainer);
 		progressContainer = fragment.findViewById(R.id.categoriesProgressContainer);
 		listShown = true;
-		
-		SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(getActivity());
+
+		final SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(getActivity());
 		sharedPreferences.registerOnSharedPreferenceChangeListener(this);
 		return fragment;
 	}
-	
+
 	@Override
-	public void onActivityCreated(Bundle savedInstanceState) {
+	public void onActivityCreated(final Bundle savedInstanceState) {
 		super.onActivityCreated(savedInstanceState);
 		categoryRepository = new CategoryRepository(getActivity());
 		registerForContextMenu(getListView());
-		((SolnRss)getActivity()).setCategoriesFragmentListener(this);
+		((SolnRss) getActivity()).setCategoriesFragmentListener(this);
 
 		setHasOptionsMenu(true);
 		setListShown(false);
 	}
 
 	@Override
-	public void onViewCreated(View view, Bundle savedInstanceState) {
+	public void onViewCreated(final View view, final Bundle savedInstanceState) {
 		super.onViewCreated(view, savedInstanceState);
 	}
-	
+
 	@Override
-	public void onCreateContextMenu(ContextMenu menu, View v,	ContextMenuInfo menuInfo) {
+	public void onCreateContextMenu(final ContextMenu menu, final View v, final ContextMenuInfo menuInfo) {
 		super.onCreateContextMenu(menu, v, menuInfo);
-		
-		AdapterView.AdapterContextMenuInfo info = (AdapterView.AdapterContextMenuInfo) menuInfo;
-		Cursor c = ((CategoryAdapter) getListAdapter()).getCursor();
+
+		final AdapterView.AdapterContextMenuInfo info = (AdapterView.AdapterContextMenuInfo) menuInfo;
+		final Cursor c = ((CategoryAdapter) getListAdapter()).getCursor();
 		c.moveToPosition(info.position);
-		
+
 		selectedCategoryID = c.getInt(c.getColumnIndex("_id"));
 		selectedCategoryName = c.getString(c.getColumnIndex("cat_name"));
 		menu.setHeaderTitle(selectedCategoryName);
-		
-		MenuInflater inflater = getActivity().getMenuInflater();
+
+		final MenuInflater inflater = getActivity().getMenuInflater();
 		inflater.inflate(R.menu.categories_context, menu);
 	}
-	
+
 	@Override
 	protected void initAdapter() {
 		final String[] from = { "cat_name" };
 		final int[] to = { android.R.id.text1 };
-		simpleCursorAdapter = new CategoryAdapter(getActivity(),
-				R.layout.categories, null, from, to, 0);
-		
+		simpleCursorAdapter = new CategoryAdapter(getActivity(), R.layout.categories, null, from, to, 0);
+
 		setListAdapter(simpleCursorAdapter);
 	}
 
-	
 	@Override
-	public Loader<Cursor> onCreateLoader(int id, Bundle bundle) {		
+	public Loader<Cursor> onCreateLoader(final int id, final Bundle bundle) {
 		return categoryRepository.loadCategories(getFilterText());
 	}
-	
+
 	@Override
 	protected void queryTheTextChange() {
 		getLoaderManager().restartLoader(0, null, this);
 	}
-	
+
 	@Override
-	public boolean onContextItemSelected(MenuItem item) {
+	public boolean onContextItemSelected(final MenuItem item) {
 		switch (item.getItemId()) {
 
-		case R.id.menu_mark_category_read:
-			markCategoryPublicationsAsRead();
-			break;
+			case R.id.menu_mark_category_read:
+				markCategoryPublicationsAsRead();
+				break;
 
-		case R.id.menu_add_to_categorie:
-			startActivityForAddSyndication();
-			break;
-			
-		case R.id.menu_delete_categorie:
-			deleteCategorie(getActivity(), selectedCategoryID);
-			break;
+			case R.id.menu_add_to_categorie:
+				startActivityForAddSyndication();
+				break;
 
-		case R.id.menu_rename_category:
-			rename();
-			break;
-			
-		default:
-			break;
+			case R.id.menu_delete_categorie:
+				deleteCategorie(getActivity(), selectedCategoryID);
+				break;
+
+			case R.id.menu_rename_category:
+				rename();
+				break;
+
+			default:
+				break;
 		}
 		return super.onContextItemSelected(item);
 	}
-	
+
 	private void markCategoryPublicationsAsRead() {
-		
-		OnClickListener listener = new DialogInterface.OnClickListener() {
+
+		final OnClickListener listener = new DialogInterface.OnClickListener() {
 			@Override
-			public void onClick(DialogInterface dialog, int which) {
-				((SolnRss)getActivity()).getPublicationsFragmentListener().markCategoryPublicationsAsRead(selectedCategoryID);
+			public void onClick(final DialogInterface dialog, final int which) {
+				((SolnRss) getActivity()).getPublicationsFragmentListener().markCategoryPublicationsAsRead(selectedCategoryID);
 			}
 		};
-		
-		Resources r = getResources();
-		AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+
+		final Resources r = getResources();
+		final AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
 		builder.setMessage(r.getString(R.string.confirm_mark_as_read, categoryName(selectedCategoryID)))
-			.setNegativeButton(r.getString(android.R.string.cancel), null)
-			.setPositiveButton(r.getString(android.R.string.ok), listener)
-			.create().show();
+				.setNegativeButton(r.getString(android.R.string.cancel), null).setPositiveButton(r.getString(android.R.string.ok), listener).create()
+				.show();
 	}
-	
+
 	@Override
-	public void onListItemClick(ListView l, View v, int position, long id) {
-		
-		Cursor cursor = ((CategoryAdapter) l.getAdapter()).getCursor();
+	public void onListItemClick(final ListView l, final View v, final int position, final long id) {
+
+		final Cursor cursor = ((CategoryAdapter) l.getAdapter()).getCursor();
 		selectedCategoryID = cursor.getInt(cursor.getColumnIndex("_id"));
-		
-		changePublicationListState(selectedCategoryID);
-		
 		((SolnRss) getActivity()).reLoadPublicationsByCategorie(selectedCategoryID);
 	}
-	
-	private void changePublicationListState(int categoryId) {
-		ChangePublicationListStateEvent event = new ChangePublicationListStateEvent();
-		PublicationsByCategoryListState state = new PublicationsByCategoryListState();
-		state.init(getActivity());
-		state.setCategoryId(categoryId);
-		state.resetPositionOnList();
-		event.setState(state);
-		EventBus.getDefault().postSticky(event);
-	}
-	
+
 	public void startActivityForAddSyndication() {
-		Intent i = new Intent(getActivity(), SyndicationsCategoriesActivity.class);
+		final Intent i = new Intent(getActivity(), SyndicationsCategoriesActivity.class);
 		i.putExtra("selectedCategorieID", selectedCategoryID);
 		i.putExtra("selectedCategoryName", selectedCategoryName);
 		startActivityForResult(i, 0);
 	}
-	
+
 	@Override
 	public void loadCategories() {
 		if (getListAdapter() == null && isAdded()) {
@@ -192,7 +173,7 @@ public class CategoriesFragment extends AbstractFragment implements	CategoriesFr
 	}
 
 	@Override
-	public void onActivityResult(int requestCode, int resultCode, Intent data) {
+	public void onActivityResult(final int requestCode, final int resultCode, final Intent data) {
 		if (isAdded()) {
 			getLoaderManager().restartLoader(0, null, this);
 		}
@@ -204,64 +185,61 @@ public class CategoriesFragment extends AbstractFragment implements	CategoriesFr
 			getLoaderManager().restartLoader(0, null, this);
 		}
 	}
-	
-	public void addCategory(Context context, String newCatgorieName) {
+
+	@Override
+	public void addCategory(final Context context, final String newCatgorieName) {
 		categoryRepository.addCategory(newCatgorieName);
 	}
 
 	private void rename() {
 		OneEditTextDialogBox oneEditTextDialogBox;
-		oneEditTextDialogBox = new OneEditTextDialogBox(getActivity(), 
-				categoryName(selectedCategoryID) ,
-				getResources().getString(R.string.input_new_name),  
-				new DialogInterface.OnClickListener() {
+		oneEditTextDialogBox = new OneEditTextDialogBox(getActivity(), categoryName(selectedCategoryID), getResources().getString(
+				R.string.input_new_name), new DialogInterface.OnClickListener() {
 			@Override
-			public void onClick(DialogInterface dialog, int which) {
-				EditText e = (EditText)((AlertDialog)dialog).findViewById(R.id.one_edit_text_dialog);
+			public void onClick(final DialogInterface dialog, final int which) {
+				final EditText e = (EditText) ((AlertDialog) dialog).findViewById(R.id.one_edit_text_dialog);
 				renameCategory(e.getText().toString());
 			}
 		});
 		oneEditTextDialogBox.displayDialogBox();
 	}
-	
-	private void renameCategory(String newName){
+
+	private void renameCategory(final String newName) {
 		categoryRepository.renameCategory(selectedCategoryID, newName);
 		((SolnRss) getActivity()).refreshPublications();
 	}
-	
-	public void deleteCategorie(Context context, final Integer deletedCategoryId) {
-		
-		OnClickListener listener = new DialogInterface.OnClickListener() {
+
+	public void deleteCategorie(final Context context, final Integer deletedCategoryId) {
+
+		final OnClickListener listener = new DialogInterface.OnClickListener() {
 			@Override
-			public void onClick(DialogInterface dialog, int which) {
-				
+			public void onClick(final DialogInterface dialog, final int which) {
+
 				categoryRepository.deleteCategory(deletedCategoryId);
-				
+
 				//getLoaderManager().restartLoader(0, null, this);
 				reLoadCategoriesAfterSyndicationDeleted();
 				// Must warn publications time line to reload all publications if this deleted category
-				((SolnRss)getActivity()).reLoadPublicationsAfterCatgoryDeleted(deletedCategoryId);
+				((SolnRss) getActivity()).reLoadPublicationsAfterCatgoryDeleted(deletedCategoryId);
 			}
 		};
-		
-		Resources r = getResources();
-		AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+
+		final Resources r = getResources();
+		final AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
 		builder.setMessage(r.getString(R.string.confirm_delete, categoryName(deletedCategoryId)))
-				.setNegativeButton(r.getString(android.R.string.cancel), null)
-				.setPositiveButton(r.getString(android.R.string.ok), listener)
-				.create().show();
-		
-		
+				.setNegativeButton(r.getString(android.R.string.cancel), null).setPositiveButton(r.getString(android.R.string.ok), listener).create()
+				.show();
+
 	}
 
 	@Override
 	public void reLoadCategoriesAfterSyndicationDeleted() {
 		getLoaderManager().restartLoader(0, null, this);
 	}
-	
+
 	@Override
 	protected void setListPositionOnScreen() {
-		
+
 	}
 
 	@Override
@@ -269,18 +247,13 @@ public class CategoriesFragment extends AbstractFragment implements	CategoriesFr
 		getListView().setSelection(0);
 	}
 
-	final List<String> preferenceKeys = Arrays.asList(new String[] {
-			"pref_sort_categories",
-			"pref_user_font_face",
-			"pref_user_font_size" 
-		});
-	
+	final List<String>	preferenceKeys	= Arrays.asList(new String[] { "pref_sort_categories", "pref_user_font_face", "pref_user_font_size" });
+
 	@Override
-	public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
+	public void onSharedPreferenceChanged(final SharedPreferences sharedPreferences, final String key) {
 		if (preferenceKeys.contains(key)) {
 			reloadCategories();
 		}
 	}
-	
-}
 
+}

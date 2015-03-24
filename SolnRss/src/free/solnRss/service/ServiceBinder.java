@@ -1,20 +1,22 @@
 package free.solnRss.service;
 
+
 import android.os.Binder;
+
 
 /**
  * For bind service with an activity
- * 
+ *
  * @author jftomasi
  *
  * @param <S>
  */
 public class ServiceBinder<S> extends Binder {
 
-	protected String TAG = "LocalBinder";
-	private S service;
+	protected String	TAG	= "LocalBinder";
+	private S			service;
 
-	public void localBinder(S service) {
+	public void localBinder(final S service) {
 		this.service = service;
 	}
 

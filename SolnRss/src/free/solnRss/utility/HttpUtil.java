@@ -1,5 +1,6 @@
 package free.solnRss.utility;
 
+
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -20,15 +21,14 @@ import org.apache.http.util.EntityUtils;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 
+
 public class HttpUtil {
-	
 
 	public enum HTTP_FAILURE {
-		
+
 	}
 
-	public static String retrieveHtml(String url)
-			throws ClientProtocolException, IOException {
+	public static String retrieveHtml(String url) throws ClientProtocolException, IOException {
 
 		final HttpParams httpParams = new BasicHttpParams();
 		HttpConnectionParams.setConnectionTimeout(httpParams, 6000);
@@ -71,9 +71,9 @@ public class HttpUtil {
 		}
 		return true;
 	}
-	
+
 	public static Bitmap downloadBitmap(String url) throws IOException {
-		
+
 		HttpUriRequest request = new HttpGet(url.toString());
 		HttpClient httpClient = new DefaultHttpClient();
 		HttpResponse response = httpClient.execute(request);
@@ -84,11 +84,10 @@ public class HttpUtil {
 			HttpEntity entity = response.getEntity();
 			byte[] bytes = EntityUtils.toByteArray(entity);
 
-			Bitmap bitmap = BitmapFactory.decodeByteArray(bytes, 0,	bytes.length);
+			Bitmap bitmap = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
 			return bitmap;
 		} else {
-			throw new IOException("Download failed, HTTP response code "
-					+ statusCode + " - " + statusLine.getReasonPhrase());
+			throw new IOException("Download failed, HTTP response code " + statusCode + " - " + statusLine.getReasonPhrase());
 		}
 	}
 
@@ -98,7 +97,7 @@ public class HttpUtil {
 		try {
 			// Get the image url
 			String url = "";
-			
+
 			// Download the remote file
 			Bitmap bitmap = downloadBitmap(url);
 
@@ -110,57 +109,26 @@ public class HttpUtil {
 					+ "(.*?)" // match any character in a non-greedy fashion
 					+ "\\1"; // closes with the quote that is in group 1
 
-			imageTagWithBinary = imageTag.replaceAll(regex,
-					"src=\"data:image/gif;base64," + raw + "\"");
+			imageTagWithBinary = imageTag.replaceAll(regex, "src=\"data:image/gif;base64," + raw + "\"");
 
 		} catch (Exception e) {
 			return imageTag;
 		}
 		return imageTagWithBinary;
 	}
-	
-	protected static String getImageUrl(String webSiteUrl, String imageTag){
+
+	protected static String getImageUrl(String webSiteUrl, String imageTag) {
 		return null;
 	}
-	
-	
-	/*final HttpParams httpParams = new BasicHttpParams();
-	HttpConnectionParams.setConnectionTimeout(httpParams, 6000);
-	HttpConnectionParams.setSoTimeout(httpParams, 6000);
-	HttpClient httpclient = new DefaultHttpClient(httpParams);
 
-	HttpGet httpget = null;
-	String response = null;
-
-	try {
-
-		httpget = new HttpGet(url.trim());
-		
-		// Create a custom response handler
-		ResponseHandler<String> responseHandler = new ResponseHandler<String>() {
-
-			public String handleResponse(final HttpResponse response)
-					throws ClientProtocolException, IOException {
-
-				int status = response.getStatusLine().getStatusCode();
-
-				if (status >= 200 && status < 300) {
-					HttpEntity entity = response.getEntity();
-					return entity != null ? StreamUtil.readInputStreamAsString(entity.getContent()) : null;
-				} else {
-					throw new ClientProtocolException("Unexpected response from site: " + status);
-				}
-			}
-		};
-
-		response = httpclient.execute(httpget, responseHandler);
-
-	} finally {
-		
-		if (httpget != null) {
-			httpget.abort();
-		}
-		httpclient.getConnectionManager().shutdown();
-	}
-	return response;*/
+	/*
+	 * final HttpParams httpParams = new BasicHttpParams(); HttpConnectionParams.setConnectionTimeout(httpParams, 6000);
+	 * HttpConnectionParams.setSoTimeout(httpParams, 6000); HttpClient httpclient = new DefaultHttpClient(httpParams); HttpGet httpget = null; String
+	 * response = null; try { httpget = new HttpGet(url.trim()); // Create a custom response handler ResponseHandler<String> responseHandler = new
+	 * ResponseHandler<String>() { public String handleResponse(final HttpResponse response) throws ClientProtocolException, IOException { int status
+	 * = response.getStatusLine().getStatusCode(); if (status >= 200 && status < 300) { HttpEntity entity = response.getEntity(); return entity !=
+	 * null ? StreamUtil.readInputStreamAsString(entity.getContent()) : null; } else { throw new
+	 * ClientProtocolException("Unexpected response from site: " + status); } } }; response = httpclient.execute(httpget, responseHandler); } finally
+	 * { if (httpget != null) { httpget.abort(); } httpclient.getConnectionManager().shutdown(); } return response;
+	 */
 }

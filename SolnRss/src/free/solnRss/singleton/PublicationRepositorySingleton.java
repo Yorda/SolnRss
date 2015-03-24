@@ -1,18 +1,20 @@
 package free.solnRss.singleton;
 
-import free.solnRss.repository.PublicationRepository;
+
 import android.content.Context;
+import free.solnRss.repository.PublicationRepository;
+
 
 public class PublicationRepositorySingleton {
 
-	private static PublicationRepositorySingleton instance;
-	protected PublicationRepository repository;
+	private static PublicationRepositorySingleton	instance;
+	protected PublicationRepository					repository;
 
-	public PublicationRepositorySingleton(Context context) {
+	public PublicationRepositorySingleton(final Context context) {
 		repository = new PublicationRepository(context);
 	}
 
-	public static PublicationRepositorySingleton getInstance(Context context) {
+	public static PublicationRepositorySingleton getInstance(final Context context) {
 		if (instance == null) {
 			instance = new PublicationRepositorySingleton(context);
 		}

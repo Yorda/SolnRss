@@ -1,5 +1,6 @@
 package free.solnRss.adapter;
 
+
 import android.content.Context;
 import android.database.Cursor;
 import android.graphics.Typeface;
@@ -12,20 +13,20 @@ import free.solnRss.R;
 import free.solnRss.singleton.TypeFaceSingleton;
 import free.solnRss.utility.Constants;
 
+
 /**
- * 
+ *
  * @author jftomasi
- * 
+ *
  */
 public class SyndicationAdapter extends SimpleCursorAdapter {
 
-	private final int titleID = R.id.syndication_title;
-	private final int numberOfClickID = R.id.syndication_number_of_click;
-	private Context context;
-	private int layout;
+	private final int	titleID			= R.id.syndication_title;
+	private final int	numberOfClickID	= R.id.syndication_number_of_click;
+	private Context		context;
+	private int			layout;
 
-	public SyndicationAdapter(Context context, int layout, Cursor c,
-			String[] from, int[] to, int flags) {
+	public SyndicationAdapter(final Context context, final int layout, final Cursor c, final String[] from, final int[] to, final int flags) {
 
 		super(context, layout, c, from, to, flags);
 		this.context = context;
@@ -33,7 +34,7 @@ public class SyndicationAdapter extends SimpleCursorAdapter {
 	}
 
 	@Override
-	public View getView(int position, View convertView, ViewGroup parent) {
+	public View getView(final int position, View convertView, final ViewGroup parent) {
 
 		SyndicationItem item = null;
 		getCursor().moveToPosition(position);
@@ -52,78 +53,60 @@ public class SyndicationAdapter extends SimpleCursorAdapter {
 			item = (SyndicationItem) convertView.getTag();
 		}
 
-		item.getTitle().setText(
-				Html.fromHtml("<u>" + getCursor().getString(1) + "</u>"));
+		item.getTitle().setText(Html.fromHtml("<u>" + getCursor().getString(1) + "</u>"));
 
 		if (getCursor().getInt(3) != 0) {
-			convertView.findViewById(R.id.syndication_activity)
-				.setVisibility(View.VISIBLE);
+			convertView.findViewById(R.id.syndication_activity).setVisibility(View.VISIBLE);
 		} else {
-			convertView.findViewById(R.id.syndication_activity)
-				.setVisibility(View.GONE);
+			convertView.findViewById(R.id.syndication_activity).setVisibility(View.GONE);
 		}
 
-		int quantity = getCursor().getInt(4);
-		item.getNumberOfClick().setText(
-				context.getResources().getQuantityString(
-						R.plurals.syndication_number_of_click, quantity, quantity));
+		final int quantity = getCursor().getInt(4);
+		item.getNumberOfClick().setText(context.getResources().getQuantityString(R.plurals.syndication_number_of_click, quantity, quantity));
 
 		if (getCursor().getInt(5) != 0) {
-			convertView.findViewById(R.id.syndication_display_mode)
-					.setVisibility(View.GONE);
+			convertView.findViewById(R.id.syndication_display_mode).setVisibility(View.GONE);
 		} else {
-			convertView.findViewById(R.id.syndication_display_mode)
-					.setVisibility(View.VISIBLE);
+			convertView.findViewById(R.id.syndication_display_mode).setVisibility(View.VISIBLE);
 		}
 
-		/*if (getCursor().getInt(6) != 0) { // Last search result
-			convertView.findViewById(R.id.syndication_last_search_result)
-					.setVisibility(View.VISIBLE);
-		} else {
-			convertView.findViewById(R.id.syndication_last_search_result)
-					.setVisibility(View.GONE);
-		}*/
 		// Improve this
-		convertView.findViewById(R.id.syndication_last_search_result)
-		.setVisibility(View.GONE);
+		convertView.findViewById(R.id.syndication_last_search_result).setVisibility(View.GONE);
 
 		setFontTypeFace(convertView, item);
-		
+
 		setFontSize(convertView, item);
-		
+
 		return convertView;
 	}
-	
-	private void setFontTypeFace(View convertView, SyndicationItem item) {
-		
+
+	private void setFontTypeFace(final View convertView, final SyndicationItem item) {
+
 		final TypeFaceSingleton tfs = TypeFaceSingleton.getInstance(context);
 		final Typeface userTypeFace = tfs.getUserTypeFace();
-		
+
 		if (userTypeFace != null) {
 
 			item.getTitle().setTypeface(userTypeFace, Typeface.BOLD);
-			
+
 			item.getNumberOfClick().setTypeface(userTypeFace);
 
-			if (getCursor().getInt(3) != 0)
-				((TextView) convertView
-					.findViewById(R.id.syndication_activity))
-						.setTypeface(userTypeFace);
+			if (getCursor().getInt(3) != 0) {
+				((TextView) convertView.findViewById(R.id.syndication_activity)).setTypeface(userTypeFace);
+			}
 
-			if (getCursor().getInt(5) == 0)
-				((TextView) convertView
-					.findViewById(R.id.syndication_display_mode))
-						.setTypeface(userTypeFace);
+			if (getCursor().getInt(5) == 0) {
+				((TextView) convertView.findViewById(R.id.syndication_display_mode)).setTypeface(userTypeFace);
+			}
 
-			if (getCursor().getInt(6) != 0)
-				((TextView) convertView
-					.findViewById(R.id.syndication_last_search_result))
-						.setTypeface(userTypeFace);
+			if (getCursor().getInt(6) != 0) {
+				((TextView) convertView.findViewById(R.id.syndication_last_search_result)).setTypeface(userTypeFace);
+			}
 		}
 	}
-	
-	private void setFontSize(View convertView, SyndicationItem item) {
-		
+
+	private void setFontSize(final View convertView, final SyndicationItem item) {
+
 		final TypeFaceSingleton tfs = TypeFaceSingleton.getInstance(context);;
 		final int userFontSize = tfs.getUserFontSize();
 
@@ -132,20 +115,17 @@ public class SyndicationAdapter extends SimpleCursorAdapter {
 			item.getTitle().setTextSize(userFontSize);
 			item.getNumberOfClick().setTextSize(userFontSize);
 
-			if (getCursor().getInt(3) != 0)
-				((TextView) convertView
-					.findViewById(R.id.syndication_activity))
-						.setTextSize(userFontSize);
+			if (getCursor().getInt(3) != 0) {
+				((TextView) convertView.findViewById(R.id.syndication_activity)).setTextSize(userFontSize);
+			}
 
-			if (getCursor().getInt(5) == 0)
-				((TextView) convertView
-					.findViewById(R.id.syndication_display_mode))
-						.setTextSize(userFontSize);
+			if (getCursor().getInt(5) == 0) {
+				((TextView) convertView.findViewById(R.id.syndication_display_mode)).setTextSize(userFontSize);
+			}
 
-			if (getCursor().getInt(6) != 0)
-				((TextView) convertView
-					.findViewById(R.id.syndication_last_search_result))
-						.setTextSize(userFontSize);
+			if (getCursor().getInt(6) != 0) {
+				((TextView) convertView.findViewById(R.id.syndication_last_search_result)).setTextSize(userFontSize);
+			}
 		}
 	}
 }

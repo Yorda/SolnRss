@@ -1,5 +1,6 @@
 package free.solnRss.repository;
 
+
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -25,36 +26,32 @@ import free.solnRss.model.Syndication;
 import free.solnRss.provider.SolnRssProvider;
 import free.solnRss.utility.SyndicateUtil;
 
-public class SyndicationRepository {
-	
-	final DateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss",	Locale.FRENCH);
-	private Context context;
 
-	private StringBuilder selection = new StringBuilder();
-	private List<String> args = new ArrayList<String>();
-	
-	public SyndicationRepository(Context context) {
+public class SyndicationRepository {
+
+	final DateFormat		sdf			= new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.FRENCH);
+	private Context			context;
+
+	private StringBuilder	selection	= new StringBuilder();
+	private List<String>	args		= new ArrayList<String>();
+
+	public SyndicationRepository(final Context context) {
 		this.context = context;
 	}
 
-	public static final String syndicationTable = SyndicationTable.SYNDICATION_TABLE;
-	
-	public static Uri uri = Uri.parse(SolnRssProvider.URI + "/syndication");
-	
-	public final String syndicationProjection[] = 
-			new String[] {
-		syndicationTable + "." + SyndicationTable.COLUMN_ID,
-		syndicationTable + "." + SyndicationTable.COLUMN_NAME,
-		syndicationTable + "." + SyndicationTable.COLUMN_URL,
-		syndicationTable + "." + SyndicationTable.COLUMN_IS_ACTIVE,
-		syndicationTable + "." + SyndicationTable.COLUMN_NUMBER_CLICK,
-		syndicationTable + "." + SyndicationTable.COLUMN_DISPLAY_ON_TIMELINE,
-		syndicationTable + "." + SyndicationTable.COLUMN_LAST_RSS_SEARCH_RESULT
-	};
-	
-	public static final String syndicationTableJoinToErrorTable = "" ;
-	
-	public CursorLoader loadSyndications(String filterText) {
+	public static final String	syndicationTable					= SyndicationTable.SYNDICATION_TABLE;
+
+	public static Uri			uri									= Uri.parse(SolnRssProvider.URI + "/syndication");
+
+	public final String			syndicationProjection[]				= new String[] { syndicationTable + "." + SyndicationTable.COLUMN_ID,
+			syndicationTable + "." + SyndicationTable.COLUMN_NAME, syndicationTable + "." + SyndicationTable.COLUMN_URL,
+			syndicationTable + "." + SyndicationTable.COLUMN_IS_ACTIVE, syndicationTable + "." + SyndicationTable.COLUMN_NUMBER_CLICK,
+			syndicationTable + "." + SyndicationTable.COLUMN_DISPLAY_ON_TIMELINE,
+			syndicationTable + "." + SyndicationTable.COLUMN_LAST_RSS_SEARCH_RESULT };
+
+	public static final String	syndicationTableJoinToErrorTable	= "";
+
+	public CursorLoader loadSyndications(final String filterText) {
 
 		selection.setLength(0);
 		args.clear();
@@ -63,89 +60,74 @@ public class SyndicationRepository {
 			selection.append(SyndicationTable.COLUMN_NAME + " like ? ");
 			args.add("%" + filterText.toString() + "%");
 		}
-		return new CursorLoader(context, uri, syndicationProjection,
-				selection.toString(), args.toArray(new String[args.size()]),
-				null);
-	}
-	
-	public void addOneReadToSyndication(Integer syndicationId, Integer numberOfClick) {
-		ContentValues values = new ContentValues();
-		values.put("syn_number_click", numberOfClick+1);
-		context.getContentResolver().update(uri, values, "_id = ? ",
-				new String[] { syndicationId.toString() });
+		return new CursorLoader(context, uri, syndicationProjection, selection.toString(), args.toArray(new String[args.size()]), null);
 	}
 
-	public void updateLastUpdateSyndicationTime(List<Syndication> syndications) {
+	public void addOneReadToSyndication(final Integer syndicationId, final Integer numberOfClick) {
+		final ContentValues values = new ContentValues();
+		values.put("syn_number_click", numberOfClick + 1);
+		context.getContentResolver().update(uri, values, "_id = ? ", new String[] { syndicationId.toString() });
+	}
+
+	public void updateLastUpdateSyndicationTime(final List<Syndication> syndications) {
 		ContentValues values = null;
-		for (Syndication syndication : syndications) {
+		for (final Syndication syndication : syndications) {
 
 			values = new ContentValues();
-			
-			values.put(SyndicationTable.COLUMN_LAST_EXTRACT_TIME,
-					sdf.format(new Date()));
 
-			context.getContentResolver().update(uri, values, " _id = ? ",
-					new String[] { syndication.getId().toString() });
+			values.put(SyndicationTable.COLUMN_LAST_EXTRACT_TIME, sdf.format(new Date()));
+
+			context.getContentResolver().update(uri, values, " _id = ? ", new String[] { syndication.getId().toString() });
 		}
 	}
-	
-	public void changeSyndicationDisplayMode(Integer id,
-			Integer isDisplayOnMainTimeLine) {
-		ContentValues values = new ContentValues();
+
+	public void changeSyndicationDisplayMode(final Integer id, final Integer isDisplayOnMainTimeLine) {
+		final ContentValues values = new ContentValues();
 		values.put("syn_display_on_timeline", isDisplayOnMainTimeLine);
-		context.getContentResolver().update(uri, values, " _id = ? ",
-				new String[] { id.toString() });
+		context.getContentResolver().update(uri, values, " _id = ? ", new String[] { id.toString() });
 	}
-	
-	public void changeSyndicationActivityStatus(Integer id, Integer status) {
-		ContentValues values = new ContentValues();
+
+	public void changeSyndicationActivityStatus(final Integer id, final Integer status) {
+		final ContentValues values = new ContentValues();
 		values.put("syn_is_active", status);
-		context.getContentResolver().update(uri, values, "_id = ? ",
-				new String[] { id.toString() });
+		context.getContentResolver().update(uri, values, "_id = ? ", new String[] { id.toString() });
 	}
-	
-	public static String orderBy(Context context) {
+
+	public static String orderBy(final Context context) {
 		String orderSyndicationBy = SyndicationTable.COLUMN_NAME + " asc";
-		if (PreferenceManager.getDefaultSharedPreferences(context)
-				.getBoolean("pref_sort_syndications", true)) {
+		if (PreferenceManager.getDefaultSharedPreferences(context).getBoolean("pref_sort_syndications", true)) {
 			orderSyndicationBy = SyndicationTable.COLUMN_NUMBER_CLICK + " desc";
 		}
 		return orderSyndicationBy;
 	}
 
-	public void renameSyndication(Integer id, String newName) {
-		ContentValues values = new ContentValues();
-		values.put("syn_name",  newName);
-		context.getContentResolver().update(uri, values,"_id = ? ",
-				new String[] { id.toString() });
+	public void renameSyndication(final Integer id, final String newName) {
+		final ContentValues values = new ContentValues();
+		values.put("syn_name", newName);
+		context.getContentResolver().update(uri, values, "_id = ? ", new String[] { id.toString() });
 	}
-	
-	public Cursor findSyndicationsToRefresh(Date timeToRefresh) {
-		String projection[] = new String[] {
-				SyndicationTable.SYNDICATION_TABLE + "."
-						+ SyndicationTable.COLUMN_ID,
-				SyndicationTable.SYNDICATION_TABLE + "."
-						+ SyndicationTable.COLUMN_URL, };
 
-		String selection = "syn_last_extract_time < Datetime(?) and syn_is_active = ? ";
-		String[] selectionArgs = new String[2];
+	public Cursor findSyndicationsToRefresh(final Date timeToRefresh) {
+		final String projection[] = new String[] { SyndicationTable.SYNDICATION_TABLE + "." + SyndicationTable.COLUMN_ID,
+				SyndicationTable.SYNDICATION_TABLE + "." + SyndicationTable.COLUMN_URL, };
+
+		final String selection = "syn_last_extract_time < Datetime(?) and syn_is_active = ? ";
+		final String[] selectionArgs = new String[2];
 		selectionArgs[0] = sdf.format(timeToRefresh);
 		selectionArgs[1] = "0";
 
-		return context.getContentResolver().query(uri, projection, selection,
-				selectionArgs, SyndicationTable.COLUMN_ID + " asc ");
+		return context.getContentResolver().query(uri, projection, selection, selectionArgs, SyndicationTable.COLUMN_ID + " asc ");
 	}
 
-	private void createNewPublicationContentTable(
-			ArrayList<ContentProviderOperation> operations) {
-		operations.add(ContentProviderOperation.newInsert( Uri.parse(SolnRssProvider.URI + "/publicationContentUpdateDB"))
+	private void createNewPublicationContentTable(final ArrayList<ContentProviderOperation> operations) {
+		operations.add(ContentProviderOperation.newInsert(Uri.parse(SolnRssProvider.URI + "/publicationContentUpdateDB"))
 				.withValueBackReference("syn_syndication_id", 0).build());
 	}
-	
-	public long addWebSite(Syndication syndication) throws Exception {
-		
-		String now = sdf.format(new Date());
-	
+
+	public long addWebSite(final Syndication syndication) throws Exception {
+
+		final String now = sdf.format(new Date());
+
 		ContentValues cv = new ContentValues();
 		cv.put("syn_name", syndication.getName());
 		cv.put("syn_url", syndication.getUrl());
@@ -156,78 +138,66 @@ public class SyndicationRepository {
 		cv.put("syn_display_on_timeline", 1);
 		cv.put("syn_number_click", 0);
 
-		ArrayList<ContentProviderOperation> operations = new ArrayList<ContentProviderOperation>();
-		
+		final ArrayList<ContentProviderOperation> operations = new ArrayList<ContentProviderOperation>();
+
 		// Register new syndication
-		operations.add(ContentProviderOperation.newInsert(uri).withValues(cv)
-				.withYieldAllowed(true).build());
-		
+		operations.add(ContentProviderOperation.newInsert(uri).withValues(cv).withYieldAllowed(true).build());
+
 		// Create new table for publication content
 		createNewPublicationContentTable(operations);
-		
+
 		// Insert new publication
-		for (Publication publication : syndication.getPublications()) {
-			
+		for (final Publication publication : syndication.getPublications()) {
+
 			cv = new ContentValues();
 			cv.put("pub_title", publication.getTitle());
 			cv.put("pub_already_read", 0);
-			cv.put("pub_publication_date", sdf.format(
-					(publication.getPublicationDate() == null ? new Date() : publication.getPublicationDate())));
-			
-			operations.add(ContentProviderOperation
-					.newInsert(Uri.parse(SolnRssProvider.URI + "/publication"))
-					.withValues(cv)
-					.withValueBackReference("syn_syndication_id", 0)
-					.build());
-			
+			cv.put("pub_publication_date", sdf.format(publication.getPublicationDate() == null ? new Date() : publication.getPublicationDate()));
+
+			operations.add(ContentProviderOperation.newInsert(Uri.parse(SolnRssProvider.URI + "/publication")).withValues(cv)
+					.withValueBackReference("syn_syndication_id", 0).build());
+
 			cv = new ContentValues();
 			cv.put("pct_link", publication.getUrl());
 			cv.put("pct_publication", publication.getDescription());
-		
-			// Insert new Content
-			operations.add(ContentProviderOperation
-					.newInsert(PublicationContentRepository.uri).withValues(cv)
-					.withValueBackReference("syndicationId", 0)
-					.withValueBackReference("pub_publication_id", operations.size() - 1)
-					.build());
-		}		
 
-		// Keep old RSS information founded in order to 
+			// Insert new Content
+			operations.add(ContentProviderOperation.newInsert(PublicationContentRepository.uri).withValues(cv)
+					.withValueBackReference("syndicationId", 0).withValueBackReference("pub_publication_id", operations.size() - 1).build());
+		}
+
+		// Keep old RSS information founded in order to
 		// not recorded old data twice
-		String rss = syndication.getRss();
+		final String rss = syndication.getRss();
 		if (!TextUtils.isEmpty(rss)) {
-			SyndicateUtil syndicateUtil = new SyndicateUtil();
+			final SyndicateUtil syndicateUtil = new SyndicateUtil();
 			syndicateUtil.init(rss);
-			List<SyndEntry> entries = syndicateUtil.lastEntries();
-			for (SyndEntry e : entries) {
+			final List<SyndEntry> entries = syndicateUtil.lastEntries();
+			for (final SyndEntry e : entries) {
 				cv = new ContentValues();
 				cv.put("rss_url", e.getLink());
 				cv.put("rss_title", e.getTitle());
-				operations.add(ContentProviderOperation
-						.newInsert(Uri.parse(SolnRssProvider.URI + "/rss"))
-						.withValues(cv)
-						.withValueBackReference("syn_syndication_id", 0)
-						.build());
+				operations.add(ContentProviderOperation.newInsert(Uri.parse(SolnRssProvider.URI + "/rss")).withValues(cv)
+						.withValueBackReference("syn_syndication_id", 0).build());
 			}
 		}
-		
+
 		// Excecute
-		ContentProviderResult[] res = context.getContentResolver().applyBatch(
-				SolnRssProvider.AUTHORITY, operations);
-		
-		Long newSyndicationId = Long.valueOf(res[0].uri.getLastPathSegment());
+		final ContentProviderResult[] res = context.getContentResolver().applyBatch(SolnRssProvider.AUTHORITY, operations);
+
+		final Long newSyndicationId = Long.valueOf(res[0].uri.getLastPathSegment());
 		return newSyndicationId;
 	}
-	
+
 	/**
 	 * Delete syndication and all data linked
-	 * 
+	 *
 	 * @param id
 	 */
-	public void delete(Integer id) {
-		SQLiteDatabase db  = RepositoryHelper.getInstance(context).getWritableDatabase();
+	public void delete(final Integer id) {
+		final SQLiteDatabase db = RepositoryHelper.getInstance(context).getWritableDatabase();
 		try {
-			String[] whereArgs = new String[] { id.toString() };
+			final String[] whereArgs = new String[] { id.toString() };
 			db.beginTransaction();
 			db.delete("d_categorie_syndication", " syn_syndication_id = ? ", whereArgs);
 			db.delete("d_publication", "syn_syndication_id = ? ", whereArgs);
@@ -239,18 +209,17 @@ public class SyndicationRepository {
 		}
 	}
 
-	public boolean isStillRecorded(String url) {
-		SQLiteDatabase db  = RepositoryHelper.getInstance(context).getReadableDatabase();
-		Cursor c = db.rawQuery(
-				"select _id from d_syndication where syn_website_url = ? ",
-				new String[] {url});
+	public boolean isStillRecorded(final String url) {
+		final SQLiteDatabase db = RepositoryHelper.getInstance(context).getReadableDatabase();
+		final Cursor c = db.rawQuery("select _id from d_syndication where syn_website_url = ? ", new String[] { url });
 
-		int count = c.getCount();
+		final int count = c.getCount();
 		c.close();
-		
-		if (count > 0)
+
+		if (count > 0) {
 			return true;
-		
+		}
+
 		return false;
 	}
 }

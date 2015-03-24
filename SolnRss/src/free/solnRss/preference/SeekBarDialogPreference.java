@@ -1,5 +1,6 @@
 package free.solnRss.preference;
 
+
 import android.content.Context;
 import android.content.res.TypedArray;
 import android.os.Parcel;
@@ -12,23 +13,23 @@ import android.widget.SeekBar.OnSeekBarChangeListener;
 import android.widget.TextView;
 import free.solnRss.R;
 
+
 /**
- * A {@link DialogPreference} that provides a user with the means to select an
- * integer from a {@link SeekBar}, and persist it.
+ * A {@link DialogPreference} that provides a user with the means to select an integer from a {@link SeekBar}, and persist it.
  * 
  * @author lukehorvat
  */
 public class SeekBarDialogPreference extends DialogPreference {
-	private static final int DEFAULT_MIN_PROGRESS = 0;
-	private static final int DEFAULT_MAX_PROGRESS = 100;
-	private static final int DEFAULT_PROGRESS = 0;
+	private static final int	DEFAULT_MIN_PROGRESS	= 0;
+	private static final int	DEFAULT_MAX_PROGRESS	= 100;
+	private static final int	DEFAULT_PROGRESS		= 0;
 
-	private int mMinProgress;
-	private int mMaxProgress;
-	private int mProgress;
-	private CharSequence mProgressTextSuffix;
-	private TextView mProgressText;
-	private SeekBar mSeekBar;
+	private int					mMinProgress;
+	private int					mMaxProgress;
+	private int					mProgress;
+	private CharSequence		mProgressTextSuffix;
+	private TextView			mProgressText;
+	private SeekBar				mSeekBar;
 
 	public SeekBarDialogPreference(final Context context) {
 		this(context, null);
@@ -38,8 +39,7 @@ public class SeekBarDialogPreference extends DialogPreference {
 		super(context, attrs);
 
 		// get attributes specified in XML
-		final TypedArray a = context.getTheme()
-				.obtainStyledAttributes(attrs, R.styleable.SeekBarDialogPreference, 0, 0);
+		final TypedArray a = context.getTheme().obtainStyledAttributes(attrs, R.styleable.SeekBarDialogPreference, 0, 0);
 		try {
 			setMinProgress(a.getInteger(R.styleable.SeekBarDialogPreference_min, DEFAULT_MIN_PROGRESS));
 			setMaxProgress(a.getInteger(R.styleable.SeekBarDialogPreference_max, DEFAULT_MAX_PROGRESS));
@@ -112,8 +112,7 @@ public class SeekBarDialogPreference extends DialogPreference {
 				// note: this does not persist the progress value. that is only
 				// ever done in setProgress()
 				final String progressStr = String.valueOf(progress + mMinProgress);
-				mProgressText.setText(mProgressTextSuffix == null ? progressStr : progressStr
-						.concat(mProgressTextSuffix.toString()));
+				mProgressText.setText(mProgressTextSuffix == null ? progressStr : progressStr.concat(mProgressTextSuffix.toString()));
 			}
 
 			@Override
@@ -186,22 +185,22 @@ public class SeekBarDialogPreference extends DialogPreference {
 	}
 
 	private static class SavedState extends BaseSavedState {
-		int minProgress;
-		int maxProgress;
-		int progress;
+		int													minProgress;
+		int													maxProgress;
+		int													progress;
 
 		@SuppressWarnings("unused")
-		public static final Parcelable.Creator<SavedState> CREATOR = new Parcelable.Creator<SavedState>() {
-			@Override
-			public SavedState createFromParcel(final Parcel in) {
-				return new SavedState(in);
-			}
+		public static final Parcelable.Creator<SavedState>	CREATOR	= new Parcelable.Creator<SavedState>() {
+																		@Override
+																		public SavedState createFromParcel(final Parcel in) {
+																			return new SavedState(in);
+																		}
 
-			@Override
-			public SavedState[] newArray(final int size) {
-				return new SavedState[size];
-			}
-		};
+																		@Override
+																		public SavedState[] newArray(final int size) {
+																			return new SavedState[size];
+																		}
+																	};
 
 		public SavedState(final Parcel source) {
 			super(source);

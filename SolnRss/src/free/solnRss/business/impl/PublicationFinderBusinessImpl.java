@@ -1,5 +1,6 @@
 package free.solnRss.business.impl;
 
+
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -38,142 +39,138 @@ import free.solnRss.repository.SyndicationRepository;
 import free.solnRss.repository.SyndicationTable;
 import free.solnRss.utility.StringUtil;
 
+
 public class PublicationFinderBusinessImpl implements PublicationFinderBusiness {
 
-	private final DateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.FRENCH);
-	private SyndicationBusiness syndicationBusiness = new SyndicationBusinessImpl();
-	
-	private SyndicationRepository syndicationRepository;
-	private RssRepository rssRepository;
+	private final DateFormat					sdf					= new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.FRENCH);
+	private SyndicationBusiness					syndicationBusiness	= new SyndicationBusinessImpl();
 
-	private SharedPreferences sharedPreferences;
-	private SparseArray<String> syndications = new SparseArray<String>();
-	
-	private List<SyndEntry> syndEntries = new ArrayList<SyndEntry>();
-	private ArrayList<ContentProviderOperation> operations = new ArrayList<ContentProviderOperation>();
-	
-	private Context context;
-	private Integer newPublicationsRecorded;
-	
+	private SyndicationRepository				syndicationRepository;
+	private RssRepository						rssRepository;
+
+	private SharedPreferences					sharedPreferences;
+	private SparseArray<String>					syndications		= new SparseArray<String>();
+
+	private List<SyndEntry>						syndEntries			= new ArrayList<SyndEntry>();
+	private ArrayList<ContentProviderOperation>	operations			= new ArrayList<ContentProviderOperation>();
+
+	private Context								context;
+	private Integer								newPublicationsRecorded;
+
 	//private ImageLoaderUtil imageLoader;
-	
-	NewPublicationsNotification newPublicationsNotification;
-	
-	public PublicationFinderBusinessImpl(Context context) {
+
+	NewPublicationsNotification					newPublicationsNotification;
+
+	public PublicationFinderBusinessImpl(final Context context) {
 		this.context = context;
 		init(context);
 	}
-	
-	private void init(Context context) {
+
+	private void init(final Context context) {
 		syndicationRepository = new SyndicationRepository(context);
 		rssRepository = new RssRepository(context);
 		newPublicationsNotification = new NewPublicationsNotification(context);
 		sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
 		//imageLoader = new ImageLoaderUtil(context);
 	}
-	
+
+	@Override
 	public void searchNewPublications() {
 		retrieveSyndicationsToRefresh();
 		retrieveNewPublications();
 		updateLastRefreshTime();
 	}
 
-	public void searchNewPublications(SparseArray<String> syndications) {
+	@Override
+	public void searchNewPublications(final SparseArray<String> syndications) {
 		this.syndications = syndications;
 		retrieveNewPublications();
 	}
-	
+
 	private void retrieveNewPublications() {
 		// For test
 		//StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder()
 		//.permitAll().build();StrictMode.setThreadPolicy(policy);
 
 		newPublicationsRecorded = 0;
-		
-		String updateDate = sdf.format(new Date());
-		
+
+		final String updateDate = sdf.format(new Date());
+
 		Integer syndicationId = -1;
 		String url = null;
-		
+
 		operations.clear();
 		syndEntries.clear();
-		
+
 		for (int i = 0, nsize = syndications.size(); i < nsize; i++) {
-			
+
 			syndicationId = syndications.keyAt(i);
 			url = syndications.get(syndicationId);
 
 			try {
 				if (UpdatingProcessConnectionManager.canUseConnection(context)) {
-					
+
 					syndEntries = syndicationBusiness.newRssPublished(url);
-					
+
 					addNewPublicationIfNotAlreadyRegistered(syndicationId, updateDate);
-					
+
 					updateRegisteredRss(syndicationId);
-					
+
 					updateRefreshTime(syndicationId, updateDate);
-					
-				} 
-				
-			} catch (ExtractFeedException fe) {
+
+				}
+
+			} catch (final ExtractFeedException fe) {
 				// Set this syndication in error
-				setSyndicationInError(syndicationId, fe.getError().getId(),	updateDate);
+				setSyndicationInError(syndicationId, fe.getError().getId(), updateDate);
 			}
 		}
 
 		registerNewPublications(updateDate);
 	}
 
-	private void setSyndicationInError(Integer syndicationId, int errorCode,
-			String updateDateFormat) {
+	private void setSyndicationInError(final Integer syndicationId, final int errorCode, final String updateDateFormat) {
 		operations.add(ContentProviderOperation.newUpdate(Uri.parse(SolnRssProvider.URI + "/syndication"))
 				.withValue(SyndicationTable.COLUMN_LAST_EXTRACT_TIME, updateDateFormat)
 				.withValue(SyndicationTable.COLUMN_LAST_RSS_SEARCH_RESULT, errorCode)
-				.withSelection(SyndicationTable.COLUMN_ID + " = ? " , new String[] { Integer.valueOf(syndicationId).toString() })
+				.withSelection(SyndicationTable.COLUMN_ID + " = ? ", new String[] { Integer.valueOf(syndicationId).toString() })
 				.withYieldAllowed(true).build());
 	}
-	
-	private void addNewPublicationIfNotAlreadyRegistered(Integer syndicationId, String updateDateFormat) {
-		
-		for (SyndEntry syndEntry : syndEntries) {
-			
-			if (!rssRepository.isAlreadyRetrieved(syndEntry.getTitle(),	syndEntry.getLink())) {
+
+	private void addNewPublicationIfNotAlreadyRegistered(final Integer syndicationId, final String updateDateFormat) {
+
+		for (final SyndEntry syndEntry : syndEntries) {
+
+			if (!rssRepository.isAlreadyRetrieved(syndEntry.getTitle(), syndEntry.getLink())) {
 				operations.add(ContentProviderOperation.newInsert(Uri.parse(SolnRssProvider.URI + "/publication"))
-						.withValues(addNewPublication(syndicationId, syndEntry, updateDateFormat))
-						.withYieldAllowed(true)	.build());
-				
+						.withValues(addNewPublication(syndicationId, syndEntry, updateDateFormat)).withYieldAllowed(true).build());
+
 				operations.add(ContentProviderOperation.newInsert(Uri.parse(SolnRssProvider.URI + "/publicationContent"))
-						.withValue("syndicationId",  syndicationId.toString())
-						.withValue(PublicationContentTable.COLUMN_LINK, syndEntry.getLink())
-						
-						.withValue(PublicationContentTable.COLUMN_PUBLICATION,inmproveDescription(getDescription(syndEntry)))
+						.withValue("syndicationId", syndicationId.toString()).withValue(PublicationContentTable.COLUMN_LINK, syndEntry.getLink())
+
+						.withValue(PublicationContentTable.COLUMN_PUBLICATION, inmproveDescription(getDescription(syndEntry)))
 						// .withValue(PublicationContentTable.COLUMN_PUBLICATION,WebSiteUtil.htmlToReadableText(syndEntry.getLink()))
-						
-						.withValueBackReference(PublicationContentTable.COLUMN_PUBLICATION_ID, operations.size() - 1)
-						.withYieldAllowed(true).build());
-				
+
+						.withValueBackReference(PublicationContentTable.COLUMN_PUBLICATION_ID, operations.size() - 1).withYieldAllowed(true).build());
+
 				newPublicationsRecorded++;
 			}
 		}
 	}
-	
-	private void updateRegisteredRss(Integer syndicationId) {
-		operations.add(ContentProviderOperation.newDelete(Uri.parse(SolnRssProvider.URI + "/rss"))
-				.withSelection("syn_syndication_id = ?", new String[] { syndicationId.toString() })
-				.withYieldAllowed(true).build());
 
-		for(SyndEntry syndEntry : syndEntries) {
-			
+	private void updateRegisteredRss(final Integer syndicationId) {
+		operations.add(ContentProviderOperation.newDelete(Uri.parse(SolnRssProvider.URI + "/rss"))
+				.withSelection("syn_syndication_id = ?", new String[] { syndicationId.toString() }).withYieldAllowed(true).build());
+
+		for (final SyndEntry syndEntry : syndEntries) {
+
 			operations.add(ContentProviderOperation.newInsert(Uri.parse(SolnRssProvider.URI + "/rss"))
-					.withValue(RssTable.COLUMN_URL, syndEntry.getLink())
-					.withValue(RssTable.COLUMN_TITLE, syndEntry.getTitle())
-					.withValue(RssTable.COLUMN_SYNDICATION_ID, syndicationId)
-					.withYieldAllowed(true).build());
+					.withValue(RssTable.COLUMN_URL, syndEntry.getLink()).withValue(RssTable.COLUMN_TITLE, syndEntry.getTitle())
+					.withValue(RssTable.COLUMN_SYNDICATION_ID, syndicationId).withYieldAllowed(true).build());
 		}
 	}
-	
-	private void registerNewPublications(String updateDate) {
+
+	private void registerNewPublications(final String updateDate) {
 		if (newPublicationsRecorded > 0) {
 			// Run the batch
 			try {
@@ -182,26 +179,26 @@ public class PublicationFinderBusinessImpl implements PublicationFinderBusiness 
 				if (mustDisplayNotification()) {
 					newPublicationsNotification.notificationForNewPublications(newPublicationsRecorded, updateDate);
 				}
-			} catch (OperationApplicationException e) {
-				
-			} catch (RemoteException r) {
-				
+			} catch (final OperationApplicationException e) {
+
+			} catch (final RemoteException r) {
+
 			}
 		}
 	}
-	
-	private void updateRefreshTime(Integer syndicationId, String updateDateFormat) {
+
+	private void updateRefreshTime(final Integer syndicationId, final String updateDateFormat) {
 		// Update last refreshTime for syndication
 		operations.add(ContentProviderOperation.newUpdate(Uri.parse(SolnRssProvider.URI + "/syndication"))
-			.withValue(SyndicationTable.COLUMN_LAST_EXTRACT_TIME, updateDateFormat)
-			.withValue(SyndicationTable.COLUMN_LAST_RSS_SEARCH_RESULT, null)
-			.withSelection(SyndicationTable.COLUMN_ID + " = ? " , new String[] { Integer.valueOf(syndicationId).toString() })
-			.withYieldAllowed(true).build());
+				.withValue(SyndicationTable.COLUMN_LAST_EXTRACT_TIME, updateDateFormat)
+				.withValue(SyndicationTable.COLUMN_LAST_RSS_SEARCH_RESULT, null)
+				.withSelection(SyndicationTable.COLUMN_ID + " = ? ", new String[] { Integer.valueOf(syndicationId).toString() })
+				.withYieldAllowed(true).build());
 	}
-	
-	private ContentValues addNewPublication(Integer syndicationId, SyndEntry syndEntry, String date) {
-		
-		ContentValues values = new ContentValues();
+
+	private ContentValues addNewPublication(final Integer syndicationId, final SyndEntry syndEntry, final String date) {
+
+		final ContentValues values = new ContentValues();
 		values.put(PublicationTable.COLUMN_SYNDICATION_ID, syndicationId);
 		values.put(PublicationTable.COLUMN_TITLE, StringUtil.unescapeHTML(syndEntry.getTitle()));
 		values.put(PublicationTable.COLUMN_ALREADY_READ, 0);
@@ -209,71 +206,69 @@ public class PublicationFinderBusinessImpl implements PublicationFinderBusiness 
 
 		return values;
 	}
-	
-	private String getDescription(SyndEntry syndEntry) {
+
+	private String getDescription(final SyndEntry syndEntry) {
 		String description = null;
 
 		if (syndEntry.getDescription() != null) {
 			description = syndEntry.getDescription().getValue();
 		}
 
-		if (syndEntry.getContents() != null
-				&& syndEntry.getContents().size() > 0) {
+		if (syndEntry.getContents() != null && syndEntry.getContents().size() > 0) {
 			description = ((SyndContent) syndEntry.getContents().get(0)).getValue();
 		}
-		
+
 		if (description == null) {
 			return new String();
 		}
 		return description;
 	}
-	
+
 	protected void retrieveSyndicationsToRefresh() {
 		syndications.clear();
-		Cursor cursor = syndicationRepository.findSyndicationsToRefresh(timeToRefresh());
+		final Cursor cursor = syndicationRepository.findSyndicationsToRefresh(timeToRefresh());
 		if (cursor.getCount() > 0) {
 			cursor.moveToFirst();
-			do {				
+			do {
 				syndications.put(cursor.getInt(0), cursor.getString(1));
 			} while (cursor.moveToNext());
 			cursor.close();
 		}
 	}
-	
+
 	private Date timeToRefresh() {
-		int refresh = sharedPreferences.getInt("pref_search_publication_time",15);
-		GregorianCalendar calendar = new GregorianCalendar();
+		final int refresh = sharedPreferences.getInt("pref_search_publication_time", 15);
+		final GregorianCalendar calendar = new GregorianCalendar();
 		calendar.setTime(new Date());
 		calendar.add(Calendar.MINUTE, -refresh);
 		return calendar.getTime();
 	}
 
 	private void updateLastRefreshTime() {
-		SharedPreferences.Editor editor = sharedPreferences.edit();
+		final SharedPreferences.Editor editor = sharedPreferences.edit();
 		editor.putLong("publicationsLastRefresh", Calendar.getInstance().getTimeInMillis());
 		editor.commit();
 	}
-	
-	private String inmproveDescription(String description) {
+
+	private String inmproveDescription(final String description) {
 		String fixedDescription = description;
-		
+
 		if (!TextUtils.isEmpty(description)) {
 			fixedDescription = StringUtil.unescapeHTML(fixedDescription);
 			fixedDescription = fixYouTubeLinkInIFrame(fixedDescription);
 		}
-		
+
 		// get image
 		//imageLoader.setDescription(fixedDescription);
 		//fixedDescription = imageLoader.saveImage();
-		
+
 		return fixedDescription;
 	}
-	
-	private String fixYouTubeLinkInIFrame(String description) {
-		return description.replaceAll("src=\"//www.youtube.com/embed",
-				"src=\"http://www.youtube.com/embed");
+
+	private String fixYouTubeLinkInIFrame(final String description) {
+		return description.replaceAll("src=\"//www.youtube.com/embed", "src=\"http://www.youtube.com/embed");
 	}
-	
+
 	public boolean mustDisplayNotification() {
 		return sharedPreferences.getBoolean("pref_display_notify", true);
 	}

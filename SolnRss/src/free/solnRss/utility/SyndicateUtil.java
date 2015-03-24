@@ -1,5 +1,6 @@
 package free.solnRss.utility;
 
+
 import java.io.File;
 import java.io.IOException;
 import java.io.StringReader;
@@ -12,11 +13,12 @@ import com.google.code.rome.android.repackaged.com.sun.syndication.io.FeedExcept
 import com.google.code.rome.android.repackaged.com.sun.syndication.io.SyndFeedInput;
 import com.google.code.rome.android.repackaged.com.sun.syndication.io.XmlReader;
 
+
 public class SyndicateUtil {
 
-	private String url;
-	private SyndFeedInput syndFeedInput;
-	private SyndFeed syndFeed;
+	private String			url;
+	private SyndFeedInput	syndFeedInput;
+	private SyndFeed		syndFeed;
 
 	public SyndicateUtil() {
 
@@ -27,7 +29,8 @@ public class SyndicateUtil {
 	}
 
 	/**
-	 * Init with the url 
+	 * Init with the url
+	 * 
 	 * @throws Exception
 	 */
 	public void init() throws Exception {
@@ -38,6 +41,7 @@ public class SyndicateUtil {
 
 	/**
 	 * The data received from web site is still a xml feed
+	 * 
 	 * @param html
 	 * @throws Exception
 	 */
@@ -46,7 +50,7 @@ public class SyndicateUtil {
 		syndFeedInput = new SyndFeedInput();
 		syndFeed = syndFeedInput.build(sr);
 	}
-	
+
 	/**
 	 * 
 	 * @param u
@@ -56,7 +60,7 @@ public class SyndicateUtil {
 		syndFeedInput = new SyndFeedInput();
 		syndFeed = syndFeedInput.build(new XmlReader(u));
 	}
-	
+
 	/**
 	 * 
 	 * @return
@@ -102,8 +106,7 @@ public class SyndicateUtil {
 	 * @throws FeedException
 	 */
 	@SuppressWarnings("unchecked")
-	public static List<SyndEntry> lastEntries(URL url) throws IOException,
-			FeedException {
+	public static List<SyndEntry> lastEntries(URL url) throws IOException, FeedException {
 		SyndFeedInput sfi = new SyndFeedInput();
 		return sfi.build(new XmlReader(url)).getEntries();
 	}
@@ -116,8 +119,7 @@ public class SyndicateUtil {
 	 * @throws FeedException
 	 */
 	@SuppressWarnings("unchecked")
-	public static List<SyndEntry> lastEntries(File file) throws IOException,
-			FeedException {
+	public static List<SyndEntry> lastEntries(File file) throws IOException, FeedException {
 		SyndFeedInput sfi = new SyndFeedInput();
 		return sfi.build(new XmlReader(file)).getEntries();
 	}

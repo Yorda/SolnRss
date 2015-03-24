@@ -1,6 +1,6 @@
 package free.solnRss.preference;
 
-import free.solnRss.R;
+
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.res.TypedArray;
@@ -10,111 +10,110 @@ import android.util.AttributeSet;
 import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.ViewGroup.LayoutParams;
 import android.widget.LinearLayout;
 import android.widget.SeekBar;
+import android.widget.SeekBar.OnSeekBarChangeListener;
 import android.widget.TextView;
 import android.widget.Toast;
-import android.widget.SeekBar.OnSeekBarChangeListener;
+import free.solnRss.R;
+
 
 @Deprecated
-public abstract class AbstractSeekBarPreference extends Preference 
-		implements	OnSeekBarChangeListener {
+public abstract class AbstractSeekBarPreference extends Preference implements OnSeekBarChangeListener {
 
-	public int maximum, interval, oldValue;
+	public int			maximum, interval, oldValue;
 
-	private TextView monitorBox;
-	
-	public AbstractSeekBarPreference(Context context) {
+	private TextView	monitorBox;
+
+	public AbstractSeekBarPreference(final Context context) {
 		super(context);
 	}
 
-	public AbstractSeekBarPreference(Context context, AttributeSet attrs) {
+	public AbstractSeekBarPreference(final Context context, final AttributeSet attrs) {
 		super(context, attrs);
 	}
 
-	public AbstractSeekBarPreference(Context context, AttributeSet attrs, int defStyle) {
+	public AbstractSeekBarPreference(final Context context, final AttributeSet attrs, final int defStyle) {
 		super(context, attrs, defStyle);
 	}
 
 	@Override
-	protected View onCreateView(ViewGroup parent) {
+	protected View onCreateView(final ViewGroup parent) {
 
-		LinearLayout layout = new LinearLayout(getContext());
+		final LinearLayout layout = new LinearLayout(getContext());
 
-		LinearLayout.LayoutParams params1 = new LinearLayout.LayoutParams(
-				LinearLayout.LayoutParams.WRAP_CONTENT,
-				LinearLayout.LayoutParams.WRAP_CONTENT);
+		final LinearLayout.LayoutParams params1 = new LinearLayout.LayoutParams(LayoutParams.WRAP_CONTENT,
+				LayoutParams.WRAP_CONTENT);
 		params1.gravity = Gravity.LEFT;
 		params1.weight = 1.0f;
 
-		LinearLayout.LayoutParams params2 = new LinearLayout.LayoutParams(
-				LinearLayout.LayoutParams.MATCH_PARENT,
-				LinearLayout.LayoutParams.WRAP_CONTENT);
+		final LinearLayout.LayoutParams params2 = new LinearLayout.LayoutParams(LayoutParams.MATCH_PARENT,
+				LayoutParams.WRAP_CONTENT);
 		params2.gravity = Gravity.LEFT;
 
-		LinearLayout.LayoutParams params3 = new LinearLayout.LayoutParams(
-				LinearLayout.LayoutParams.WRAP_CONTENT,
-				LinearLayout.LayoutParams.WRAP_CONTENT);
+		final LinearLayout.LayoutParams params3 = new LinearLayout.LayoutParams(LayoutParams.WRAP_CONTENT,
+				LayoutParams.WRAP_CONTENT);
 		params3.gravity = Gravity.CENTER;
 
 		layout.setPadding(15, 5, 10, 5);
 		layout.setOrientation(LinearLayout.VERTICAL);
 
-		TextView view = new TextView(getContext());
+		final TextView view = new TextView(getContext());
 		view.setText(getTitle());
 		view.setTextSize(18);
 		view.setTypeface(Typeface.SANS_SERIF, Typeface.BOLD);
 		view.setGravity(Gravity.LEFT);
 		view.setLayoutParams(params1);
 
-		SeekBar bar = new SeekBar(getContext());
+		final SeekBar bar = new SeekBar(getContext());
 		bar.setMax(maximum);
-		bar.setProgress((int) this.oldValue);
+		bar.setProgress(oldValue);
 		bar.setLayoutParams(params2);
 		bar.setOnSeekBarChangeListener(this);
 
-		this.monitorBox = new TextView(getContext());
-		this.monitorBox.setTextSize(12);
-		this.monitorBox.setTypeface(Typeface.MONOSPACE, Typeface.ITALIC);
-		this.monitorBox.setLayoutParams(params3);
-		this.monitorBox.setPadding(2, 5, 0, 0);
-		this.monitorBox.setText(bar.getProgress() + " min");
+		monitorBox = new TextView(getContext());
+		monitorBox.setTextSize(12);
+		monitorBox.setTypeface(Typeface.MONOSPACE, Typeface.ITALIC);
+		monitorBox.setLayoutParams(params3);
+		monitorBox.setPadding(2, 5, 0, 0);
+		monitorBox.setText(bar.getProgress() + " min");
 
 		layout.addView(view);
 		layout.addView(bar);
-		layout.addView(this.monitorBox);
+		layout.addView(monitorBox);
 		layout.setId(android.R.id.widget_frame);
 
 		return layout;
 	}
 
 	@Override
-	public void onProgressChanged(SeekBar seekBar, int progress,
-			boolean fromUser) {
+	public void onProgressChanged(final SeekBar seekBar, int progress, final boolean fromUser) {
 
-		progress = Math.round(((float) progress) / interval) * interval;
+		progress = Math.round((float) progress / interval) * interval;
 
 		if (!callChangeListener(progress)) {
-			seekBar.setProgress((int) this.oldValue);
+			seekBar.setProgress(oldValue);
 			return;
 		}
 
 		seekBar.setProgress(progress);
-		this.oldValue = progress;
-		this.monitorBox.setText(progress + " min");
+		oldValue = progress;
+		monitorBox.setText(progress + " min");
 	}
 
 	@Override
-	protected Object onGetDefaultValue(TypedArray ta, int index) {
-		return validateValue((int) ta.getInt(index, 50));
+	protected Object onGetDefaultValue(final TypedArray ta, final int index) {
+		return validateValue(ta.getInt(index, 50));
 	}
 
 	@Override
-	protected void onSetInitialValue(boolean restoreValue, Object defaultValue) {
-		int temp = restoreValue ? getPersistedInt(50) : (Integer) defaultValue;
-		if (!restoreValue)
+	protected void onSetInitialValue(final boolean restoreValue, final Object defaultValue) {
+		final int temp = restoreValue ? getPersistedInt(50) : (Integer) defaultValue;
+		if (!restoreValue) {
 			persistInt(temp);
-		this.oldValue = temp;
+		}
+		oldValue = temp;
 	}
 
 	private int validateValue(int value) {
@@ -123,35 +122,32 @@ public abstract class AbstractSeekBarPreference extends Preference
 		} else if (value < 0) {
 			value = 0;
 		} else if (value % interval != 0) {
-			value = Math.round(((float) value) / interval) * interval;
+			value = Math.round((float) value / interval) * interval;
 		}
 		return value;
 	}
 
-	private void updatePreference(int newValue) {
-		SharedPreferences.Editor editor = getEditor();
+	private void updatePreference(final int newValue) {
+		final SharedPreferences.Editor editor = getEditor();
 		editor.putInt(getKey(), newValue);
 		editor.commit();
 	}
-	
+
 	@Override
-	public void onStartTrackingTouch(SeekBar seekBar) {
-		
+	public void onStartTrackingTouch(final SeekBar seekBar) {
+
 	}
 
 	@Override
-	public void onStopTrackingTouch(SeekBar seekBar) {
-		updatePreference(this.oldValue);
-		
-		if (this.oldValue == 0) {
+	public void onStopTrackingTouch(final SeekBar seekBar) {
+		updatePreference(oldValue);
+
+		if (oldValue == 0) {
 			// Warn user, the new publication search is deactivate
-			Toast.makeText(getContext(),
-					getContext().getResources().getString(R.string.stop_search),
-					Toast.LENGTH_LONG).show();
+			Toast.makeText(getContext(), getContext().getResources().getString(R.string.stop_search), Toast.LENGTH_LONG).show();
 		}
-		
+
 		notifyChanged();
 	}
-
 
 }

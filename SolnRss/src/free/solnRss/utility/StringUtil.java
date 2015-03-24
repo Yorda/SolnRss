@@ -1,6 +1,8 @@
 package free.solnRss.utility;
 
+
 import java.util.HashMap;
+
 
 public class StringUtil {
 
@@ -56,8 +58,7 @@ public class StringUtil {
 	 * @param max
 	 * @return
 	 */
-	public final static boolean isValidMinMax(final String s, final int min,
-			final int max) {
+	public final static boolean isValidMinMax(final String s, final int min, final int max) {
 		if (s == null || s.trim().length() == 0) {
 			return false;
 		}
@@ -68,8 +69,7 @@ public class StringUtil {
 	}
 
 	/**
-	 * Replaces characters that may be confused by a HTML parser with their
-	 * equivalent character entity references.
+	 * Replaces characters that may be confused by a HTML parser with their equivalent character entity references.
 	 * 
 	 * @param s
 	 * @return
@@ -86,37 +86,37 @@ public class StringUtil {
 			int cint = 0xffff & c;
 			if (cint < 32) {
 				switch (c) {
-				case '\r':
-				case '\n':
-				case '\t':
-				case '\f': {
-					// Leave whitespace untouched
-				}
-					break;
-				default: {
-					newLength -= 1;
-					someCharacterEscaped = true;
-				}
+					case '\r':
+					case '\n':
+					case '\t':
+					case '\f': {
+						// Leave whitespace untouched
+					}
+						break;
+					default: {
+						newLength -= 1;
+						someCharacterEscaped = true;
+					}
 				}
 			} else {
 				switch (c) {
-				case '\"': {
-					newLength += 5;
-					someCharacterEscaped = true;
-				}
-					break;
-				case '&':
-				case '\'': {
-					newLength += 4;
-					someCharacterEscaped = true;
-				}
-					break;
-				case '<':
-				case '>': {
-					newLength += 3;
-					someCharacterEscaped = true;
-				}
-					break;
+					case '\"': {
+						newLength += 5;
+						someCharacterEscaped = true;
+					}
+						break;
+					case '&':
+					case '\'': {
+						newLength += 4;
+						someCharacterEscaped = true;
+					}
+						break;
+					case '<':
+					case '>': {
+						newLength += 3;
+						someCharacterEscaped = true;
+					}
+						break;
 				}
 			}
 		}
@@ -130,49 +130,49 @@ public class StringUtil {
 			int cint = 0xffff & c;
 			if (cint < 32) {
 				switch (c) {
-				case '\r':
-				case '\n': {
-					sb.append("<br/>");
-					break;
-				}
-				case '\t':
-				case '\f': {
-					sb.append(c);
-				}
-					break;
-				default: {
-					// Remove this character
-				}
+					case '\r':
+					case '\n': {
+						sb.append("<br/>");
+						break;
+					}
+					case '\t':
+					case '\f': {
+						sb.append(c);
+					}
+						break;
+					default: {
+						// Remove this character
+					}
 				}
 			} else {
 				switch (c) {
-				case '\"': {
-					sb.append("&quot;");
-				}
-					break;
-				case '\'': {
-					sb.append("&#39;");
-				}
-					break;
-				case '&': {
-					sb.append("&amp;");
-				}
-					break;
-				case '<': {
-					sb.append("&lt;");
-				}
-					break;
-				case '>': {
-					sb.append("&gt;");
-				}
-					break;
-				case '€': {
-					sb.append("&#128;");
-				}
-					break;
-				default: {
-					sb.append(c);
-				}
+					case '\"': {
+						sb.append("&quot;");
+					}
+						break;
+					case '\'': {
+						sb.append("&#39;");
+					}
+						break;
+					case '&': {
+						sb.append("&amp;");
+					}
+						break;
+					case '<': {
+						sb.append("&lt;");
+					}
+						break;
+					case '>': {
+						sb.append("&gt;");
+					}
+						break;
+					case '€': {
+						sb.append("&#128;");
+					}
+						break;
+					default: {
+						sb.append(c);
+					}
 				}
 			}
 		}
@@ -180,8 +180,7 @@ public class StringUtil {
 	}
 
 	/**
-	 * Turn any HTML escape entities in the string into characters and return
-	 * the resulting string.
+	 * Turn any HTML escape entities in the string into characters and return the resulting string.
 	 * 
 	 * @param s
 	 *            String to be un-escaped.
@@ -227,7 +226,7 @@ public class StringUtil {
 		return result.toString();
 	}
 
-	private final static HashMap<String, Integer> htmlEntities = new HashMap<String, Integer>();
+	private final static HashMap<String, Integer>	htmlEntities	= new HashMap<String, Integer>();
 	static {
 		htmlEntities.put("n" + "b" + "s" + "p", new Integer(160));
 		htmlEntities.put("i" + "e" + "x" + "c" + "l", new Integer(161));
@@ -364,8 +363,7 @@ public class StringUtil {
 		htmlEntities.put("m" + "u", new Integer(956));
 		htmlEntities.put("n" + "u", new Integer(957));
 		htmlEntities.put("xi", new Integer(958));
-		htmlEntities.put("o" + "m" + "i" + "" + "c" + "r" + "on", new Integer(
-				959));
+		htmlEntities.put("o" + "m" + "i" + "" + "c" + "r" + "on", new Integer(959));
 		htmlEntities.put("pi", new Integer(960));
 		htmlEntities.put("r" + "h" + "o", new Integer(961));
 		htmlEntities.put("s" + "i" + "g" + "m" + "a" + "f", new Integer(962));

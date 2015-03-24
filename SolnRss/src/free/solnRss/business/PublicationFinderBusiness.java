@@ -1,6 +1,8 @@
 package free.solnRss.business;
 
+
 import android.util.SparseArray;
+
 
 public interface PublicationFinderBusiness {
 

@@ -1,12 +1,14 @@
 package free.solnRss.adapter;
 
+
 import android.widget.TextView;
+
 
 public class SyndicationItem {
 
-	private TextView title;
-	private TextView numberOfClick;
-	private TextView lastSearchError;
+	private TextView	title;
+	private TextView	numberOfClick;
+	private TextView	lastSearchError;
 
 	public SyndicationItem() {
 
@@ -16,7 +18,7 @@ public class SyndicationItem {
 		return title;
 	}
 
-	public void setTitle(TextView title) {
+	public void setTitle(final TextView title) {
 		this.title = title;
 	}
 
@@ -24,7 +26,7 @@ public class SyndicationItem {
 		return numberOfClick;
 	}
 
-	public void setNumberOfClick(TextView numberOfClick) {
+	public void setNumberOfClick(final TextView numberOfClick) {
 		this.numberOfClick = numberOfClick;
 	}
 
@@ -32,7 +34,7 @@ public class SyndicationItem {
 		return lastSearchError;
 	}
 
-	public void setLastSearchError(TextView lastSearchError) {
+	public void setLastSearchError(final TextView lastSearchError) {
 		this.lastSearchError = lastSearchError;
 	}
 }

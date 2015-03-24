@@ -1,6 +1,8 @@
 package free.solnRss.fragment.listener;
 
+
 import android.content.Context;
+
 
 public interface CategoriesFragmentListener {
 	/**
@@ -14,7 +16,7 @@ public interface CategoriesFragmentListener {
 	 * @param context
 	 */
 	public void reloadCategories();
-	
+
 	/**
 	 * 
 	 * @param contex

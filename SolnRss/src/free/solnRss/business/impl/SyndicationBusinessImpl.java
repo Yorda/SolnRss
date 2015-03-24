@@ -1,5 +1,6 @@
 package free.solnRss.business.impl;
 
+
 import java.net.URL;
 import java.util.List;
 
@@ -14,22 +15,21 @@ import free.solnRss.utility.HttpUtil;
 import free.solnRss.utility.SyndicateUtil;
 import free.solnRss.utility.WebSiteUtil;
 
+
 public class SyndicationBusinessImpl implements SyndicationBusiness {
-	private SyndicateUtil syndicateUtil;
+	private SyndicateUtil	syndicateUtil;
 
 	public SyndicationBusinessImpl() {
 		syndicateUtil = new SyndicateUtil();
 	}
 
 	@Override
-	public Syndication retrieveSyndicationContent(String html, String url)
-			throws Exception {
+	public Syndication retrieveSyndicationContent(final String html, final String url) throws Exception {
 		return setSyndication(html, url);
 	}
 
 	@Override
-	public List<SyndEntry> newRssPublished(String url)
-			throws ExtractFeedException {
+	public List<SyndEntry> newRssPublished(final String url) throws ExtractFeedException {
 		List<SyndEntry> entries = null;
 
 		if (!HttpUtil.isValidUrl(url)) {
@@ -39,19 +39,17 @@ public class SyndicationBusinessImpl implements SyndicationBusiness {
 
 		try {
 			rss = HttpUtil.retrieveHtml(url);
-		} catch (Exception e) {
+		} catch (final Exception e) {
 			e.printStackTrace();
-			throw new ExtractFeedException(
-					ExtractFeedException.Error.GET_HTTP_DATA);
+			throw new ExtractFeedException(ExtractFeedException.Error.GET_HTTP_DATA);
 		}
 
 		try {
 			syndicateUtil.init(rss);
 			entries = syndicateUtil.lastEntries();
 
-		} catch (Exception e) {
-			throw new ExtractFeedException(
-					ExtractFeedException.Error.GET_FEED_INFO);
+		} catch (final Exception e) {
+			throw new ExtractFeedException(ExtractFeedException.Error.GET_FEED_INFO);
 		}
 		return entries;
 	}
@@ -60,13 +58,11 @@ public class SyndicationBusinessImpl implements SyndicationBusiness {
 	 * 
 	 * @param html
 	 * @param url
-	 * @return An object syndication otherwise null if no syndication
-	 *         information found
+	 * @return An object syndication otherwise null if no syndication information found
 	 * @throws Exception
 	 */
-	private Syndication setSyndication(String html, String url)
-			throws Exception {
-		Syndication syndication = new Syndication();
+	private Syndication setSyndication(final String html, final String url) throws Exception {
+		final Syndication syndication = new Syndication();
 		syndication.setWebsiteUrl(url);
 
 		// If html is already a feed
@@ -77,7 +73,7 @@ public class SyndicationBusinessImpl implements SyndicationBusiness {
 
 		} else {
 			// Try to find rss url in html
-			String syndicationUrl = WebSiteUtil.searchSyndicate(html, url);
+			final String syndicationUrl = WebSiteUtil.searchSyndicate(html, url);
 			if (syndicationUrl == null) {
 				return null;
 			}
@@ -89,21 +85,18 @@ public class SyndicationBusinessImpl implements SyndicationBusiness {
 		}
 
 		syndication.setName(syndicateUtil.syndicationName());
-		List<SyndEntry> entries = syndicateUtil.lastEntries();
+		final List<SyndEntry> entries = syndicateUtil.lastEntries();
 		Publication publication = null;
 		String description;
-		for (SyndEntry entry : entries) {
+		for (final SyndEntry entry : entries) {
 
-			description = entry.getDescription() != null ? entry
-					.getDescription().getValue() : null;
+			description = entry.getDescription() != null ? entry.getDescription().getValue() : null;
 
 			if (entry.getContents() != null && entry.getContents().size() > 0) {
-				description = ((SyndContent) entry.getContents().get(0))
-						.getValue();
+				description = ((SyndContent) entry.getContents().get(0)).getValue();
 			}
 
-			publication = new Publication(entry.getLink(),
-					entry.getPublishedDate(), entry.getTitle(), description);
+			publication = new Publication(entry.getLink(), entry.getPublishedDate(), entry.getTitle(), description);
 			syndication.addPublication(publication);
 		}
 

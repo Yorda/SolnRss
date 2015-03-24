@@ -1,5 +1,6 @@
 package free.solnRss.adapter;
 
+
 import android.content.Context;
 import android.database.Cursor;
 import android.graphics.Typeface;
@@ -14,38 +15,34 @@ import free.solnRss.repository.SyndicationsByCategoryRepository;
 import free.solnRss.singleton.TypeFaceSingleton;
 import free.solnRss.utility.Constants;
 
-public class SyndicationsCategorieAdapter extends SimpleCursorAdapter implements
-		FilterQueryProvider {
 
-	protected Cursor cursor;
-	private Context context;
-	private int layout;
-	private Integer selectedCategoryId;
-	private SyndicationsByCategoryRepository syndicationsByCategoryRepository;
+public class SyndicationsCategorieAdapter extends SimpleCursorAdapter implements FilterQueryProvider {
 
-	public SyndicationsCategorieAdapter(Context context, int layout, Cursor c,
-			String[] from, int[] to, int flags) {
+	protected Cursor							cursor;
+	private Context								context;
+	private int									layout;
+	private Integer								selectedCategoryId;
+	private SyndicationsByCategoryRepository	syndicationsByCategoryRepository;
+
+	public SyndicationsCategorieAdapter(final Context context, final int layout, final Cursor c, final String[] from, final int[] to, final int flags) {
 		super(context, layout, c, from, to, flags);
-		this.cursor = c;
+		cursor = c;
 		this.context = context;
 		this.layout = layout;
 		setFilterQueryProvider(this);
-		syndicationsByCategoryRepository = new SyndicationsByCategoryRepository(
-				context);
+		syndicationsByCategoryRepository = new SyndicationsByCategoryRepository(context);
 	}
 
 	@Override
-	public View getView(int position, View convertView, ViewGroup parent) {
+	public View getView(final int position, View convertView, final ViewGroup parent) {
 		SyndicationsCategorieItem item = null;
 
 		if (convertView == null) {
 			convertView = View.inflate(context, layout, null);
 			item = new SyndicationsCategorieItem();
 
-			item.setName((TextView) convertView
-					.findViewById(R.id.syndication_to_categorie_name));
-			item.setCheck((CheckBox) convertView
-					.findViewById(R.id.syndication_to_categorie_check));
+			item.setName((TextView) convertView.findViewById(R.id.syndication_to_categorie_name));
+			item.setCheck((CheckBox) convertView.findViewById(R.id.syndication_to_categorie_check));
 			convertView.setTag(item);
 
 		} else {
@@ -53,13 +50,13 @@ public class SyndicationsCategorieAdapter extends SimpleCursorAdapter implements
 		}
 
 		getCursor().moveToPosition(position);
-		
+
 		// getCursor().getColumnIndex("_id")
 		final Integer syndicationId = getCursor().getInt(0);
-		
+
 		// getCursor().getColumnIndex("syn_name")
 		final String name = getCursor().getString(1);
-		
+
 		// getCursor().getColumnIndex("cas_categorie_id")
 		final Integer categorieId = getCursor().getInt(2);
 
@@ -72,12 +69,10 @@ public class SyndicationsCategorieAdapter extends SimpleCursorAdapter implements
 			item.getCheck().setChecked(true);
 		}
 
-		Typeface userTypeFace = TypeFaceSingleton.getInstance(context)
-				.getUserTypeFace();
+		final Typeface userTypeFace = TypeFaceSingleton.getInstance(context).getUserTypeFace();
 
-		int userFontSize = TypeFaceSingleton.getInstance(context)
-				.getUserFontSize();
-		
+		final int userFontSize = TypeFaceSingleton.getInstance(context).getUserFontSize();
+
 		if (userTypeFace != null) {
 			item.getName().setTypeface(userTypeFace);
 		}
@@ -89,12 +84,11 @@ public class SyndicationsCategorieAdapter extends SimpleCursorAdapter implements
 	}
 
 	@Override
-	public Cursor runQuery(CharSequence constraint) {
-		return syndicationsByCategoryRepository.reloadSyndicationsByCategory(
-				selectedCategoryId, constraint.toString());
+	public Cursor runQuery(final CharSequence constraint) {
+		return syndicationsByCategoryRepository.reloadSyndicationsByCategory(selectedCategoryId, constraint.toString());
 	}
 
-	public void setSelectedCategoryId(Integer selectedCategoryId) {
+	public void setSelectedCategoryId(final Integer selectedCategoryId) {
 		this.selectedCategoryId = selectedCategoryId;
 	}
 }

@@ -1,5 +1,6 @@
 package free.solnRss.utility;
 
+
 import java.io.BufferedInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -10,6 +11,7 @@ import java.io.InputStream;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.util.Base64;
+
 
 /**
  * 
@@ -25,8 +27,7 @@ public class StreamUtil {
 	 * @return
 	 * @throws IOException
 	 */
-	public static String readInputStreamAsString(InputStream in)
-			throws IOException {
+	public static String readInputStreamAsString(InputStream in) throws IOException {
 
 		BufferedInputStream bis = new BufferedInputStream(in);
 		ByteArrayOutputStream buf = new ByteArrayOutputStream();

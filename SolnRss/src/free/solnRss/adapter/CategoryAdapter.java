@@ -1,5 +1,6 @@
 package free.solnRss.adapter;
 
+
 import android.content.Context;
 import android.content.res.Resources;
 import android.database.Cursor;
@@ -13,25 +14,25 @@ import free.solnRss.R;
 import free.solnRss.singleton.TypeFaceSingleton;
 import free.solnRss.utility.Constants;
 
+
 public class CategoryAdapter extends SimpleCursorAdapter {
 
-	protected Cursor cursor;
-	private final Context context;
-	private final int layout;
+	protected Cursor		cursor;
+	private final Context	context;
+	private final int		layout;
 
-	public CategoryAdapter(final Context context, int layout, Cursor c,
-			String[] from, int[] to, int flags) {
+	public CategoryAdapter(final Context context, final int layout, final Cursor c, final String[] from, final int[] to, final int flags) {
 
 		super(context, layout, c, from, to, flags);
-		this.cursor = c;
+		cursor = c;
 		this.context = context;
 		this.layout = layout;
 	}
 
 	@Override
-	public View getView(int position, View convertView, ViewGroup parent) {
+	public View getView(final int position, final View convertView, final ViewGroup parent) {
 		CategoryItem item = null;
-		Resources r = context.getResources();
+		final Resources r = context.getResources();
 		View v;
 
 		if (convertView == null) {
@@ -39,8 +40,7 @@ public class CategoryAdapter extends SimpleCursorAdapter {
 			item = new CategoryItem();
 
 			item.setName((TextView) v.findViewById(R.id.categorie_name));
-			item.setNumberOfUse((TextView) v
-					.findViewById(R.id.categorie_number_of_use));
+			item.setNumberOfUse((TextView) v.findViewById(R.id.categorie_number_of_use));
 			v.setTag(item);
 
 		} else {
@@ -51,11 +51,10 @@ public class CategoryAdapter extends SimpleCursorAdapter {
 		getCursor().moveToPosition(position);
 
 		// getCursor().getColumnIndex("cat_name")
-		item.getName().setText(
-				Html.fromHtml("<u>" + getCursor().getString(1) + "</u>"));
+		item.getName().setText(Html.fromHtml("<u>" + getCursor().getString(1) + "</u>"));
 
 		// getCursor().getColumnIndex("number_of_use")
-		Integer numberOfUse = getCursor().getInt(2);
+		final Integer numberOfUse = getCursor().getInt(2);
 		String use = new String();
 
 		if (numberOfUse == null || numberOfUse == 0) {
@@ -68,11 +67,9 @@ public class CategoryAdapter extends SimpleCursorAdapter {
 
 		item.getNumberOfUse().setText(use);
 
-		Typeface userTypeFace = TypeFaceSingleton.getInstance(context)
-				.getUserTypeFace();
-		int userFontSize = TypeFaceSingleton.getInstance(context)
-				.getUserFontSize();
-		
+		final Typeface userTypeFace = TypeFaceSingleton.getInstance(context).getUserTypeFace();
+		final int userFontSize = TypeFaceSingleton.getInstance(context).getUserFontSize();
+
 		if (userTypeFace != null) {
 			item.getName().setTypeface(userTypeFace, Typeface.BOLD);
 			item.getNumberOfUse().setTypeface(userTypeFace);

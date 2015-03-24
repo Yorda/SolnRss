@@ -1,22 +1,22 @@
 package free.solnRss.manager;
 
-import free.solnRss.R;
+
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.net.ConnectivityManager;
 import android.preference.PreferenceManager;
+import free.solnRss.R;
+
 
 public class UpdatingProcessConnectionManager {
-	private static String noConnectionReason;
+	private static String	noConnectionReason;
 
-	public static boolean canUseConnection(Context context) {
+	public static boolean canUseConnection(final Context context) {
 
-		ConnectivityManager connectivityManager = (ConnectivityManager) context
-				.getSystemService(Context.CONNECTIVITY_SERVICE);
+		final ConnectivityManager connectivityManager = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
 
 		// For WiFi
-		boolean isWifi = connectivityManager.getNetworkInfo(
-				ConnectivityManager.TYPE_WIFI).isConnectedOrConnecting();
+		final boolean isWifi = connectivityManager.getNetworkInfo(ConnectivityManager.TYPE_WIFI).isConnectedOrConnecting();
 
 		boolean isMobile = false;
 
@@ -24,23 +24,18 @@ public class UpdatingProcessConnectionManager {
 		// Could be null on tablet
 		if (connectivityManager.getNetworkInfo(ConnectivityManager.TYPE_MOBILE) != null) {
 
-			isMobile = connectivityManager.getNetworkInfo(
-					ConnectivityManager.TYPE_MOBILE).isConnectedOrConnecting();
+			isMobile = connectivityManager.getNetworkInfo(ConnectivityManager.TYPE_MOBILE).isConnectedOrConnecting();
 		}
 
 		if (!isMobile && !isWifi) {
-			noConnectionReason = context.getResources().getString(
-					R.string.no_connection);
+			noConnectionReason = context.getResources().getString(R.string.no_connection);
 			return false;
 		}
 
-		SharedPreferences preferences = PreferenceManager
-				.getDefaultSharedPreferences(context);
+		final SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(context);
 
-		if (preferences.getBoolean("pref_what_type_of_connection", true)
-				&& !isWifi) {
-			noConnectionReason = context.getResources().getString(
-					R.string.no_connection_wifi);
+		if (preferences.getBoolean("pref_what_type_of_connection", true) && !isWifi) {
+			noConnectionReason = context.getResources().getString(R.string.no_connection_wifi);
 			return false;
 		}
 

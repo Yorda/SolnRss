@@ -1,6 +1,8 @@
 package free.solnRss.fragment.listener;
 
+
 import android.os.Parcelable;
+
 
 public interface PublicationsFragmentListener {
 	/**
@@ -47,8 +49,7 @@ public interface PublicationsFragmentListener {
 	public void markAsRead();
 
 	/**
-	 * When list view is empty user can reload publication's list with
-	 * publications already read.
+	 * When list view is empty user can reload publication's list with publications already read.
 	 */
 	public void reloadPublicationsWithAlreadyRead();
 
@@ -62,8 +63,7 @@ public interface PublicationsFragmentListener {
 	 * 
 	 * @param deletedSyndicationId
 	 */
-	public void reLoadPublicationsAfterSyndicationDeleted(
-			Integer deletedSyndicationId);
+	public void reLoadPublicationsAfterSyndicationDeleted(Integer deletedSyndicationId);
 
 	/**
 	 * 

@@ -1,5 +1,6 @@
 package free.solnRss.utility;
 
+
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.regex.Matcher;
@@ -18,10 +19,12 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.util.Base64;
 
+
 public class ImageToDataUtil {
 
-	private final Pattern pImg = Pattern.compile("<img(.*?)>");
-	private final Pattern pSrc = Pattern.compile("src=(['\"])(.*?)\\1");
+	private final Pattern	pImg	= Pattern.compile("<img(.*?)>");
+	private final Pattern	pSrc	= Pattern.compile("src=(['\"])(.*?)\\1");
+
 	//private final String onePixelBase64 = "R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7";
 
 	public String replaceImageByBase64Data(String html) {
@@ -35,8 +38,7 @@ public class ImageToDataUtil {
 		while (m.find()) {
 			httpImage = html.substring(m.start(), m.end());
 			base64Image = replaceByBase64Data(httpImage);
-			htmlWithBase64Image = htmlWithBase64Image.replaceAll(httpImage,
-					base64Image);
+			htmlWithBase64Image = htmlWithBase64Image.replaceAll(httpImage, base64Image);
 		}
 		return htmlWithBase64Image;
 	}
@@ -53,15 +55,15 @@ public class ImageToDataUtil {
 		while (m.find()) {
 			url = imageTag.substring(m.start() + 5, m.end() - 1);
 			try {
-				
+
 				bitmap = downloadBitmap(url);
 				raw64 = encode(bitmap);
-				raw64ImageTag = raw64ImageTag.replaceAll(url,
-						"data:image/gif;base64," + raw64);
+				raw64ImageTag = raw64ImageTag.replaceAll(url, "data:image/gif;base64," + raw64);
 
 			} catch (Exception e) {
-				/*raw64ImageTag = raw64ImageTag.replaceAll(url,
-						"data:image/gif;base64," + onePixelBase64);*/
+				/*
+				 * raw64ImageTag = raw64ImageTag.replaceAll(url, "data:image/gif;base64," + onePixelBase64);
+				 */
 			}
 		}
 		return raw64ImageTag;
@@ -87,17 +89,15 @@ public class ImageToDataUtil {
 			HttpEntity entity = response.getEntity();
 			byte[] bytes = EntityUtils.toByteArray(entity);
 
-			Bitmap bitmap = BitmapFactory.decodeByteArray(bytes, 0,
-					bytes.length);
-			
-			/*File f = new File("");
-			FileOutputStream fos = new FileOutputStream(f);
-			bitmap.compress(CompressFormat.PNG, 0, fos);*/
-			
+			Bitmap bitmap = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
+
+			/*
+			 * File f = new File(""); FileOutputStream fos = new FileOutputStream(f); bitmap.compress(CompressFormat.PNG, 0, fos);
+			 */
+
 			return bitmap;
 		} else {
-			throw new IOException("Download failed, HTTP response code "
-					+ statusCode + " - " + statusLine.getReasonPhrase());
+			throw new IOException("Download failed, HTTP response code " + statusCode + " - " + statusLine.getReasonPhrase());
 		}
 	}
 }

@@ -1,5 +1,6 @@
 package free.solnRss.utility;
 
+
 import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
@@ -16,18 +17,18 @@ import android.util.Log;
 
 import com.squareup.picasso.Picasso;
 
-public class ImageLoaderUtil {
-	
-	private final String tag = ImageLoaderUtil.class.getName();
-	private Context context;
-	private String url, imageName, path, description;
-	private Bitmap bitmap;
 
+public class ImageLoaderUtil {
+
+	private final String	tag	= ImageLoaderUtil.class.getName();
+	private Context			context;
+	private String			url, imageName, path, description;
+	private Bitmap			bitmap;
 
 	public ImageLoaderUtil(Context context) {
 		this.context = context;
 	}
-	
+
 	public String saveImage() {
 
 		Document document = Jsoup.parse(description);
@@ -37,13 +38,13 @@ public class ImageLoaderUtil {
 		for (Element image : images) {
 			try {
 				url = image.absUrl("src");
-				
+
 				if (TextUtils.isEmpty(url)) {
 					continue;
 				}
-				
+
 				imageName = Integer.valueOf(url.hashCode()).toString() + ".jpg";
-				
+
 				path = "file://" + context.getFilesDir() + "/" + imageName;
 
 				// Must not already registered
@@ -60,15 +61,15 @@ public class ImageLoaderUtil {
 		return document.html();
 	}
 
-	private boolean isImageAlreadyDownloded(String path) {		
+	private boolean isImageAlreadyDownloded(String path) {
 		File file = new File(path);
 		return file.exists();
 	}
-	
+
 	private void loadImage() throws Exception {
 		bitmap = Picasso.with(context).load(url).get();
 		File file = new File(context.getFilesDir(), imageName);
-		
+
 		String filePath = file.toString();
 		FileOutputStream fos = new FileOutputStream(filePath);
 

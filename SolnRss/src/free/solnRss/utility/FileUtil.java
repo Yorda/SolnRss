@@ -1,5 +1,6 @@
 package free.solnRss.utility;
 
+
 import java.io.BufferedOutputStream;
 import java.io.BufferedReader;
 import java.io.File;
@@ -11,16 +12,16 @@ import java.io.ObjectOutputStream;
 
 import android.os.Environment;
 
+
 public class FileUtil {
 
-	public String readFileToSring(final String path)	
-			throws FileNotFoundException, IOException {
+	public String readFileToSring(final String path) throws FileNotFoundException, IOException {
 
 		BufferedReader reader = null;
 		String s = null;
 		try {
 			File f = new File(path);
-			
+
 			reader = new BufferedReader(new FileReader(f));
 			StringBuffer buffer = new StringBuffer();
 

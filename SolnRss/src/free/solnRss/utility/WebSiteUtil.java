@@ -1,5 +1,6 @@
 package free.solnRss.utility;
 
+
 import java.io.IOException;
 import java.util.Locale;
 
@@ -10,9 +11,9 @@ import org.jsoup.select.Elements;
 import de.jetwick.snacktory.HtmlFetcher;
 import de.jetwick.snacktory.JResult;
 
+
 public final class WebSiteUtil {
 
-	
 	public static String htmlToReadableText(String url) {
 
 		String text = null;
@@ -33,13 +34,9 @@ public final class WebSiteUtil {
 
 		return text;
 	}
-	
-	final static String[] feedsType = { 
-		"link[type$=rss+xml]", 
-		"link[type$=atom+xml]" , 
-		"a[href*=http://feeds.feedburner.com]"
-	};
-	
+
+	final static String[]	feedsType	= { "link[type$=rss+xml]", "link[type$=atom+xml]", "a[href*=http://feeds.feedburner.com]" };
+
 	/**
 	 * 
 	 * @param url
@@ -47,7 +44,7 @@ public final class WebSiteUtil {
 	 * @throws IOException
 	 */
 	public static String searchSyndicate(String url) throws IOException {
-		Document doc = Jsoup.connect(url).get();		
+		Document doc = Jsoup.connect(url).get();
 		String feeds = null;
 
 		int i = 0;
@@ -60,18 +57,18 @@ public final class WebSiteUtil {
 		}
 		return feeds;
 	}
-	
+
 	public static String searchSyndicate(String html, String url) throws IOException {
 		Document doc = Jsoup.parse(html);
 		return searchSyndicate(doc, url);
 	}
 
 	public static String searchSyndicate(Document doc, String url) throws IOException {
-		
+
 		String feeds = null;
 
 		int i = 0;
-		while ( i < feedsType.length) {
+		while (i < feedsType.length) {
 			Elements elements = doc.select(feedsType[i]);
 			if (feeds == null && elements != null && elements.hasAttr("href")) {
 				feeds = getSyndicate(url, elements);
@@ -80,7 +77,7 @@ public final class WebSiteUtil {
 		}
 		return feeds;
 	}
-	
+
 	private static String getSyndicate(String url, Elements elements) {
 		String href = elements.attr("href");
 		if (href.toLowerCase(Locale.getDefault()).indexOf("http") == -1) {

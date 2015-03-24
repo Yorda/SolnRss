@@ -1,5 +1,6 @@
 package free.solnRss.fragment;
 
+
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.DialogInterface.OnClickListener;
@@ -22,75 +23,62 @@ import android.widget.AdapterView;
 import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.Toast;
-import de.greenrobot.event.EventBus;
 import free.solnRss.R;
 import free.solnRss.activity.SolnRss;
 import free.solnRss.adapter.SyndicationAdapter;
 import free.solnRss.dialog.OneEditTextDialogBox;
-import free.solnRss.event.ChangePublicationListStateEvent;
 import free.solnRss.fragment.listener.SyndicationsFragmentListener;
 import free.solnRss.repository.SyndicationRepository;
-import free.solnRss.state.PublicationsBySyndicationListState;
+
 
 /**
  * 
  * @author jftomasi
  *
  */
-public class SyndicationsFragment extends AbstractFragment implements SyndicationsFragmentListener, 
-			SharedPreferences.OnSharedPreferenceChangeListener {
-	
-	private SyndicationRepository syndicationRepository;
-	private Integer selectedSyndicationID;
-	private Integer activeStatus;
-	private Integer isDisplayOnMainTimeLine;
-	
+public class SyndicationsFragment extends AbstractFragment implements SyndicationsFragmentListener,
+		SharedPreferences.OnSharedPreferenceChangeListener {
+
+	private SyndicationRepository	syndicationRepository;
+	private Integer					selectedSyndicationID;
+	private Integer					activeStatus;
+	private Integer					isDisplayOnMainTimeLine;
+
 	@Override
-	public View onCreateView(LayoutInflater inflater, ViewGroup vg, Bundle save) {
-		
+	public View onCreateView(final LayoutInflater inflater, final ViewGroup vg, final Bundle save) {
+
 		selectedSyndicationID = null;
 		activeStatus = null;
-		View fragment = inflater.inflate( R.layout.fragment_syndications, vg, false);
-		
-		emptyLayoutId = R.id.emptySyndicationsLayout;	
-		
+		final View fragment = inflater.inflate(R.layout.fragment_syndications, vg, false);
+
+		emptyLayoutId = R.id.emptySyndicationsLayout;
+
 		listContainer = fragment.findViewById(R.id.syndicationsListContainer);
 		progressContainer = fragment.findViewById(R.id.syndicationsProgressContainer);
 		listShown = true;
 
-		SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(getActivity());
+		final SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(getActivity());
 		sharedPreferences.registerOnSharedPreferenceChangeListener(this);
-		
+
 		return fragment;
 	}
 
 	@Override
-	public void onActivityResult(int requestCode, int resultCode, Intent data) {
+	public void onActivityResult(final int requestCode, final int resultCode, final Intent data) {
 		super.onActivityResult(requestCode, resultCode, data);
 	}
 
 	@Override
-	public void onListItemClick(ListView l, View v, int position, long id) {
-		
-		Cursor cursor = ((SyndicationAdapter) l.getAdapter()).getCursor();
-		int syndicationId = cursor.getInt(cursor.getColumnIndex("_id"));
-		
-		changePublicationListState(syndicationId);
-		
+	public void onListItemClick(final ListView l, final View v, final int position, final long id) {
+
+		final Cursor cursor = ((SyndicationAdapter) l.getAdapter()).getCursor();
+		final int syndicationId = cursor.getInt(cursor.getColumnIndex("_id"));
+
 		((SolnRss) getActivity()).reLoadPublicationsBySyndication(syndicationId);
-	}
-	
-	private void changePublicationListState(int syndicationId) {
-		ChangePublicationListStateEvent event = new ChangePublicationListStateEvent();
-		PublicationsBySyndicationListState state = new PublicationsBySyndicationListState();
-		state.init(getActivity());
-		state.setSyndicationId(syndicationId);
-		event.setState(state);
-		EventBus.getDefault().postSticky(event);
 	}
 
 	@Override
-	public void onActivityCreated(Bundle savedInstanceState) {
+	public void onActivityCreated(final Bundle savedInstanceState) {
 		super.onActivityCreated(savedInstanceState);
 		syndicationRepository = new SyndicationRepository(getActivity());
 		registerForContextMenu(getListView());
@@ -98,29 +86,28 @@ public class SyndicationsFragment extends AbstractFragment implements Syndicatio
 		setHasOptionsMenu(true);
 		setListShown(false);
 	}
-	
-	@Override
-	public void onViewCreated(View view, Bundle savedInstanceState) {
-		super.onViewCreated(view, savedInstanceState);
-	}
-		
 
 	@Override
-	public void onCreateContextMenu(ContextMenu menu, View v,	ContextMenuInfo menuInfo) {
+	public void onViewCreated(final View view, final Bundle savedInstanceState) {
+		super.onViewCreated(view, savedInstanceState);
+	}
+
+	@Override
+	public void onCreateContextMenu(final ContextMenu menu, final View v, final ContextMenuInfo menuInfo) {
 		super.onCreateContextMenu(menu, v, menuInfo);
-		
-		AdapterView.AdapterContextMenuInfo info = (AdapterView.AdapterContextMenuInfo) menuInfo;
-		Cursor c = ((SyndicationAdapter) getListAdapter()).getCursor();
+
+		final AdapterView.AdapterContextMenuInfo info = (AdapterView.AdapterContextMenuInfo) menuInfo;
+		final Cursor c = ((SyndicationAdapter) getListAdapter()).getCursor();
 		c.moveToPosition(info.position);
-		
+
 		selectedSyndicationID = c.getInt(c.getColumnIndex("_id"));
-		activeStatus =  c.getInt(c.getColumnIndex("syn_is_active"));
+		activeStatus = c.getInt(c.getColumnIndex("syn_is_active"));
 		isDisplayOnMainTimeLine = c.getInt(c.getColumnIndex("syn_display_on_timeline"));
-		
+
 		menu.setHeaderTitle(c.getString(c.getColumnIndex("syn_name")));
-		MenuInflater inflater = getActivity().getMenuInflater();
+		final MenuInflater inflater = getActivity().getMenuInflater();
 		inflater.inflate(R.menu.syndications_context, menu);
-		
+
 		setLabelContextMenuActivation(menu);
 		setLabelContextMenuForDisplayOnMainTimeLine(menu);
 	}
@@ -130,138 +117,131 @@ public class SyndicationsFragment extends AbstractFragment implements Syndicatio
 		final String[] from = { "syn_name", "syn_number_click" };
 		final int[] to = { android.R.id.text1, android.R.id.text2 };
 
-		simpleCursorAdapter = new SyndicationAdapter(getActivity(),
-				R.layout.syndications, null, from, to, 0);
-		setListAdapter((SyndicationAdapter)simpleCursorAdapter);
+		simpleCursorAdapter = new SyndicationAdapter(getActivity(), R.layout.syndications, null, from, to, 0);
+		setListAdapter(simpleCursorAdapter);
 	}
 
-	
 	@Override
-	public Loader<Cursor> onCreateLoader(int id, Bundle bundle) {
+	public Loader<Cursor> onCreateLoader(final int id, final Bundle bundle) {
 		return syndicationRepository.loadSyndications(getFilterText());
 	}
-	
+
 	@Override
 	protected void queryTheTextChange() {
 		getLoaderManager().restartLoader(0, null, this);
 	}
-	
+
 	/*
 	 * In context menu, if syndication is inactive set label to reactivate
-	 * 
 	 * @param menu
 	 */
-	private void setLabelContextMenuActivation(ContextMenu menu) {
-		boolean isActive = activeStatus == 0 ? true : false;
-		MenuItem itemActive = menu.getItem(1);
+	private void setLabelContextMenuActivation(final ContextMenu menu) {
+		final boolean isActive = activeStatus == 0 ? true : false;
+		final MenuItem itemActive = menu.getItem(1);
 		if (!isActive) {
 			itemActive.setTitle(getResources().getString(R.string.active_articles_btn));
 		}
 	}
-	
-	private void setLabelContextMenuForDisplayOnMainTimeLine(ContextMenu menu) {
-		boolean isDisplayed = isDisplayOnMainTimeLine == 1 ? true : false;
-		MenuItem itemActive = menu.getItem(2);
+
+	private void setLabelContextMenuForDisplayOnMainTimeLine(final ContextMenu menu) {
+		final boolean isDisplayed = isDisplayOnMainTimeLine == 1 ? true : false;
+		final MenuItem itemActive = menu.getItem(2);
 		if (!isDisplayed) {
 			itemActive.setTitle(getResources().getString(R.string.display_articles_on_time_line));
 		}
-		
+
 	}
 
 	@Override
-	public boolean onContextItemSelected(MenuItem item) {
+	public boolean onContextItemSelected(final MenuItem item) {
 		switch (item.getItemId()) {
 
-		case R.id.menu_mark_syndication_as_read:
-			markSyndicationPublicationsAsRead();
-			break;
+			case R.id.menu_mark_syndication_as_read:
+				markSyndicationPublicationsAsRead();
+				break;
 
-		case R.id.menu_active:
-			changeStatus(item);
-			break;
+			case R.id.menu_active:
+				changeStatus(item);
+				break;
 
-		case R.id.menu_display_on_time_line:
-			changeDisplayMode(item);
-			break;
+			case R.id.menu_display_on_time_line:
+				changeDisplayMode(item);
+				break;
 
-		case R.id.menu_clean:
-			clean();
-			break;
+			case R.id.menu_clean:
+				clean();
+				break;
 
-		case R.id.menu_delete:
-			delete();
-			break;
+			case R.id.menu_delete:
+				delete();
+				break;
 
-		case R.id.menu_rename:
-			rename();
-			break;
-			
-		default:
-			break;
+			case R.id.menu_rename:
+				rename();
+				break;
+
+			default:
+				break;
 		}
 		return super.onContextItemSelected(item);
 	}
 
 	private void rename() {
 		OneEditTextDialogBox oneEditTextDialogBox;
-		oneEditTextDialogBox = new OneEditTextDialogBox(getActivity(), 
-				syndicationName(selectedSyndicationID) ,
-				getResources().getString(R.string.input_new_name),  
-				new DialogInterface.OnClickListener() {
+		oneEditTextDialogBox = new OneEditTextDialogBox(getActivity(), syndicationName(selectedSyndicationID), getResources().getString(
+				R.string.input_new_name), new DialogInterface.OnClickListener() {
 			@Override
-			public void onClick(DialogInterface dialog, int which) {
-				EditText e = (EditText)((AlertDialog)dialog).findViewById(R.id.one_edit_text_dialog);
+			public void onClick(final DialogInterface dialog, final int which) {
+				final EditText e = (EditText) ((AlertDialog) dialog).findViewById(R.id.one_edit_text_dialog);
 				renameSyndication(e.getText().toString());
 			}
 		});
 		oneEditTextDialogBox.displayDialogBox();
 	}
-	
-	private void renameSyndication(String newName){
+
+	private void renameSyndication(final String newName) {
 		syndicationRepository.renameSyndication(selectedSyndicationID, newName);
 		((SolnRss) getActivity()).refreshPublications();
 	}
-	
+
 	private void markSyndicationPublicationsAsRead() {
 
-		OnClickListener listener = new DialogInterface.OnClickListener() {
+		final OnClickListener listener = new DialogInterface.OnClickListener() {
 			@Override
-			public void onClick(DialogInterface dialog, int which) {
-				((SolnRss) getActivity()).getPublicationsFragmentListener()
-						.markSyndicationPublicationsAsRead(selectedSyndicationID);
+			public void onClick(final DialogInterface dialog, final int which) {
+				((SolnRss) getActivity()).getPublicationsFragmentListener().markSyndicationPublicationsAsRead(selectedSyndicationID);
 			}
 		};
 
-		Resources r = getResources();
+		final Resources r = getResources();
 
-		AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-		
+		final AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+
 		builder.setMessage(r.getString(R.string.confirm_mark_as_read, syndicationName(selectedSyndicationID)))
-			.setNegativeButton(r.getString(android.R.string.cancel), null)
-			.setPositiveButton(r.getString(android.R.string.ok), listener)
-			.create().show();
+				.setNegativeButton(r.getString(android.R.string.cancel), null).setPositiveButton(r.getString(android.R.string.ok), listener).create()
+				.show();
 	}
-	
+
 	private void changeDisplayMode(final MenuItem item) {
-		
+
 		syndicationRepository.changeSyndicationDisplayMode(selectedSyndicationID, isDisplayOnMainTimeLine == 0 ? 1 : 0);
 		// Reload publications list
 		((SolnRss) getActivity()).refreshPublications();
-		
+
 		String msg = getResources().getString(R.string.display_syndication);
-		if(isDisplayOnMainTimeLine != 0){
-			 msg =  getResources().getString(R.string.undisplay_syndication);
-		}		
+		if (isDisplayOnMainTimeLine != 0) {
+			msg = getResources().getString(R.string.undisplay_syndication);
+		}
 		Toast.makeText(getActivity(), msg, Toast.LENGTH_LONG).show();
 	}
 
 	public void changeStatus(final MenuItem item) {
-		
-		syndicationRepository.changeSyndicationActivityStatus(selectedSyndicationID, activeStatus == 0 ? 1: 0);
-		
+
+		syndicationRepository.changeSyndicationActivityStatus(selectedSyndicationID, activeStatus == 0 ? 1 : 0);
+
 		String title = getResources().getString(R.string.active_articles_btn);
 		String msg = getResources().getString(R.string.unactive_syndication);
-		
+
 		if (activeStatus != 0) {
 			title = getResources().getString(R.string.unactive_articles_btn);
 			msg = getResources().getString(R.string.active_syndication);
@@ -269,71 +249,68 @@ public class SyndicationsFragment extends AbstractFragment implements Syndicatio
 
 		item.setTitle(title);
 		Toast.makeText(getActivity(), msg, Toast.LENGTH_LONG).show();
-		
+
 	}
 
 	public void delete() {
-		
-		AsyncTask<Integer, Void, Integer> t = new AsyncTask<Integer, Void, Integer>() {
+
+		final AsyncTask<Integer, Void, Integer> t = new AsyncTask<Integer, Void, Integer>() {
 			@Override
-			protected Integer doInBackground(Integer... arg0) {
+			protected Integer doInBackground(final Integer... arg0) {
 				syndicationRepository.delete(selectedSyndicationID);
 				return selectedSyndicationID;
 			};
+
 			@Override
-			protected void onPostExecute(Integer result) {
-				((SolnRss)getActivity()).reLoadPublicationsAfterSyndicationDeleted(selectedSyndicationID);
-				((SolnRss)getActivity()).reLoadCategoriesAfterSyndicationDeleted();
+			protected void onPostExecute(final Integer result) {
+				((SolnRss) getActivity()).reLoadPublicationsAfterSyndicationDeleted(selectedSyndicationID);
+				((SolnRss) getActivity()).reLoadCategoriesAfterSyndicationDeleted();
 				reloadSyndications();
-				Toast.makeText(getActivity(),
-						getResources().getString(R.string.delete_syndication_ok),
-						Toast.LENGTH_LONG).show();
+				Toast.makeText(getActivity(), getResources().getString(R.string.delete_syndication_ok), Toast.LENGTH_LONG).show();
 			};
 		};
-		
+
 		dialogBox(getResources().getString(R.string.delete_confirm), t);
 	}
-	
+
 	public void clean() {
-		
-		AsyncTask<Integer, Void, Integer> t = new AsyncTask<Integer, Void, Integer>() {
+
+		final AsyncTask<Integer, Void, Integer> t = new AsyncTask<Integer, Void, Integer>() {
 			@Override
-			protected Integer doInBackground(Integer... arg0) {
+			protected Integer doInBackground(final Integer... arg0) {
 				((SolnRss) getActivity()).getPublicationsFragmentListener().deletePublications(selectedSyndicationID);
 				return selectedSyndicationID;
 			};
+
 			@Override
-			protected void onPostExecute(Integer result) {
+			protected void onPostExecute(final Integer result) {
 				// ((SolnRss)getActivity()).refreshPublications();
-				String ok = getResources().getString(R.string.clean_syndication_ok);
+				final String ok = getResources().getString(R.string.clean_syndication_ok);
 				Toast.makeText(getActivity(), ok, Toast.LENGTH_LONG).show();
 			};
 		};
-		
+
 		dialogBox(getResources().getString(R.string.clean_confirm), t);
 	}
-	
-	public void dialogBox(String message,
-			final AsyncTask<Integer, Void, Integer> task) {
 
-		OnClickListener listener = new DialogInterface.OnClickListener() {
+	public void dialogBox(final String message, final AsyncTask<Integer, Void, Integer> task) {
+
+		final OnClickListener listener = new DialogInterface.OnClickListener() {
 			@Override
-			public void onClick(DialogInterface dialog, int which) {
+			public void onClick(final DialogInterface dialog, final int which) {
 				task.execute(selectedSyndicationID);
 			}
 		};
 
-		Resources r = getResources();
-		AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-		builder.setMessage(message)
-				.setNegativeButton(r.getString(android.R.string.cancel), null)
-				.setPositiveButton(r.getString(android.R.string.ok), listener)
-				.create().show();
+		final Resources r = getResources();
+		final AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+		builder.setMessage(message).setNegativeButton(r.getString(android.R.string.cancel), null)
+				.setPositiveButton(r.getString(android.R.string.ok), listener).create().show();
 	}
-	
+
 	@Override
-	public void addOneReadToSyndication(Integer syndicationId, Integer numberOfClick) {
-		syndicationRepository.addOneReadToSyndication(syndicationId,numberOfClick);
+	public void addOneReadToSyndication(final Integer syndicationId, final Integer numberOfClick) {
+		syndicationRepository.addOneReadToSyndication(syndicationId, numberOfClick);
 	}
 
 	@Override
@@ -361,12 +338,9 @@ public class SyndicationsFragment extends AbstractFragment implements Syndicatio
 	}
 
 	@Override
-	public void onSharedPreferenceChanged(SharedPreferences sharedPreferences,
-			String key) {
-		if (key.compareTo("pref_sort_syndications") == 0 
-				|| key.compareTo("pref_user_font_face") == 0 
-				|| key.compareTo("pref_user_font_size") == 0) {
+	public void onSharedPreferenceChanged(final SharedPreferences sharedPreferences, final String key) {
+		if (key.compareTo("pref_sort_syndications") == 0 || key.compareTo("pref_user_font_face") == 0 || key.compareTo("pref_user_font_size") == 0) {
 			reloadSyndications();
-		} 	
-	}	
+		}
+	}
 }

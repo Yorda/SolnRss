@@ -1,5 +1,6 @@
 package free.solnRss.activity;
 
+
 import android.app.ListActivity;
 import android.app.LoaderManager;
 import android.content.Loader;
@@ -19,48 +20,50 @@ import free.solnRss.repository.SyndicationsByCategoryRepository;
 import free.solnRss.task.SyndicationCategoryAddTask;
 import free.solnRss.task.SyndicationCategoryRemoveTask;
 
-public class SyndicationsCategoriesActivity extends ListActivity implements
-		LoaderManager.LoaderCallbacks<Cursor> {
-	
-	final int layoutID = R.layout.activity_syndications_categorie;
-	private Integer selectedCategorieID;
-	private String selectedCategoryName;
-	
-	private final String[] from = { "syn_name" };
-	private final int[] to = { android.R.id.text1 };
-	
-	private SyndicationsByCategoryRepository syndicationsByCategoryRepository;
+
+public class SyndicationsCategoriesActivity extends ListActivity implements LoaderManager.LoaderCallbacks<Cursor> {
+
+	final int									layoutID	= R.layout.activity_syndications_categorie;
+	private Integer								selectedCategorieID;
+	private String								selectedCategoryName;
+
+	private final String[]						from		= { "syn_name" };
+	private final int[]							to			= { android.R.id.text1 };
+
+	private SyndicationsCategorieAdapter		adapter;
+
+	private SyndicationsByCategoryRepository	syndicationsByCategoryRepository;
 
 	@Override
-	protected void onCreate(Bundle savedInstanceState) {
+	protected void onCreate(final Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(layoutID);
-		
+
 		getActionBar().setBackgroundDrawable(new ColorDrawable(0xeeeeee));
-		
-		selectedCategorieID  = getIntent().getIntExtra("selectedCategorieID", -1);
+
+		selectedCategorieID = getIntent().getIntExtra("selectedCategorieID", -1);
 		selectedCategoryName = getIntent().getStringExtra("selectedCategoryName");
-		
+
 		if (!TextUtils.isEmpty(selectedCategoryName)) {
 			getActionBar().setTitle(Html.fromHtml("<b><u>" + selectedCategoryName + "</u></b>"));
 		}
-		
+
 		if (selectedCategorieID == -1) {
 			finish();
 		}
 	}
-	
+
 	@Override
-	public boolean onCreateOptionsMenu(Menu menu) {
+	public boolean onCreateOptionsMenu(final Menu menu) {
 		getMenuInflater().inflate(R.menu.syndications_categories_menu, menu);
-		MenuItem item =  menu.add("Search"); 
+		final MenuItem item = menu.add("Search");
 		item.setIcon(R.drawable.ic_abar_search);
-		SearchView searchView =  new SearchView(this);
+		final SearchView searchView = new SearchView(this);
 		setupSearchView(item, searchView);
 		item.setActionView(searchView);
 		return true;
 	}
-	
+
 	@Override
 	protected void onStart() {
 		super.onStart();
@@ -69,19 +72,19 @@ public class SyndicationsCategoriesActivity extends ListActivity implements
 		getListView().setTextFilterEnabled(true);
 	}
 
-	public void addSyndicationToCategorie(Integer syndicationId) {
-		SyndicationCategoryAddTask addTask = new SyndicationCategoryAddTask(this);
+	public void addSyndicationToCategorie(final Integer syndicationId) {
+		final SyndicationCategoryAddTask addTask = new SyndicationCategoryAddTask(this);
 		addTask.execute(syndicationId, selectedCategorieID);
 	}
 
-	public void removeSyndicationToCategorie(Integer syndicationId) {
-		SyndicationCategoryRemoveTask removeTask = new SyndicationCategoryRemoveTask(this);
+	public void removeSyndicationToCategorie(final Integer syndicationId) {
+		final SyndicationCategoryRemoveTask removeTask = new SyndicationCategoryRemoveTask(this);
 		removeTask.execute(syndicationId, selectedCategorieID);
 	}
 
-	public void checkBoxHandler(View v) {
-		CheckBox cb = (CheckBox) v;
-		Integer syndicationId = (Integer) cb.getTag();
+	public void checkBoxHandler(final View v) {
+		final CheckBox cb = (CheckBox) v;
+		final Integer syndicationId = (Integer) cb.getTag();
 		if (cb.isChecked()) {
 			addSyndicationToCategorie(syndicationId);
 		} else {
@@ -93,75 +96,70 @@ public class SyndicationsCategoriesActivity extends ListActivity implements
 		getLoaderManager().restartLoader(0, null, this);
 	}
 
-	private void setupSearchView(MenuItem searchItem, SearchView searchView) {
-		boolean isAlwaysExpanded = false;
+	private void setupSearchView(final MenuItem searchItem, final SearchView searchView) {
+		final boolean isAlwaysExpanded = false;
 		if (isAlwaysExpanded) {
 			searchView.setIconifiedByDefault(false);
 		} else {
-			searchItem.setShowAsAction(
-					MenuItem.SHOW_AS_ACTION_IF_ROOM
-					| MenuItem.SHOW_AS_ACTION_COLLAPSE_ACTION_VIEW
-				);
+			searchItem.setShowAsAction(MenuItem.SHOW_AS_ACTION_IF_ROOM | MenuItem.SHOW_AS_ACTION_COLLAPSE_ACTION_VIEW);
 		}
 		searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
 			@Override
-			public boolean onQueryTextSubmit(String query) {
+			public boolean onQueryTextSubmit(final String query) {
 				filterCategories(query);
 				return false;
 			}
-			
+
 			@Override
-			public boolean onQueryTextChange(String newText) {
+			public boolean onQueryTextChange(final String newText) {
 				filterCategories(newText);
 				return true;
 			}
 		});
 	}
-	private String filterText = null;
-	private void filterCategories(String newText) {
-		if (this.getListView() != null) {
+
+	private String	filterText	= null;
+
+	private void filterCategories(final String newText) {
+		if (getListView() != null) {
 			if (TextUtils.isEmpty(newText)) {
-				this.getListView().clearTextFilter();
+				getListView().clearTextFilter();
 				filterText = null;
 			} else {
-				this.getListView().setFilterText(newText);
+				getListView().setFilterText(newText);
 				filterText = newText;
 			}
 		}
 	}
-	
-	SyndicationsCategorieAdapter adapter;
-	private void initAdapter() {		
-		adapter = new SyndicationsCategorieAdapter(this,R.layout.syndications_categorie, null, from, to, 0);
+
+	private void initAdapter() {
+		adapter = new SyndicationsCategorieAdapter(this, R.layout.syndications_categorie, null, from, to, 0);
 		setListAdapter(adapter);
 		adapter.setSelectedCategoryId(selectedCategorieID);
 	}
 
 	@Override
-	public Loader<Cursor> onCreateLoader(int arg0, Bundle arg1) {
-		return syndicationsByCategoryRepository.loadSyndicationsByCategory(
-				selectedCategorieID, filterText);
+	public Loader<Cursor> onCreateLoader(final int arg0, final Bundle arg1) {
+		return syndicationsByCategoryRepository.loadSyndicationsByCategory(selectedCategorieID, filterText);
 	}
-	
+
 	@Override
-	public void onLoadFinished(Loader<Cursor> loader, Cursor cursor) {
-		if(adapter == null){
+	public void onLoadFinished(final Loader<Cursor> loader, final Cursor cursor) {
+		if (adapter == null) {
 			initAdapter();
 		}
 		if (cursor.getCount() < 1) {
-			findViewById(R.id.emptySyndicationCategoryLayout)
-					.setVisibility(View.VISIBLE);
+			findViewById(R.id.emptySyndicationCategoryLayout).setVisibility(View.VISIBLE);
 		} else {
-			findViewById(R.id.emptySyndicationCategoryLayout)
-					.setVisibility(View.INVISIBLE);
+			findViewById(R.id.emptySyndicationCategoryLayout).setVisibility(View.INVISIBLE);
 		}
-		
+
 		adapter.swapCursor(cursor);
 	}
 
 	@Override
-	public void onLoaderReset(Loader<Cursor> loader) {
-		if(adapter == null){
+	public void onLoaderReset(final Loader<Cursor> loader) {
+		if (adapter == null) {
 			initAdapter();
 		}
 		adapter.swapCursor(null);

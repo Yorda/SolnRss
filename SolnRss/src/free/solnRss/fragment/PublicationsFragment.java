@@ -94,12 +94,6 @@ SharedPreferences.OnSharedPreferenceChangeListener {
 
 		final SharedPreferences sharedPreferences = getActivity().getPreferences(0);
 
-		// Get the publication list state
-		final String savedPublicationListState = sharedPreferences.getString("publication list state", null);
-		if (savedPublicationListState != null) {
-
-		}
-
 		if (sharedPreferences.getInt("selectedSyndicationID", -1) != -1) {
 			selectedSyndicationID = sharedPreferences.getInt("selectedSyndicationID", -1);
 			loadPublicationsBySyndication();

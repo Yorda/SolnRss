@@ -60,12 +60,17 @@ SharedPreferences.OnSharedPreferenceChangeListener {
 	public View onCreateView(final LayoutInflater inflater, final ViewGroup vg, final Bundle save) {
 
 		final View fragment = inflater.inflate(R.layout.fragment_publications, vg, false);
+
 		listContainer = fragment.findViewById(R.id.listContainer);
+
 		progressContainer = fragment.findViewById(R.id.progressContainer);
+
 		emptyLayoutId = R.id.emptyPublicationsLayout;
+
 		listShown = true;
 
 		final SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(getActivity());
+
 		sharedPreferences.registerOnSharedPreferenceChangeListener(this);
 
 		return fragment;
@@ -73,10 +78,13 @@ SharedPreferences.OnSharedPreferenceChangeListener {
 
 	@Override
 	public void onActivityCreated(final Bundle savedInstanceState) {
+
 		super.onActivityCreated(savedInstanceState);
 
 		publicationRepository = new PublicationRepository(getActivity());
+
 		publicationContentRepository = new PublicationContentRepository(getActivity());
+
 		displayList(savedInstanceState);
 
 		registerForContextMenu(getListView());
@@ -95,23 +103,32 @@ SharedPreferences.OnSharedPreferenceChangeListener {
 		final SharedPreferences sharedPreferences = getActivity().getPreferences(0);
 
 		if (sharedPreferences.getInt("selectedSyndicationID", -1) != -1) {
+
 			selectedSyndicationID = sharedPreferences.getInt("selectedSyndicationID", -1);
+
 			loadPublicationsBySyndication();
 		}
 
 		else if (sharedPreferences.getInt("selectedCategoryID", -1) != -1) {
+
 			selectedCategoryID = sharedPreferences.getInt("selectedCategoryID", -1);
+
 			loadPublicationsByCategory();
 		}
 
 		else if (sharedPreferences.getString("dateNewPublicationsFound", null) != null) {
+
 			dateNewPublicationsFound = sharedPreferences.getString("dateNewPublicationsFound", null);
+
 			loadPublicationsByLastFound(dateNewPublicationsFound);
 		}
 
 		else if (sharedPreferences.getBoolean("displayFavoritePublications", false)) {
+
 			displayFavoritePublications();
+
 		} else {
+
 			loadPublications();
 		}
 		setFilterText(sharedPreferences.getString("filterText", null));
@@ -120,8 +137,9 @@ SharedPreferences.OnSharedPreferenceChangeListener {
 	@Override
 	protected void displayEmptyMessage() {
 
-		final LinearLayout l = (LinearLayout) getActivity().findViewById(emptyLayoutId);
-		l.setVisibility(View.VISIBLE);
+		final LinearLayout linearLayout = (LinearLayout) getActivity().findViewById(emptyLayoutId);
+
+		linearLayout.setVisibility(View.VISIBLE);
 
 		getActivity().findViewById(R.id.displayAllButton).setVisibility(View.VISIBLE);
 
@@ -139,6 +157,7 @@ SharedPreferences.OnSharedPreferenceChangeListener {
 		else if (dateNewPublicationsFound != null) {
 			// Selected by last date found
 			writeEmptyMessage(null, R.string.empty_publications_date_last_found, R.string.empty_publications_date_last_found, getFilterText());
+
 		} else {
 
 			// All publication
@@ -152,16 +171,24 @@ SharedPreferences.OnSharedPreferenceChangeListener {
 	}
 
 	private void writeEmptyMessage(final String name, final int idMsgWithoutFilter, final int idMsgWithFilter, final String filter) {
+
 		if (TextUtils.isEmpty(filter)) {
+
 			if (name == null) {
+
 				displayEmptyListView(getResources().getString(idMsgWithoutFilter));
+
 			} else {
+
 				displayEmptyListView(getResources().getString(idMsgWithoutFilter, name));
 			}
 		} else {
 			if (name == null) {
+
 				displayEmptyListView(getResources().getString(idMsgWithFilter, filter));
+
 			} else {
+
 				displayEmptyListView(getResources().getString(idMsgWithFilter, name, filter));
 			}
 		}
@@ -169,19 +196,20 @@ SharedPreferences.OnSharedPreferenceChangeListener {
 
 	private void displayEmptyListView(final String msg) {
 
-		final TextView tv = (TextView) getActivity().findViewById(R.id.emptyPublicationsMessage);
+		final TextView textView = (TextView) getActivity().findViewById(R.id.emptyPublicationsMessage);
 
 		final Typeface userTypeFace = TypeFaceSingleton.getInstance(getActivity()).getUserTypeFace();
+
 		if (userTypeFace != null) {
-			tv.setTypeface(userTypeFace);
+			textView.setTypeface(userTypeFace);
 		}
 
 		final int userFontSize = TypeFaceSingleton.getInstance(getActivity()).getUserFontSize();
 		if (userFontSize != Constants.FONT_SIZE) {
-			tv.setTextSize(userFontSize);
+			textView.setTextSize(userFontSize);
 		}
 
-		tv.setText(msg);
+		textView.setText(msg);
 
 		final Button displayAllButton = (Button) getActivity().findViewById(R.id.displayAllButton);
 		if (userTypeFace != null) {
@@ -270,17 +298,21 @@ SharedPreferences.OnSharedPreferenceChangeListener {
 		nextSelectedSyndicationID = null;
 
 		final AdapterView.AdapterContextMenuInfo info = (AdapterView.AdapterContextMenuInfo) menuInfo;
-		final Cursor c = ((PublicationAdapter) getListAdapter()).getCursor();
-		c.moveToPosition(info.position);
 
-		menu.setHeaderTitle(c.getString(c.getColumnIndex(SyndicationTable.COLUMN_NAME)));
+		final Cursor cursor = ((PublicationAdapter) getListAdapter()).getCursor();
 
-		nextSelectedSyndicationID = c.getInt(c.getColumnIndex(PublicationTable.COLUMN_SYNDICATION_ID));
+		cursor.moveToPosition(info.position);
+
+		menu.setHeaderTitle(cursor.getString(cursor.getColumnIndex(SyndicationTable.COLUMN_NAME)));
+
+		nextSelectedSyndicationID = cursor.getInt(cursor.getColumnIndex(PublicationTable.COLUMN_SYNDICATION_ID));
 
 		final MenuInflater inflater = getActivity().getMenuInflater();
+
 		inflater.inflate(R.menu.publications_context, menu);
 
 		if (selectedSyndicationID != null) {
+
 			menu.getItem(0).setTitle(getResources().getString(R.string.display_all_publication));
 		}
 	}
@@ -422,8 +454,6 @@ SharedPreferences.OnSharedPreferenceChangeListener {
 
 		return publicationRepository.loadPublications(getFilterText(), selectedSyndicationID, selectedCategoryID, dateNewPublicationsFound,
 				displayAlreadyReadPublications());
-
-		// return state.displayList();
 	}
 
 	private boolean displayAlreadyReadPublications() {
